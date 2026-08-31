@@ -1,0 +1,54 @@
+/*
+ * Project PDF export stylesheet — shared by all human-facing docs/reports.
+ *
+ * Wire it ONCE (survives linters; no raw HTML inside the .md):
+ *   VS Code "Markdown PDF" (yzane.markdown-pdf) — in settings.json:
+ *     "markdown-pdf.styles": [".agent/templates/pdf-export.css"]
+ *   Pandoc:
+ *     pandoc doc.md -o doc.pdf --css .agent/templates/pdf-export.css
+ *
+ * Goal: body text flush on BOTH left and right edges (justified, no ragged
+ * margin), headings left-aligned, long URLs wrap instead of overflowing.
+ */
+
+body {
+  font-family: -apple-system, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+  font-size: 12pt;
+  line-height: 1.6;
+  color: #1a1a1a;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 32px;
+}
+
+/* Body copy: justified — even on both sides, never jagged */
+p, li, blockquote, td, dd {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+}
+
+/* Headings and list containers stay left — justifying short lines looks broken */
+h1, h2, h3, h4, h5, h6, ul, ol { text-align: left; }
+
+h1 { font-size: 22pt; margin: 0 0 12px; }
+h2 { font-size: 16pt; margin-top: 28px; border-bottom: 1px solid #dddddd; padding-bottom: 4px; }
+h3 { font-size: 13pt; margin-top: 18px; }
+
+/* Long URLs in the References section wrap, never push past the page edge */
+a { color: #0b66c3; text-decoration: underline; word-break: break-all; }
+
+code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.92em; overflow-wrap: anywhere; word-break: break-word; }
+hr { border: none; border-top: 1px solid #dddddd; margin: 24px 0; }
+table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+th, td { border: 1px solid #dddddd; padding: 6px 10px; overflow-wrap: anywhere; word-break: break-word; }
+
+img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}

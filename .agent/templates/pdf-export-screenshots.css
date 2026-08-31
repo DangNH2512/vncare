@@ -1,0 +1,62 @@
+/*
+ * pdf-export-screenshots.css — layer ON TOP of pdf-export.css for documents
+ * that carry many UI captures (SRS, design docs, walkthroughs).
+ *
+ * Problem it solves: a phone screenshot is tall and narrow. At the default
+ * `max-width: 100%` it fills an entire A4 page each, so a 50-capture document
+ * becomes 150 pages of pictures with the prose scattered between them.
+ *
+ * Rules:
+ *   1. Cap by HEIGHT, not width — that is what actually controls how much
+ *      vertical space a portrait capture eats.
+ *   2. Make images inline-block so consecutive captures in one paragraph sit
+ *      SIDE BY SIDE (a before/after pair reads as a pair, not as two pages).
+ *   3. Keep a whole capture on one page; never split an image across a break.
+ */
+
+p img,
+li img {
+    display: inline-block;
+    vertical-align: top;
+    max-height: 300px;
+    max-width: 48%;
+    width: auto;
+    height: auto;
+    margin: 6px 8px 6px 0;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* A lone capture in its own paragraph may be a touch larger. */
+p > img:only-child {
+    max-height: 360px;
+    max-width: 62%;
+}
+
+/* Wide desktop-browser captures: width is the binding constraint, not height. */
+p img[src*="web-"] {
+    max-height: 250px;
+    max-width: 100%;
+}
+
+p > img[src*="web-"]:only-child {
+    max-height: 320px;
+}
+
+/*
+ * Label columns must not snap mid-word.
+ *
+ * pdf-export-tables.css keeps `word-break: break-word` on body cells, which is
+ * right for a cell holding a long path or an inline snippet — but in a
+ * two-or-three column "label | value" table it renders the label as
+ * "Productio / n". `overflow-wrap: break-word` breaks a word only when it
+ * cannot fit on a line by itself, so ordinary labels stay whole while a
+ * genuinely unbreakable token still cannot overflow the page.
+ */
+td:first-child {
+    word-break: normal;
+    overflow-wrap: break-word;
+    min-width: 5.5em;
+}

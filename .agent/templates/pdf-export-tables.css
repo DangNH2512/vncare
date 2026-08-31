@@ -1,0 +1,74 @@
+/*
+ * Add-on stylesheet for TABLE-HEAVY reports (weekly reports, audit reports).
+ *
+ * Layer it AFTER the shared pdf-export.css — never instead of it:
+ *   pandoc doc.md -o doc.html --standalone --embed-resources \
+ *     --css .agent/templates/pdf-export.css \
+ *     --css .agent/templates/pdf-export-tables.css
+ *
+ * Why this exists: the shared stylesheet justifies `td` (correct for prose-width
+ * cells), but a 4+ column table squeezes cells to ~120px where justification
+ * stretches 3-4 words across the full cell and looks broken. This override keeps
+ * prose justified while letting table cells fall back to left alignment, and
+ * widens the page so wide tables breathe.
+ */
+
+@page {
+  size: A4;
+  margin: 14mm 12mm;
+}
+
+body {
+  max-width: 1000px;
+  padding: 16px 8px;
+}
+
+/* Table cells: left-aligned. Justifying a 120px cell stretches words apart. */
+th, td {
+  text-align: left;
+  hyphens: none;
+  font-size: 0.86em;
+  line-height: 1.45;
+  padding: 5px 8px;
+  vertical-align: top;
+}
+
+th {
+  background: #f4f6f8;
+  font-weight: 600;
+}
+
+/* Let column widths follow content instead of splitting evenly. */
+table {
+  table-layout: auto;
+  margin: 12px 0;
+  page-break-inside: auto;
+}
+
+tr {
+  page-break-inside: avoid;
+}
+
+/*
+ * Headers must break between WORDS only. The shared stylesheet sets
+ * `word-break: break-word` on th/td (right for long inline code in a body cell),
+ * but on a narrow header it shreds a label mid-word — "Khai báo" renders as
+ * "Kh / ai / bá / o". Body cells keep the aggressive breaking; headers do not.
+ */
+th {
+  word-break: normal;
+  overflow-wrap: normal;
+  min-width: 4.5em;
+}
+
+/*
+ * Do NOT force the first column to nowrap: in these reports column 1 is a long
+ * text column, and pinning it to one line starves every column after it.
+ * Auto table-layout already keeps a short "#" column narrow on its own.
+ */
+
+/* Inline code inside cells must not force a column wider than its share. */
+td code {
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+}

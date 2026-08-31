@@ -1,0 +1,224 @@
+                                                                                           DA NANG CONNECT — BRIEF DỰ ÁN
+
+
+
+
+DỰ ÁN
+
+
+Da Nang Connect
+Nền tảng kết nối cộng đồng người nước ngoài tại Đà Nẵng — bắt đầu từ nơi Facebook, Meetup và
+WhatsApp đang làm expat mệt mỏi vì phải tìm kiếm ở quá nhiều nơi.
+
+
+
+        3.504                      11 : 1                                90×                           5+
+ bài đăng nhu cầu được phân   tỷ lệ cầu / cung dịch vụ             khoảng trống ở nhóm y     kênh rời rạc expat phải tự
+             tích                                                       tế/wellness                     gộp
+
+
+
+
+                                                         Trang 1
+                                                                                                     DA NANG CONNECT — BRIEF DỰ ÁN
+
+
+1. Bối cảnh & Insight
+Một báo cáo phân tích dữ liệu mạng xã hội (insightsocial.app) về hành vi của cộng đồng người nước ngoài tại
+Đà Nẵng cho thấy một khoảng lệch rõ rệt giữa nhu cầu và nguồn cung dịch vụ dành cho họ:
+
+ ● Tỷ lệ bài đăng thể hiện nhu cầu (hỏi, tìm kiếm, xin gợi ý) so với bài đăng chào cung dịch vụ là khoảng 11:1.
+ ● Ở nhóm y tế/wellness — nơi khoảng trống lớn nhất — chênh lệch lên tới 90 lần.
+
+ ● Gần như mọi nhu cầu được đăng đều kèm điều kiện “English-speaking”: rào cản không chỉ là thiếu người
+     cung cấp dịch vụ, mà là thiếu người cung cấp dịch vụ nói được tiếng Anh.
+ ● Với riêng nhu cầu kết nối cộng đồng (sự kiện, thể thao, trao đổi ngôn ngữ), cộng đồng expat hiện đang rải
+     rác trên ít nhất 5 kênh khác nhau: Facebook Groups, Meetup.com, WhatsApp Groups, Luma, và các trang
+     độc lập (Da Nang Leisure, What's Up Da Nang) — không có điểm tổng hợp duy nhất.
+
+   Insight cốt lõi
+   Nhu cầu kết nối của expat tại Đà Nẵng không thiếu — nó chỉ đang bị chôn vùi và phân mảnh. Cơ hội không
+   nằm ở việc tạo ra nhu cầu mới, mà ở việc tổ chức lại nhu cầu đã có sẵn một cách dễ tiếp cận hơn.
+
+Nguồn dữ liệu: Insight Social — Phân tích 3.504 bài đăng expat Đà Nẵng, cập nhật 18/07/2026 (insightsocial.app)
+
+Vì sao chọn Kết nối cộng đồng để bắt đầu — bằng chứng ngay trong dữ liệu
+Báo cáo chỉ ra insight #4: khi cộng lại, nhu cầu sự kiện + thể thao + trao đổi ngôn ngữ thực ra vượt qua nhu cầu
+nhà ở — dù nhà ở luôn được nhắc đến như nhu cầu "nóng" nhất. Đây là bằng chứng trực tiếp cho việc chọn
+Kết nối cộng đồng làm điểm khởi đầu, thay vì lao ngay vào nhà ở:
+
+
+  809 bài                                                            349 bài
+  Sự kiện + Thể thao (cộng gộp 2 nhóm Facebook)                      Nhà ở (cộng gộp 2 nhóm Facebook)
+
+ ● Ở nhóm "Expats in Da Nang" (1.919 bài, nhịp đều, ít drama) — Sự kiện & kết nối là chủ đề #1 với 363 bài,
+     gấp 1,8 lần nhóm còn lại. Chính báo cáo khuyến nghị đây là nhóm phù hợp nhất để tổ chức sự kiện,
+     meetup, lớp học.
+ ● Tăng trưởng nóng: trong giai đoạn Tháng 5–6/2026, số bài về sự kiện tăng gấp 10 lần so với tháng trước —
+     tốc độ tăng nhanh hơn cả nhà ở (gấp 4 lần cùng kỳ).
+ ● Từ khóa nhu cầu xuất hiện nhiều liên quan trực tiếp đến kết nối cộng đồng: “sports bar” (37 lần),
+     “language exchange” (28 lần), “fitness” (26 lần), “sports” (24 lần), “entertainment” (23 lần).
+
+
+2. Vấn đề cụ thể
+Trọng tâm ban đầu của dự án là mảng Kết nối cộng đồng (event, thể thao, trao đổi ngôn ngữ) — được chọn vì
+đây là điểm khởi đầu rủi ro thấp nhất để kiểm chứng giả định quan trọng nhất: liệu expat có sẵn sàng rời thói
+quen dùng Facebook để dùng một nền tảng chuyên biệt hơn không.
+
+
+                                                               Trang 2
+                                                                                      DA NANG CONNECT — BRIEF DỰ ÁN
+
+Điểm đau cụ thể, đã được xác nhận qua khảo sát nhanh với người sáng lập dự án và đối chiếu với bối cảnh thị
+trường:
+
+ ● Khó tìm: sự kiện và bài đăng bị chìm trong feed Facebook, không có filter/search theo sở thích, khu vực
+    hay thời gian.
+ ● Phân mảnh kênh: một expat muốn biết "tuần này có gì diễn ra" phải kiểm tra riêng lẻ Facebook, Meetup,
+    WhatsApp, và các trang sự kiện độc lập.
+ ● Thiếu cơ chế cho nhu cầu tức thời (ad-hoc): "cần bạn đánh cầu chiều nay", "tìm người luyện tiếng Anh tối
+    nay" — dạng nhu cầu này không phù hợp với cơ chế sự kiện có lịch cố định của Meetup.
+
+
+3. Giải pháp v1
+Da Nang Connect là ứng dụng cho phép người nước ngoài tại Đà Nẵng tạo, tìm kiếm và tham gia hoạt động kết
+nối cộng đồng — với trải nghiệm tìm kiếm/lọc tốt hơn nhiều so với việc lướt feed Facebook.
+
+Tính năng cốt lõi (MVP)
+ ● Tạo sự kiện/hoạt động: bất kỳ user nào cũng có thể tạo — từ buổi thể thao, meetup ngôn ngữ, đến sự
+    kiện cộng đồng có quy mô.
+ ● Đăng ký tham gia (RSVP): xem ai đã tham gia, số lượng chỗ còn lại.
+
+ ● Tìm kiếm & lọc nâng cao: theo loại hình, khu vực (Mỹ Khê, An Thượng, Mỹ An...), thời gian, ngôn ngữ.
+
+ ● Hồ sơ cá nhân cơ bản: mức độ tin cậy, lịch sử tham gia, để tạo cảm giác an toàn khi gặp người lạ.
+
+Chiến lược ra mắt: Curate thủ công, sau đó chuyển sang Self-serve
+Ứng dụng mới sẽ trống nếu chờ organizer chủ động đăng bài đầu tiên. Vì vậy, giai đoạn đầu, đội sáng lập sẽ
+chủ động:
+
+ ● Tổng hợp thủ công các sự kiện công khai đang có trên Facebook/Meetup/WhatsApp, đăng lại lên app để
+    tạo cảm giác "có sự sống" ngay từ ngày đầu.
+ ● Chủ động liên hệ organizer gốc: "Sự kiện của bạn đã có X người quan tâm trên Da Nang Connect — bạn có
+    muốn tự quản lý listing này không?" — đây là cửa chuyển đổi organizer từ bị động sang chủ động sử dụng
+    app.
+
+   Vì sao không tự động hóa việc gộp dữ liệu (aggregator tự động)?
+   Facebook không có API công khai ổn định cho việc này — scraping vi phạm điều khoản sử dụng và có thể khiến
+   app ngừng hoạt động bất kỳ lúc nào. Curate thủ công ở giai đoạn đầu vừa tránh rủi ro pháp lý, vừa tạo lý do
+   tự nhiên để tiếp cận từng organizer.
+
+
+
+4. Khác biệt với Meetup / Facebook Groups
+
+
+                                                       Trang 3
+                                                                                         DA NANG CONNECT — BRIEF DỰ ÁN
+
+
+ Tiêu chí                              Da Nang Connect
+
+ Phạm vi                               Hyperlocal cho riêng Đà Nẵng — tối ưu tìm theo khu vực cụ thể (Mỹ Khê, An
+                                       Thượng, Mỹ An...), điều Meetup/Facebook không làm tốt ở cấp thành phố.
+
+ Chi phí tạo sự kiện                   Miễn phí cho organizer nhỏ lẻ — Meetup thu phí tổ chức nhóm, tạo rào cản
+                                       cho người tổ chức tạm thời, không chuyên nghiệp.
+
+ Loại nhu cầu                          Hướng tới cả sự kiện có lịch lẫn nhu cầu tức thời/ad-hoc (giai đoạn 2) —
+                                       Meetup chỉ mạnh về sự kiện có tổ chức, có lịch cố định.
+
+ Đối tượng                             Thiết kế riêng cho cộng đồng expat — không lẫn với người dùng địa phương
+                                       như Facebook Groups đại trà.
+
+
+
+5. Roadmap mở rộng
+Sau khi Kết nối cộng đồng có traction thực tế (không phải giả định), dự án mở rộng sang các mảng dịch vụ theo
+đúng thứ tự rủi ro tăng dần — mỗi giai đoạn tận dụng lượng người dùng đã có để thuyết phục nguồn cung mới
+tham gia dễ dàng hơn.
+
+ Giai đoạn                             Nội dung
+
+ Giai đoạn 1                           Kết nối cộng đồng — event, thể thao, trao đổi ngôn ngữ. Rủi ro thấp, không
+                                       cần xác thực chuyên môn, không có bên thứ ba trong giao dịch tiền.
+
+ Giai đoạn 2                           Nhà ở — nhu cầu lớn nhất theo dữ liệu, nhưng cần xây cơ chế xử lý tranh
+                                       chấp, xác thực môi giới/chủ nhà.
+
+ Giai đoạn 3                           Y tế / dịch vụ chuyên môn — khoảng trống cung lớn nhất (90×), nhưng đòi
+                                       hỏi xác thực chuyên môn và mức độ tin cậy cao nhất, rủi ro uy tín và pháp lý
+                                       cao nhất nếu giới thiệu sai.
+
+
+
+6. Mô hình kiếm tiền
+Ở giai đoạn đầu, mục tiêu là chứng minh mô hình (vendor/organizer sẵn sàng tham gia, expat sẵn sàng chuyển
+từ Facebook sang app), không phải tối đa hóa doanh thu ngay. Quảng cáo và hoa hồng chỉ khả thi khi đã có
+lượng truy cập đủ lớn.
+
+ ● Giai đoạn đầu — Freemium: miễn phí các tính năng cơ bản (tạo & tham gia sự kiện); tính phí cho filter
+    nâng cao (đánh giá cao nhất, khu vực ưu tiên...) và các tiện ích mở rộng.
+ ● Giai đoạn tăng trưởng — Quảng cáo trong app + gói premium loại bỏ quảng cáo, khi lượng truy cập đủ lớn
+    để quảng cáo có giá trị thương mại.
+ ● Giai đoạn mở rộng dịch vụ (nhà ở, y tế) — hoa hồng theo giao dịch hoặc phí niêm yết cho vendor, khi đã
+    có lượng người dùng đủ lớn để vendor thấy giá trị trả phí.
+
+                                                      Trang 4
+                                                                                    DA NANG CONNECT — BRIEF DỰ ÁN
+
+
+7. Rủi ro đã lường trước
+
+ Rủi ro                           Cách xử lý
+
+ Cold-start nguồn cung            Organizer/vendor không chủ động đăng bài dù nhu cầu cao (data cho thấy
+                                  cung chỉ chiếm 6% bài đăng). Giải pháp: đội sáng lập tự tay curate nội dung
+                                  mồi và tiếp cận trực tiếp trong giai đoạn đầu.
+
+ Cạnh tranh từ Meetup.com         Nền tảng toàn cầu đã có sẵn cơ chế discovery theo sở thích. Giải pháp: cạnh
+                                  tranh bằng hyperlocal, miễn phí tạo event, và nhu cầu ad-hoc mà Meetup
+                                  không phục vụ tốt.
+
+ Rủi ro pháp lý khi gộp dữ liệu   Scraping tự động từ Facebook vi phạm điều khoản sử dụng, rủi ro app bị gãy
+                                  đột ngột. Giải pháp: curate thủ công, không dùng scraping tự động.
+
+ Phân mảnh đối tượng người dùng   Digital nomad và expat định cư dài hạn tụ tập ở kênh khác nhau (coworking
+                                  space/WhatsApp vs. group trường quốc tế/khu dân cư). Cần chọn 1 kênh cụ
+                                  thể để seed 100 user đầu tiên thay vì dàn trải.
+
+
+
+
+                                                 Trang 5
+                                                                                   DA NANG CONNECT — BRIEF DỰ ÁN
+
+
+Lời mời tham gia
+Dự án đang ở giai đoạn hoàn thiện brief và tìm kiếm những người đồng hành đầu tiên — về sản phẩm, kỹ
+thuật, hoặc vận hành cộng đồng tại Đà Nẵng. Đây là cơ hội xây dựng từ giai đoạn insight, cùng định hình hướng
+đi của sản phẩm ngay từ đầu.
+
+
+
+
+                                                   Trang 6
+                                                                                           DA NANG CONNECT — BRIEF DỰ ÁN
+
+
+Phụ lục — Nguồn dữ liệu
+Toàn bộ số liệu trong tài liệu này trích từ báo cáo phân tích 3.504 bài đăng của Insight Social, thu thập từ 2
+nhóm Facebook expat lớn nhất Đà Nẵng (Expats in Da Nang: 1.919 bài; Expats in Da Nang City: 1.585 bài), giai
+đoạn Th12/2025–Th7/2026, cập nhật ngày 18/07/2026.
+
+Báo cáo đầy đủ: insightsocial.app/analytics/expats-da-nang
+
+Dữ liệu gốc — Expats in Da Nang: 2.000 bài đăng, 36.511 reactions, 36.337 bình luận
+
+Dữ liệu gốc — Expats in Da Nang City: 1.634 bài đăng, 57.793 reactions, 52.002 bình luận
+
+
+
+
+                                                               Trang 7
+

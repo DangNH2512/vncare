@@ -1,0 +1,111 @@
+/*
+ * Add-on stylesheet for RELAXED, easy-scan reports (executive evaluations,
+ * decision docs). Born from user feedback 2026-08-03: justified body + dense
+ * bold + full-grid tables read as "rối mắt" (visually noisy).
+ *
+ * Layer it AFTER pdf-export.css (and after pdf-export-tables.css if used):
+ *   pandoc doc.md -o doc.html --standalone --embed-resources \
+ *     --css .agent/templates/pdf-export.css \
+ *     --css .agent/templates/pdf-export-tables.css \
+ *     --css .agent/templates/pdf-export-relaxed.css
+ *
+ * What it changes vs the base sheets:
+ *   - Body text LEFT-aligned (no justify): Vietnamese + inline numbers create
+ *     uneven word gaps ("rivers") when justified.
+ *   - More air: bigger line-height, paragraph spacing, section spacing.
+ *   - Calmer tables: horizontal rules only (no vertical grid), zebra rows.
+ *   - Headings carry the visual hierarchy (accent bar) so body bold can be rare.
+ */
+
+@page {
+  size: A4;
+  margin: 16mm 14mm;
+}
+
+body {
+  max-width: 860px;
+  padding: 20px 16px;
+  font-size: 12.5pt;
+  line-height: 1.75;
+  color: #222;
+}
+
+/* Left-aligned body — no justification rivers */
+p, li, blockquote, td, dd {
+  text-align: left;
+  hyphens: none;
+}
+
+p { margin: 0 0 14px; }
+li { margin-bottom: 6px; }
+ul, ol { margin: 10px 0 16px; }
+
+/* Headings own the hierarchy */
+h1 {
+  font-size: 20pt;
+  line-height: 1.35;
+  margin: 0 0 6px;
+  color: #1a1a1a;
+}
+
+h2 {
+  font-size: 15pt;
+  margin-top: 34px;
+  margin-bottom: 12px;
+  padding: 2px 0 2px 12px;
+  border-bottom: none;
+  border-left: 4px solid #C2185B;
+  color: #7b1240;
+  page-break-after: avoid;
+}
+
+h3 { font-size: 12.5pt; margin-top: 22px; color: #333; }
+
+/* Rare bold reads as signal, not noise */
+strong { font-weight: 650; color: #111; }
+
+/* Calm tables: horizontal rules only, zebra, airy cells */
+table {
+  table-layout: auto;
+  margin: 14px 0 20px;
+  border: none;
+}
+
+th, td {
+  border: none;
+  border-bottom: 1px solid #e3e3e3;
+  padding: 8px 12px;
+  font-size: 0.88em;
+  line-height: 1.5;
+  vertical-align: top;
+  text-align: left;
+}
+
+th {
+  background: none;
+  border-bottom: 2px solid #C2185B;
+  color: #7b1240;
+  font-weight: 650;
+}
+
+/* Never break a word mid-token in a cell ("BoongChat" -> "BoongCh/at").
+   Auto table layout then reserves at least the longest word per column. */
+th, td {
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+tbody tr:nth-child(even) td { background: #faf7f8; }
+tr { page-break-inside: avoid; }
+
+hr { border-top: 1px solid #eeeeee; margin: 30px 0; }
+
+blockquote {
+  border-left: 3px solid #e0c3cf;
+  margin: 14px 0;
+  padding: 4px 16px;
+  color: #555;
+}
+
+code { font-size: 0.9em; background: #f6f2f4; padding: 1px 4px; border-radius: 3px; }
+td code, th code { background: none; padding: 0; }

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>{{TITLE}}</title>
+<!--
+  DA NANG CONNECT — WEEKLY DECK TEMPLATE. Do NOT edit the CSS below when reusing.
+  Recipe + mandatory slide order: .agent/skills/weekly-report/SKILL.md
+  Palette is locked so every weekly report looks like the previous ones.
+  Replace {{PLACEHOLDERS}} and duplicate <section class="slide"> blocks as needed.
+-->
+<style>
+  /* Da Nang Connect brand palette — locked so every reporting period matches. */
+  :root{
+    --navy:#1b1f2e;
+    --gold:#c9a227;
+    --cream:#faf7f2;
+    --rose:#b76e79;
+    --bronze:#b8752e;
+    --ink:#2c3040;
+    --muted:#6f6d6b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  @page{size:A4 landscape;margin:0;}
+  html,body{font-family:'Inter',-apple-system,'Helvetica Neue',sans-serif;color:var(--ink);}
+
+  .slide{
+    position:relative;width:297mm;height:210mm;
+    background:var(--cream);page-break-after:always;overflow:hidden;
+    padding:22mm 24mm 16mm 24mm;display:flex;flex-direction:column;
+  }
+  .slide:last-child{page-break-after:auto;}
+  /* Left gold spine on every content slide */
+  .slide::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5mm;background:var(--gold);}
+
+  /* ---------- Cover / closing (dark) ---------- */
+  .slide.dark{background:var(--navy);color:#fff;justify-content:center;}
+  .slide.dark::before{display:none;}
+  .slide.dark::after{
+    content:"";position:absolute;left:0;right:0;top:0;height:3.2mm;background:var(--gold);
+  }
+  .barbottom{position:absolute;left:0;right:0;bottom:0;height:3.2mm;background:var(--gold);}
+  .eyebrow-gold{
+    font-size:9.5pt;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold);font-weight:600;margin-bottom:8mm;
+  }
+  .cover-title{font-family:'Playfair Display',Georgia,serif;font-weight:800;font-size:46pt;line-height:1.05;}
+  .cover-sub{font-size:13pt;color:#d7d9e0;margin-top:4mm;font-weight:400;}
+  .rule-gold{width:22mm;height:1.1mm;background:var(--gold);margin:5mm 0 6mm;}
+  .cover-range{font-size:12.5pt;font-weight:700;color:#fff;}
+  .cover-foot{position:absolute;left:24mm;bottom:12mm;font-size:9.5pt;color:#9ea3b0;}
+
+  /* ---------- Headings ---------- */
+  .eyebrow{
+    font-size:8.5pt;letter-spacing:.2em;text-transform:uppercase;
+    color:#8d8b86;font-weight:600;margin-bottom:2mm;
+  }
+  h1{font-family:'Playfair Display',Georgia,serif;font-weight:800;font-size:33pt;line-height:1.1;color:var(--navy);}
+  .underline{width:19mm;height:1mm;background:var(--gold);margin-top:3.5mm;}
+  .partlabel{font-size:9.5pt;color:#7c7a76;font-weight:600;margin-top:4mm;}
+
+  /* Week pill */
+  .pill{
+    display:inline-block;padding:1.8mm 5mm;border-radius:99px;
+    font-size:8.5pt;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+    color:#fff;margin-bottom:4mm;
+  }
+  .pill.navy{background:var(--navy);}
+  .pill.rose{background:var(--rose);}
+  .pill.bronze{background:var(--bronze);}
+
+  /* ---------- Bullet list with badges ---------- */
+  .points{margin-top:9mm;display:flex;flex-direction:column;gap:5.5mm;}
+  .pt{display:flex;gap:4.5mm;align-items:flex-start;}
+  .badge{
+    flex:0 0 auto;width:6.4mm;height:6.4mm;border-radius:99px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:9pt;font-weight:700;margin-top:.4mm;
+  }
+  .badge.gold{background:var(--gold);}
+  .badge.rose{background:var(--rose);}
+  .badge.bronze{background:var(--bronze);}
+  .pt p{font-size:11.5pt;line-height:1.5;}
+  .pt strong{color:var(--navy);font-weight:700;}
+  .note{margin-top:8mm;font-size:10pt;color:#7c7a76;font-style:italic;line-height:1.5;}
+
+  /* ---------- Overview cards ---------- */
+  .cards{margin-top:7mm;display:flex;flex-direction:column;gap:6mm;}
+  .card{border-radius:2.6mm;overflow:hidden;box-shadow:0 .6mm 2mm rgba(27,31,46,.07);}
+  .card-hd{padding:4mm 6mm;color:#fff;}
+  .card-hd .k{font-size:8pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;opacity:.82;}
+  .card-hd .v{font-family:'Playfair Display',Georgia,serif;font-size:17pt;font-weight:700;margin-top:.8mm;}
+  .card-hd.navy{background:var(--navy);}
+  .card-hd.rose{background:var(--rose);}
+  .card-bd{background:#fff;padding:4.5mm 6mm 4mm;}
+  .card-bd li{list-style:none;font-size:11pt;line-height:1.5;margin-bottom:2.2mm;padding-left:5mm;position:relative;}
+  .card-bd li::before{content:"–";position:absolute;left:0;font-weight:700;}
+  .card-bd.navy li::before{color:var(--navy);}
+  .card-bd.rose li::before{color:var(--rose);}
+  .card-bd .total{font-size:11pt;font-weight:700;color:var(--navy);margin-top:1mm;}
+
+  /* ---------- Comparison chart ---------- */
+  .legend{display:flex;gap:9mm;margin-top:5mm;font-size:9.5pt;font-weight:600;}
+  .legend .a{color:var(--navy);}
+  .legend .b{color:var(--rose);}
+  .metric{margin-top:5.5mm;border-top:.25mm solid #e3e0da;padding-top:3mm;}
+  .metric .name{font-size:10.5pt;font-weight:600;color:var(--ink);margin-bottom:2.4mm;}
+  .row{display:flex;align-items:center;gap:4mm;margin-bottom:2.2mm;}
+  .row .num{font-family:'Playfair Display',Georgia,serif;font-size:14pt;font-weight:700;width:12mm;text-align:right;}
+  .row.a .num{color:var(--navy);}
+  .row.b .num{color:var(--rose);}
+  .track{flex:1;height:3.4mm;background:#e8e2d8;border-radius:99px;overflow:hidden;}
+  .fill{height:100%;border-radius:99px;}
+  .row.a .fill{background:var(--navy);}
+  .row.b .fill{background:var(--rose);}
+  .verdict{
+    margin-top:6mm;background:#fff;border-left:1.2mm solid var(--gold);
+    padding:4mm 6mm;border-radius:1.5mm;
+  }
+  .verdict .t{font-size:9.5pt;font-weight:700;color:var(--gold);letter-spacing:.06em;margin-bottom:1.6mm;}
+  .verdict p{font-size:10.5pt;line-height:1.55;}
+
+  /* ---------- Meeting agenda (11 compact rows) ---------- */
+  .agenda{margin-top:6mm;display:flex;flex-direction:column;gap:2.6mm;}
+  .ag{display:flex;gap:3.5mm;align-items:flex-start;}
+  .ag p{font-size:9.6pt;line-height:1.38;}
+  /* Density variant for a reported week with >14 line items (e.g. combined
+     2-week deck) so the scoreline still fits above the footer. Use
+     class="agenda tight" on the whole list, not per-row. */
+  .agenda.tight{gap:1.6mm;margin-top:4mm;}
+  .agenda.tight .ag p{font-size:8.8pt;line-height:1.28;}
+  .agenda.tight + .scoreline{margin-top:3mm;padding:2.2mm 6mm;}
+  .ag strong{color:var(--navy);font-weight:700;}
+  .ag em{color:#7c7a76;font-style:italic;}
+  .st{
+    flex:0 0 auto;width:4.8mm;height:4.8mm;border-radius:99px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:7.5pt;font-weight:700;color:#fff;margin-top:.5mm;
+  }
+  .st.ok{background:var(--gold);}
+  .st.mid{background:var(--bronze);}
+  .st.no{background:#9b3f45;}
+  .scoreline{
+    margin-top:5mm;padding:2.8mm 6mm;background:#fff;border-radius:1.5mm;
+    border-left:1.2mm solid var(--navy);font-size:10.5pt;color:var(--ink);
+    align-self:flex-start;
+  }
+  .scoreline strong{font-family:'Playfair Display',Georgia,serif;font-size:13pt;color:var(--navy);}
+
+  /* ---------- Bug-fix slide: two columns ---------- */
+  .fixcols{margin-top:7mm;display:flex;gap:8mm;align-items:flex-start;}
+  .fixcol{flex:1;}
+  .fixhd{
+    padding:2.6mm 5mm;border-radius:2mm 2mm 0 0;color:#fff;
+    font-size:8pt;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+  }
+  .fixhd.navy{background:var(--navy);}
+  .fixhd.rose{background:var(--rose);}
+  .fixhd span{opacity:.8;letter-spacing:.06em;text-transform:none;font-weight:600;}
+  .fixbd{background:#fff;border-radius:0 0 2mm 2mm;padding:4mm 5mm;}
+  .fixbd li{
+    list-style:none;font-size:9.2pt;line-height:1.42;margin-bottom:2.8mm;
+    padding-left:4.2mm;position:relative;
+  }
+  .fixbd li:last-child{margin-bottom:0;}
+  .fixbd li::before{content:"–";position:absolute;left:0;font-weight:700;}
+  .fixbd.navy li::before{color:var(--navy);}
+  .fixbd.rose li::before{color:var(--rose);}
+  .fixbd strong{color:var(--navy);font-weight:700;}
+  .fixbd em{color:#8d8b86;font-style:normal;font-size:.92em;}
+
+  /* ---------- Feature screenshot placeholder (MANDATORY on every NEW-FEATURE slide) ----------
+     See .agent/skills/weekly-report/SKILL.md Rule 7. Bug-fix / ops slides do NOT use this —
+     they stay as .fixcols tables. One .shotbox per screen to capture; use 2 side-by-side for a
+     feature that needs a before/after or a two-screen flow. */
+  .shotwrap{display:flex;gap:6mm;margin-top:6mm;}
+  .shotbox{
+    flex:1;height:58mm;border:.6mm dashed #c7c2b6;border-radius:2.5mm;
+    background:#fdfcfa;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2.5mm;padding:4mm;box-sizing:border-box;overflow:hidden;
+  }
+  .shotbox .cam{font-size:20pt;color:#c2bcae;}
+  .shotbox .lbl{font-size:9pt;font-weight:700;color:var(--navy);text-align:center;line-height:1.3;}
+  /* Once a real screenshot replaces the placeholder: add class="shotbox filled"
+     and put <img src="..." alt="..."> inside instead of .cam/.lbl. height is a
+     DEFINITE value (not min-height) so img height:100% + object-fit:cover
+     actually crops instead of collapsing to auto. */
+  .shotbox.filled{border-style:solid;border-width:.3mm;border-color:#e3ded2;padding:0;display:block;}
+  .shotbox.filled img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;}
+  /* PORTRAIT (phone, apps/mobile) screenshot => split slide: copy LEFT, device screen RIGHT.
+     A phone shot inside a full-width .shotbox wastes ~70% of the row on empty
+     background and shrinks the screen down to an unreadable size. Use
+     .splitwrap instead of .shotwrap whenever the evidence image is portrait. */
+  .splitwrap{display:flex;gap:9mm;margin-top:5mm;align-items:stretch;height:112mm;}
+  .splitcol{flex:1;display:flex;flex-direction:column;justify-content:center;}
+  .splitcol .points{margin-top:0;gap:4.5mm;}
+  .splitcol .shotcap{margin-top:6mm;}
+  .splitshot{
+    flex:0 0 68mm;display:flex;align-items:center;justify-content:center;
+    background:#f2efe9;border:.3mm solid #e3ded2;border-radius:2.5mm;padding:3mm;
+  }
+  .splitshot img{max-height:100%;max-width:100%;object-fit:contain;border-radius:2mm;display:block;}
+  /* Landscape screenshot on the right: widen the image column so an apps/web
+     capture is still readable (68mm only suits a portrait phone shot). */
+  .splitshot.land{flex:0 0 142mm;}
+  .splitwrap.land .splitcol .pt p{font-size:10.5pt;line-height:1.45;}
+  .splitwrap.land .splitcol .points{gap:4mm;}
+  .splitshot.empty{border-style:dashed;border-width:.6mm;border-color:#c7c2b6;background:#fdfcfa;flex-direction:column;gap:2.5mm;}
+  .splitshot.empty .cam{font-size:20pt;color:#c2bcae;}
+  .splitshot.empty .lbl{font-size:9pt;font-weight:700;color:var(--navy);text-align:center;line-height:1.3;}
+  /* Wide screenshot that must be seen whole (a chat thread, a long form) */
+  .shotbox.wide{height:72mm;background:#f2efe9;display:flex;align-items:center;justify-content:center;padding:1.5mm;}
+  .shotbox.wide img{width:auto;max-width:100%;height:100%;object-fit:contain;border-radius:1.5mm;}
+  .shotcap{margin-top:3mm;font-size:8.6pt;color:#7c7a76;line-height:1.45;}
+  .shotcap strong{color:var(--ink);}
+
+  /* ---------- Footer ---------- */
+  .foot{
+    position:absolute;left:24mm;right:24mm;bottom:11mm;
+    display:flex;justify-content:space-between;font-size:8.5pt;color:#9a9791;
+  }
+  .spacer{flex:1;}
+</style>
+</head>
+<body>
+<!-- 01 — COVER (dark) -->
+<section class="slide dark">
+  <div class="eyebrow-gold">Báo cáo tiến độ dự án</div>
+  <div class="cover-title">Da Nang Connect</div>
+  <div class="cover-sub">Nền tảng kết nối cộng đồng expat tại Đà Nẵng — Web &amp; Mobile App</div>
+  <div class="rule-gold"></div>
+  <div class="cover-range">{{RANGE}}</div>
+  <div class="cover-foot">Trình bày ngày {{PRESENT_DATE}}</div>
+  <div class="barbottom"></div>
+</section>
+
+<!-- 02 — BẮT BUỘC: toàn bộ task tuần trước + trạng thái + scoreline -->
+<section class="slide">
+  <div class="eyebrow">{{PLAN_SOURCE}}</div>
+  <h1>Tuần vừa qua — đo theo các mục đã chốt</h1>
+  <div class="underline"></div>
+  <div class="agenda">
+    <div class="ag"><span class="st ok">✓</span><p><strong>{{ITEM}}</strong> {{DETAIL}}</p></div>
+    <div class="ag"><span class="st mid">◐</span><p><strong>{{ITEM}}</strong> {{DETAIL}} <em>(trang N)</em></p></div>
+    <div class="ag"><span class="st no">✗</span><p><strong>{{ITEM}}</strong> — chưa khởi động</p></div>
+  </div>
+  <div class="scoreline"><strong>{{N}}</strong> hoàn thành &nbsp;·&nbsp; <strong>{{N}}</strong> đang chạy &nbsp;·&nbsp; <strong>{{N}}</strong> chưa khởi động</div>
+  <div class="foot"><span>Da Nang Connect &nbsp;|&nbsp; Nền tảng kết nối cộng đồng expat</span><span>02 / {{TOTAL}}</span></div>
+</section>
+
+<!-- 03 — BẮT BUỘC: nhìn nhanh 2 tuần (tuần trước nữa + tuần trước) -->
+<section class="slide">
+  <div class="eyebrow">Tổng quan</div>
+  <h1>Hai tuần — nhìn nhanh</h1>
+  <div class="cards">
+    <div class="card">
+      <div class="card-hd navy"><div class="k">Tuần trước nữa</div><div class="v">{{RANGE_A}}</div></div>
+      <div class="card-bd navy"><ul><li>{{HIGHLIGHT}}</li></ul><div class="total">{{N}} cập nhật hệ thống</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd rose"><div class="k">Tuần trước</div><div class="v">{{RANGE_B}}</div></div>
+      <div class="card-bd rose"><ul><li>{{HIGHLIGHT}}</li></ul><div class="total">{{N}} cập nhật hệ thống</div></div>
+    </div>
+  </div>
+  <div class="note" style="margin-top:6mm;">{{CAVEAT_VE_MUC_CHUA_XONG}}</div>
+  <div class="foot"><span>Da Nang Connect &nbsp;|&nbsp; Nền tảng kết nối cộng đồng expat</span><span>03 / {{TOTAL}}</span></div>
+</section>
+
+<!-- 04..N — SLIDE CHI TIẾT: pill navy = tuần trước nữa, pill rose = tuần trước -->
+<section class="slide">
+  <div class="spacer"></div>
+  <div><span class="pill rose">{{PILL}}</span></div>
+  <h1>{{HEADING}}</h1>
+  <div class="partlabel">Phần 1 / 2</div>
+  <div class="underline" style="margin-top:2mm;"></div>
+  <div class="points">
+    <div class="pt"><div class="badge gold">✓</div><p><strong>{{LABEL}}:</strong> {{PLAIN_LANGUAGE_BENEFIT}}</p></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="foot"><span>Da Nang Connect &nbsp;|&nbsp; Nền tảng kết nối cộng đồng expat</span><span>0N / {{TOTAL}}</span></div>
+</section>
+
+<!-- SLIDE 2 CỘT (lỗi đã sửa / so sánh) -->
+<section class="slide">
+  <div class="spacer"></div>
+  <div><span class="pill bronze">{{PILL}}</span></div>
+  <h1>{{HEADING}}</h1>
+  <div class="underline" style="margin-top:2mm;"></div>
+  <div class="fixcols">
+    <div class="fixcol"><div class="fixhd navy">{{COL_A}} <span>{{SUB}}</span></div><div class="fixbd navy"><ul><li>{{ITEM}}</li></ul></div></div>
+    <div class="fixcol"><div class="fixhd rose">{{COL_B}} <span>{{SUB}}</span></div><div class="fixbd rose"><ul><li>{{ITEM}}</li></ul></div></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="foot"><span>Da Nang Connect &nbsp;|&nbsp; Nền tảng kết nối cộng đồng expat</span><span>0N / {{TOTAL}}</span></div>
+</section>
+
+<!-- SLIDE TÍNH NĂNG MỚI — BẮT BUỘC có vùng minh hoạ ảnh chụp màn hình (Rule 7).
+     KHÔNG dùng slide này cho lỗi đã sửa/hạng mục vận hành — những mục đó ở lại
+     dạng bảng .fixcols phía trên, không cần ảnh. -->
+<section class="slide">
+  <div class="spacer"></div>
+  <div><span class="pill rose">{{PILL}}</span></div>
+  <h1>{{FEATURE_HEADING}}</h1>
+  <div class="underline" style="margin-top:2mm;"></div>
+  <div class="points" style="margin-top:5mm;">
+    <div class="pt"><div class="badge gold">✓</div><p><strong>{{LABEL}}:</strong> {{PLAIN_LANGUAGE_BENEFIT}}</p></div>
+  </div>
+  <div class="shotwrap">
+    <div class="shotbox"><div class="cam">&#128247;</div><div class="lbl">{{SCREEN_NAME_1}}</div></div>
+    <!-- nhân bản thêm 1 .shotbox nếu tính năng cần 2 màn hình minh hoạ (before/after, 2 bước) -->
+  </div>
+  <!-- Ghi rõ bề mặt + route, vd: "apps/web -> /events?area=an-thuong -> thẻ sự kiện -> nút RSVP" -->
+  <div class="shotcap"><strong>Chụp màn hình tại:</strong> {{WHERE_TO_CAPTURE — apps/web hoặc apps/mobile + route/màn hình cụ thể}}</div>
+  <div class="spacer"></div>
+  <div class="foot"><span>Da Nang Connect &nbsp;|&nbsp; Nền tảng kết nối cộng đồng expat</span><span>0N / {{TOTAL}}</span></div>
+</section>
+
+<!-- SLIDE TÍNH NĂNG MỚI — ẢNH DỌC (điện thoại): chữ TRÁI, màn hình PHẢI -->
+<section class="slide">
+  <div><span class="pill rose">{{PILL}}</span></div>
+  <h1 style="font-size:29pt;">{{FEATURE_HEADING}}</h1>
+  <div class="underline" style="margin-top:2mm;"></div>
+  <div class="splitwrap">
+    <div class="splitcol">
+      <div class="points">
+        <div class="pt"><div class="badge gold">✓</div><p><strong>{{LABEL}}:</strong> {{PLAIN_LANGUAGE_BENEFIT}}</p></div>
+      </div>
+      <div class="shotcap"><strong>Chụp màn hình tại:</strong> {{WHERE_TO_CAPTURE}}</div>
+    </div>
+    <!-- có ảnh: <div class="splitshot"><img src="_evidence/<file>.png" alt="..."></div> -->
+    <div class="splitshot empty"><div class="cam">&#128247;</div><div class="lbl">{{SCREEN_NAME}}</div></div>
+  </div>
+  <div class="foot"><span>Da Nang Connect &nbsp;|&nbsp; Nền tảng kết nối cộng đồng expat</span><span>0N / {{TOTAL}}</span></div>
+</section>
+
+<!-- SLIDE MINH BẠCH: hạng mục CHƯA XONG (bắt buộc nếu có mục ◐ hoặc ✗) -->
+<section class="slide">
+  <div class="spacer"></div>
+  <div><span class="pill bronze">Chưa hoàn tất · minh bạch</span></div>
+  <h1>{{HEADING}}</h1>
+  <div class="underline" style="margin-top:2mm;"></div>
+  <div class="points">
+    <div class="pt"><div class="badge bronze">◐</div><p><strong>Hiện trạng:</strong> {{STATE}}</p></div>
+    <div class="pt"><div class="badge bronze">◐</div><p><strong>Vướng ở đâu:</strong> {{BLOCKER}}</p></div>
+    <div class="pt"><div class="badge gold">→</div><p><strong>Kế hoạch:</strong> {{NEXT}}</p></div>
+  </div>
+  <div class="verdict"><div class="t">CAM KẾT</div><p>{{COMMITMENT}}</p></div>
+  <div class="spacer"></div>
+  <div class="foot"><span>Da Nang Connect &nbsp;|&nbsp; Nền tảng kết nối cộng đồng expat</span><span>0N / {{TOTAL}}</span></div>
+</section>
+
+<!-- CUỐI — CLOSING (dark) -->
+<section class="slide dark">
+  <div class="cover-title" style="font-size:38pt;">Cảm ơn quý khách</div>
+  <div class="rule-gold"></div>
+  <div class="cover-sub">Đội ngũ dự án sẵn sàng trao đổi thêm chi tiết về các hạng mục trên.</div>
+  <div class="cover-foot">Da Nang Connect &nbsp;|&nbsp; Nền tảng kết nối cộng đồng expat &nbsp;|&nbsp; {{PRESENT_DATE}}</div>
+  <div class="barbottom"></div>
+</section>
+</body>
+</html>
