@@ -89,6 +89,9 @@ export function AuthForm({ mode, onDone, onSwitchMode, className }: AuthFormProp
       onDone?.();
     } catch (cause) {
       setError(describe(cause));
+    } finally {
+      // Also on success: a closed <dialog> stays mounted, so this flag would
+      // otherwise persist into the next opening.
       setSubmitting(false);
     }
   };

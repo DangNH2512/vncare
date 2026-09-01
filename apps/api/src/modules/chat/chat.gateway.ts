@@ -24,14 +24,9 @@ const room = {
 /**
  * Realtime delivery for chat.
  *
- * This is an acceleration layer, never a source of truth: every message is
- * already durable in `messages` before it is broadcast, so a client that misses
- * an event loses nothing it cannot fetch over REST. Reconnecting clients
- * re-read the thread rather than replaying socket traffic.
- *
- * Identity comes from the socket handshake with the same development stub the
- * HTTP guard uses; a JWT replaces it in `authenticate` without touching
- * anything else here.
+ * An acceleration layer, never a source of truth: a message is durable in
+ * `messages` before it is broadcast, so a client that misses an event refetches
+ * over REST. Identity is the same access token HTTP uses.
  */
 @Injectable()
 @WebSocketGateway({ namespace: '/chat' })
@@ -140,9 +135,8 @@ export class ChatGateway implements OnGatewayConnection {
    * cached at connect time, so a revoked session stops working mid-connection.
    */
   private async authenticate(client: Socket): Promise<string | null> {
-    // Read defensively: a socket reconnecting mid-upgrade can reach a handler
-    // with a partially populated handshake, and a throw here would surface as
-    // an unanswered acknowledgement rather than a refused connection.
+    // Handshake fields may be absent mid-upgrade; a throw here would surface
+    // as an unanswered acknowledgement rather than a refused connection.
     const handshake = client.handshake as
       | {
           auth?: Record<string, unknown>;

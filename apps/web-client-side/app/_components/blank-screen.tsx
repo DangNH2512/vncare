@@ -19,15 +19,9 @@ export interface BlankScreenProps {
 }
 
 /**
- * The screen shown when there is nothing to show.
- *
- * One component for two situations that look identical to a visitor: a URL that
- * matches nothing, and a screen that exists in the navigation but has not been
- * built. Both leave someone stranded, and both are answered the same way — say
- * plainly what happened, and put the way back within reach.
- *
- * Deliberately not a bare "404": the number tells the visitor nothing they can
- * act on, and a dead end with no exit is the part that actually costs a session.
+ * The screen shown when there is nothing to show: a URL that matches nothing,
+ * or a screen the navigation advertises but that is not built yet. Both say
+ * what happened and carry a way back.
  */
 export function BlankScreen({ titleKey, descriptionKey, glyph, action }: BlankScreenProps) {
   const t = useTranslate();
@@ -41,10 +35,8 @@ export function BlankScreen({ titleKey, descriptionKey, glyph, action }: BlankSc
           description={t(descriptionKey)}
           action={
             action ?? (
-              // A link styled as the primary button, the same way the shell's
-              // "Create event" call to action is built: this navigates, so it
-              // must be an anchor — middle-click and "open in new tab" are not
-              // optional on a dead end.
+              // Anchor styled as the primary button: this navigates, so it
+              // must support middle-click and "open in new tab".
               <Link
                 href="/"
                 className={cn(

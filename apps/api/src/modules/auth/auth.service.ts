@@ -29,28 +29,19 @@ const AUDIENCE = 'dnc-client';
 /**
  * Trust level granted at registration.
  *
- * The ladder in docs/analysis says T1 is "email verified", and email delivery
- * does not exist yet. Registration therefore grants T1 outright so a new
- * account can post at all; when the verification flow lands this drops to 0 and
- * verifying promotes to 1. The ladder itself stays wired either way, which is
- * why this is a constant and not a removed check.
+ * T1 is "email verified" in the ladder, and email delivery does not exist yet;
+ * granting it outright lets a new account post. Drops to 0 once verification
+ * lands, with verifying promoting to 1.
  */
 const TRUST_LEVEL_ON_REGISTER = 1;
 
 /**
  * How long a just-rotated refresh token keeps working.
  *
- * Rotation with reuse detection assumes a token is presented once. Real clients
- * break that assumption without being compromised: React re-runs an effect, two
- * restored tabs refresh in the same instant, a request is retried after a
- * timeout that had in fact succeeded. Punishing those with a full family
- * revocation signs an honest user out for opening two tabs.
- *
- * So a token revoked *by rotation* within this window is treated as the same
- * request arriving twice and is answered normally. Anything else — a token
- * revoked by logout, by an earlier reuse, or rotated longer ago than this —
- * still trips the alarm. The window is the exposure this buys: a stolen token
- * replayed inside it succeeds, which is why it is seconds rather than minutes.
+ * Within this window a token revoked by rotation is treated as the same request
+ * arriving twice, so a client racing itself is not signed out. Any other
+ * revocation still trips reuse detection. A stolen token replayed inside the
+ * window succeeds, which is why it is seconds.
  */
 const ROTATION_GRACE_MS = 10_000;
 

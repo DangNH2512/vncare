@@ -157,9 +157,7 @@ export async function login(body: LoginRequestT): Promise<AuthSessionResponseT> 
  * In-flight refresh, shared by every concurrent caller.
  *
  * Refresh tokens rotate, so two simultaneous refreshes would spend the same
- * token twice and look like a replay. That is not hypothetical: React re-runs
- * effects in development, and a 401 on two parallel requests would otherwise
- * queue two retries. One promise, shared.
+ * token twice and read as a replay.
  */
 let inFlightRefresh: Promise<AuthSessionResponseT | null> | null = null;
 

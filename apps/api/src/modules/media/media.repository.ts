@@ -34,15 +34,10 @@ export class MediaRepository {
   /**
    * Reserves a row before the bytes exist.
    *
-   * The id is generated inside the statement so the storage key can be derived
-   * from it in the same INSERT. Writing a placeholder key and updating it
-   * afterwards looks equivalent and is not: two uploads started at the same
-   * moment would both hold the placeholder and collide on
-   * `uq_media_storage_key`.
-   *
-   * The key comes from that id and never from anything the client sent — a
-   * client-supplied name is a path traversal and a way to overwrite someone
-   * else's object.
+   * The id is generated inside the statement so the storage key is derived from
+   * it in the same INSERT; a placeholder key updated afterwards would collide on
+   * `uq_media_storage_key` between simultaneous uploads. The key never comes
+   * from the client — a supplied name is a path traversal.
    */
   async create(input: MediaCreateInput): Promise<MediaRow> {
     const { rows } = await this.pool.query<MediaRow>(

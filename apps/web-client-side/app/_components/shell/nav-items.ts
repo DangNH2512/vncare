@@ -5,11 +5,9 @@ import { BellIcon, CalendarIcon, CompassIcon, HomeIcon, UserIcon } from './icons
 
 export interface NavItem {
   /**
-   * Fixed destination, or null when the target depends on who is signed in.
-   *
-   * The profile item is the only one: a member's page lives at their own
-   * handle, so there is no single URL to put here. Both navs resolve it at
-   * render time and fall back to the sign-in prompt when nobody is signed in.
+   * Fixed destination, or null when it depends on who is signed in. Only the
+   * profile item is null: a member's page lives at their own handle. Both navs
+   * resolve it at render time and prompt for sign-in when there is nobody.
    */
   href: string | null;
   labelKey: MessageKey;

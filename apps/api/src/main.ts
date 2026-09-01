@@ -11,10 +11,8 @@ import { createOpenApiDocument } from './common/openapi.js';
 /**
  * Browser origins allowed to call this API.
  *
- * An allow-list, never a wildcard: the client sends an identity header on every
- * request, and `origin: true` would let any page on the internet make
- * authenticated calls with the visitor's own credentials once cookies replace
- * the development header.
+ * An allow-list, never a wildcard: `credentials: true` plus `origin: true`
+ * would let any page make authenticated calls with the visitor's own cookie.
  */
 function corsOrigins(): string[] {
   const configured = process.env['CORS_ORIGINS'];
@@ -28,10 +26,7 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin: corsOrigins(),
     credentials: true,
-    // `x-user-id` and `x-trust-level` are the development identity stub; they
-    // are what makes these requests preflighted, and they disappear with the
-    // auth module.
-    allowedHeaders: ['content-type', 'authorization', 'x-user-id', 'x-trust-level'],
+    allowedHeaders: ['content-type', 'authorization', 'x-platform'],
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   });
   // Validates every parameter that carries a Standard Schema (Zod) and

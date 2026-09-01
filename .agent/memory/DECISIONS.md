@@ -259,3 +259,25 @@ trong đó `/events/new` là nút CTA to nhất màn hình.
 component `BlankScreen`. Một mục nav dẫn vào ngõ cụt tệ hơn một mục nói "chưa xong".
 
 **Hệ quả:** Mọi đích trong nav trả 200. Khi màn hình thật xong thì thay nguyên file.
+
+## [2026-09-01] Form trong dialog phải reset khi mở lại
+
+**Bối cảnh:** Sau khi đăng xuất rồi đăng nhập lại, nút kẹt ở "Please wait..." và
+**không có request HTTP nào** được gửi. Chủ dự án nghi logout không kết thúc session.
+
+**Chẩn đoán:** Không liên quan tới token. `AuthForm` chỉ đặt `submitting = false`
+trong nhánh `catch`; khi đăng nhập **thành công** thì cờ này ở lại `true` mãi. Một
+`<dialog>` đã đóng vẫn còn mounted, nên lần mở sau `canSubmit` là false và `submit()`
+return ngay dòng đầu — nút thì vẫn hiển thị "Please wait...". Lỗi thứ hai đi kèm:
+`mode` của dialog cũng persist, nên ai từng bấm sang "Create account" thì lần sau mở ra
+vẫn là form đăng ký.
+
+**Lựa chọn:** `setSubmitting(false)` trong `finally`; `AuthForm` chỉ mount khi dialog
+mở; `mode` reset về `signIn` mỗi lần mở.
+
+**Bằng chứng logout vẫn đúng:** phát lại refresh token cũ sau khi đăng xuất trả về
+**401** ở cả WebKit lẫn Chromium — session thật sự bị thu hồi phía server, cookie cũng
+bị xoá khỏi trình duyệt.
+
+**Bài học:** một `<dialog>` đóng **không** unmount. Mọi state cục bộ trong dialog phải
+reset khi mở, hoặc component phải mount theo trạng thái mở.

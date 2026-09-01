@@ -55,18 +55,9 @@ export const viewport: Viewport = {
  */
 export default async function RootLayout({ children }: { children: ReactNode }) {
   /*
-   * The palette is decided here, on the server, from a cookie the toggle wrote.
-   *
-   * This used to be an inline pre-paint script. React never executes a <script>
-   * it renders on the client and warns about the attempt, and `next/script`
-   * with `beforeInteractive` does not hoist an inline script out of the App
-   * Router tree — it ends up in the flight payload and warns just the same.
-   *
-   * Reading a cookie removes the script entirely: `data-theme` is in the first
-   * byte of HTML, so there is no flash, nothing to hydrate against, and nothing
-   * for React to refuse to run. An absent or `system` cookie leaves the
-   * attribute off, which is exactly what the `prefers-color-scheme` branch in
-   * globals.css expects.
+   * Palette resolved on the server so `data-theme` is in the first byte of
+   * HTML: no pre-paint script, no flash. Absent or `system` leaves the
+   * attribute off, which is the `prefers-color-scheme` branch in globals.css.
    */
   const stored = (await cookies()).get(THEME_COOKIE)?.value;
   const theme = stored === 'light' || stored === 'dark' ? stored : undefined;

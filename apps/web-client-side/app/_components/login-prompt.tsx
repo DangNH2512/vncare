@@ -8,13 +8,11 @@ import { AuthForm } from './auth-form';
 import { cn } from '../_lib/cn';
 
 /**
- * The dialog that appears when a visitor reaches for something that needs an
- * account.
+ * The dialog shown when a visitor reaches for something that needs an account.
  *
- * Rendered once at the shell level and driven by AuthProvider, so a gated
- * button anywhere in the app is one `requireAuth()` call rather than its own
- * copy of this. The visitor keeps their place: the action they attempted runs
- * as soon as they are signed in.
+ * Mounted once at the shell level and driven by AuthProvider, so a gated button
+ * anywhere is one `requireAuth()` call. The action they attempted runs once
+ * they are signed in.
  */
 export function LoginPrompt() {
   const t = useTranslate();
@@ -25,7 +23,11 @@ export function LoginPrompt() {
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (promptOpen && !dialog.open) dialog.showModal();
+    if (promptOpen && !dialog.open) {
+      // Every opening starts on sign-in, whatever mode the last one ended in.
+      setMode('signIn');
+      dialog.showModal();
+    }
     if (!promptOpen && dialog.open) dialog.close();
   }, [promptOpen]);
 
@@ -44,7 +46,11 @@ export function LoginPrompt() {
           <h2 className="text-xl font-semibold">{t('auth.prompt.title')}</h2>
           <p className="mt-1 text-sm text-fg-muted">{t('auth.prompt.body')}</p>
         </div>
-        <AuthForm mode={mode} onSwitchMode={setMode} onDone={closePrompt} />
+        {/* Mounted only while open: a closed <dialog> keeps its subtree
+            mounted, so the form would otherwise carry state between openings. */}
+        {promptOpen && (
+          <AuthForm mode={mode} onSwitchMode={setMode} onDone={closePrompt} />
+        )}
       </div>
     </dialog>
   );

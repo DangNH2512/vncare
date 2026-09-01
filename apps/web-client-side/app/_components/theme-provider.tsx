@@ -21,15 +21,9 @@ export type ResolvedTheme = 'light' | 'dark';
  * React. It writes the same attribute this provider later manages.
  */
 /**
- * Name of the cookie the server reads to paint the right palette immediately.
- *
- * A cookie rather than localStorage because the *server* is what needs to know:
- * it renders `data-theme` into the HTML, so the correct palette is present in
- * the first byte. Storage the server cannot read forces a pre-paint script, and
- * a script in the React tree is one React refuses to run on the client.
- *
- * Absent means "follow the system", which needs no attribute at all: the
- * `prefers-color-scheme` branch in globals.css already covers it.
+ * Palette cookie, read by the server so `data-theme` is in the first byte of
+ * HTML. Absent means "follow the system", which needs no attribute — the
+ * `prefers-color-scheme` branch in globals.css covers it.
  */
 export const THEME_COOKIE = 'dnc-theme';
 

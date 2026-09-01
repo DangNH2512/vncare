@@ -9,6 +9,8 @@ Danh sách việc đang mở. Xong thì xoá khỏi đây, kết quả đáng nh
 | T-11 | Social login Google/Apple/Facebook | — | todo | Bảng `social_accounts` chưa tạo. iOS có Google/FB thì **bắt buộc** có Apple Sign-In |
 | T-12 | Rate limit đăng nhập và đăng ký | — | todo | Chưa có Redis sliding window; hiện chỉ chống dò tài khoản bằng thời gian phản hồi đều nhau |
 | T-13 | Job `trust:recompute` ghi `users.trust_level` | — | todo | `computeTrustLevel` đã có ở `@dnc/domain` nhưng chưa ai gọi |
+| T-15 | Rà lại comment cũ theo `code-documentation.md` §2 | — | todo | Phiên 2026-09-01 đã dọn các comment kể-lại-bug do agent viết. Còn nên rà nốt phần comment cũ trong `apps/web-client-side/app/_components/` và `_lib/` |
+| T-14 | Dựng Playwright thật ở `apps/web-client-side/e2e/` | — | todo | Ba bug chỉ-có-ở-client đã lọt lưới (script tag, hydration `Sep`/`Sept`, nút kẹt "Please wait"). Không có bộ test nào canh chúng. `test-file-placement.md` đã định sẵn chỗ. **Phải chạy cả WebKit**, không chỉ Chromium |
 | T-02 | `moderation_audit_log` cho hành động ẩn/gỡ của chủ thread | — | todo | Có `TODO(moderation)` trong `comment.service.ts` `remove()` |
 | T-03 | Bản đồ M0–M5 | — | todo | Kế hoạch: `docs/analysis/13-ban-do-va-truc-quan-hoa-su-kien.md` |
 | T-04 | Chuyển `src/database/sql/*.sql` sang migration TypeORM | — | todo | Skill `database-migrations` mô tả migration là class TS; code đang dùng file SQL nạp qua initdb |

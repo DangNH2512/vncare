@@ -63,16 +63,11 @@ export function minutesUntil(iso: string, now: Date = new Date()): number | null
 }
 
 /**
- * Weekday and month names, owned here rather than taken from the runtime.
+ * Weekday and month names, owned here rather than taken from `Intl`.
  *
- * `Intl` cannot be trusted for these across engines: for `en-GB` Node and
- * Chromium render September as `Sept` while Safari renders `Sep`, so the server
- * and the browser produce different text for the same instant and React reports
- * a hydration mismatch on every card that shows a date. Numeric fields do not
- * have this problem, so the day, the year and the clock still come from `Intl`.
- *
- * Owning the names also means Vietnamese reads the way Vietnamese reads, which
- * `Intl` does not get right for a compact feed card.
+ * Engines disagree on these — `en-GB` September is `Sept` in Node and Chromium,
+ * `Sep` in Safari — which makes server and client output differ for the same
+ * instant. Numeric fields agree, so they still come from `Intl`.
  */
 const WEEKDAY_SHORT: Readonly<Record<Locale, readonly string[]>> = {
   en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],

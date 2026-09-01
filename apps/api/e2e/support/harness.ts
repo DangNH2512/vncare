@@ -13,13 +13,10 @@ import { AppModule } from '../../src/app.module.js';
 /**
  * Shared setup for the API integration specs.
  *
- * The suite runs against the local PostGIS container rather than a mock: the
- * behaviour under test is largely enforced by the database itself — partial
- * unique indexes, CHECK constraints, foreign keys and the counter triggers —
- * and a mocked repository would assert only that the mock was called.
- *
- * Actors are real accounts created through the real registration endpoint, so
- * every spec exercises the same authentication path a browser does.
+ * Runs against the local PostGIS container, not a mock: most of the behaviour
+ * under test is enforced by the database itself — partial unique indexes, CHECK
+ * constraints, foreign keys, counter triggers. Actors are real accounts created
+ * through the registration endpoint.
  */
 export const DATABASE_URL =
   process.env['DATABASE_URL'] ?? 'postgresql://dnc:dnc@localhost:5433/dnc';
