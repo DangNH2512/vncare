@@ -121,5 +121,131 @@
       "ready": "Sẵn sàng",
       "planned": "Đã lên kế hoạch"
     }
+  },
+  "shell": {
+    "nav": {
+      "home": "Trang chủ",
+      "discover": "Khám phá",
+      "myEvents": "Sự kiện của tôi",
+      "notifications": "Thông báo",
+      "profile": "Hồ sơ",
+      "create": "Tạo",
+      "createEvent": "Tạo sự kiện"
+    },
+    "a11y": {
+      "primaryNav": "Điều hướng chính",
+      "bottomNav": "Thanh điều hướng dưới",
+      "create": "Tạo sự kiện mới"
+    },
+    "rail": {
+      "upcoming": "Sắp diễn ra",
+      "areas": "Khu vực",
+      "suggestions": "Gợi ý theo dõi",
+      "follow": "Theo dõi"
+    }
+  },
+  "feed": {
+    "title": "Bảng tin cộng đồng",
+    "composer": {
+      "placeholder": "Bạn đang lên kế hoạch gì?",
+      "create": "Tạo sự kiện"
+    },
+    "filter": {
+      "label": "Lọc bảng tin",
+      "all": "Tất cả",
+      "today": "Hôm nay",
+      "weekend": "Cuối tuần",
+      "free": "Miễn phí"
+    },
+    "card": {
+      "createdEvent": "đã tạo sự kiện",
+      "menu": "Tùy chọn khác cho bài đăng này",
+      "seatsLeft": "Còn {count} chỗ",
+      "full": "Hết chỗ",
+      "join": "Tham gia",
+      "joined": "Sẽ tham gia",
+      "comments": "{count} bình luận",
+      "share": "Chia sẻ",
+      "going": "{count} người tham gia",
+      "openEvent": "Mở sự kiện: {title}"
+    },
+    "activity": {
+      "joinedOne": "vừa tham gia",
+      "joinedMany": "và {count} người khác vừa tham gia"
+    },
+    "empty": {
+      "title": "Không có sự kiện nào khớp bộ lọc",
+      "description": "Tuần này chưa có gì ở đây. Hãy xóa bộ lọc, hoặc chính bạn là người mở màn.",
+      "reset": "Xóa bộ lọc"
+    },
+    "loading": "Đang tải bảng tin",
+    "composerPlaceholder": "Bạn đang lên kế hoạch gì tuần này?",
+    "createEvent": "Tạo sự kiện",
+    "filterAll": "Tất cả",
+    "filterToday": "Hôm nay",
+    "filterWeekend": "Cuối tuần",
+    "filterFree": "Miễn phí",
+    "createdEvent": "đã tạo sự kiện",
+    "curatedEvent": "chia sẻ từ nguồn công khai",
+    "rsvp": "Tham gia",
+    "going": "Sẽ tham gia",
+    "joinWaitlist": "Tham gia danh sách chờ",
+    "onWaitlist": "Trong hàng chờ",
+    "comments": "{count} bình luận",
+    "share": "Chia sẻ",
+    "moreActions": "Thao tác khác",
+    "seatsOf": "{taken}/{capacity}",
+    "plusOthers": "+{count}",
+    "activityJoined": "{name} và {count} người khác vừa tham gia",
+    "emptyTitle": "Chưa có sự kiện nào khớp bộ lọc",
+    "emptyBody": "Hãy là người đầu tiên đăng — cộng đồng sẽ cảm ơn bạn.",
+    "clearFilter": "Xoá bộ lọc"
+  },
+  "discover": {
+    "title": "Khám phá",
+    "search": {
+      "label": "Tìm sự kiện",
+      "placeholder": "Tìm theo tên sự kiện..."
+    },
+    "areas": {
+      "heading": "Xem theo khu vực",
+      "aria": "Lọc theo khu vực"
+    },
+    "view": {
+      "label": "Hiển thị kết quả dạng",
+      "list": "Danh sách",
+      "map": "Bản đồ"
+    },
+    "filters": {
+      "button": "Bộ lọc",
+      "title": "Lọc sự kiện",
+      "category": "Thể loại",
+      "freeOnly": "Chỉ sự kiện miễn phí",
+      "clear": "Xoá bộ lọc",
+      "done": "Xem {count} kết quả",
+      "close": "Đóng bộ lọc",
+      "activeCount": "{count} bộ lọc đang bật"
+    },
+    "category": {
+      "sports": "Thể thao",
+      "language": "Ngôn ngữ",
+      "social": "Giao lưu",
+      "outdoors": "Ngoài trời",
+      "wellness": "Sức khoẻ"
+    },
+    "results": {
+      "count": "Tìm thấy {count} sự kiện"
+    },
+    "map": {
+      "title": "Bản đồ khu vực",
+      "aria": "Bản đồ sáu khu vực đầu tiên",
+      "markerAria": "{area}: {count} sự kiện",
+      "placeholderNote": "Bản đồ tương tác sắp ra mắt"
+    },
+    "empty": {
+      "title": "Không có sự kiện nào khớp bộ lọc",
+      "description": "Thử khu vực khác hoặc xoá bộ lọc — hoặc chính bạn tạo một sự kiện mới.",
+      "clear": "Xoá tất cả bộ lọc"
+    }
   }
 }

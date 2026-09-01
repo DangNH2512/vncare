@@ -1,7 +1,7 @@
 import en from '../messages/en.json' with { type: 'json' };
 import vi from '../messages/vi.json' with { type: 'json' };
 
-export { MESSAGE_KEYS, type MessageKey } from './message-keys.js';
+export { MESSAGE_KEYS, type MessageKey } from './message-keys';
 
 /**
  * Raw message catalogs. Runtime i18n stays per-app (next-intl on web,

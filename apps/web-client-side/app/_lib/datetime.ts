@@ -116,3 +116,38 @@ export function toDateTimeAttribute(iso: string): string {
   const date = parseIso(iso);
   return date === null ? '' : date.toISOString();
 }
+
+/**
+ * Relative "time ago / time until" label — `2h ago` / `2 giờ trước`.
+ *
+ * Built on Intl.RelativeTimeFormat so both locales come from the platform
+ * rather than from hand-written pluralisation. `numeric: 'auto'` turns
+ * day-scale values into words ("yesterday" / "hôm qua"), which reads better
+ * in a feed than "1 day ago". Future instants format as "in 2h" / "sau 2 giờ",
+ * so the same helper serves "posted 2h ago" and "starts in 2h".
+ *
+ * Returns an empty string for an unparseable input, mirroring the format
+ * helpers above.
+ */
+export function timeAgo(iso: string, locale: Locale, now: Date = new Date()): string {
+  const date = parseIso(iso);
+  if (date === null) return '';
+  const formatter = new Intl.RelativeTimeFormat(INTL_LOCALE[locale], {
+    numeric: 'auto',
+    style: 'narrow',
+  });
+  const seconds = Math.round((date.getTime() - now.getTime()) / 1000);
+  if (Math.abs(seconds) < 60) return formatter.format(0, 'second');
+  const minutes = Math.trunc(seconds / 60);
+  if (Math.abs(minutes) < 60) return formatter.format(minutes, 'minute');
+  const hours = Math.trunc(seconds / 3600);
+  if (Math.abs(hours) < 24) return formatter.format(hours, 'hour');
+  const days = Math.trunc(seconds / 86_400);
+  if (Math.abs(days) < 7) return formatter.format(days, 'day');
+  const weeks = Math.trunc(days / 7);
+  if (Math.abs(weeks) < 5) return formatter.format(weeks, 'week');
+  // Calendar-average divisors keep month/year buckets close enough for a label.
+  const months = Math.trunc(days / 30.44);
+  if (Math.abs(months) < 12) return formatter.format(months, 'month');
+  return formatter.format(Math.trunc(days / 365.25), 'year');
+}

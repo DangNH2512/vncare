@@ -121,5 +121,131 @@
       "ready": "Ready",
       "planned": "Planned"
     }
+  },
+  "shell": {
+    "nav": {
+      "home": "Home",
+      "discover": "Discover",
+      "myEvents": "My events",
+      "notifications": "Notifications",
+      "profile": "Profile",
+      "create": "Create",
+      "createEvent": "Create event"
+    },
+    "a11y": {
+      "primaryNav": "Primary navigation",
+      "bottomNav": "Bottom navigation",
+      "create": "Create a new event"
+    },
+    "rail": {
+      "upcoming": "Coming up",
+      "areas": "Areas",
+      "suggestions": "People to follow",
+      "follow": "Follow"
+    }
+  },
+  "feed": {
+    "title": "Community feed",
+    "composer": {
+      "placeholder": "What are you planning?",
+      "create": "Create event"
+    },
+    "filter": {
+      "label": "Filter the feed",
+      "all": "All",
+      "today": "Today",
+      "weekend": "Weekend",
+      "free": "Free"
+    },
+    "card": {
+      "createdEvent": "created an event",
+      "menu": "More options for this post",
+      "seatsLeft": "{count} spots left",
+      "full": "Full",
+      "join": "Join",
+      "joined": "Going",
+      "comments": "{count} comments",
+      "share": "Share",
+      "going": "{count} going",
+      "openEvent": "Open event: {title}"
+    },
+    "activity": {
+      "joinedOne": "just joined",
+      "joinedMany": "and {count} others just joined"
+    },
+    "empty": {
+      "title": "No events match these filters",
+      "description": "Nothing planned here yet this week. Clear the filters, or be the one who starts something.",
+      "reset": "Clear filters"
+    },
+    "loading": "Loading the feed",
+    "composerPlaceholder": "What are you planning this week?",
+    "createEvent": "Create event",
+    "filterAll": "All",
+    "filterToday": "Today",
+    "filterWeekend": "Weekend",
+    "filterFree": "Free",
+    "createdEvent": "created an event",
+    "curatedEvent": "shared from a public source",
+    "rsvp": "RSVP",
+    "going": "Going",
+    "joinWaitlist": "Join waitlist",
+    "onWaitlist": "On waitlist",
+    "comments": "{count} comments",
+    "share": "Share",
+    "moreActions": "More actions",
+    "seatsOf": "{taken}/{capacity}",
+    "plusOthers": "+{count}",
+    "activityJoined": "{name} and {count} others just joined",
+    "emptyTitle": "No events match this filter",
+    "emptyBody": "Be the first to post one — the community will thank you.",
+    "clearFilter": "Clear filter"
+  },
+  "discover": {
+    "title": "Discover",
+    "search": {
+      "label": "Search events",
+      "placeholder": "Search by event name..."
+    },
+    "areas": {
+      "heading": "Browse by area",
+      "aria": "Filter by area"
+    },
+    "view": {
+      "label": "Show results as",
+      "list": "List",
+      "map": "Map"
+    },
+    "filters": {
+      "button": "Filters",
+      "title": "Filter events",
+      "category": "Category",
+      "freeOnly": "Free events only",
+      "clear": "Clear filters",
+      "done": "Show {count} results",
+      "close": "Close filters",
+      "activeCount": "{count} filters active"
+    },
+    "category": {
+      "sports": "Sports",
+      "language": "Language",
+      "social": "Social",
+      "outdoors": "Outdoors",
+      "wellness": "Wellness"
+    },
+    "results": {
+      "count": "{count} events found"
+    },
+    "map": {
+      "title": "Area map",
+      "aria": "Map of the six launch areas",
+      "markerAria": "{area}: {count} events",
+      "placeholderNote": "Interactive map coming soon"
+    },
+    "empty": {
+      "title": "No events match your filters",
+      "description": "Try another area or clear the filters — or be the one who starts something new.",
+      "clear": "Clear all filters"
+    }
   }
 }

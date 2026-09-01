@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef, ElementType } from 'react';
+import type { ElementType, HTMLAttributes } from 'react';
 
 import { cn } from '../../_lib/cn';
 
@@ -13,7 +13,7 @@ const WIDTH = {
 
 export type ContainerWidth = keyof typeof WIDTH;
 
-export interface ContainerProps extends ComponentPropsWithRef<'div'> {
+export interface ContainerProps extends HTMLAttributes<HTMLElement> {
   width?: ContainerWidth;
   /** Landmark element to render; defaults to a plain div. */
   as?: Extract<ElementType, 'div' | 'main' | 'section' | 'header' | 'footer' | 'nav'>;

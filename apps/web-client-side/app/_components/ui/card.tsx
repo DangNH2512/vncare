@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef, ElementType } from 'react';
+import type { ElementType, HTMLAttributes } from 'react';
 
 import { cn } from '../../_lib/cn';
 
@@ -9,11 +9,16 @@ const PADDING = {
   lg: 'p-5 sm:p-6',
 } as const;
 
-export interface CardProps extends ComponentPropsWithRef<'div'> {
+/**
+ * Props are typed against the generic `HTMLElement` rather than one concrete
+ * tag: `as` accepts several elements and no single ref or handler type covers
+ * all of them. Refs are intentionally not forwarded.
+ */
+export interface CardProps extends HTMLAttributes<HTMLElement> {
   padding?: keyof typeof PADDING;
   /** Adds hover/active feedback. Use only when the whole card is a link or button. */
   interactive?: boolean;
-  as?: Extract<ElementType, 'div' | 'article' | 'section' | 'li' | 'label'>;
+  as?: Extract<ElementType, 'div' | 'article' | 'section' | 'li'>;
 }
 
 /**

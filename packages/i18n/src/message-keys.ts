@@ -19,6 +19,35 @@ export type MessageKey =
   | 'datetime.timeZoneNote'
   | 'datetime.today'
   | 'datetime.tomorrow'
+  | 'discover.areas.aria'
+  | 'discover.areas.heading'
+  | 'discover.category.language'
+  | 'discover.category.outdoors'
+  | 'discover.category.social'
+  | 'discover.category.sports'
+  | 'discover.category.wellness'
+  | 'discover.empty.clear'
+  | 'discover.empty.description'
+  | 'discover.empty.title'
+  | 'discover.filters.activeCount'
+  | 'discover.filters.button'
+  | 'discover.filters.category'
+  | 'discover.filters.clear'
+  | 'discover.filters.close'
+  | 'discover.filters.done'
+  | 'discover.filters.freeOnly'
+  | 'discover.filters.title'
+  | 'discover.map.aria'
+  | 'discover.map.markerAria'
+  | 'discover.map.placeholderNote'
+  | 'discover.map.title'
+  | 'discover.results.count'
+  | 'discover.search.label'
+  | 'discover.search.placeholder'
+  | 'discover.title'
+  | 'discover.view.label'
+  | 'discover.view.list'
+  | 'discover.view.map'
   | 'event.card.almostFull'
   | 'event.card.attendees'
   | 'event.card.hostedBy'
@@ -39,6 +68,51 @@ export type MessageKey =
   | 'event.status.published'
   | 'event.status.suspended'
   | 'event.status.takenDown'
+  | 'feed.activity.joinedMany'
+  | 'feed.activity.joinedOne'
+  | 'feed.activityJoined'
+  | 'feed.card.comments'
+  | 'feed.card.createdEvent'
+  | 'feed.card.full'
+  | 'feed.card.going'
+  | 'feed.card.join'
+  | 'feed.card.joined'
+  | 'feed.card.menu'
+  | 'feed.card.openEvent'
+  | 'feed.card.seatsLeft'
+  | 'feed.card.share'
+  | 'feed.clearFilter'
+  | 'feed.comments'
+  | 'feed.composer.create'
+  | 'feed.composer.placeholder'
+  | 'feed.composerPlaceholder'
+  | 'feed.createEvent'
+  | 'feed.createdEvent'
+  | 'feed.curatedEvent'
+  | 'feed.empty.description'
+  | 'feed.empty.reset'
+  | 'feed.empty.title'
+  | 'feed.emptyBody'
+  | 'feed.emptyTitle'
+  | 'feed.filter.all'
+  | 'feed.filter.free'
+  | 'feed.filter.label'
+  | 'feed.filter.today'
+  | 'feed.filter.weekend'
+  | 'feed.filterAll'
+  | 'feed.filterFree'
+  | 'feed.filterToday'
+  | 'feed.filterWeekend'
+  | 'feed.going'
+  | 'feed.joinWaitlist'
+  | 'feed.loading'
+  | 'feed.moreActions'
+  | 'feed.onWaitlist'
+  | 'feed.plusOthers'
+  | 'feed.rsvp'
+  | 'feed.seatsOf'
+  | 'feed.share'
+  | 'feed.title'
   | 'home.componentsHeading'
   | 'home.componentsNote'
   | 'home.eyebrow'
@@ -64,6 +138,20 @@ export type MessageKey =
   | 'rsvp.error.occurrenceClosed'
   | 'rsvp.error.suspended'
   | 'rsvp.error.trustTooLow'
+  | 'shell.a11y.bottomNav'
+  | 'shell.a11y.create'
+  | 'shell.a11y.primaryNav'
+  | 'shell.nav.create'
+  | 'shell.nav.createEvent'
+  | 'shell.nav.discover'
+  | 'shell.nav.home'
+  | 'shell.nav.myEvents'
+  | 'shell.nav.notifications'
+  | 'shell.nav.profile'
+  | 'shell.rail.areas'
+  | 'shell.rail.follow'
+  | 'shell.rail.suggestions'
+  | 'shell.rail.upcoming'
   | 'theme.dark'
   | 'theme.light'
   | 'theme.system'
@@ -104,6 +192,35 @@ export const MESSAGE_KEYS = [
   'datetime.timeZoneNote',
   'datetime.today',
   'datetime.tomorrow',
+  'discover.areas.aria',
+  'discover.areas.heading',
+  'discover.category.language',
+  'discover.category.outdoors',
+  'discover.category.social',
+  'discover.category.sports',
+  'discover.category.wellness',
+  'discover.empty.clear',
+  'discover.empty.description',
+  'discover.empty.title',
+  'discover.filters.activeCount',
+  'discover.filters.button',
+  'discover.filters.category',
+  'discover.filters.clear',
+  'discover.filters.close',
+  'discover.filters.done',
+  'discover.filters.freeOnly',
+  'discover.filters.title',
+  'discover.map.aria',
+  'discover.map.markerAria',
+  'discover.map.placeholderNote',
+  'discover.map.title',
+  'discover.results.count',
+  'discover.search.label',
+  'discover.search.placeholder',
+  'discover.title',
+  'discover.view.label',
+  'discover.view.list',
+  'discover.view.map',
   'event.card.almostFull',
   'event.card.attendees',
   'event.card.hostedBy',
@@ -124,6 +241,51 @@ export const MESSAGE_KEYS = [
   'event.status.published',
   'event.status.suspended',
   'event.status.takenDown',
+  'feed.activity.joinedMany',
+  'feed.activity.joinedOne',
+  'feed.activityJoined',
+  'feed.card.comments',
+  'feed.card.createdEvent',
+  'feed.card.full',
+  'feed.card.going',
+  'feed.card.join',
+  'feed.card.joined',
+  'feed.card.menu',
+  'feed.card.openEvent',
+  'feed.card.seatsLeft',
+  'feed.card.share',
+  'feed.clearFilter',
+  'feed.comments',
+  'feed.composer.create',
+  'feed.composer.placeholder',
+  'feed.composerPlaceholder',
+  'feed.createEvent',
+  'feed.createdEvent',
+  'feed.curatedEvent',
+  'feed.empty.description',
+  'feed.empty.reset',
+  'feed.empty.title',
+  'feed.emptyBody',
+  'feed.emptyTitle',
+  'feed.filter.all',
+  'feed.filter.free',
+  'feed.filter.label',
+  'feed.filter.today',
+  'feed.filter.weekend',
+  'feed.filterAll',
+  'feed.filterFree',
+  'feed.filterToday',
+  'feed.filterWeekend',
+  'feed.going',
+  'feed.joinWaitlist',
+  'feed.loading',
+  'feed.moreActions',
+  'feed.onWaitlist',
+  'feed.plusOthers',
+  'feed.rsvp',
+  'feed.seatsOf',
+  'feed.share',
+  'feed.title',
   'home.componentsHeading',
   'home.componentsNote',
   'home.eyebrow',
@@ -149,6 +311,20 @@ export const MESSAGE_KEYS = [
   'rsvp.error.occurrenceClosed',
   'rsvp.error.suspended',
   'rsvp.error.trustTooLow',
+  'shell.a11y.bottomNav',
+  'shell.a11y.create',
+  'shell.a11y.primaryNav',
+  'shell.nav.create',
+  'shell.nav.createEvent',
+  'shell.nav.discover',
+  'shell.nav.home',
+  'shell.nav.myEvents',
+  'shell.nav.notifications',
+  'shell.nav.profile',
+  'shell.rail.areas',
+  'shell.rail.follow',
+  'shell.rail.suggestions',
+  'shell.rail.upcoming',
   'theme.dark',
   'theme.light',
   'theme.system',

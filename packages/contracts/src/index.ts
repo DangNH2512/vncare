@@ -3,7 +3,7 @@ export {
   cursorPage,
   envelope,
   type ApiErrorT,
-} from './common.js';
+} from './common';
 export {
   EventCreateRequest,
   EventResponse,
@@ -11,7 +11,7 @@ export {
   type EventCreateRequestT,
   type EventResponseT,
   type EventStatusT,
-} from './event.js';
+} from './event';
 export {
   ACTIVE_RSVP_STATUSES,
   OCCURRENCE_CAPACITY_COLUMN,
@@ -27,4 +27,4 @@ export {
   type RsvpResponseT,
   type RsvpStatusT,
   type WaitlistStatusT,
-} from './rsvp.js';
+} from './rsvp';
