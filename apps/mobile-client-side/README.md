@@ -1,4 +1,4 @@
-# @dnc/mobile
+# @dnc/mobile-client-side
 
 Expo 57 (React Native + Expo Router) mobile app. Not scaffolded yet — created
 with `create-expo-app` in Sprint 0 week 2 so the generated native config

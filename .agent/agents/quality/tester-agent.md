@@ -76,7 +76,8 @@ quy, khoảng trống bao phủ kèm bằng chứng cụ thể.
 Kích hoạt khi có bất kỳ dấu hiệu nào:
 
 - Tính năng mới hoặc luồng vận hành mới.
-- Việc xuyên service (`apps/api` + `apps/web` hoặc `apps/mobile`).
+- Việc xuyên service (`apps/api` + `apps/web-client-side`, `apps/web-admin-side`
+  hoặc `apps/mobile`).
 - Component/hook/service dùng chung được nhiều màn hình gọi.
 - Chạm tới: auth, quyền, `trust_level`, sức chứa RSVP, hàng đợi chờ, truy vấn
   PostGIS, kiểm duyệt/report, push notification, migration dữ liệu.
@@ -122,7 +123,7 @@ Kiểm chứng bị chặn (và lý do):
 ```md
 ## Bug / Optimization
 Severity: P0 | P1 | P2 | P3
-Owner: backend-agent | web-agent | mobile-agent | ba-agent
+Owner: backend-agent | web-client-agent | web-admin-agent | mobile-agent | ba-agent
 Area:
 Steps to reproduce: <từng bước, có dữ liệu cụ thể>
 Expected:

@@ -1,4 +1,4 @@
-# @dnc/web
+# @dnc/web-client-side
 
 Next.js 16 (App Router) web app. Not scaffolded yet — created with
 `create-next-app` in Sprint 0 week 2 so the generated config matches the

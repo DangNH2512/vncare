@@ -17,7 +17,8 @@ nhiều phút; chạy song song đè chết container Postgres/Redis dùng chung
 - **Hạ tầng:** `docker compose -f ops/docker-compose.yml up -d postgres redis`
   (PostgreSQL 16 + PostGIS + Redis). Migration đã chạy, seed dữ liệu test đã có.
 - **API:** `apps/api` chạy ở `http://localhost:3001`.
-- **Web:** `apps/web` chạy ở `http://localhost:3000` (test **không** tự start server).
+- **Web client:** `apps/web-client-side` chạy ở `http://localhost:3000` (test **không** tự start server).
+- **Web admin:** `apps/web-admin-side` chạy ở cổng riêng (test **không** tự start server).
 - **Mobile:** simulator + Metro (:8081) + dev-client đã cài; `apps/mobile/.env.local`
   trỏ API localhost.
 - **Serial:** chạy `--workers=1`. Song song vừa đè container vừa làm hỏng test race
@@ -34,18 +35,21 @@ pnpm --filter @dnc/api test:e2e -- test/<feature>.e2e-spec.ts --runInBand
 # API — unit theo tên:
 pnpm --filter @dnc/api test -- --testNamePattern="<tên test>"
 
-# Web — 1 spec targeted (an toàn nhất), serial:
-pnpm --filter @dnc/web exec playwright test e2e/<feature>.spec.ts --workers=1
+# Web client — 1 spec targeted (an toàn nhất), serial:
+pnpm --filter @dnc/web-client exec playwright test e2e/<feature>.spec.ts --workers=1
 
-# Web — 1 test theo tên:
-pnpm --filter @dnc/web exec playwright test e2e/<feature>.spec.ts -g "tên test" --workers=1
+# Web client — 1 test theo tên:
+pnpm --filter @dnc/web-client exec playwright test e2e/<feature>.spec.ts -g "tên test" --workers=1
 
-# Web — chỉ project mobile viewport (mặc định của sản phẩm):
-pnpm --filter @dnc/web exec playwright test e2e/<feature>.spec.ts --project=mobile
+# Web client — chỉ project mobile viewport (mặc định của sản phẩm):
+pnpm --filter @dnc/web-client exec playwright test e2e/<feature>.spec.ts --project=mobile
 
-# Report khi đỏ:
-pnpm --filter @dnc/web exec playwright show-report
-pnpm --filter @dnc/web exec playwright show-trace test-results/*/trace.zip
+# Web admin — 1 spec targeted (desktop là mặc định của console vận hành):
+pnpm --filter @dnc/web-admin exec playwright test e2e/<feature>.spec.ts --workers=1
+
+# Report khi đỏ (đổi filter theo app đang test):
+pnpm --filter @dnc/web-client exec playwright show-report
+pnpm --filter @dnc/web-client exec playwright show-trace test-results/*/trace.zip
 
 # Mobile — syntax validate (không cần sim):
 maestro test --dry-run apps/mobile/.maestro/flows/<area>/<case>.yaml
@@ -147,15 +151,15 @@ Bảng TC-ID với cột API / Web Desktop / Web Mobile / Mobile App.
 ```markdown
 # <Feature> — Test Cases
 
-> **Scope**: 1-2 dòng. **Source**: `apps/api/src/...` · `apps/web/src/...` · `apps/mobile/src/...`.
-> **API**: endpoint chính. **Existing E2E**: `apps/web/e2e/<feature>.spec.ts`.
+> **Scope**: 1-2 dòng. **Source**: `apps/api/src/...` · `apps/web-client-side/src/...` · `apps/web-admin-side/src/...` · `apps/mobile/src/...`.
+> **API**: endpoint chính. **Existing E2E**: `apps/web-client-side/e2e/<feature>.spec.ts` · `apps/web-admin-side/e2e/<feature>.spec.ts`.
 > **Platforms**: API / Web desktop / Web mobile / Mobile app.
 > **Locale**: EN (mặc định) + VI.
 > **Acceptance criteria**: link tới `docs/features/<feature>.md#acceptance-criteria` (oracle).
 
 ## Pre-requisites
 - [ ] Postgres+PostGIS & Redis chạy từ `ops/docker-compose.yml`
-- [ ] `apps/api` ở :3001, `apps/web` ở :3000, Metro :8081 (nếu test mobile)
+- [ ] `apps/api` ở :3001, `apps/web-client-side` ở :3000, `apps/web-admin-side` ở cổng riêng (nếu test luồng vận hành), Metro :8081 (nếu test mobile)
 - [ ] Test user: `<identifier>` / `<password>`; seed sự kiện `qa_*`
 
 ## Test cases
@@ -195,7 +199,7 @@ Ghi ở `docs/test-info/qa-<scope>-report-<YYYY-MM-DD>.md`.
 # <Scope> — QA Report
 
 **Tester:** Claude
-**Target:** apps/web localhost:3000 · apps/api localhost:3001 · iPhone 16 sim
+**Target:** apps/web-client-side localhost:3000 · apps/web-admin-side <cổng> · apps/api localhost:3001 · iPhone 16 sim
 **Locale đã test:** EN + VI
 **Test User:** `<identifier>` / `<password>`
 **Run:** YYYY-MM-DD HH:MM → HH:MM (giờ Asia/Ho_Chi_Minh)

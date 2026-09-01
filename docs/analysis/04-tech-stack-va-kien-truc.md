@@ -92,8 +92,8 @@ Bảy nguyên tắc dưới đây là bộ lọc để giải quyết mọi tran
 flowchart TB
     subgraph clients["Lớp client"]
         MOB["Mobile app<br/>Expo 54 · React Native 0.81<br/>iOS + Android"]
-        WEB["Web app<br/>Next.js 15 App Router · React 19<br/>SSR trang sự kiện công khai"]
-        ADM["Admin curation console<br/>route group trong Next.js<br/>dùng cho giai đoạn curate thủ công"]
+        WEB["Web người dùng cuối<br/>apps/web-client-side · Next.js 15 App Router · React 19<br/>SSR trang sự kiện công khai"]
+        ADM["Web vận hành<br/>apps/web-admin-side · Next.js App Router<br/>console curate, kiểm duyệt, quản trị · noindex"]
     end
 
     subgraph edge["Lớp biên"]
@@ -571,21 +571,35 @@ da-nang-connect/
 │   │   ├── jest.config.ts
 │   │   └── package.json
 │   │
-│   ├── web/                              # Next.js 15 — @dnc/web
+│   ├── web-client-side/                  # Next.js App Router — @dnc/web-client (người dùng cuối)
 │   │   ├── src/
 │   │   │   ├── app/
 │   │   │   │   ├── [locale]/             # en | vi
 │   │   │   │   │   ├── (public)/         # trang SEO: /events, /events/[slug], /areas/[slug]
-│   │   │   │   │   ├── (app)/            # cần đăng nhập: /my/events, /my/rsvps
-│   │   │   │   │   └── (admin)/          # console curate — bảo vệ bằng role
+│   │   │   │   │   └── (app)/            # cần đăng nhập: /my/events, /my/rsvps
 │   │   │   │   ├── api/                  # BFF route handler: /api/auth/*, /api/proxy/*
+│   │   │   │   ├── .well-known/          # apple-app-site-association · assetlinks.json
 │   │   │   │   ├── sitemap.ts
 │   │   │   │   └── robots.ts
 │   │   │   ├── components/
 │   │   │   ├── features/                 # gom theo miền: event/, rsvp/, map/
 │   │   │   ├── lib/
 │   │   │   └── styles/
-│   │   ├── e2e/                          # Playwright
+│   │   ├── e2e/                          # Playwright — luồng người dùng cuối
+│   │   ├── Dockerfile
+│   │   └── package.json
+│   │
+│   ├── web-admin-side/                   # Next.js App Router — @dnc/web-admin (đội vận hành)
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   │   ├── (admin)/              # console curate, kiểm duyệt, quản lý user — bảo vệ bằng role
+│   │   │   │   ├── api/                  # BFF route handler cho phiên vận hành
+│   │   │   │   └── robots.ts             # noindex toàn bộ, không sitemap
+│   │   │   ├── components/
+│   │   │   ├── features/                 # curation/, moderation/, users/, taxonomy/, analytics/
+│   │   │   ├── lib/
+│   │   │   └── styles/
+│   │   ├── e2e/                          # Playwright — luồng vận hành
 │   │   ├── Dockerfile
 │   │   └── package.json
 │   │
@@ -813,7 +827,7 @@ e2e/modules/rsvp/rsvp.service.waitlist.spec.ts     ← test nằm ở đây
 - Import từ spec trỏ ngược vào source bằng đường dẫn tương đối: `../../../src/modules/rsvp/rsvp.service`.
 - Jest config: `rootDir: "."` và `roots: ["<rootDir>/e2e"]`. Không sửa `testRegex` để quét `src/`.
 - `tsconfig.json` giữ `e2e` trong `exclude`; `ts-jest` type-check spec lúc chạy test, còn `tsc --noEmit` và bản build production không bao giờ biên dịch spec.
-- Các app khác giữ thư mục test riêng: `apps/web` → `e2e/` (Playwright); `apps/mobile` → `__tests__/`. Bất biến chung: file test không nằm cạnh file production.
+- Các app khác giữ thư mục test riêng: cả `apps/web-client-side` (luồng người dùng cuối) lẫn `apps/web-admin-side` (luồng vận hành) → `e2e/` (Playwright); `apps/mobile` → `__tests__/`. Bất biến chung: file test không nằm cạnh file production.
 
 ### 5.6 Phụ thuộc giữa các package
 
@@ -827,7 +841,8 @@ flowchart BT
     CLI["@dnc/api-client<br/>sinh từ OpenAPI"]
 
     API["apps/api"]
-    WEB["apps/web"]
+    WEBC["apps/web-client-side"]
+    WEBA["apps/web-admin-side"]
     MOB["apps/mobile"]
 
     TYP --> VAL
@@ -837,12 +852,19 @@ flowchart BT
     I18N --> API
     CFG --> API
 
-    CLI --> WEB
-    UI --> WEB
-    I18N --> WEB
-    TYP --> WEB
-    VAL --> WEB
-    CFG --> WEB
+    CLI --> WEBC
+    UI --> WEBC
+    I18N --> WEBC
+    TYP --> WEBC
+    VAL --> WEBC
+    CFG --> WEBC
+
+    CLI --> WEBA
+    UI --> WEBA
+    I18N --> WEBA
+    TYP --> WEBA
+    VAL --> WEBA
+    CFG --> WEBA
 
     CLI --> MOB
     I18N --> MOB
@@ -1526,8 +1548,8 @@ Một URL, ba hành vi. Đây là điều kiện để việc chia sẻ link s�
 | Hạ tầng | Giá trị | Nơi khai báo |
 |---|---|---|
 | Custom scheme | `dnconnect://` | `app.config.ts` → `scheme` |
-| Universal Link (iOS) | `https://<domain>/.well-known/apple-app-site-association` — trả `application/json`, **không** redirect, **không** có đuôi `.json` trong URL | Phục vụ bởi `apps/web` |
-| App Link (Android) | `https://<domain>/.well-known/assetlinks.json` | Phục vụ bởi `apps/web` |
+| Universal Link (iOS) | `https://<domain>/.well-known/apple-app-site-association` — trả `application/json`, **không** redirect, **không** có đuôi `.json` trong URL | Phục vụ bởi `apps/web-client-side` |
+| App Link (Android) | `https://<domain>/.well-known/assetlinks.json` | Phục vụ bởi `apps/web-client-side` |
 | Associated domains | `applinks:<domain>` | `app.config.ts` → `ios.associatedDomains` |
 | Intent filter | `autoVerify: true`, host `<domain>` | `app.config.ts` → `android.intentFilters` |
 
@@ -1672,7 +1694,7 @@ Toàn bộ được validate bằng Zod ở `src/config/env.schema.ts` khi khở
 | | `REFRESH_TOKEN_ABSOLUTE_TTL` | `180d` | | |
 | | `TOKEN_HASH_PEPPER` | 32 byte ngẫu nhiên | ✓ | Đổi là đăng xuất toàn hệ thống |
 | | `CURSOR_SIGNING_SECRET` | | ✓ | Mục 6.4 |
-| | `CSRF_SECRET` | | ✓ | Chỉ `apps/web` dùng |
+| | `CSRF_SECRET` | | ✓ | Chỉ `apps/web-client-side` dùng, cho phiên của người dùng cuối |
 | Social | `GOOGLE_CLIENT_ID_IOS` · `_ANDROID` · `_WEB` | | ✓ | Cả ba nằm trong whitelist `aud` |
 | | `APPLE_TEAM_ID` · `APPLE_SERVICE_ID` · `APPLE_KEY_ID` · `APPLE_PRIVATE_KEY` | | ✓ | Cho luồng web |
 | | `FACEBOOK_APP_ID` · `FACEBOOK_APP_SECRET` | | | Có thể bật sau |
@@ -1694,7 +1716,7 @@ Toàn bộ được validate bằng Zod ở `src/config/env.schema.ts` khi khở
 | Cờ tính năng | `FEATURE_CHAT_ENABLED` · `FEATURE_WAITLIST_ENABLED` · `FEATURE_PHONE_OTP_REQUIRED` | `true` | | Tắt nhanh khi có sự cố mà không phải deploy lại |
 | Bảo trì | `MAINTENANCE_MODE` · `MIN_SUPPORTED_APP_VERSION` | `false` · `1.2.0` | | Phục vụ `GET /app/config` |
 
-Biến của `apps/web` cần lộ ra trình duyệt phải có tiền tố `NEXT_PUBLIC_` — và **chỉ** những thứ thật sự công khai (`NEXT_PUBLIC_WEB_BASE_URL`, `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_MAP_TILE_URL_TEMPLATE`). Một khoá bí mật lỡ mang tiền tố này là nó nằm trong bundle JavaScript gửi cho mọi khách truy cập.
+Biến của `apps/web-client-side` cần lộ ra trình duyệt người dùng cuối phải có tiền tố `NEXT_PUBLIC_` — và **chỉ** những thứ thật sự công khai (`NEXT_PUBLIC_WEB_BASE_URL`, `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_MAP_TILE_URL_TEMPLATE`). Một khoá bí mật lỡ mang tiền tố này là nó nằm trong bundle JavaScript gửi cho mọi khách truy cập.
 
 ### 10.3 Quản lý bí mật
 
@@ -1851,7 +1873,7 @@ Tất cả job chạy song song trừ `setup`, đặt `concurrency` theo nhánh 
 
 ### 12.3 `deploy-staging.yml` — tự động khi đẩy lên `develop`
 
-1. Dựng và đẩy image `api`, `web` với tag `sha-<commit>` và `staging-latest`.
+1. Dựng và đẩy image `api`, `web-client` với tag `sha-<commit>` và `staging-latest`.
 2. SSH vào VM staging, `docker compose pull`.
 3. Chạy container migration một lần (`docker compose run --rm api pnpm migration:run`) — thất bại thì dừng, không deploy code.
 4. `docker compose up -d` với health check; chờ `GET /health/ready` trả 200.

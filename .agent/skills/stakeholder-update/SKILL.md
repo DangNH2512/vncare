@@ -17,7 +17,10 @@ Soạn bản cập nhật cho các bên liên quan, tuỳ biến theo đối tư
      sự kiện tạo mới, tỷ lệ RSVP trên lượt xem, tỷ lệ no-show, organizer chủ động,
      retention D1/D7/D30, tỷ lệ curate → self-serve.
   2. **Chi tiết kỹ thuật** — tiếng Anh, cho người trong team (`apps/api`,
-     `apps/web`, `apps/mobile`, `packages/shared-types`, `ops/`).
+     `apps/web-client-side`, `apps/web-admin-side`, `apps/mobile`,
+     `packages/shared-types`, `ops/`). Báo tiến độ hai app web **tách riêng** —
+     `apps/web-client-side` đang có UI cơ bản (4 màn: feed, chi tiết sự kiện, khám
+     phá, hồ sơ), `apps/web-admin-side` còn rỗng, chưa bắt đầu.
   3. **Hướng tới người dùng** — cộng đồng expat và organizer. **Mặc định viết
      tiếng Anh**, bản tiếng Việt là bản thứ hai; giọng văn đơn giản, không thuật ngữ.
 - **Nguồn sự thật:** `.agent/memory/ACTIVE_TASKS.md` (thứ đã ship), `HANDOFFS.md`,

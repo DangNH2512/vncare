@@ -74,7 +74,8 @@ BA Agent viết Requirement Brief gồm:
   cậy tối thiểu nếu có.
 - Trong phạm vi và ngoài phạm vi.
 - Acceptance criteria dạng Given/When/Then kiểm thử được khi khả thi.
-- App bị ảnh hưởng (`apps/api`, `apps/web`, `apps/mobile`, `packages/*`).
+- App bị ảnh hưởng (`apps/api`, `apps/web-client-side`, `apps/web-admin-side`,
+  `apps/mobile`, `packages/*`).
 - Kỳ vọng về hợp đồng API/dữ liệu.
 - Ảnh hưởng Trust & Safety: hàng đợi kiểm duyệt, rate limit, tín hiệu no-show.
 - Ảnh hưởng quyền riêng tư: trường dữ liệu cá nhân mới, phạm vi hiển thị dữ liệu đó,

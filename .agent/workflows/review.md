@@ -12,8 +12,9 @@ description: /review - Tự động soát code sau mỗi lần thực thi task
 1. **TypeScript:**
 ```bash
 pnpm --filter @dnc/api typecheck
-pnpm --filter @dnc/web typecheck
-pnpm --filter @dnc/mobile typecheck   # chỉ khi có chạm apps/mobile
+pnpm --filter @dnc/web-client typecheck
+pnpm --filter @dnc/web-admin typecheck  # chỉ khi có chạm apps/web-admin-side
+pnpm --filter @dnc/mobile typecheck     # chỉ khi có chạm apps/mobile
 ```
 
 2. **Kiểm tra kiến trúc:**
@@ -23,7 +24,7 @@ grep -rn "dataSource\.\|DataSource" apps/api/src/modules --include="*.service.ts
 # Kỳ vọng: 0 kết quả
 
 # Web/mobile không fetch thẳng lên API — phải đi qua @dnc/api-client
-grep -rn "fetch(\`\?https\?://\|axios\.create" apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx"
+grep -rn "fetch(\`\?https\?://\|axios\.create" apps/web-client-side/src apps/web-admin-side/src apps/mobile/src --include="*.ts" --include="*.tsx"
 # Kỳ vọng: 0 kết quả (trừ chính lớp client và route handler BFF)
 
 # Module nền tảng không được import ngược module miền
@@ -34,16 +35,16 @@ grep -rn "modules/\(event\|rsvp\|search\|chat\|report\)" apps/api/src/modules/au
 3. **Kiểm tra chất lượng code:**
 ```bash
 # Không để tiếng Việt lọt vào source (file locale nằm ở packages/i18n nên không bị quét)
-grep -rn "[àáảãạăắằẳẵặâấầẩẫậ]" apps/api/src apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx"
+grep -rn "[àáảãạăắằẳẵặâấầẩẫậ]" apps/api/src apps/web-client-side/src apps/web-admin-side/src apps/mobile/src --include="*.ts" --include="*.tsx"
 # Kỳ vọng: 0 kết quả
 
 # Không còn dấu vết debug
-grep -rn "console\.log\|debugger\|TODO\|FIXME" apps/api/src apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx"
+grep -rn "console\.log\|debugger\|TODO\|FIXME" apps/api/src apps/web-client-side/src apps/web-admin-side/src apps/mobile/src --include="*.ts" --include="*.tsx"
 ```
 
 4. **Kiểm tra kích thước file** (đánh dấu nếu > 500 dòng):
 ```bash
-find apps/web/src apps/mobile/src -name "*.tsx" | xargs wc -l | sort -rn | head -5
+find apps/web-client-side/src apps/web-admin-side/src apps/mobile/src -name "*.tsx" | xargs wc -l | sort -rn | head -5
 find apps/api/src -name "*.ts" | xargs wc -l | sort -rn | head -5
 ```
 

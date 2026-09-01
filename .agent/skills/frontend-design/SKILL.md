@@ -5,7 +5,8 @@ license: Điều khoản đầy đủ trong LICENSE.txt
 ---
 
 > **Ghi chú cho Da Nang Connect:** đây là skill gốc từ Anthropic, giữ nguyên bản
-> chung. Khi làm UI thật cho `apps/web` hoặc `apps/mobile`, dùng
+> chung. Khi làm UI thật cho `apps/web-client-side`, `apps/web-admin-side` hoặc
+> `apps/mobile`, dùng
 > [modern-ui-design](../modern-ui-design/SKILL.md) — nó bọc các nguyên tắc dưới đây
 > bằng design token, ràng buộc stack và checklist i18n EN/VI của dự án. Skill này
 > phù hợp cho artifact rời, landing page và bản thăm dò thẩm mỹ.

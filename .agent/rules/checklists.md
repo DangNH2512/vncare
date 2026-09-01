@@ -12,7 +12,8 @@ description: Checklist tra nhanh — chạy trước khi đánh dấu bất kỳ
 
 ```
 □ pnpm --filter @dnc/api typecheck      → 0 errors (apps/api)
-□ pnpm --filter @dnc/web typecheck      → 0 errors (apps/web)
+□ pnpm --filter @dnc/web-client typecheck → 0 errors (apps/web-client-side)
+□ pnpm --filter @dnc/web-admin typecheck  → 0 errors (apps/web-admin-side, nếu có chạm)
 □ pnpm --filter @dnc/mobile typecheck   → 0 errors (apps/mobile, nếu có chạm)
 □ Quan sát thật (REALITY)   → mở web/simulator thật, đi hết flow, mô tả cái THẤY
 □ Triangulate               → UI ↔ API response ↔ DB khớp nhau (observe-reality.md §C)

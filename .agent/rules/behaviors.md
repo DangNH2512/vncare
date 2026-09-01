@@ -34,7 +34,7 @@ Mẫu hợp đồng yêu cầu (rút ra trong đầu, không cần viết ra):
 
 ```text
 Goal:
-Target surface: apps/api | apps/web | apps/mobile | packages/* | ops | docs | .agent
+Target surface: apps/api | apps/web-client-side | apps/web-admin-side | apps/mobile | packages/* | ops | docs | .agent
 Mentioned files/routes/errors/screens:
 Environment: local | Docker | staging | production | unknown
 Constraints:
@@ -174,8 +174,10 @@ Không thêm nhiễu kiểu changelog. Thay thẳng nội dung đã cũ.
 Chạy bộ kiểm tra nhỏ nhất mà có ý nghĩa cho bề mặt vừa chạm, và **đọc output**.
 
 - `apps/api`: `pnpm --filter @dnc/api typecheck`, thêm test/build khi rủi ro đáng.
-- `apps/web`: `pnpm --filter @dnc/web typecheck` + lint/build, Playwright cho luồng
-  browser vừa chạm khi khả thi.
+- `apps/web-client-side`: `pnpm --filter @dnc/web-client typecheck` + lint/build,
+  Playwright cho luồng browser vừa chạm khi khả thi.
+- `apps/web-admin-side`: `pnpm --filter @dnc/web-admin typecheck` + lint/build,
+  Playwright cho luồng vận hành vừa chạm khi khả thi.
 - `apps/mobile`: chỉ chạy script Expo/EAS/typecheck nếu thực sự có trong
   `package.json`; kiểm tra trên simulator khi đổi hành vi.
 - `packages/*`: build package và ít nhất một app tiêu thụ.

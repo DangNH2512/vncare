@@ -110,7 +110,7 @@ flowchart TB
     CDNSTATIC["CDN trong nước<br/>(chỉ ảnh + asset tĩnh)"]
 
     subgraph app1["app-1 · 4 vCPU / 8 GB · Viettel IDC"]
-        NEXT["apps/web<br/>Next.js 16.3 SSR + ISR"]
+        NEXT["apps/web-client-side<br/>Next.js 16.3 SSR + ISR"]
 
         subgraph idsvc["identity-service"]
             IDAPI["RUN_MODE=api"]
@@ -616,7 +616,7 @@ Ghi vào ADR-0004 và `CLAUDE.md`:
 
 ### 5.1 Bức tranh một dòng
 
-> **Mặc định là bất đồng bộ qua bus. Đồng bộ chỉ còn đúng MỘT cạnh: `apps/web` (Next.js SSR) → `event-service` qua HTTP nội bộ. Giữa ba service backend với nhau, KHÔNG có một lời gọi đồng bộ nào.**
+> **Mặc định là bất đồng bộ qua bus. Đồng bộ chỉ còn đúng MỘT cạnh: `apps/web-client-side` (Next.js SSR) → `event-service` qua HTTP nội bộ. Giữa ba service backend với nhau, KHÔNG có một lời gọi đồng bộ nào.**
 
 ### 5.2 Luật gọi đồng bộ
 
@@ -1131,7 +1131,7 @@ Trả lời thẳng câu hỏi "đội 2 người có nên dùng Kubernetes khô
 | Node | Container | RAM ước |
 |---|---|---:|
 | **app-1** | `caddy` | 40 MB |
-| | `web` (Next.js SSR) | 250 MB |
+| | `web-client` (Next.js SSR) | 250 MB |
 | | `identity-api`, `identity-worker` | 2 × 200 MB |
 | | `event-api`, `event-worker` | 2 × 220 MB |
 | | `comms-api` (REST + WS), `comms-worker` | 2 × 200 MB |

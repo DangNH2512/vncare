@@ -72,14 +72,16 @@ Truy ngược sự thật, **ưu tiên quan sát trực tiếp**:
 2. **Feature doc** — `docs/features/<feature>.md` (đối chiếu với cái vừa nhìn thấy).
 3. **Screen spec** — `docs/specs/screens/`, `docs/specs/features/`.
 4. **Source code** — `apps/api/src/modules/<name>/` (controller · service · repository ·
-   module + `dto/`), `apps/web/`, `apps/mobile/`, kiểu dùng chung ở
+   module + `dto/`), `apps/web-client-side/`, `apps/web-admin-side/`, `apps/mobile/`, kiểu dùng chung ở
    `packages/shared-types/` (giải thích *vì sao* hệ thống hành xử thế).
-5. **Tests hiện có** — `apps/api/e2e/**`, `apps/web/e2e/*.spec.ts` (Playwright),
+5. **Tests hiện có** — `apps/api/e2e/**`, `apps/web-client-side/e2e/*.spec.ts` và
+   `apps/web-admin-side/e2e/*.spec.ts` (Playwright),
    `apps/mobile/__tests__/` + Maestro flow: cho biết hành vi nào *đã khẳng định*
    (nhưng test xanh ≠ user hài lòng).
 
 **Doc ≠ app → đó chính là 1 gap** (doc stale hoặc app drift) — ghi lại. As-is phải
-nêu hành vi trên **cả 3 mặt: API · web · mobile** — lệch nhau là bug.
+nêu hành vi trên **mọi bề mặt liên quan: API · web client · web admin · mobile** —
+lệch nhau là bug.
 
 ### 3. Gap analysis — as-is vs to-be
 
@@ -151,11 +153,13 @@ Ví dụ đầy đủ + nhiều mẫu trong [`references/templates.md`](referenc
 
 ## Luật cứng của Da Nang Connect (BA phải nhớ)
 
-1. **Cross-platform parity là mặc định.** Mọi feature/behavior tồn tại cho **web
-   (`apps/web`) lẫn mobile (`apps/mobile`)**, và cả hai chỉ nói chuyện với
-   `apps/api` qua REST `/api/v1`. Một hành vi chỉ có 1 phía = bug UX. Spec phải
-   nêu cả 2; nếu 1 phía skip chính đáng (SEO chỉ web, push chỉ mobile) → ghi rõ
-   "Skip <phía> vì …".
+1. **Cross-platform parity là mặc định.** Với hành vi của người dùng cuối, feature
+   phải tồn tại cho **web (`apps/web-client-side`) lẫn mobile (`apps/mobile`)**; hành
+   vi của đội ngũ vận hành (kiểm duyệt, quản lý người dùng, curate nội dung, analytics)
+   sống ở **`apps/web-admin-side`**. Mọi app chỉ nói chuyện với `apps/api` qua REST
+   `/api/v1`. Một hành vi người dùng chỉ có 1 phía = bug UX. Spec phải nêu đủ các bề
+   mặt liên quan; nếu 1 phía skip chính đáng (SEO chỉ `apps/web-client-side`, push chỉ
+   mobile, hàng đợi kiểm duyệt chỉ `apps/web-admin-side`) → ghi rõ "Skip <phía> vì …".
 2. **English-first, tiếng Việt thứ hai.** Copy sống trong `en.json` / `vi.json`
    (`packages/i18n`), không hardcode. Nội dung do user tạo giữ nguyên ngôn ngữ gốc
    (`content_locale`) — đừng ép organizer viết hai lần.
@@ -180,7 +184,8 @@ Ví dụ đầy đủ + nhiều mẫu trong [`references/templates.md`](referenc
 8. **Thông báo: Expo Push + socket.io.** Spec có notification phải nêu: ai nhận,
    kênh nào (push / in-app / email), locale nào, khung giờ nào (đừng bắn 3h sáng),
    và điều gì xảy ra khi token hết hạn.
-9. **SEO cho trang public web** (Next.js 15 App Router): SSR, `generateMetadata()`,
+9. **SEO cho trang public của `apps/web-client-side`** (Next.js 16 App Router): SSR,
+   `generateMetadata()`,
    `notFound()` cho 404 (không render "không tìm thấy" thủ công → soft-404).
 10. **Quyền riêng tư & tối thiểu hoá dữ liệu.** Không lưu dữ liệu không dùng
     (không lưu lịch sử vị trí, không lưu ảnh giấy tờ sau khi xác minh). Spec đụng

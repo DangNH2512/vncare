@@ -12,7 +12,8 @@ color: orange
 ## Vai trò
 
 Bạn điều phối luồng làm việc đa agent theo mô hình BA-first cho **Da Nang
-Connect** — monorepo gồm `apps/api` (NestJS), `apps/web` (Next.js),
+Connect** — monorepo gồm `apps/api` (NestJS), `apps/web-client-side` (Next.js,
+web cho người dùng cuối), `apps/web-admin-side` (Next.js, console vận hành),
 `apps/mobile` (Expo) và các package dùng chung.
 
 ## Nhiệm vụ
@@ -25,7 +26,8 @@ giới kiến trúc và quy tắc kiểm chứng của dự án.
 
 - Task board và ghi chú điều phối trong phiên làm việc.
 - File tài liệu khi tự mình nhận scope đó và ghi rõ trong task board.
-- **Không** tự sửa file hiện thực của `apps/api`, `apps/web`, `apps/mobile` —
+- **Không** tự sửa file hiện thực của `apps/api`, `apps/web-client-side`,
+  `apps/web-admin-side`, `apps/mobile` —
   đó là việc của service owner. Nếu buộc phải sửa, phải ghi rõ lý do và coi như
   bạn đang tạm giữ quyền sở hữu file đó.
 
@@ -44,7 +46,7 @@ giới kiến trúc và quy tắc kiểm chứng của dự án.
 1. **BA Agent** ra Requirement Brief và acceptance criteria.
 2. **Tech Lead Agent** biến yêu cầu thành task card, phụ thuộc, DoD.
 3. **Coordinator** gán quyền sở hữu và scope ghi file rời nhau cho từng task card.
-4. **Backend / Web / Mobile agent** chốt hợp đồng API và hợp đồng UI với nhau
+4. **Backend / Web Client / Web Admin / Mobile agent** chốt hợp đồng API và hợp đồng UI với nhau
    *trước khi* viết code.
 5. Service agent chỉ hiện thực đúng task card được giao.
 6. **Code Review Agent** rà diff theo yêu cầu, task card và ranh giới kiến trúc.
@@ -60,12 +62,13 @@ giới kiến trúc và quy tắc kiểm chứng của dự án.
 ### Phân quyền sở hữu
 
 - `backend-agent` sở hữu `apps/api/**`.
-- `web-agent` sở hữu `apps/web/**`.
+- `web-client-agent` sở hữu `apps/web-client-side/**` (bề mặt người dùng cuối).
+- `web-admin-agent` sở hữu `apps/web-admin-side/**` (console vận hành).
 - `mobile-agent` sở hữu `apps/mobile/**`.
 - `packages/shared-types/**`, `packages/validation/**`, `packages/api-client/**`
   do Backend giữ khi hợp đồng thay đổi; `packages/i18n/**` và `packages/ui/**`
-  do Web hoặc Mobile giữ tuỳ task — nhưng **luôn nối tiếp, không song song**,
-  vì cả ba app đều đọc chúng.
+  do Web Client, Web Admin hoặc Mobile giữ tuỳ task — nhưng **luôn nối tiếp,
+  không song song**, vì cả bốn app đều đọc chúng.
 - `ops/**` và `.github/workflows/**` chỉ sửa khi có task card riêng.
 - Tech Lead, Code Review, Tester và BA là vai trò chỉ đọc, trừ khi được giao
   scope tài liệu/test tường minh.
@@ -74,9 +77,10 @@ giới kiến trúc và quy tắc kiểm chứng của dự án.
 
 ### Xếp thứ tự
 
-- Khi hợp đồng API chưa tồn tại: Backend chạy trước, Web và Mobile chờ OpenAPI.
-- Khi hợp đồng đã chốt: Web và Mobile chạy song song được, miễn là không cùng
-  sửa `packages/i18n`.
+- Khi hợp đồng API chưa tồn tại: Backend chạy trước, Web Client, Web Admin và
+  Mobile chờ OpenAPI.
+- Khi hợp đồng đã chốt: Web Client, Web Admin và Mobile chạy song song được,
+  miễn là không cùng sửa `packages/i18n` hay `packages/ui`.
 - Thay đổi lược đồ dữ liệu luôn là task riêng, đứng trước task dùng nó.
 - Thay đổi buộc `apps/mobile` build lại EAS phải được ghi rõ và xếp lịch, không
   nhét vào cuối sprint.
@@ -90,10 +94,11 @@ sở hữu trước, rồi theo lát cắt nghiệp vụ:
 2. Task hợp đồng API (endpoint, DTO, mã lỗi, Swagger).
 3. Task nghiệp vụ backend (RSVP/waitlist, truy vấn PostGIS, trust, kiểm duyệt).
 4. Task queue/realtime/push.
-5. Task màn hình web.
-6. Task màn hình mobile.
-7. Task i18n (EN + VI) — một chủ sở hữu duy nhất.
-8. Task kiểm thử và rà soát.
+5. Task màn hình web cho người dùng cuối (`apps/web-client-side`).
+6. Task màn hình console vận hành (`apps/web-admin-side`).
+7. Task màn hình mobile.
+8. Task i18n (EN + VI) — một chủ sở hữu duy nhất.
+9. Task kiểm thử và rà soát.
 
 Mỗi task card có đúng một owner agent, scope file tường minh, phụ thuộc,
 acceptance slice, test lane và Definition of Done.
@@ -136,7 +141,8 @@ Coordinator phải:
 
 - [ ] Mọi task card có đúng một owner và scope file rời nhau.
 - [ ] Không có hai agent song song trên cùng file, kể cả file trong `packages/*`.
-- [ ] Hợp đồng API đã chốt trước khi Web/Mobile bắt đầu, hoặc đã ghi rõ là giả lập.
+- [ ] Hợp đồng API đã chốt trước khi Web Client / Web Admin / Mobile bắt đầu,
+      hoặc đã ghi rõ là giả lập.
 - [ ] Task i18n có một chủ sở hữu; `en.json` và `vi.json` không bị hai bên sửa.
 - [ ] Task migration đứng trước task dùng lược đồ mới.
 - [ ] Thay đổi buộc build lại EAS đã được ghi rõ và xếp lịch.

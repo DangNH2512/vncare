@@ -18,7 +18,8 @@ Trả lời các câu hỏi này bằng cách đọc code, không phải nhớ:
 1. User đang cố làm gì?
 2. Thực tế xảy ra chuyện gì thay vì thế?
 3. Màn hình/component nào là điểm vào?
-4. Bug xảy ra trên bề mặt nào — `apps/web`, `apps/mobile`, hay cả hai? Ở ngôn ngữ nào
+4. Bug xảy ra trên bề mặt nào — `apps/web-client-side`, `apps/web-admin-side`,
+   `apps/mobile`, hay nhiều bề mặt? Ở ngôn ngữ nào
    (EN hay VI)? Với vai trò nào (khách vãng lai, người tham gia, host, moderator)?
 
 ```
@@ -54,8 +55,8 @@ Socket event + job BullMQ (push)      ← ai phát, ai tiêu thụ, chạy mấy
 
 ```bash
 # Tìm kiếm hữu ích:
-grep -rn "functionName\|handlerName" apps/api/src apps/web/src --include="*.ts" --include="*.tsx" -l
-grep -rn "<endpoint path>" apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx" -n
+grep -rn "functionName\|handlerName" apps/api/src apps/web-client-side/src apps/web-admin-side/src --include="*.ts" --include="*.tsx" -l
+grep -rn "<endpoint path>" apps/web-client-side/src apps/web-admin-side/src apps/mobile/src --include="*.ts" --include="*.tsx" -n
 ```
 
 ---
@@ -127,7 +128,7 @@ Sau khi viết fix → chạy
 □ Nếu đụng truy vấn địa lý: đối chiếu ST_Distance dưới DB ở hai biên bán kính
 □ Nếu đụng push: đếm số thông báo nhận trên thiết bị thật, không chỉ nội dung
 □ Nếu đụng chuỗi hiển thị: kiểm ở cả EN và VI
-□ E2E: chạy spec liên quan (apps/web/e2e hoặc apps/api/e2e)
+□ E2E: chạy spec liên quan (apps/web-client-side/e2e, apps/web-admin-side/e2e hoặc apps/api/e2e)
 ```
 
 **Ghi lại trong Output Report:**

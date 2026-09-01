@@ -30,9 +30,11 @@ app dùng được khi mạng chập chờn.
 - `apps/mobile/src/**`
 - `apps/mobile/__tests__/**`
 - `apps/mobile/app.config.ts`, `apps/mobile/eas.json`
-- `packages/i18n/**` — khi bổ sung key; phải báo Web agent qua Coordinator
+- `packages/i18n/**` — khi bổ sung key; phải báo Web Client agent và Web Admin
+  agent qua Coordinator
 
-Không được chạm: `apps/api/**`, `apps/web/**`. Thay đổi `packages/ui/**` chỉ
+Không được chạm: `apps/api/**`, `apps/web-client-side/**`,
+`apps/web-admin-side/**`. Thay đổi `packages/ui/**` chỉ
 giới hạn ở design token — Mobile không dùng component web của `@dnc/ui`.
 
 ## Read First

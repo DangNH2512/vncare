@@ -48,7 +48,8 @@ tắc giữ hợp đồng với mọi thứ nó import.
 Trước khi sửa code sẵn có, làm các bước này và nêu trong kế hoạch:
 
 1. **Lập bản đồ nơi gọi.** Grep mọi nơi tiêu thụ symbol/file/endpoint/cột sắp
-   chạm — nhớ grep cả `apps/web`, `apps/mobile` và `packages/`. Liệt kê ra. Không
+   chạm — nhớ grep cả `apps/web-client-side`, `apps/web-admin-side`,
+   `apps/mobile` và `packages/`. Liệt kê ra. Không
    thể bảo vệ thứ mình chưa tìm thấy.
 2. **Chụp lại hành vi hiện tại.** Mỗi đường một dòng: hiện tại nó bảo đảm gì
    (input, output, side effect, ca lỗi). Đây là baseline không được làm tệ đi.

@@ -12,12 +12,14 @@ dropdowns that reach far below the last data row so newly typed rows already
 have them.
 
 Product-specific notes:
-    * Platform covers Web (apps/web), Android and iOS (apps/mobile) plus "All".
-      A defect that reproduces on several platforms is written "Web, iOS" and is
-      counted once per platform, so platform totals may exceed the row count.
+    * Platform covers Web Client (apps/web-client-side, the end-user web app),
+      Web Admin (apps/web-admin-side, the operations console), Android and iOS
+      (apps/mobile) plus "All". A defect that reproduces on several platforms is
+      written "Web Client, iOS" and is counted once per platform, so platform
+      totals may exceed the row count.
     * The UI ships in English first and Vietnamese second, so a locale-specific
       defect must say which locale it was seen in, inside the "Environment"
-      column (e.g. "Web Chrome 129 - locale VI").
+      column (e.g. "Web Client Chrome 129 - locale VI").
 """
 
 from __future__ import annotations
@@ -53,7 +55,7 @@ WIDTHS = [6, 13, 15, 19.14, 14.29, 17.29, 26, 56.86, 22.71, 40.57, 30, 21, 12, 3
 # Vocabularies — the only accepted values; the summary sheet counts these exact
 # strings, so changing one here means changing it in write_summary() too.
 LOAI = ["Bug", "Đề xuất", "Không phải bug", "Cảnh báo"]
-PLATFORMS = ["All", "Web", "Android", "iOS"]
+PLATFORMS = ["All", "Web Client", "Web Admin", "Android", "iOS"]
 SEVERITIES = ["Blocker", "Major", "Minor"]
 DEV_STATUS = ["New", "Fixed", "Wont-fix", "Cannot-repro", "Đã trả lời",
               "In progress", "Cần PO xác nhận", "Chấp nhận tạm - làm sau"]
@@ -174,7 +176,7 @@ def write_tracker(wb: Workbook, sheet: str, rows: list[dict[str, str]],
                             allow_blank=True, errorStyle="warning",
                             errorTitle="Ngoài danh mục",
                             error="Giá trị không có trong danh mục chuẩn. Vẫn nhập được "
-                                  "(vd Platform 'Web, iOS' khi lỗi gặp ở cả hai).")
+                                  "(vd Platform 'Web Client, iOS' khi lỗi gặp ở cả hai).")
         ws.add_data_validation(dv)
         dv.add(f"{letter}2:{letter}{VALIDATION_LIMIT}")
 
@@ -206,7 +208,7 @@ def write_summary(wb: Workbook, sheet: str, last_row: int) -> None:
 
     ws["A1"] = f"BẢNG TÓM TẮT BUG — tự đếm từ sheet '{sheet}'"
     ws["A1"].font = Font(bold=True, size=14, color="1B5E20")
-    ws["A2"] = ("⚠️ Lỗi gặp ở nhiều nền tảng (vd 'Web, iOS') được đếm ở MỖI nền tảng "
+    ws["A2"] = ("⚠️ Lỗi gặp ở nhiều nền tảng (vd 'Web Client, iOS') được đếm ở MỖI nền tảng "
                 "liên quan → tổng theo platform có thể > số dòng bug.")
     ws["A2"].font = Font(italic=True, color="7F7F7F")
 
@@ -270,7 +272,7 @@ def write_summary(wb: Workbook, sheet: str, last_row: int) -> None:
     # một giá trị nào là các dòng mang trạng thái đó biến mất khỏi tổng.
     statuses = list(DEV_STATUS)
     rows1 = []
-    for plat in ["Web", "Android", "iOS", "All"]:
+    for plat in ["Web Client", "Web Admin", "Android", "iOS", "All"]:
         formulas = [f'=COUNTIFS({q}!${PLATFORM}$2:${PLATFORM}${lim},"*{plat}*",{q}!${DEV_STATUS}$2:${DEV_STATUS}${lim},"{s}")'
                     for s in statuses]
         formulas.append(f'=COUNTIF({q}!${PLATFORM}$2:${PLATFORM}${lim},"*{plat}*")')
@@ -282,11 +284,11 @@ def write_summary(wb: Workbook, sheet: str, last_row: int) -> None:
     rows2 = []
     for sev in SEVERITIES:
         formulas = [f'=COUNTIFS({q}!${SEVERITY}$2:${SEVERITY}${lim},"{sev}",{q}!${PLATFORM}$2:${PLATFORM}${lim},"*{p}*")'
-                    for p in ["Web", "Android", "iOS", "All"]]
+                    for p in ["Web Client", "Web Admin", "Android", "iOS", "All"]]
         formulas.append(f'=COUNTIF({q}!${SEVERITY}$2:${SEVERITY}${lim},"{sev}")')
         rows2.append((sev, formulas))
     nxt = table(nxt, "BẢNG 2 — Severity × Platform",
-                ["Severity", "Web", "Android", "iOS", "All", "Tổng"], rows2)
+                ["Severity", "Web Client", "Web Admin", "Android", "iOS", "All", "Tổng"], rows2)
 
     # BẢNG 3 — Severity × Dev Status (còn bao nhiêu Blocker/Major chưa fix)
     rows3 = []

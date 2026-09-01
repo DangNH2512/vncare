@@ -1,17 +1,23 @@
 # Playwright (web) — patterns Da Nang Connect
 
-> Test web sống ở `apps/web/e2e/*.spec.ts`, config `apps/web/playwright.config.ts`.
-> Hai project viewport: **mobile (mặc định)** + desktop (variant). Fixtures dùng chung
-> ở `apps/web/e2e/_fixtures.ts`.
+> Test web sống ở `apps/web-client-side/e2e/*.spec.ts` (luồng người dùng cuối) và
+> `apps/web-admin-side/e2e/*.spec.ts` (luồng vận hành), mỗi app có
+> `playwright.config.ts` riêng. Hai project viewport: **mobile (mặc định)** + desktop
+> (variant) cho client; với admin thì **desktop là mặc định** vì người vận hành dùng
+> máy tính. Fixtures dùng chung nằm trong `e2e/_fixtures.ts` của chính app đó.
 >
-> - **Web** chạy ở `http://localhost:3000` (Next.js App Router, `apps/web`).
+> - **Web client** chạy ở `http://localhost:3000` (Next.js App Router, `apps/web-client-side`).
+> - **Web admin** chạy ở cổng riêng (Next.js App Router, `apps/web-admin-side`) — khai
+>   báo qua biến môi trường, không hard-code cổng vào spec.
 > - **API** chạy ở `http://localhost:3001` (NestJS, `apps/api`) — khai báo qua biến
 >   môi trường `E2E_API_URL` để không hard-code cổng vào spec.
 >
 > ## ⚡ Hai luật bất biến trước khi viết dòng test đầu tiên
 >
-> **1. Viewport mobile là mặc định.** Phần lớn expat mở app bằng điện thoại khi đang
-> di chuyển. Desktop là variant, không phải oracle.
+> **1. Viewport mobile là mặc định (với `apps/web-client-side`).** Phần lớn expat mở
+> app bằng điện thoại khi đang di chuyển. Desktop là variant, không phải oracle.
+> Với `apps/web-admin-side` thì ngược lại: desktop là oracle chính, mobile chỉ là
+> kiểm tra responsive bổ sung.
 > ```ts
 > test.use({ viewport: { width: 390, height: 844 } });
 > test.describe('RSVP button at mobile viewport', () => { /* ... */ });
@@ -220,7 +226,8 @@ test('/events/<slug-giả> trả 404 (notFound, không soft-200)', async ({ requ
 
 Pure function (validation, mapping khu vực → slug, tính khoảng cách, quy tắc trust
 level, format ngày theo locale) nên là unit test cạnh source
-(`apps/web/src/**/*.test.ts` hoặc `packages/shared-types/**/*.test.ts`) — nhanh, ổn
+(`apps/web-client-side/src/**/*.test.ts`, `apps/web-admin-side/src/**/*.test.ts`
+hoặc `packages/shared-types/**/*.test.ts`) — nhanh, ổn
 định, không cần server chạy.
 
 ```ts

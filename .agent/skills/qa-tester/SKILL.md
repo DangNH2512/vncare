@@ -2,11 +2,14 @@
 name: qa-tester
 description: >-
   Professional QA / Test engineer for Da Nang Connect — the expat community
-  platform (NestJS API in apps/api, Next.js 15 web in apps/web, Expo mobile in
-  apps/mobile). Use this skill whenever the user wants to test a feature, design
-  test cases, find what's untested, reproduce or hunt bugs, or generate automated
-  coverage — Jest/supertest specs for the API, Playwright specs (apps/web/e2e/)
-  for web and Maestro flows (apps/mobile/.maestro/flows/) for mobile, plus a
+  platform (NestJS API in apps/api, Next.js 16 end-user web in
+  apps/web-client-side, Next.js 16 operations console in apps/web-admin-side,
+  Expo mobile in apps/mobile). Use this skill whenever the user wants to test a
+  feature, design test cases, find what's untested, reproduce or hunt bugs, or
+  generate automated coverage — Jest/supertest specs for the API, Playwright
+  specs (apps/web-client-side/e2e/ for end-user flows, apps/web-admin-side/e2e/
+  for operations flows) for web and Maestro flows (apps/mobile/.maestro/flows/)
+  for mobile, plus a
   test-case doc and QA report. Trigger on phrases like "test", "viết test",
   "test case", "QA", "kiểm thử", "test tay mệt quá", "còn thiếu test",
   "coverage", "cover case này", "reproduce bug", "edge case", "regression",
@@ -93,7 +96,7 @@ viewport mobile trước**, desktop/tablet là variant:
   thể "pass" giả do nút stretch theo flex.
 - Assert visual/tap-target trong Playwright phải **declare viewport** trên describe:
   `test.use({ viewport: { width: 390, height: 844 } })`.
-- **Bản đồ** (react-leaflet trên web, react-native-maps trên mobile) là surface dễ
+- **Bản đồ** (MapLibre trên `apps/web-client-side`, react-native-maps trên mobile) là surface dễ
   vỡ nhất ở mobile: marker chồng, popup tràn, gesture pan/zoom nuốt scroll. Luôn có
   ít nhất 1 case bản đồ ở viewport mobile.
 
@@ -158,7 +161,8 @@ KHÔNG cấm mở app nhìn. Phân biệt rõ:
 Đừng viết trùng. Quét cái đã có:
 
 - API: `apps/api/src/**/*.spec.ts` (unit) + `apps/api/test/*.e2e-spec.ts` (supertest).
-- Web: `apps/web/e2e/<feature>.spec.ts`.
+- Web client (luồng người dùng cuối): `apps/web-client-side/e2e/<feature>.spec.ts`.
+- Web admin (luồng vận hành): `apps/web-admin-side/e2e/<feature>.spec.ts`.
 - Mobile: `apps/mobile/.maestro/flows/<area>/*.yaml`.
 - Logic dùng chung (validation, mapping khu vực, format ngày): `packages/shared-types`.
 
@@ -192,7 +196,9 @@ Output bước này = **bảng TC-ID** (test-case table), kể cả khi chưa co
 - **API (Jest + supertest)** → `apps/api/test/<feature>.e2e-spec.ts`. Contract +
   quyền + biên. Đây là nơi rẻ nhất để test race RSVP, PostGIS, phân quyền. Pattern
   trong [`references/run-and-report.md`](references/run-and-report.md) §A.
-- **Web (Playwright)** → `apps/web/e2e/<feature>.spec.ts`, theo pattern +
+- **Web (Playwright)** → luồng người dùng cuối đặt ở
+  `apps/web-client-side/e2e/<feature>.spec.ts`, luồng vận hành (kiểm duyệt, quản lý
+  người dùng, analytics) đặt ở `apps/web-admin-side/e2e/<feature>.spec.ts`, theo pattern +
   `_fixtures.ts` trong [`references/playwright-web.md`](references/playwright-web.md).
   `test.skip` khi thiếu data. Cache login `beforeAll` để né rate-limit.
 - **Mobile (Maestro)** → `apps/mobile/.maestro/flows/<area>/<case>.yaml`, theo pattern
@@ -221,9 +227,11 @@ Mỗi TC-ID map tới ≥1 test code. Giữ AC-ID ↔ TC-ID truy vết được.
 ## Cross-platform parity (luật cứng)
 
 Coverage mặc định **cả ba tầng**: API → Jest/supertest, web → Playwright
-(`apps/web/e2e/`), mobile → Maestro (`apps/mobile/.maestro/`). Một feature chỉ test 1
+(`apps/web-client-side/e2e/` cho luồng người dùng cuối, `apps/web-admin-side/e2e/`
+cho luồng vận hành), mobile → Maestro (`apps/mobile/.maestro/`). Một feature chỉ test 1
 phía = coverage thiếu = coi như chưa xong. Nếu 1 phía skip chính đáng (SEO trang sự
-kiện chỉ web; push notification chỉ mobile) → ghi rõ "Skip <phía> vì …" trong
+kiện chỉ có ở `apps/web-client-side`; hàng đợi kiểm duyệt chỉ có ở
+`apps/web-admin-side`; push notification chỉ mobile) → ghi rõ "Skip <phía> vì …" trong
 test-case doc + tóm tắt.
 
 ---
@@ -245,6 +253,6 @@ test-case doc + tóm tắt.
 
 - [`references/observe-reality.md`](references/observe-reality.md) — **mở browser (`preview_*`) + simulator (idb/screenshot) nhìn app bằng mắt user**, triangulate UI↔API↔Postgres, exploratory heuristics, evidence discipline. Đọc khi cần biết "thật sự pass" — không chỉ tin màu xanh.
 - [`references/test-design.md`](references/test-design.md) — kỹ thuật thiết kế case (equivalence/boundary/negative…), cách suy case từ acceptance criteria, **ma trận test Da Nang Connect** + **risk-class sweep checklist** (RSVP/waitlist, PostGIS, i18n, push, moderation, trust level).
-- [`references/playwright-web.md`](references/playwright-web.md) — pattern Playwright cho `apps/web`: `_fixtures.ts`, cấu trúc describe (API/UI/behavior), ví dụ spec đầy đủ có chú thích, rule locale EN/VI + rate-limit/serial.
+- [`references/playwright-web.md`](references/playwright-web.md) — pattern Playwright cho cả `apps/web-client-side` lẫn `apps/web-admin-side`: `_fixtures.ts`, cấu trúc describe (API/UI/behavior), ví dụ spec đầy đủ có chú thích, rule locale EN/VI + rate-limit/serial.
 - [`references/maestro-mobile.md`](references/maestro-mobile.md) — pattern Maestro cho `apps/mobile`: cấu trúc flow, `_shared/login.yaml`, deep-link tab nav, testID, permission (location/notification), gotcha iOS dialog, idb cho sim.
 - [`references/run-and-report.md`](references/run-and-report.md) — **run policy GENERATE-ONLY** (lệnh được phép cho api/web/mobile, workers=1), pattern Jest/supertest cho `apps/api`, test-case doc template, QA report template, harness gotchas.

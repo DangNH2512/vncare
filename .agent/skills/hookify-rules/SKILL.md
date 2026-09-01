@@ -26,7 +26,7 @@ allowed-tools: Read, Write, Bash
 | Truy vấn theo khu vực/bán kính phải dùng PostGIS | grep gate: chặn công thức Haversine tự viết (`Math.acos`, `6371`) trong `apps/api/src` — bắt dùng `ST_DWithin` |
 | Thời gian lưu UTC | grep gate: chặn `timestamp without time zone` trong file migration; bắt dùng `timestamptz` |
 | Khoá i18n phải đồng bộ `en`/`vi` | PostToolUse: sau khi sửa `en.json`, so số khoá với `vi.json`, lệch thì cảnh báo |
-| Không hardcode chuỗi hiển thị | grep gate: chặn literal tiếng Việt/tiếng Anh trong JSX của `apps/web`/`apps/mobile` ngoài lời gọi `t()` |
+| Không hardcode chuỗi hiển thị | grep gate: chặn literal tiếng Việt/tiếng Anh trong JSX của `apps/web-client-side`/`apps/web-admin-side`/`apps/mobile` ngoài lời gọi `t()` |
 | Bí mật không được commit | PreToolUse: chặn ghi vào `apps/mobile/keys/`, `*.p8`, `*.keystore`, `.env` (không phải `.env.example`) |
 | Mọi mutation phải ghi audit log | review prompt: service có mutation mà không gọi hàm ghi audit log |
 | Endpoint UGC phải có luồng report | review prompt: thêm controller tạo nội dung do người dùng tạo mà không có endpoint report tương ứng |
@@ -62,7 +62,7 @@ fi
 
 ```bash
 # chạy ở PostToolUse sau khi sửa file locale
-for app in apps/web apps/mobile; do
+for app in apps/web-client-side apps/web-admin-side apps/mobile; do
   en="$app/src/locales/en.json"; vi="$app/src/locales/vi.json"
   [ -f "$en" ] && [ -f "$vi" ] || continue
   diff <(python3 -c "import json,sys;print('\n'.join(sorted(json.load(open(sys.argv[1])))))" "$en") \

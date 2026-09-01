@@ -24,8 +24,8 @@ Biến một BA Requirement Brief thành một hoặc nhiều **Story file** chi
 cảnh, acceptance criteria, checklist công việc và dev note.
 
 Việc này chống mất ngữ cảnh giữa các session và cho phép triển khai song song khi
-phạm vi các app không giẫm chân nhau (`apps/api` · `apps/web` · `apps/mobile` ·
-`packages/shared-types`).
+phạm vi các app không giẫm chân nhau (`apps/api` · `apps/web-client-side` ·
+`apps/web-admin-side` · `apps/mobile` · `packages/shared-types`).
 
 ## Khi nào kích hoạt
 
@@ -105,7 +105,7 @@ Dùng [Story Template](../../templates/story-template.md) cho mọi story file.
 | Thời gian | Lưu UTC (`timestamptz`), hiển thị `Asia/Ho_Chi_Minh`, biên bộ lọc theo giờ Đà Nẵng |
 | Realtime & job | socket.io event nào, BullMQ job nào, Expo Push gửi cho ai/lúc nào/locale nào |
 | Audit | Hành động của moderator/admin ghi `audit_log` bất biến |
-| Test | `apps/api/e2e/**` (phản chiếu `src/**`) · `apps/web/e2e/*.spec.ts` (Playwright) · `apps/mobile/__tests__/` + Maestro. **Không để file test cạnh mã nguồn.** |
+| Test | `apps/api/e2e/**` (phản chiếu `src/**`) · `apps/web-client-side/e2e/*.spec.ts` (Playwright, luồng người dùng cuối) · `apps/web-admin-side/e2e/*.spec.ts` (Playwright, luồng vận hành) · `apps/mobile/__tests__/` + Maestro. **Không để file test cạnh mã nguồn.** |
 
 ### Bước 4 — Sinh Sprint Status
 
@@ -195,7 +195,8 @@ sẽ trôi.
 Phỏng theo BMAD Method `bmad-create-epics-and-stories` + `bmad-create-story` +
 `bmad-dev-story` (https://github.com/bmad-code-org/bmad-method — MIT License).
 Tuỳ biến cho Da Nang Connect:
-- Stack NestJS 11 / Next.js 15 / Expo 54, monorepo `apps/*` + `packages/*`.
+- Stack NestJS 11 / Next.js 16 (cả `apps/web-client-side` lẫn `apps/web-admin-side`) /
+  Expo 54, monorepo `apps/*` + `packages/*`.
 - Luồng tuần tự BA-first (không dùng TOML).
 - Quy ước dự án: module NestJS 4 file + `dto/`, OpenAPI/Swagger, repository pattern,
   `audit_log` cho hành động vận hành, i18n `en.json`/`vi.json`, test không nằm cạnh mã nguồn.

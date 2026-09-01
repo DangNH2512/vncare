@@ -196,9 +196,11 @@ hay là roadmap" → roadmap thì viết vào `docs/future-features/`.
 - **Mobile-first**, tap target ≥44×44, form tạo event chạy tốt trên điện thoại
   bằng 4G. Tạo hoạt động dưới 90 giây trên mobile là mục tiêu sản phẩm.
 - **English-first UI**, tiếng Việt là ngôn ngữ thứ hai — không hardcode chuỗi.
-- **SEO #1 cho trang public web** (Next.js 15 App Router): SSR +
-  `generateMetadata()` + JSON-LD `Event` + `notFound()` cho 404.
-- **Cross-platform parity** mặc định: `apps/web` + `apps/mobile`, cả hai chỉ nói
+- **SEO #1 cho trang public của `apps/web-client-side`** (Next.js 16 App Router): SSR +
+  `generateMetadata()` + JSON-LD `Event` + `notFound()` cho 404. `apps/web-admin-side`
+  KHÔNG index (`robots: noindex`).
+- **Cross-platform parity** mặc định cho người dùng cuối: `apps/web-client-side` +
+  `apps/mobile`; luồng vận hành sống ở `apps/web-admin-side`. Mọi app chỉ nói
   chuyện với `apps/api` qua REST `/api/v1`. Kiểu dùng chung ở `packages/shared-types`.
 - **An toàn cá nhân là ràng buộc dữ liệu**, không phải tính năng phụ:
   `location_precision`, `blocks`, `conversations.request_status`,

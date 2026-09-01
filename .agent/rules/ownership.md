@@ -17,7 +17,8 @@ Business Intake
   -> BA: requirement brief + acceptance criteria
   -> Tech Lead: kiến trúc + task card nhỏ + DoD
   -> Coordinator: task board, chủ sở hữu, thứ tự, điểm bàn giao
-  -> Engineering: Backend (apps/api) / Web (apps/web) / Mobile (apps/mobile)
+  -> Engineering: Backend (apps/api) / Web Client (apps/web-client-side)
+                  / Web Admin (apps/web-admin-side) / Mobile (apps/mobile)
   -> Code Review: đúng/sai, ranh giới module, khả năng bảo trì, lỗ hổng test
   -> QA: Tester Lead + các lane UT / IT / Screen / Regression
   -> Engineering: sửa lỗi
@@ -70,12 +71,13 @@ chứng từ lane kiểm thử tương ứng.
 | Yêu cầu nghiệp vụ, acceptance criteria | BA | Mặc định chỉ đọc; sở hữu khâu nghiệm thu nghiệp vụ |
 | Kiến trúc, chia task, DoD | Tech Lead | Mặc định chỉ đọc; sở hữu task card và thứ tự thực thi |
 | `apps/api/**` | Backend | NestJS module, repository, migration TypeORM, truy vấn PostGIS, guard, Swagger, BullMQ job, socket gateway |
-| `apps/web/**` | Web | Next.js App Router (`(public)` / `(app)` / `(admin)`), Tailwind, react-leaflet, BFF route handler |
+| `apps/web-client-side/**` | Web Client | Web cho người dùng cuối. Next.js 16 App Router (`(public)` / `(app)`), Tailwind, MapLibre, SEO/SSR, deep link `.well-known`, BFF route handler |
+| `apps/web-admin-side/**` | Web Admin | Console vận hành. Next.js 16 App Router, Tailwind, bảng biểu + thao tác hàng loạt, `robots: noindex`, ưu tiên desktop |
 | `apps/mobile/**` | Mobile | Expo Router, react-native-maps, Expo Push, `app.config.ts`, `eas.json` |
-| `packages/shared-types/**` | Backend đề xuất, Tech Lead duyệt | Enum và kiểu miền dùng chung — đổi là breaking cho cả ba app |
+| `packages/shared-types/**` | Backend đề xuất, Tech Lead duyệt | Enum và kiểu miền dùng chung — đổi là breaking cho cả bốn app |
 | `packages/api-client/**` | Sinh tự động | Sinh lại từ OpenAPI của `apps/api`; **không sửa tay** |
 | `packages/i18n/**` | Role tạo key + reviewer | `en.json` và `vi.json` luôn đổi trong cùng một thay đổi |
-| `packages/ui/**`, `packages/validation/**`, `packages/config/**` | Web (chủ trì) + consumer | Sửa là chạm nhiều app: bắt buộc cross-surface check |
+| `packages/ui/**`, `packages/validation/**`, `packages/config/**` | Web Client (chủ trì) + consumer (`apps/web-admin-side`, `apps/mobile`) | Sửa là chạm nhiều app: bắt buộc cross-surface check |
 | `ops/**`, `.github/workflows/**` | Backend/DevOps | Compose, nginx, script deploy, migration production, CI |
 | `docs/analysis/**` | BA + Tech Lead | Tài liệu phân tích là nguồn sự thật nghiệp vụ; code theo tài liệu |
 | `.agent/**` | Orchestrator | Ưu tiên sửa bổ sung; không tạo file backup trừ khi người dùng yêu cầu |
@@ -215,7 +217,8 @@ Acceptance criteria:
 - Given/When/Then ...
 Affected services:
 - apps/api:
-- apps/web:
+- apps/web-client-side:
+- apps/web-admin-side:
 - apps/mobile:
 - packages/*:
 API/data contract notes:

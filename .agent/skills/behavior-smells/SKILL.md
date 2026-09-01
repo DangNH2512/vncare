@@ -18,7 +18,9 @@ description: >-
 > Mỗi mục: **dấu hiệu → câu hỏi BA/Tester soi → cách chuẩn hoá**.
 
 **Ngữ cảnh kỹ thuật:** `apps/api` (NestJS + TypeORM + PostgreSQL/PostGIS + Redis/BullMQ),
-`apps/web` (Next.js App Router), `apps/mobile` (Expo). UI mặc định tiếng Anh, tiếng Việt
+`apps/web-client-side` (Next.js App Router, web của người dùng cuối),
+`apps/web-admin-side` (Next.js App Router, console vận hành), `apps/mobile` (Expo).
+UI mặc định tiếng Anh, tiếng Việt
 là ngôn ngữ thứ hai. Mọi mốc thời gian **lưu UTC**, hiển thị theo `Asia/Ho_Chi_Minh`.
 
 ---

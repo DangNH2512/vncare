@@ -11,7 +11,7 @@ description: Mọi số liệu và biểu đồ trên dashboard/report của con
 ## Quy tắc
 
 Khi dựng hoặc sửa BẤT KỲ bề mặt dashboard / report / analytics nào của console
-vận hành (`apps/web/src/app/[locale]/(admin)/**` — stat tile, thẻ biểu đồ, con số
+vận hành (`apps/web-admin-side/src/app/[locale]/**` — stat tile, thẻ biểu đồ, con số
 KPI, badge phần trăm, phễu chuyển đổi), mỗi số liệu hiển thị BẮT BUỘC có tooltip
 giải thích:
 
@@ -70,5 +70,5 @@ Mục checklist cho reviewer/tester:
 
 Component tooltip dùng chung đặt tại `packages/ui` để cả các màn report sau này
 tái sử dụng; màn dashboard đầu tiên đặt tại
-`apps/web/src/features/admin/components/`. Khi dựng màn đầu tiên, làm chuẩn luôn
+`apps/web-admin-side/src/features/analytics/components/`. Khi dựng màn đầu tiên, làm chuẩn luôn
 để các màn sau chỉ việc sao khuôn.

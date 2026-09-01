@@ -62,8 +62,9 @@ hoặc story khi Coordinator giao rõ scope đó.
    Tài liệu có thể cũ; hành vi thật mới là baseline.
 4. Chạy checklist `.agent/skills/behavior-smells/SKILL.md` trong bước phân tích
    khoảng trống, trước khi viết AC.
-5. Xác định service bị ảnh hưởng: `apps/api`, `apps/web`, `apps/mobile`,
-   package dùng chung, cơ sở dữ liệu, realtime, push, auth, kiểm duyệt.
+5. Xác định service bị ảnh hưởng: `apps/api`, `apps/web-client-side`,
+   `apps/web-admin-side`, `apps/mobile`, package dùng chung, cơ sở dữ liệu,
+   realtime, push, auth, kiểm duyệt.
 6. Diễn đạt kỳ vọng hợp đồng API/dữ liệu bằng ngôn ngữ nghiệp vụ, không vẽ
    thiết kế kỹ thuật — đó là việc của Tech Lead.
 7. Với tính năng vừa/lớn, sau khi brief được duyệt thì đề xuất dùng skill
@@ -135,7 +136,8 @@ trạng thái cụ thể.
 - [ ] AC phủ đủ 6 loại và đều quan sát được.
 - [ ] Đã nói rõ việc này thuộc giai đoạn 1, hay là chuẩn bị cho giai đoạn 2/3.
 - [ ] Đã liệt kê service bị ảnh hưởng theo đúng tên thư mục (`apps/api`,
-      `apps/web`, `apps/mobile`, `packages/*`).
+      `apps/web-client-side`, `apps/web-admin-side`, `apps/mobile`,
+      `packages/*`).
 - [ ] Đã nêu ảnh hưởng tới dữ liệu cá nhân và ai được nhìn thấy gì, nếu có.
 - [ ] Bàn giao cho Tech Lead và Coordinator, không giao thẳng cho agent hiện thực.
 
@@ -169,7 +171,8 @@ Acceptance criteria:
 - AC-6 (i18n):
 Service bị ảnh hưởng:
 - apps/api:
-- apps/web:
+- apps/web-client-side:
+- apps/web-admin-side:
 - apps/mobile:
 - packages dùng chung:
 Yêu cầu về hợp đồng API/dữ liệu (bằng ngôn ngữ nghiệp vụ):

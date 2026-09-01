@@ -2,7 +2,12 @@
   "common": {
     "appName": "Da Nang Connect",
     "loading": "Loading...",
-    "retry": "Retry"
+    "retry": "Retry",
+    "free": "Free",
+    "seeAll": "See all",
+    "skipToContent": "Skip to content",
+    "comingSoon": "Coming soon",
+    "language": "Language"
   },
   "event": {
     "detail": {
@@ -10,7 +15,29 @@
       "joinWaitlistButton": "Join waitlist",
       "seatsLeft": "{count} seats left",
       "full": "Event is full"
-    }
+    },
+    "card": {
+      "hostedBy": "Hosted by {name}",
+      "attendees": "{count} going",
+      "price": "{amount}",
+      "startingSoon": "Starting soon",
+      "almostFull": "Almost full"
+    },
+    "status": {
+      "draft": "Draft",
+      "pendingReview": "Pending review",
+      "published": "Published",
+      "suspended": "Suspended",
+      "takenDown": "Taken down",
+      "cancelled": "Cancelled"
+    },
+    "empty": {
+      "title": "No events in {area} this week",
+      "description": "Nobody has posted here yet. A morning run, a coffee, a language swap — anything counts, and it takes two minutes.",
+      "cta": "Create an event",
+      "resetFilter": "Show all areas"
+    },
+    "requiredTrust": "Trust level {level} or above"
   },
   "rsvp": {
     "error": {
@@ -30,6 +57,69 @@
       "attend10Events": "Attend 10 events",
       "hostFirstEvent": "Host your first event",
       "host5Events": "Host 5 events"
+    },
+    "level": {
+      "t0": "Restricted",
+      "t1": "New member",
+      "t2": "Verified",
+      "t3": "Regular",
+      "t4": "Trusted",
+      "t5": "Community host"
+    },
+    "badge": {
+      "short": "T{level}",
+      "aria": "Trust level {level}, {label}"
+    }
+  },
+  "a11y": {
+    "toggleTheme": "Switch between light and dark mode",
+    "switchLanguage": "Switch language",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "clearFilter": "Clear the current filter"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "nav": {
+    "events": "Events",
+    "map": "Map",
+    "profile": "Profile",
+    "createEvent": "Create event"
+  },
+  "datetime": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "timeZoneNote": "Times shown in Da Nang time (GMT+7)"
+  },
+  "area": {
+    "label": "Area",
+    "all": "All areas",
+    "eventCount": "{count} events"
+  },
+  "home": {
+    "eyebrow": "Sprint 0 · Foundation",
+    "title": "The expat community of Da Nang, in one place",
+    "subtitle": "Sports meetups, language exchange and neighbourhood get-togethers across the six areas we launch in.",
+    "routesHeading": "Screens on the way",
+    "routesNote": "The foundation below is done. Each screen is assembled on top of it.",
+    "componentsHeading": "Shared primitives",
+    "componentsNote": "Switch the language to Vietnamese and narrow the window: nothing here may overflow or clip.",
+    "route": {
+      "feed": "Event feed",
+      "feedDescription": "Everything happening this week, soonest first.",
+      "detail": "Event detail",
+      "detailDescription": "Full description, meeting point, and the RSVP or waitlist action.",
+      "areas": "Area filter and map",
+      "areasDescription": "Filter by neighbourhood, with the six launch areas drawn on a map.",
+      "profile": "Member profile",
+      "profileDescription": "Who someone is, what they host, and how far up the trust ladder they are."
+    },
+    "status": {
+      "ready": "Ready",
+      "planned": "Planned"
     }
   }
 }

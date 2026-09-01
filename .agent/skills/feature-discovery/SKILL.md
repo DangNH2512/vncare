@@ -159,8 +159,10 @@ nhét vào MVP.
 cho `apps/mobile` (app đã cài trên máy user không tự cập nhật ngay) không? Mutation
 có cần `Idempotency-Key` không?
 
-**Màn hình UI** — chỉ liệt kê tên màn hình, chưa thiết kế. Tách riêng `apps/web`
-(public + dashboard organizer) và `apps/mobile`.
+**Màn hình UI** — chỉ liệt kê tên màn hình, chưa thiết kế. Tách riêng
+`apps/web-client-side` (trang public + dashboard organizer), `apps/web-admin-side`
+(màn hình vận hành: curate, kiểm duyệt, quản lý người dùng, analytics) và
+`apps/mobile`.
 
 **Realtime & thông báo** — có cần cập nhật trực tiếp qua socket.io không? Có gửi
 Expo Push không? Job nền qua BullMQ (nhắc lịch, thăng hạng waitlist, đối soát đếm)?
@@ -238,7 +240,7 @@ Dùng template này:
 <Endpoint mới hoặc đổi dưới /api/v1 — nêu cờ breaking change cho app mobile đã cài>
 
 ## Màn hình UI
-<Chỉ liệt kê tên: apps/web (public · dashboard organizer) / apps/mobile>
+<Chỉ liệt kê tên: apps/web-client-side (public · dashboard organizer) / apps/web-admin-side (curate · kiểm duyệt · quản lý người dùng · analytics) / apps/mobile>
 
 ## Thông báo & realtime
 <Trigger · người nhận · kênh · locale · khung giờ · điều kiện huỷ>

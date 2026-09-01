@@ -79,7 +79,8 @@ Một repo, quản lý bằng **pnpm workspace + Turborepo**. Package nội bộ
 | Thành phần | Công nghệ | Đường dẫn | Package |
 |---|---|---|---|
 | **API backend** | NestJS 11 + TypeScript + TypeORM | `apps/api/` | `@dnc/api` |
-| **Web** | Next.js 15 App Router + React 19 + Tailwind CSS | `apps/web/` | `@dnc/web` |
+| **Web (người dùng cuối)** | Next.js 16 App Router + React 19 + Tailwind CSS | `apps/web-client-side/` | `@dnc/web-client` |
+| **Web (vận hành)** | Next.js 16 App Router + React 19 + Tailwind CSS | `apps/web-admin-side/` | `@dnc/web-admin` |
 | **Mobile** | Expo 54 + React Native 0.81 + Expo Router | `apps/mobile/` | `@dnc/mobile` |
 | Kiểu dùng chung | enum, hằng số, kiểu miền | `packages/shared-types/` | `@dnc/shared-types` |
 | API client | sinh từ OpenAPI + hook TanStack Query | `packages/api-client/` | `@dnc/api-client` |
@@ -90,7 +91,8 @@ Một repo, quản lý bằng **pnpm workspace + Turborepo**. Package nội bộ
 | Hạ tầng | compose, nginx, script, grafana | `ops/` | — |
 | Tài liệu | phân tích, ADR, nguồn | `docs/` | — |
 
-> **🔴 Luật chia sẻ code:** web và mobile **không** import trực tiếp từ `apps/api`.
+> **🔴 Luật chia sẻ code:** cả hai app web (`apps/web-client-side`, `apps/web-admin-side`)
+> và mobile **không** import trực tiếp từ `apps/api`.
 > Kiểu dữ liệu đi qua `@dnc/shared-types` và `@dnc/api-client` (sinh từ OpenAPI của
 > backend). Không gõ tay interface hai lần.
 
@@ -112,15 +114,16 @@ Cây thư mục đầy đủ → `docs/analysis/04-tech-stack-va-kien-truc.md` m
 | Địa lý | PostGIS 3.4 | `geography(Point,4326)`, `ST_DWithin`, index GIST |
 | Cache / queue | Redis 7.4 + BullMQ 5 | Cache, rate limit, pub/sub cho socket, job nền |
 | Realtime | Socket.IO 4.8 + `@socket.io/redis-adapter` | |
-| Web | Next.js 15 + React 19 + Tailwind CSS 4 | App Router, RSC, SEO cho trang sự kiện công khai |
+| Web client | Next.js 16 + React 19 + Tailwind CSS 4 | App Router, RSC, SEO cho trang sự kiện công khai |
+| Web admin | Next.js 16 + React 19 + Tailwind CSS 4 | Cùng stack với client để dùng chung `packages/*`; KHÔNG cần SEO (`robots: noindex`), ưu tiên bảng biểu đầy đủ chức năng + thao tác hàng loạt, responsive nhưng ưu tiên desktop |
 | Mobile | Expo 54 + React Native 0.81 + Expo Router 6 | EAS Build/Submit, OTA update |
-| Bản đồ | `react-leaflet` (web) · `react-native-maps` (mobile) | tile OSM, không khoá nhà cung cấp |
+| Bản đồ | MapLibre (`apps/web-client-side`) · `react-native-maps` (mobile) | tile OSM, không khoá nhà cung cấp |
 | Auth | JWT RS256 access 15 phút + refresh 30 ngày xoay vòng | Social login Google / Apple / Facebook |
 | Push | Expo Push Service → APNs + FCM | Một API cho cả hai nền tảng |
 | Lưu trữ | S3-compatible + CDN có POP tại Việt Nam | Presigned upload |
 | Hạ tầng | Docker + Docker Compose | Cùng một image cho staging và production |
 | CI/CD | GitHub Actions + EAS | |
-| Theo dõi lỗi | Sentry | Backend + web + mobile, có source map |
+| Theo dõi lỗi | Sentry | Backend + cả hai app web + mobile, có source map |
 
 Giải trình lựa chọn từng lớp → `docs/analysis/04-tech-stack-va-kien-truc.md` mục 4.
 
@@ -290,7 +293,7 @@ Luật đầy đủ ở [`.agent/rules/behaviors.md`](../../rules/behaviors.md) 
 | 13 | Mọi nội dung người dùng tạo (sự kiện, bình luận, ảnh, hồ sơ) phải có đường báo cáo (`report`) và chịu được hành động kiểm duyệt |
 | 14 | Điểm tin cậy tính từ `trust_signals` append-only qua job nền — KHÔNG cộng/trừ trực tiếp vào cột tổng trong request |
 | 15 | Đánh dấu no-show là tín hiệu tin cậy có hệ quả — phải có cửa sổ khiếu nại, không tự động phạt vĩnh viễn |
-| 16 | File test KHÔNG nằm cạnh mã nguồn (`apps/api/e2e/**`, `apps/web/e2e/**`, `apps/mobile/__tests__/**`) |
+| 16 | File test KHÔNG nằm cạnh mã nguồn (`apps/api/e2e/**`, `apps/web-client-side/e2e/**`, `apps/web-admin-side/e2e/**`, `apps/mobile/__tests__/**`) |
 | 17 | Xong = `tsc --noEmit` pass + test liên quan pass + luồng thật đã chạy + i18n đủ hai ngôn ngữ |
 | 18 | File > 500 dòng → DỪNG, tạo task tách file trước |
 | 19 | Sửa component/hook dùng chung → kiểm tra TẤT CẢ màn hình tiêu thụ |

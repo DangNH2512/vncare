@@ -1,6 +1,6 @@
 ---
 name: modern-ui-design
-description: Thiết kế và triển khai UI khác biệt, đạt chuẩn production cho Da Nang Connect — tránh thẩm mỹ "AI slop" chung chung. Dùng khi xây bất kỳ trang, component, dashboard hay màn hình mobile nào mà chất lượng thiết kế có ý nghĩa. Áp dụng cho apps/web (Next.js 15 + React 19 + Tailwind CSS) và apps/mobile (Expo 54 + React Native 0.81). Chốt một hướng thẩm mỹ dứt khoát trước khi động vào code.
+description: Thiết kế và triển khai UI khác biệt, đạt chuẩn production cho Da Nang Connect — tránh thẩm mỹ "AI slop" chung chung. Dùng khi xây bất kỳ trang, component, dashboard hay màn hình mobile nào mà chất lượng thiết kế có ý nghĩa. Áp dụng cho apps/web-client-side và apps/web-admin-side (Next.js 16 + React 19 + Tailwind CSS) và apps/mobile (Expo 54 + React Native 0.81). Chốt một hướng thẩm mỹ dứt khoát trước khi động vào code.
 allowed-tools: Read, Write, Edit, Bash, WebFetch
 ---
 
@@ -49,10 +49,14 @@ Trả lời những câu này trước khi viết dòng CSS/JSX đầu tiên:
 Luôn kiểm tra và bám token đang có trước khi tự bịa token mới:
 
 ```bash
-# Web tokens
-sed -n '1,60p' apps/web/src/app/globals.css 2>/dev/null
-cat apps/web/tailwind.config.ts 2>/dev/null
-grep -rn "--color-\|theme(" apps/web/src/styles 2>/dev/null | head -20
+# Web tokens — client (người dùng cuối)
+sed -n '1,60p' apps/web-client-side/src/app/globals.css 2>/dev/null
+cat apps/web-client-side/tailwind.config.ts 2>/dev/null
+grep -rn "--color-\|theme(" apps/web-client-side/src/styles 2>/dev/null | head -20
+
+# Web tokens — admin (đội ngũ vận hành)
+sed -n '1,60p' apps/web-admin-side/src/app/globals.css 2>/dev/null
+cat apps/web-admin-side/tailwind.config.ts 2>/dev/null
 
 # Mobile theme
 cat apps/mobile/constants/Colors.ts 2>/dev/null
@@ -60,12 +64,17 @@ cat apps/mobile/constants/theme.ts 2>/dev/null
 ```
 
 **Ràng buộc stack:**
-- **Web** — Next.js 15 App Router, React 19, Tailwind CSS. Khai báo màu/khoảng
-  cách/bo góc dưới dạng CSS custom properties trong `globals.css` rồi map vào
-  `tailwind.config.ts`; tránh style inline và tránh rải hex khắp nơi.
+- **Web** — cả `apps/web-client-side` lẫn `apps/web-admin-side` đều dùng Next.js 16
+  App Router, React 19, Tailwind CSS. Khai báo màu/khoảng cách/bo góc dưới dạng CSS
+  custom properties trong `globals.css` rồi map vào `tailwind.config.ts`; tránh style
+  inline và tránh rải hex khắp nơi. Hai app dùng chung token qua `packages/ui`.
+- **Khác biệt client vs admin** — `apps/web-client-side` cần SEO/SSR và tối ưu đọc
+  trên di động ngoài nắng; `apps/web-admin-side` KHÔNG cần SEO (đặt `robots: noindex`),
+  ưu tiên bảng biểu đầy đủ chức năng và thao tác hàng loạt, vẫn responsive nhưng ưu
+  tiên desktop vì người vận hành dùng máy tính.
 - **Mobile** — Expo 54 + React Native 0.81; dùng `StyleSheet.create`, tôn trọng
   safe-area insets, hỗ trợ cả light/dark (`useColorScheme`).
-- **Bản đồ** — `react-leaflet` trên web, `react-native-maps` trên mobile. Marker,
+- **Bản đồ** — MapLibre trên `apps/web-client-side`, `react-native-maps` trên mobile. Marker,
   cluster và popup phải dùng chung token màu với phần còn lại của app.
 
 ---
@@ -109,16 +118,20 @@ cat apps/mobile/constants/theme.ts 2>/dev/null
 
 ### Bố cục không gian
 - Phá lưới một cách có chủ ý: ảnh header tràn viền, stat card lệch trục, CTA bất đối xứng.
-- Mật độ theo ngữ cảnh: bảng kiểm duyệt = dày (nhiều dữ liệu); feed sự kiện và
-  trang chi tiết = thoáng (dễ đọc ngoài nắng, một tay).
+- Mật độ theo ngữ cảnh: bảng kiểm duyệt trong `apps/web-admin-side` = dày (nhiều dữ
+  liệu, thao tác hàng loạt); feed sự kiện và trang chi tiết trong
+  `apps/web-client-side` = thoáng (dễ đọc ngoài nắng, một tay).
 - Dùng khoảng trắng như một yếu tố thiết kế, không phải chỗ độn.
 
 ---
 
-## Bước 5 — Pattern triển khai (Web, Next.js + Tailwind)
+## Bước 5 — Pattern triển khai (Web client, Next.js + Tailwind)
+
+> Các màn hình ví dụ dưới đây (feed sự kiện, thẻ sự kiện, bộ lọc khu vực) thuộc
+> `apps/web-client-side`. Với `apps/web-admin-side`, xem ghi chú mật độ ở Bước 4.
 
 ```tsx
-// ✅ Token-driven, không ad-hoc — apps/web/src/app/globals.css
+// ✅ Token-driven, không ad-hoc — apps/web-client-side/src/app/globals.css
 // :root {
 //   --color-surface: #FFFFFF;
 //   --color-on-surface: #17222B;

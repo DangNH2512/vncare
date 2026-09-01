@@ -2,7 +2,12 @@
   "common": {
     "appName": "Da Nang Connect",
     "loading": "Đang tải...",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "free": "Miễn phí",
+    "seeAll": "Xem tất cả",
+    "skipToContent": "Bỏ qua, tới nội dung chính",
+    "comingSoon": "Sắp ra mắt",
+    "language": "Ngôn ngữ"
   },
   "event": {
     "detail": {
@@ -10,7 +15,29 @@
       "joinWaitlistButton": "Vào hàng chờ",
       "seatsLeft": "Còn {count} chỗ",
       "full": "Sự kiện đã đủ người"
-    }
+    },
+    "card": {
+      "hostedBy": "Tổ chức bởi {name}",
+      "attendees": "{count} người tham gia",
+      "price": "{amount}",
+      "startingSoon": "Sắp bắt đầu",
+      "almostFull": "Sắp kín chỗ"
+    },
+    "status": {
+      "draft": "Bản nháp",
+      "pendingReview": "Chờ kiểm duyệt",
+      "published": "Đã đăng",
+      "suspended": "Tạm ẩn",
+      "takenDown": "Đã gỡ bỏ",
+      "cancelled": "Đã huỷ"
+    },
+    "empty": {
+      "title": "Chưa có sự kiện nào ở {area} trong tuần này",
+      "description": "Chưa ai đăng sự kiện ở đây. Một buổi chạy sáng, một buổi cà phê, một buổi trao đổi ngôn ngữ — đăng chỉ mất hai phút.",
+      "cta": "Tạo sự kiện mới",
+      "resetFilter": "Xem tất cả khu vực"
+    },
+    "requiredTrust": "Yêu cầu mức tin cậy {level} trở lên"
   },
   "rsvp": {
     "error": {
@@ -30,6 +57,69 @@
       "attend10Events": "Tham dự 10 sự kiện",
       "hostFirstEvent": "Tổ chức sự kiện đầu tiên",
       "host5Events": "Tổ chức 5 sự kiện"
+    },
+    "level": {
+      "t0": "Bị hạn chế",
+      "t1": "Thành viên mới",
+      "t2": "Đã xác minh",
+      "t3": "Thành viên thường xuyên",
+      "t4": "Được tin cậy",
+      "t5": "Người tổ chức nòng cốt"
+    },
+    "badge": {
+      "short": "T{level}",
+      "aria": "Mức tin cậy {level}, {label}"
+    }
+  },
+  "a11y": {
+    "toggleTheme": "Chuyển giữa giao diện sáng và tối",
+    "switchLanguage": "Chuyển đổi ngôn ngữ",
+    "openMenu": "Mở menu",
+    "closeMenu": "Đóng menu",
+    "clearFilter": "Xoá bộ lọc hiện tại"
+  },
+  "theme": {
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Theo hệ thống"
+  },
+  "nav": {
+    "events": "Sự kiện",
+    "map": "Bản đồ",
+    "profile": "Trang cá nhân",
+    "createEvent": "Tạo sự kiện mới"
+  },
+  "datetime": {
+    "today": "Hôm nay",
+    "tomorrow": "Ngày mai",
+    "timeZoneNote": "Giờ hiển thị theo giờ Đà Nẵng (GMT+7)"
+  },
+  "area": {
+    "label": "Khu vực",
+    "all": "Tất cả khu vực",
+    "eventCount": "{count} sự kiện"
+  },
+  "home": {
+    "eyebrow": "Sprint 0 · Nền tảng",
+    "title": "Cộng đồng người nước ngoài tại Đà Nẵng, gom về một nơi",
+    "subtitle": "Giao lưu thể thao, trao đổi ngôn ngữ và các buổi gặp gỡ khu phố tại sáu khu vực đầu tiên.",
+    "routesHeading": "Các màn hình sắp có",
+    "routesNote": "Phần nền tảng đã xong. Mỗi màn hình bên dưới được dựng trên nền đó.",
+    "componentsHeading": "Bộ thành phần dùng chung",
+    "componentsNote": "Chuyển sang tiếng Việt và thu hẹp cửa sổ: không thành phần nào được tràn hay bị cắt chữ.",
+    "route": {
+      "feed": "Dòng sự kiện",
+      "feedDescription": "Mọi hoạt động trong tuần, sắp diễn ra xếp trước.",
+      "detail": "Chi tiết sự kiện",
+      "detailDescription": "Mô tả đầy đủ, điểm hẹn, và nút ghi danh hoặc vào hàng chờ.",
+      "areas": "Bộ lọc khu vực và bản đồ",
+      "areasDescription": "Lọc theo khu phố, kèm sáu khu vực đầu tiên vẽ trên bản đồ.",
+      "profile": "Hồ sơ thành viên",
+      "profileDescription": "Họ là ai, tổ chức những gì, và đang ở mức tin cậy nào."
+    },
+    "status": {
+      "ready": "Sẵn sàng",
+      "planned": "Đã lên kế hoạch"
     }
   }
 }

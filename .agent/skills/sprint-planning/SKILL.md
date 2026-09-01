@@ -23,9 +23,13 @@ Plan a sprint by scoping work, estimating capacity, and setting clear goals.
   thật sự có, không theo velocity lý tưởng. Trừ hao cho việc vận hành (deploy,
   submit App Store/Play Store) vì nó cạnh tranh trực tiếp với giờ làm tính năng.
 - **Chi phí ẩn hay bị quên khi ước lượng — cộng vào ngay từ đầu:**
-  - Một tính năng chạm cả 3 bề mặt (`apps/api` + `apps/web` + `apps/mobile`) tốn
-    khoảng gấp đôi ước lượng ban đầu; tách DTO dùng chung vào
-    `packages/shared-types` trước để tránh lệch hợp đồng.
+  - Một tính năng chạm nhiều bề mặt (`apps/api` + `apps/web-client-side` +
+    `apps/mobile`, và `apps/web-admin-side` nếu có phần vận hành) tốn khoảng gấp đôi
+    ước lượng ban đầu; tách DTO dùng chung vào `packages/shared-types` trước để tránh
+    lệch hợp đồng.
+  - `apps/web-admin-side` hiện **còn rỗng, chưa bắt đầu** — story đầu tiên chạm app
+    này phải cộng thêm chi phí dựng khung (scaffold Next.js 16, layout, auth, nối
+    `packages/*`), đừng ước lượng như thêm một màn hình vào app đã có.
   - Truy vấn địa lý cần migration PostGIS + index GIST + dữ liệu seed cho từng
     khu vực; không ước lượng như một câu `WHERE` thường.
   - Mọi chuỗi hiển thị cần đồng thời `en.json` và `vi.json` (EN là mặc định).

@@ -6,7 +6,8 @@ allowed-tools: Read, Write, Edit, Bash
 
 # Bug Report Sheet — Raw Feedback → Trackable Bug Log
 
-> **Bối cảnh:** Da Nang Connect có 3 surface (`apps/api`, `apps/web`, `apps/mobile`)
+> **Bối cảnh:** Da Nang Connect có 4 surface (`apps/api`, `apps/web-client-side`,
+> `apps/web-admin-side`, `apps/mobile`)
 > và tester là người dùng thật trong cộng đồng expat — họ báo lỗi bằng ảnh chụp màn
 > hình, video quay điện thoại, tin nhắn tiếng Anh lẫn tiếng Việt. Skill này biến
 > mớ đó thành một sổ theo dõi mà chủ dự án gõ vào được hằng ngày.
@@ -69,7 +70,7 @@ PII thì bôi.
 - Cùng một lỗi do 2 người báo → một dòng, cả hai tên trong `Người báo cáo`.
 - Yêu cầu không phải lỗi ("đổi nhãn nút", "cho lọc theo khung giờ") vẫn log, nhưng
   gắn `Loại = Đề xuất`. **Không thổi phồng số bug bằng feature request.**
-- **Cùng triệu chứng ở Web và Mobile = một dòng** với `Platform = "Web, iOS"` — trừ
+- **Cùng triệu chứng ở Web và Mobile = một dòng** với `Platform = "Web Client, iOS"` — trừ
   khi nguyên nhân khác nhau (vd web sai format ngày, mobile sai timezone) thì tách.
 
 ## Rule 3 — Investigate before assigning status (đây là điểm khác biệt)
@@ -82,13 +83,14 @@ và ghi lại `file:line`.
 | Thư mục | Owner |
 |---|---|
 | `apps/api` | Backend (NestJS, TypeORM, PostGIS, BullMQ) |
-| `apps/web` | Web (Next.js App Router) |
+| `apps/web-client-side` | Web client — người dùng cuối (Next.js App Router) |
+| `apps/web-admin-side` | Web admin — đội ngũ vận hành (Next.js App Router) |
 | `apps/mobile` | Mobile (Expo / React Native) |
-| `packages/shared-types` | Shared — sửa ở đây ảnh hưởng cả 3 |
+| `packages/shared-types` | Shared — sửa ở đây ảnh hưởng cả 4 |
 | `ops/` | DevOps (Docker Compose, CI/CD, Sentry) |
 
 ```bash
-grep -rn "<từ khoá triệu chứng>" apps/api/src apps/web/src apps/mobile/src | head
+grep -rn "<từ khoá triệu chứng>" apps/api/src apps/web-client-side/src apps/web-admin-side/src apps/mobile/src | head
 git log --format="%h %ad %s" --date=short -5 -- <file nghi ngờ>   # đã fix rồi chưa?
 ```
 
@@ -142,7 +144,7 @@ Verify | Phản hồi Dev (chi tiết) | Phản hồi QC (chi tiết)
 | Quy ước | Nội dung |
 |---------|----------|
 | `Loại` | `Bug` / `Đề xuất` / `Không phải bug` / `Cảnh báo` — nói ngay dòng này là loại gì |
-| `Platform` | `All` / `Web` / `Android` / `iOS`; nhiều nền tảng ghi `Web, iOS` |
+| `Platform` | `All` / `Web Client` / `Web Admin` / `Android` / `iOS`; nhiều nền tảng ghi `Web Client, iOS` |
 | `Màn hình` | dạng `Màn-Chức năng`, vd `Events-Detail`, `RSVP-Waitlist`, `Onboarding-Chọn khu vực`, `Moderation-Báo cáo` |
 | `Content` | 1 câu mô tả lỗi. Tiền tố `[Đề xuất]` nếu là yêu cầu cải tiến, `[FB by <tên>]` nếu do stakeholder báo, `[Role ...]` nếu chỉ xảy ra với 1 vai trò (member / organizer / moderator) |
 | `Expected` / `Actual` | gạch đầu dòng `- `, mỗi ý một dòng |
@@ -221,7 +223,7 @@ Bắt buộc có trong workbook:
 |---------|--------|
 | 20 cột + header xanh `2E7D32` + `freeze_panes` qua cột `Loại` | STT / Xong / Loại luôn nhìn thấy khi cuộn ngang |
 | **Dropdown** ở `Loại` / `Platform` / `Severity` / `Dev Status` / `Verify`, phủ tới dòng 1000 | Dòng thêm sau này đã có sẵn dropdown |
-| `errorStyle="warning"` cho dropdown | Vẫn gõ được `Web, iOS` (có dấu phẩy) khi lỗi gặp cả hai — không được chặn |
+| `errorStyle="warning"` cho dropdown | Vẫn gõ được `Web Client, iOS` (có dấu phẩy) khi lỗi gặp cả hai — không được chặn |
 | `Proof-of-fix` và `Verify` **để trống** | Đó là phần QC điền sau khi verify build mới |
 | `Tóm tắt` dùng **COUNTIFS** trên vùng tới dòng 1000 | Dashboard tự cập nhật khi thêm/sửa dòng |
 | ≥60 **dòng trống đã kẻ sẵn** ở cuối | Thêm bug mới là gõ thẳng, không phải copy định dạng |

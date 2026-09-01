@@ -27,7 +27,8 @@ công, và cảnh báo mọi trường hợp dữ liệu cá nhân của ngườ
   - `ops/**` — Docker Compose, nginx, script vận hành, dashboard Grafana
   - `docs/analysis/**` phần vận hành, khi Coordinator giao scope tài liệu
   - `.agent/agents/operations/ops-monitor-agent.md` — chính file này
-- **Không** sửa `apps/api/**`, `apps/web/**`, `apps/mobile/**`. Phát hiện lỗi
+- **Không** sửa `apps/api/**`, `apps/web-client-side/**`,
+  `apps/web-admin-side/**`, `apps/mobile/**`. Phát hiện lỗi
   code thì trả về agent sở hữu qua Coordinator.
 - **Không** tự chạy lệnh có tính phá huỷ trên production (restart, migrate,
   xoá, đổi cấu hình đang chạy). Đề xuất, chờ chủ dự án duyệt.

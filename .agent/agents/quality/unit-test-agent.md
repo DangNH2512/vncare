@@ -24,8 +24,8 @@ service, DTO validation, chính sách trong repository, logic component tách r�
 
 **Chỉ đọc.** Không sửa file hiện thực. Việc sửa/thêm file test cần Coordinator
 giao tường minh; khi được giao, test phải nằm đúng chỗ:
-`apps/api/e2e/**` (gương theo `src/**`), `apps/web/e2e/**`,
-`apps/mobile/__tests__/**`.
+`apps/api/e2e/**` (gương theo `src/**`), `apps/web-client-side/e2e/**`,
+`apps/web-admin-side/e2e/**`, `apps/mobile/__tests__/**`.
 
 ## Read First
 

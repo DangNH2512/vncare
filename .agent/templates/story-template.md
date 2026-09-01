@@ -3,7 +3,7 @@
 story_id: ""                # ví dụ: "1-2-event-rsvp-api"
 epic: ""                    # Tên epic mà story này thuộc về
 feature: ""                 # Tên feature cha
-owner: ""                   # Backend (apps/api) | Web (apps/web) | Mobile (apps/mobile) | Shared (packages/shared-types)
+owner: ""                   # Backend (apps/api) | Web Client (apps/web-client-side) | Web Admin (apps/web-admin-side) | Mobile (apps/mobile) | Shared (packages/shared-types)
 status: "draft"             # draft | ready-for-dev | in-progress | done | blocked
 created: ""                 # Ngày theo ISO, ví dụ: 2026-09-01
 baseline_commit: ""         # Git commit SHA lúc bắt đầu story (agent điền)
@@ -75,13 +75,24 @@ Agent tự tick từng ô khi hoàn thành.
 - [ ] Phát socket.io event / đẩy job BullMQ (Expo Push) nếu luồng có thông báo cho người dùng
 - [ ] Có unit test
 
-### Web (`apps/web/`) — Next.js 15 App Router + React 19
+### Web Client (`apps/web-client-side/`) — Next.js 16 App Router + React 19
 - [ ] Tạo/cập nhật route hoặc server component: `app/...`
 - [ ] Tạo/cập nhật data hook: `use...()`
-- [ ] Hiển thị bản đồ bằng `react-leaflet` nếu story có hiển thị vị trí
+- [ ] Hiển thị bản đồ bằng `MapLibre` nếu story có hiển thị vị trí
+- [ ] Có metadata / JSON-LD `Event` / sitemap nếu story chạm trang công khai có SEO
 - [ ] Có trạng thái loading (skeleton/spinner)
 - [ ] Có trạng thái rỗng (không có sự kiện nào trong khu vực này / chưa có RSVP nào)
 - [ ] Có trạng thái lỗi (toast/inline)
+- [ ] Thêm key i18n vào `en.json` + `vi.json` (EN là ngôn ngữ giao diện mặc định)
+
+### Web Admin (`apps/web-admin-side/`) — Next.js 16 App Router + React 19
+- [ ] Tạo/cập nhật route hoặc server component: `app/...` (sau cổng đăng nhập + kiểm tra role)
+- [ ] Bảng có sắp xếp / lọc / phân trang phía server, trạng thái nằm trong URL
+- [ ] Thao tác hàng loạt có bước xác nhận nêu rõ số bản ghi bị ảnh hưởng
+- [ ] Hành động kiểm duyệt/quản trị bắt buộc nhập lý do và ghi audit log
+- [ ] Chỉ số dashboard có tooltip nêu cách tính (rules/dashboard-metric-tooltips.md)
+- [ ] `robots: noindex`; không sitemap, không JSON-LD
+- [ ] Có trạng thái loading / rỗng / lỗi / không đủ quyền
 - [ ] Thêm key i18n vào `en.json` + `vi.json` (EN là ngôn ngữ giao diện mặc định)
 
 ### Mobile (`apps/mobile/`) — Expo 54 + React Native 0.81
@@ -93,7 +104,7 @@ Agent tự tick từng ô khi hoàn thành.
 
 ### Shared (`packages/shared-types/`)
 - [ ] Export DTO/enum được dùng ở nhiều hơn một app
-- [ ] Kiểm/nâng phiên bản hợp đồng kiểu dữ liệu mà `apps/web` và `apps/mobile` đang dùng
+- [ ] Kiểm/nâng phiên bản hợp đồng kiểu dữ liệu mà `apps/web-client-side`, `apps/web-admin-side` và `apps/mobile` đang dùng
 
 ### Việc xuyên suốt
 - [ ] Đã viết migration DB VÀ đã revert thử một lần ở local (nếu có đổi schema)
@@ -179,7 +190,8 @@ Do agent triển khai điền trong lúc chạy. KHÔNG sửa tay.
 ```
 tsc --noEmit: exit code ... (per workspace)
 API test: ...
-Web flow (apps/web): ...
+Web client flow (apps/web-client-side): ...
+Web admin flow (apps/web-admin-side): ...
 Mobile flow (apps/mobile, device/simulator): ...
 i18n: en.json / vi.json key counts match
 ```

@@ -30,7 +30,8 @@ trình multi-agent bằng một protocol cụ thể, có kiểm chứng.
 
 ## Khi nào kích hoạt
 
-- Tính năng trải trên `apps/api` + `apps/web`, hoặc `apps/api` + `apps/mobile`.
+- Tính năng trải trên `apps/api` + `apps/web-client-side`, `apps/api` +
+  `apps/web-admin-side`, hoặc `apps/api` + `apps/mobile`.
 - Hình dạng API hoặc DTO không tầm thường (object lồng nhau, enum, phân trang,
   truy vấn địa lý PostGIS có tham số bán kính/khu vực).
 - Các agent service đang có giả định mâu thuẫn về luồng dữ liệu.
@@ -67,9 +68,9 @@ Tùy service bị ảnh hưởng, đưa các góc nhìn sau vào bàn:
 |---------|------------------|-----------|
 | **BA** | Luôn luôn | Quy tắc nghiệp vụ, luồng người dùng, ca biên |
 | **Backend** | Cần API/DB | Endpoint, DTO, validation, auth, PostGIS, ActivityLog |
-| **Web** | UI trên `apps/web` | State, loading/error, realtime, i18n EN/VI, SEO |
+| **Web** | UI trên `apps/web-client-side` | State, loading/error, realtime, i18n EN/VI, SEO |
 | **Mobile** | UI trên `apps/mobile` | State, offline, deep link, Expo Push, quyền vị trí |
-| **AdminPanel** | UI kiểm duyệt/vận hành | Bảng/form, phân quyền, hàng đợi moderation, báo cáo |
+| **AdminPanel** | UI trên `apps/web-admin-side` (kiểm duyệt/vận hành) | Bảng/form, phân quyền, hàng đợi moderation, báo cáo, thao tác hàng loạt |
 
 ### Bước 3 — Chạy thảo luận có cấu trúc
 
@@ -101,7 +102,7 @@ Trình bày lần lượt góc nhìn từng agent. Khuôn mẫu:
 [Error state: toast/inline/retry]
 [Realtime: tên event socket.io nếu có]
 [Push: có bắn Expo Push Notification không, payload gì, deep link tới đâu]
-[Bản đồ: react-leaflet (web) / react-native-maps (mobile) cần field nào]
+[Bản đồ: MapLibre (apps/web-client-side) / react-native-maps (mobile) cần field nào]
 [i18n: key mới cần thêm, luôn có đủ cả EN và VI, EN là mặc định]
 [Kiểm tra SOLID: hook có đúng SRP không?]
 
