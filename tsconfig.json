@@ -1,12 +1,4 @@
 {
-  "//": "Workspace root. Each package typechecks itself via `tsc --noEmit` (turbo task). TODO: migrate to TypeScript project references once apps/* are scaffolded.",
-  "files": [],
-  "references": [
-    { "path": "packages/contracts" },
-    { "path": "packages/domain" },
-    { "path": "packages/tokens" },
-    { "path": "packages/i18n" },
-    { "path": "packages/geo" },
-    { "path": "apps/api" }
-  ]
+  "//": "Workspace root. Each package owns its tsconfig and typechecks via `tsc --noEmit` (turbo task); the editor picks the nearest tsconfig per file. Project references require composite projects with declaration emit — revisit when build orchestration needs them.",
+  "files": []
 }
