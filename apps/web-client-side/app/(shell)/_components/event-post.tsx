@@ -80,7 +80,13 @@ export function EventPost({ event, index }: EventPostProps) {
             <TrustBadge level={event.hostTrustLevel} variant="compact" />
             {isPending && <Badge tone="warning">{t('event.status.pendingReview')}</Badge>}
           </div>
-          <p className="text-xs text-fg-muted">
+          {/*
+           * The relative timestamp is measured against `Date.now()`, so the
+           * server string and the first client string can differ by a bucket
+           * ("last wk" vs "2 wk ago"). Suppressing the warning on this node is
+           * correct: the client value is the accurate one and React keeps it.
+           */}
+          <p className="text-xs text-fg-muted" suppressHydrationWarning>
             {t(isPending ? 'feed.curatedEvent' : 'feed.createdEvent')} · {timeAgo(event.createdAt, locale)}
           </p>
         </div>

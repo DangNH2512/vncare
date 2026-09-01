@@ -53,12 +53,26 @@ export const viewport: Viewport = {
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${bodyFont.variable} ${headingFont.variable}`}>
-      <head>
-        {/* Applies the stored palette before first paint; without it the light theme flashes. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
-      </head>
+    /*
+     * `suppressHydrationWarning` covers the one attribute the bootstrap script
+     * writes before React hydrates (`data-theme`). Without it React reports a
+     * mismatch on every load, because the server cannot know the visitor's
+     * stored palette. It suppresses this element only, not its subtree.
+     */
+    <html
+      lang="en"
+      className={`${bodyFont.variable} ${headingFont.variable}`}
+      suppressHydrationWarning
+    >
       <body className="min-h-dvh bg-bg text-fg">
+        {/*
+         * Applies the stored palette before first paint; without it the light
+         * theme flashes. It sits at the top of <body> rather than in <head>:
+         * React never executes a <script> it renders on the client, and Next
+         * warns about one placed inside a component's head. As the first body
+         * node it still runs before anything paints.
+         */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
         {/* The app shell (side nav, tab bar, rails) is applied by the (shell) route group layout. */}
         <ThemeProvider>
           <LocaleProvider>{children}</LocaleProvider>
