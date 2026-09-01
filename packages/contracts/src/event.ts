@@ -48,3 +48,48 @@ export const EventResponse = z.object({
   createdAt: z.iso.datetime(),
 });
 export type EventResponseT = z.infer<typeof EventResponse>;
+
+/**
+ * Editable surface of an event. Every field is optional so a client can PATCH
+ * one of them; `areaId` is included because an organizer moving a venue across
+ * an area boundary is a normal correction, not a new event.
+ */
+export const EventUpdateRequest = EventCreateRequest.partial();
+export type EventUpdateRequestT = z.infer<typeof EventUpdateRequest>;
+
+/**
+ * Lifecycle transitions an organizer may request. Moderation-only states
+ * (`suspended`, `taken_down`) are absent: they are reachable exclusively
+ * through the moderation console, never through the owner's own endpoint.
+ */
+export const EventStatusUpdateRequest = z.object({
+  status: z.enum(['draft', 'pending_review', 'published', 'cancelled']),
+});
+export type EventStatusUpdateRequestT = z.infer<typeof EventStatusUpdateRequest>;
+
+/**
+ * Event list filters.
+ *
+ * `radiusMeters` is capped: an unbounded radius turns a city query into a
+ * country scan, which is a cheap denial-of-service. A radius search requires
+ * both coordinates, checked by the refinement below rather than silently
+ * ignored.
+ */
+export const ListEventQuery = z
+  .object({
+    cursor: z.string().max(200).optional(),
+    limit: z.coerce.number().int().min(1).max(50).default(20),
+    areaId: z.uuid().optional(),
+    status: EventStatus.optional(),
+    organizerId: z.uuid().optional(),
+    lat: z.coerce.number().min(-90).max(90).optional(),
+    lng: z.coerce.number().min(-180).max(180).optional(),
+    radiusMeters: z.coerce.number().int().min(100).max(50_000).optional(),
+  })
+  .refine(
+    (q) =>
+      (q.lat === undefined && q.lng === undefined && q.radiusMeters === undefined) ||
+      (q.lat !== undefined && q.lng !== undefined && q.radiusMeters !== undefined),
+    { error: 'errors.event.radiusRequiresCoordinates', path: ['radiusMeters'] },
+  );
+export type ListEventQueryT = z.infer<typeof ListEventQuery>;

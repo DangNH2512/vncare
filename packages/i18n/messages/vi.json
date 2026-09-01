@@ -247,5 +247,111 @@
       "description": "Thử khu vực khác hoặc xoá bộ lọc — hoặc chính bạn tạo một sự kiện mới.",
       "clear": "Xoá tất cả bộ lọc"
     }
+  },
+  "errors": {
+    "common": {
+      "duplicate": "Nội dung này đã tồn tại.",
+      "referenceNotFound": "Đối tượng được tham chiếu không còn tồn tại.",
+      "constraintViolated": "Yêu cầu này vi phạm một ràng buộc dữ liệu.",
+      "retryLater": "Hệ thống đang bận. Vui lòng thử lại sau giây lát."
+    },
+    "auth": {
+      "unauthenticated": "Vui lòng đăng nhập để tiếp tục.",
+      "trustLevelTooLow": "Tài khoản của bạn cần mức độ tin cậy cao hơn để làm việc này."
+    },
+    "event": {
+      "notFound": "Sự kiện này không còn tồn tại.",
+      "notOrganizer": "Chỉ người tổ chức mới sửa được sự kiện này.",
+      "underModeration": "Sự kiện đang bị tạm giữ để kiểm duyệt.",
+      "radiusRequiresCoordinates": "Tìm theo bán kính cần có cả vĩ độ và kinh độ."
+    },
+    "post": {
+      "notFound": "Bài đăng này không còn tồn tại.",
+      "notOwner": "Chỉ tác giả mới sửa được bài đăng này."
+    },
+    "comment": {
+      "notFound": "Bình luận này không còn tồn tại.",
+      "notAuthor": "Chỉ tác giả mới sửa được bình luận này.",
+      "parentNotFound": "Bình luận được trả lời không còn tồn tại.",
+      "notThreadOwner": "Chỉ người tổ chức hoặc tác giả mới ghim được bình luận ở đây.",
+      "cannotPinReply": "Chỉ bình luận gốc mới ghim được."
+    },
+    "chat": {
+      "cannotMessageSelf": "Bạn không thể tự nhắn tin cho chính mình.",
+      "conversationNotFound": "Cuộc trò chuyện này không còn tồn tại.",
+      "conversationClosed": "Cuộc trò chuyện này đã đóng.",
+      "requestRefused": "Người này không nhận tin nhắn từ bạn.",
+      "requestQuotaExhausted": "Hãy chờ phản hồi trước khi gửi thêm tin nhắn.",
+      "notRequestRecipient": "Chỉ người nhận mới trả lời được lời mời này.",
+      "messageNotFound": "Tin nhắn này không còn tồn tại.",
+      "messagePayloadMismatch": "Nội dung tin nhắn không khớp với loại tin nhắn."
+    },
+    "media": {
+      "typeNotAllowed": "Định dạng tệp này không được hỗ trợ.",
+      "tooLarge": "Tệp quá lớn.",
+      "notUploaded": "Tải lên chưa hoàn tất. Vui lòng thử lại.",
+      "notFound": "Tệp đính kèm không còn tồn tại."
+    }
+  },
+  "post": {
+    "composer": {
+      "open": "Viết bài",
+      "title": "Bài viết mới",
+      "bodyLabel": "Nội dung",
+      "bodyPlaceholder": "Hỏi cộng đồng, chia sẻ một gợi ý, hoặc nói bạn đang tìm gì.",
+      "kindLabel": "Loại bài",
+      "areaLabel": "Khu vực",
+      "areaCityWide": "Toàn Đà Nẵng",
+      "submit": "Đăng",
+      "submitting": "Đang đăng...",
+      "cancel": "Huỷ",
+      "remaining": "Còn {count} ký tự",
+      "errorGeneric": "Không đăng được bài. Vui lòng thử lại.",
+      "errorOffline": "Không kết nối được API. Chạy pnpm --filter @dnc/api dev.",
+      "back": "Quay lại",
+      "skipMedia": "Bỏ qua",
+      "you": "Bạn",
+      "waitingUploads": "Đang tải lên..."
+    },
+    "kind": {
+      "question": "Câu hỏi",
+      "recommendation": "Gợi ý",
+      "notice": "Thông báo",
+      "lookingFor": "Đang tìm"
+    },
+    "card": {
+      "posted": "đã đăng",
+      "cityWide": "Đà Nẵng",
+      "edited": "đã sửa",
+      "comments": "{count} bình luận",
+      "react": "Bày tỏ cảm xúc với bài này",
+      "gallery": "Bộ ảnh gồm {count} mục",
+      "showMore": "+{count} nữa"
+    },
+    "feed": {
+      "loading": "Đang tải bài cộng đồng",
+      "empty": "Chưa có bài viết nào. Hãy là người đầu tiên."
+    },
+    "media": {
+      "dropTitle": "Kéo ảnh và video vào đây",
+      "dropHint": "Ảnh và video. JPG, PNG, WebP, HEIC, MP4 hoặc MOV.",
+      "choose": "Chọn từ thiết bị",
+      "addMore": "Thêm ảnh hoặc video",
+      "remove": "Bỏ mục này",
+      "counter": "Đã chọn {count} mục",
+      "previewLabel": "Xem trước nội dung sắp đăng",
+      "previous": "Mục trước",
+      "next": "Mục sau",
+      "rejectedType": "Một số tệp bị bỏ qua: định dạng không được hỗ trợ.",
+      "rejectedSize": "Một số tệp bị bỏ qua: dung lượng quá lớn."
+    },
+    "location": {
+      "add": "Thêm địa điểm",
+      "pinned": "Đã ghim địa điểm",
+      "tapToPin": "Chạm lên bản đồ để ghim vị trí",
+      "labelField": "Tên địa điểm",
+      "remove": "Bỏ",
+      "mapUnavailable": "Không tải được bản đồ. Bạn vẫn đăng bài được mà không cần địa điểm."
+    }
   }
 }

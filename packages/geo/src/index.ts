@@ -1,6 +1,12 @@
 import areas from '../data/da-nang-areas.v0.draft.json' with { type: 'json' };
 
 export interface AreaFeature {
+  /**
+   * Stable identity of the area, and the primary key the `areas` table is
+   * seeded with. It lives in the geodata so the API seed and every client read
+   * the same value; a second hand-written map is how the two drift apart.
+   */
+  id: string;
   slug: string;
   nameEn: string;
   nameVi: string;
@@ -14,6 +20,7 @@ export interface AreaFeature {
  * migration, so a boundary change is a data PR plus one migration.
  */
 export const daNangAreas: AreaFeature[] = areas.features.map((f) => ({
+  id: f.properties.id,
   slug: f.properties.slug,
   nameEn: f.properties.nameEn,
   nameVi: f.properties.nameVi,

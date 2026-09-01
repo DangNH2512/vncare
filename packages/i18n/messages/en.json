@@ -247,5 +247,111 @@
       "description": "Try another area or clear the filters — or be the one who starts something new.",
       "clear": "Clear all filters"
     }
+  },
+  "errors": {
+    "common": {
+      "duplicate": "That already exists.",
+      "referenceNotFound": "Something this refers to no longer exists.",
+      "constraintViolated": "That request breaks a rule of this data.",
+      "retryLater": "The service is busy. Please try again in a moment."
+    },
+    "auth": {
+      "unauthenticated": "Please sign in to continue.",
+      "trustLevelTooLow": "Your account needs a higher trust level for this."
+    },
+    "event": {
+      "notFound": "This event no longer exists.",
+      "notOrganizer": "Only the organizer can change this event.",
+      "underModeration": "This event is on hold pending moderation.",
+      "radiusRequiresCoordinates": "A radius search needs a latitude and a longitude."
+    },
+    "post": {
+      "notFound": "This post no longer exists.",
+      "notOwner": "Only the author can change this post."
+    },
+    "comment": {
+      "notFound": "This comment no longer exists.",
+      "notAuthor": "Only the author can change this comment.",
+      "parentNotFound": "The comment being replied to no longer exists.",
+      "notThreadOwner": "Only the organizer or author can pin a comment here.",
+      "cannotPinReply": "Only a top-level comment can be pinned."
+    },
+    "chat": {
+      "cannotMessageSelf": "You cannot start a conversation with yourself.",
+      "conversationNotFound": "This conversation no longer exists.",
+      "conversationClosed": "This conversation is closed.",
+      "requestRefused": "This person is not accepting messages from you.",
+      "requestQuotaExhausted": "Wait for a reply before sending another message.",
+      "notRequestRecipient": "Only the recipient can answer this request.",
+      "messageNotFound": "This message no longer exists.",
+      "messagePayloadMismatch": "The message content does not match its type."
+    },
+    "media": {
+      "typeNotAllowed": "That file type is not supported.",
+      "tooLarge": "That file is too large.",
+      "notUploaded": "The upload did not finish. Please try again.",
+      "notFound": "That attachment no longer exists."
+    }
+  },
+  "post": {
+    "composer": {
+      "open": "Write a post",
+      "title": "New post",
+      "bodyLabel": "Your post",
+      "bodyPlaceholder": "Ask the community, share a recommendation, or say what you are looking for.",
+      "kindLabel": "Post type",
+      "areaLabel": "Area",
+      "areaCityWide": "Anywhere in Da Nang",
+      "submit": "Post",
+      "submitting": "Posting...",
+      "cancel": "Cancel",
+      "remaining": "{count} characters left",
+      "errorGeneric": "Could not publish that post. Please try again.",
+      "errorOffline": "Cannot reach the API. Start it with pnpm --filter @dnc/api dev.",
+      "back": "Back",
+      "skipMedia": "Skip",
+      "you": "You",
+      "waitingUploads": "Uploading..."
+    },
+    "kind": {
+      "question": "Question",
+      "recommendation": "Recommendation",
+      "notice": "Notice",
+      "lookingFor": "Looking for"
+    },
+    "card": {
+      "posted": "posted",
+      "cityWide": "Da Nang",
+      "edited": "edited",
+      "comments": "{count} comments",
+      "react": "React to this post",
+      "gallery": "Gallery with {count} items",
+      "showMore": "+{count} more"
+    },
+    "feed": {
+      "loading": "Loading community posts",
+      "empty": "No community posts yet. Be the first."
+    },
+    "media": {
+      "dropTitle": "Drag photos and videos here",
+      "dropHint": "Photos and videos. JPG, PNG, WebP, HEIC, MP4 or MOV.",
+      "choose": "Select from device",
+      "addMore": "Add more media",
+      "remove": "Remove this item",
+      "counter": "{count} selected",
+      "previewLabel": "Preview of the media you are about to post",
+      "previous": "Previous item",
+      "next": "Next item",
+      "rejectedType": "Some files were skipped: that format is not supported.",
+      "rejectedSize": "Some files were skipped: too large."
+    },
+    "location": {
+      "add": "Add a location",
+      "pinned": "Location pinned",
+      "tapToPin": "Tap the map to drop a pin",
+      "labelField": "Place name",
+      "remove": "Remove",
+      "mapUnavailable": "The map could not load. You can still post without a location."
+    }
   }
 }

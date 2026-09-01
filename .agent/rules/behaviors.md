@@ -20,6 +20,9 @@ dụ và mẫu được nhúng ngay tại chỗ khi đủ ngắn.
 - Nếu người dùng chỉ hỏi, trả lời thẳng. Nếu sẽ sửa file, cập nhật
   `.agent/memory/ACTIVE_TASKS.md`, đọc `planning-and-agent-mode.md`, rồi áp
   `skill-triggers.md`.
+- Quét kho skill là bắt buộc ở mọi task, không chỉ khi có từ khoá: `skill-first.md`
+  §S1 — đọc `SKILL.md` của mọi skill khớp và tuyên bố danh sách áp dụng trước khi
+  chạm file đầu tiên.
 - Nạp context tối thiểu: file được nhắc đích danh trước, rồi phụ thuộc trực tiếp,
   rồi tài liệu riêng cho task. Không đọc ồ ạt tài liệu không liên quan.
 - Với ảnh chụp / lỗi / log, mở đúng file, route, lệnh hoặc log path trước khi đi

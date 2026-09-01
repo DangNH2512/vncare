@@ -48,6 +48,35 @@ export type MessageKey =
   | 'discover.view.label'
   | 'discover.view.list'
   | 'discover.view.map'
+  | 'errors.auth.trustLevelTooLow'
+  | 'errors.auth.unauthenticated'
+  | 'errors.chat.cannotMessageSelf'
+  | 'errors.chat.conversationClosed'
+  | 'errors.chat.conversationNotFound'
+  | 'errors.chat.messageNotFound'
+  | 'errors.chat.messagePayloadMismatch'
+  | 'errors.chat.notRequestRecipient'
+  | 'errors.chat.requestQuotaExhausted'
+  | 'errors.chat.requestRefused'
+  | 'errors.comment.cannotPinReply'
+  | 'errors.comment.notAuthor'
+  | 'errors.comment.notFound'
+  | 'errors.comment.notThreadOwner'
+  | 'errors.comment.parentNotFound'
+  | 'errors.common.constraintViolated'
+  | 'errors.common.duplicate'
+  | 'errors.common.referenceNotFound'
+  | 'errors.common.retryLater'
+  | 'errors.event.notFound'
+  | 'errors.event.notOrganizer'
+  | 'errors.event.radiusRequiresCoordinates'
+  | 'errors.event.underModeration'
+  | 'errors.media.notFound'
+  | 'errors.media.notUploaded'
+  | 'errors.media.tooLarge'
+  | 'errors.media.typeNotAllowed'
+  | 'errors.post.notFound'
+  | 'errors.post.notOwner'
   | 'event.card.almostFull'
   | 'event.card.attendees'
   | 'event.card.hostedBy'
@@ -134,6 +163,53 @@ export type MessageKey =
   | 'nav.events'
   | 'nav.map'
   | 'nav.profile'
+  | 'post.card.cityWide'
+  | 'post.card.comments'
+  | 'post.card.edited'
+  | 'post.card.gallery'
+  | 'post.card.posted'
+  | 'post.card.react'
+  | 'post.card.showMore'
+  | 'post.composer.areaCityWide'
+  | 'post.composer.areaLabel'
+  | 'post.composer.back'
+  | 'post.composer.bodyLabel'
+  | 'post.composer.bodyPlaceholder'
+  | 'post.composer.cancel'
+  | 'post.composer.errorGeneric'
+  | 'post.composer.errorOffline'
+  | 'post.composer.kindLabel'
+  | 'post.composer.open'
+  | 'post.composer.remaining'
+  | 'post.composer.skipMedia'
+  | 'post.composer.submit'
+  | 'post.composer.submitting'
+  | 'post.composer.title'
+  | 'post.composer.waitingUploads'
+  | 'post.composer.you'
+  | 'post.feed.empty'
+  | 'post.feed.loading'
+  | 'post.kind.lookingFor'
+  | 'post.kind.notice'
+  | 'post.kind.question'
+  | 'post.kind.recommendation'
+  | 'post.location.add'
+  | 'post.location.labelField'
+  | 'post.location.mapUnavailable'
+  | 'post.location.pinned'
+  | 'post.location.remove'
+  | 'post.location.tapToPin'
+  | 'post.media.addMore'
+  | 'post.media.choose'
+  | 'post.media.counter'
+  | 'post.media.dropHint'
+  | 'post.media.dropTitle'
+  | 'post.media.next'
+  | 'post.media.previewLabel'
+  | 'post.media.previous'
+  | 'post.media.rejectedSize'
+  | 'post.media.rejectedType'
+  | 'post.media.remove'
   | 'rsvp.error.alreadyRsvped'
   | 'rsvp.error.occurrenceClosed'
   | 'rsvp.error.suspended'
@@ -221,6 +297,35 @@ export const MESSAGE_KEYS = [
   'discover.view.label',
   'discover.view.list',
   'discover.view.map',
+  'errors.auth.trustLevelTooLow',
+  'errors.auth.unauthenticated',
+  'errors.chat.cannotMessageSelf',
+  'errors.chat.conversationClosed',
+  'errors.chat.conversationNotFound',
+  'errors.chat.messageNotFound',
+  'errors.chat.messagePayloadMismatch',
+  'errors.chat.notRequestRecipient',
+  'errors.chat.requestQuotaExhausted',
+  'errors.chat.requestRefused',
+  'errors.comment.cannotPinReply',
+  'errors.comment.notAuthor',
+  'errors.comment.notFound',
+  'errors.comment.notThreadOwner',
+  'errors.comment.parentNotFound',
+  'errors.common.constraintViolated',
+  'errors.common.duplicate',
+  'errors.common.referenceNotFound',
+  'errors.common.retryLater',
+  'errors.event.notFound',
+  'errors.event.notOrganizer',
+  'errors.event.radiusRequiresCoordinates',
+  'errors.event.underModeration',
+  'errors.media.notFound',
+  'errors.media.notUploaded',
+  'errors.media.tooLarge',
+  'errors.media.typeNotAllowed',
+  'errors.post.notFound',
+  'errors.post.notOwner',
   'event.card.almostFull',
   'event.card.attendees',
   'event.card.hostedBy',
@@ -307,6 +412,53 @@ export const MESSAGE_KEYS = [
   'nav.events',
   'nav.map',
   'nav.profile',
+  'post.card.cityWide',
+  'post.card.comments',
+  'post.card.edited',
+  'post.card.gallery',
+  'post.card.posted',
+  'post.card.react',
+  'post.card.showMore',
+  'post.composer.areaCityWide',
+  'post.composer.areaLabel',
+  'post.composer.back',
+  'post.composer.bodyLabel',
+  'post.composer.bodyPlaceholder',
+  'post.composer.cancel',
+  'post.composer.errorGeneric',
+  'post.composer.errorOffline',
+  'post.composer.kindLabel',
+  'post.composer.open',
+  'post.composer.remaining',
+  'post.composer.skipMedia',
+  'post.composer.submit',
+  'post.composer.submitting',
+  'post.composer.title',
+  'post.composer.waitingUploads',
+  'post.composer.you',
+  'post.feed.empty',
+  'post.feed.loading',
+  'post.kind.lookingFor',
+  'post.kind.notice',
+  'post.kind.question',
+  'post.kind.recommendation',
+  'post.location.add',
+  'post.location.labelField',
+  'post.location.mapUnavailable',
+  'post.location.pinned',
+  'post.location.remove',
+  'post.location.tapToPin',
+  'post.media.addMore',
+  'post.media.choose',
+  'post.media.counter',
+  'post.media.dropHint',
+  'post.media.dropTitle',
+  'post.media.next',
+  'post.media.previewLabel',
+  'post.media.previous',
+  'post.media.rejectedSize',
+  'post.media.rejectedType',
+  'post.media.remove',
   'rsvp.error.alreadyRsvped',
   'rsvp.error.occurrenceClosed',
   'rsvp.error.suspended',

@@ -19,7 +19,7 @@ export const AREA_SLUGS = [
 export type AreaSlug = (typeof AREA_SLUGS)[number];
 
 export interface Area {
-  /** Matches `areas.id` once the table is seeded from @dnc/geo; fixed here so mock events can reference it. */
+  /** `areas.id` in the database; the value comes from @dnc/geo, which the API seed also reads. */
   id: string;
   slug: AreaSlug;
   nameEn: string;
@@ -27,20 +27,6 @@ export interface Area {
   /** Centre of the area's bounding box — the map's default camera target. */
   center: { lat: number; lng: number };
 }
-
-/**
- * Stable placeholder identifiers. They are replaced by the values the areas
- * migration inserts; keeping them constant means mock and real payloads have
- * the same shape and the UI never learns about the difference.
- */
-const AREA_IDS: Readonly<Record<AreaSlug, string>> = {
-  'an-thuong': '0f2b8a10-0000-4000-8000-000000000001',
-  'my-khe': '0f2b8a10-0000-4000-8000-000000000002',
-  'my-an': '0f2b8a10-0000-4000-8000-000000000003',
-  'hai-chau': '0f2b8a10-0000-4000-8000-000000000004',
-  'son-tra': '0f2b8a10-0000-4000-8000-000000000005',
-  'ngu-hanh-son': '0f2b8a10-0000-4000-8000-000000000006',
-};
 
 /** Bounding-box centre of the first ring. GeoJSON coordinate order is [lng, lat]. */
 function ringCenter(coordinates: readonly (readonly number[])[][]): {
@@ -77,7 +63,7 @@ export const AREAS: readonly Area[] = AREA_SLUGS.map((slug) => {
     throw new Error(`@dnc/geo is missing the "${slug}" area feature`);
   }
   return {
-    id: AREA_IDS[slug],
+    id: feature.id,
     slug,
     nameEn: feature.nameEn,
     nameVi: feature.nameVi,

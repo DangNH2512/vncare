@@ -1,13 +1,17 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { PostResponseT } from '@dnc/contracts';
 
 import { Avatar, Button, Card, Chip, ChipRow, EmptyState } from '../../_components/ui';
 import { useLocale, useTranslate } from '../../_components/locale-provider';
 import { AREAS, areaName, type AreaSlug } from '../../_lib/areas';
+import { listPosts } from '../../_lib/api';
 import { dayOffsetFrom } from '../../_lib/datetime';
 import { MOCK_EVENTS, type MockEvent } from '../../_lib/mock-data';
+import { CommunityPost } from './community-post';
 import { EventPost } from './event-post';
+import { PostComposer } from './post-composer';
 
 type QuickFilter = 'all' | 'today' | 'weekend' | 'free';
 type Filter = QuickFilter | AreaSlug;
@@ -51,6 +55,43 @@ export function FeedStream() {
   const t = useTranslate();
   const { locale } = useLocale();
   const [filter, setFilter] = useState<Filter>('all');
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [posts, setPosts] = useState<PostResponseT[]>([]);
+
+  // Community posts come from the API while events are still fixtures, so the
+  // feed is half live and half mock during this transition. A failed load is
+  // silent by design: the events below are unaffected and an error banner over
+  // a working feed would be noise.
+  useEffect(() => {
+    let cancelled = false;
+    listPosts()
+      .then((page) => {
+        if (!cancelled) setPosts(page.items);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Prepended rather than refetched: the author must see their post land
+  // immediately, and a round trip would put a spinner between the tap and the
+  // result for no new information.
+  const handleCreated = useCallback((post: PostResponseT) => {
+    setPosts((current) => [post, ...current]);
+  }, []);
+
+  const areaFilterId =
+    filter === 'all' || filter === 'today' || filter === 'weekend' || filter === 'free'
+      ? undefined
+      : AREAS.find((area) => area.slug === filter)?.id;
+
+  // Time-based filters do not apply to posts: a post has no start time, so
+  // "Today" and "Weekend" would silently drop every one of them.
+  const visiblePosts =
+    filter === 'today' || filter === 'weekend' || filter === 'free'
+      ? []
+      : posts.filter((post) => areaFilterId === undefined || post.areaId === areaFilterId);
 
   const visible = useMemo(
     () => MOCK_EVENTS.filter((event) => matches(event, filter)),
@@ -66,11 +107,19 @@ export function FeedStream() {
         <Avatar name="You" size="md" />
         <button
           type="button"
+          onClick={() => setComposerOpen(true)}
+          aria-label={t('post.composer.open')}
           className="min-h-11 min-w-0 flex-1 truncate rounded-full border border-line bg-surface-sunken px-4 text-left text-sm text-fg-muted hover:border-line-strong"
         >
           {t('feed.composerPlaceholder')}
         </button>
       </Card>
+
+      <PostComposer
+        open={composerOpen}
+        onClose={() => setComposerOpen(false)}
+        onCreated={handleCreated}
+      />
 
       <ChipRow role="group" aria-label={t('feed.filterAll')}>
         <Chip selected={filter === 'all'} onClick={() => setFilter('all')}>
@@ -97,7 +146,11 @@ export function FeedStream() {
         ))}
       </ChipRow>
 
-      {visible.length === 0 ? (
+      {visiblePosts.map((post) => (
+        <CommunityPost key={post.id} post={post} />
+      ))}
+
+      {visible.length === 0 && visiblePosts.length === 0 ? (
         <Card padding="lg">
           <EmptyState
             icon={<span className="text-4xl">🌊</span>}
