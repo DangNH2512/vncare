@@ -568,8 +568,8 @@ ALTER TABLE users
 | Khái niệm | Bản chất thật | Lưu ở đâu | Kiểm tra bằng gì |
 |---|---|---|---|
 | `guest` | **Trạng thái phiên**, không phải hàng trong `users`. Là "chưa có JWT hợp lệ" | Không lưu ở đâu cả | `@Public()` decorator + `request.user === undefined` |
-| `organizer` | **Quan hệ theo sự kiện** — một user là organizer *của những sự kiện mình tạo*, không phải của toàn hệ thống | `events.host_user_id` và bảng `event_cohosts` | `EventRoleGuard` truy vấn quan hệ với `eventId`/`occurrenceId` trong route param |
-| `verified_member` | **Trust level**, một bậc trên thang T0–T5 | `users.trust_level` (smallint 0–5) | `@RequireTrust(2)` decorator |
+| `organizer` | **Quan hệ theo sự kiện** — một user là organizer *của những sự kiện mình tạo*, không phải của toàn hệ thống | `events.host_user_id` và bảng `event_cohosts` | `EventOwnershipGuard` truy vấn quan hệ với `eventId`/`occurrenceId` trong route param |
+| `verified_member` | **Trust level**, một bậc trên thang T0–T5 | `users.trust_level` (smallint 0–5) | `@MinTrust(2)` decorator |
 | `support` | **Đã gộp vào `moderator`.** Không tồn tại như role riêng | — | Permission `user.support.*` gán cho `moderator` |
 
 Và `service_provider` (giai đoạn 2–3) **không** được thêm vào enum. Khi tới giai đoạn đó, nhà cung cấp
@@ -1123,7 +1123,7 @@ flowchart LR
     LVL["users.trust_level<br/>T0 - T5"]
     QUOTA["Han muc + rate limit<br/>§11.2"]
     BADGE["Badge hien thi<br/>§11.5"]
-    GUARD["TrustLevelGuard<br/>@RequireTrust(n)"]
+    GUARD["TrustTierGuard<br/>@MinTrust(n)"]
 
     E1 --> TS
     E2 --> TS
@@ -1142,3 +1142,1013 @@ flowchart LR
     style TS fill:#eef4ff,stroke:#1f6feb
     style LVL fill:#e6f7e6,stroke:#2e9e4f
 ```
+
+---
+
+## 12. Mapping role → use case
+
+### 12.1 Cách đọc bảng
+
+Bảng dưới đối chiếu **toàn bộ 76 use case** trong `02-use-case.md` (EP-01 → EP-11) với **5 role toàn cục** cộng
+**2 ngữ cảnh theo sự kiện**. Đây là bảng bắc cầu giữa §9 (quyền nguyên tử) và tài liệu use case — khi hai bên
+lệch nhau, **§9 + §12 của tài liệu này là nguồn sự thật**, `02-use-case.md` mô tả luồng.
+
+| Cột | Ý nghĩa |
+|---|---|
+| `guest` | Chưa đăng nhập. Không phải giá trị của `users.role`, chỉ là trạng thái phiên (§8.1) |
+| `member` · `curator` · `mod` · `admin` · `s.admin` | Năm giá trị của `users.role` |
+| `host` | Người dùng **là `events.host_user_id` của chính resource đang thao tác** |
+| `co-host` | Người dùng có bản ghi `event_cohosts` với `accepted_at IS NOT NULL` trên **chính** event đó |
+| `Trust min` | Bậc T0–T5 **tối thiểu** để gọi được UC. `—` = không phụ thuộc trust; `sys` = actor là system, không có trust |
+
+Ký hiệu: **✅** dùng được · **❌** không · **⚠️** có điều kiện (tra mã `Đn` ở §9.3) · **—** không áp dụng ·
+**🕓** thuộc giai đoạn sau, chỉ thiết kế trước.
+
+> **Quy tắc bao trùm**: `moderator`, `admin`, `super_admin` khi tạo hoặc tham gia sự kiện thì hành xử **đúng như
+> một `member`** — role vận hành không cấp đặc quyền nghiệp vụ (Đ2). Vì vậy ở EP-03/EP-05, cột của ba role này
+> lặp lại cột `member` chứ không "mở rộng hơn". Điều ngược lại cũng đúng: `member` không bao giờ chạm được
+> EP-09/EP-10/EP-11 chỉ nhờ trust level cao.
+
+### 12.2 EP-01 — Onboarding & Auth
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-01 | Đăng ký email + mật khẩu | ✅ | — | — | — | — | — | — | — | — | Tạo `role='member'`, `status='registered'`, `trust_level=0` (S1) |
+| UC-02 | Xác minh email | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | Chỉ chính chủ; nâng T0→T1 (S2) |
+| UC-03 | Đăng nhập email | ✅ | — | — | — | — | — | — | — | — | Bị chặn nếu `status ∈ {suspended, banned}` |
+| UC-04 | Social login | ✅ | — | — | — | — | — | — | — | — | Apple Sign-In bắt buộc trên iOS; chỉ tin `email_verified = true` |
+| UC-05 | Onboarding lần đầu | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T1 | Cần `status ∈ {email_verified, phone_verified}` (S4) |
+| UC-06 | Quên mật khẩu | ✅ | — | — | — | — | — | — | — | — | Đặt lại thành công ⇒ thu hồi mọi refresh token |
+| UC-07 | Refresh & đăng xuất | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | Đổi role ⇒ thu hồi toàn bộ refresh token (§8.3 quy tắc 4) |
+| UC-08 | Đổi ngôn ngữ UI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | — | EN mặc định, VI thứ hai; guest lưu ở cookie/AsyncStorage |
+| UC-09 | Duyệt ở chế độ khách | ✅ Đ1 | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | — | Cổng giá trị: chặn tại RSVP (Đ14), không ẩn nút |
+| UC-10 | Xoá tài khoản & xuất dữ liệu | ❌ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | — | — | T0 | `role != 'member'` phải hạ về `member` trước khi xoá (S11) |
+
+### 12.3 EP-02 — Hồ sơ & Trust
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-11 | Sửa hồ sơ cá nhân | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | **Avatar ảnh thật cần T1**; T0 chỉ dùng avatar chữ cái (§11.2) |
+| UC-12 | Xem hồ sơ công khai | ⚠️ Đ1 | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | — | Tôn trọng UC-17; guest không thấy lịch sử tham gia |
+| UC-13 | Xác minh email & phone | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | OTP 5 phút, ≤ 5 lần/số/giờ; nâng T1→T2 (S3) |
+| UC-14 | Xác minh giấy tờ | 🕓 | 🕓 | 🕓 | 🕓 | 🕓 | 🕓 | — | — | 🕓 | **Won't** ở GĐ1 — hoãn sang GĐ2 |
+| UC-15 | Tính & hiển thị bậc tin cậy | — | — | — | — | — | — | — | — | sys | Job `trust:recompute` là **nơi duy nhất** ghi `users.trust_level` |
+| UC-16 | Đánh giá sau hoạt động | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | T1 | Chỉ người có `attendance = 'checked_in'` và host của occurrence đó; cửa sổ 7 ngày |
+| UC-17 | Cấu hình riêng tư hồ sơ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | Điều khiển `show_in_attendee_list`, `share_contact_with_host` (Đ20, Đ22) |
+| UC-18 | Chặn người dùng khác | ❌ | ✅ | ✅ | ⚠️ Đ34 | ⚠️ Đ34 | ⚠️ Đ34 | ✅ | ✅ | T1 | Chặn hai chiều, không lộ trạng thái; `blocks` thắng mọi quyền DM (Đ29, Đ32) |
+
+### 12.4 EP-03 — Tạo & quản lý sự kiện
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-19 | Tạo hoạt động mới | ❌ | ⚠️ Đ2 | ✅ Đ42 | ⚠️ Đ2 | ⚠️ Đ2 | ⚠️ Đ2 | — | — | **T1** | T1 ⇒ vào `pending_review` nếu mô tả có link ngoài allowlist / số điện thoại; hạn mức theo bậc (§11.2) |
+| UC-20 | Ghim địa điểm & gán khu vực | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ | ⚠️ Đ5 | T1 / **T2** | T1 chỉ đặt được `location_precision = area_only`; **`exact` cần T2** |
+| UC-21 | Nháp & xuất bản | ❌ | ⚠️ Đ2 | ✅ | ⚠️ Đ2 | ⚠️ Đ2 | ⚠️ Đ2 | ✅ | ⚠️ Đ5 | T1 | Nháp không vào feed công khai, không đếm vào hạn mức "đang mở" |
+| UC-22 | Sửa sự kiện đã xuất bản | ❌ | ⚠️ Đ6 | ⚠️ Đ7 | ⚠️ Đ8 | ⚠️ Đ9 | ⚠️ Đ9 | ✅ Đ4 | ⚠️ Đ5 | — | Thay đổi trọng yếu ⇒ bắt buộc `change_reason` + thông báo + đặt lại job T-24h/T-2h |
+| UC-23 | Huỷ hoạt động | ❌ | ⚠️ Đ6 | ⚠️ Đ7 | ⚠️ Đ11 | ⚠️ Đ9 | ⚠️ Đ9 | ✅ Đ12 | ⚠️ Đ13 | — | Co-host cần `can_cancel = true` (mặc định `false`) |
+| UC-24 | Chuỗi hoạt động lặp lại | ❌ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ✅ | ⚠️ Đ5 | **T3** | Ngưỡng cao có chủ đích: recurring nhân bản rủi ro nội dung lên nhiều occurrence |
+| UC-25 | Quản lý danh sách tham dự | ❌ | ❌ | ⚠️ Đ7 | ⚠️ Đ21 | ⚠️ Đ21 | ⚠️ Đ21 | ✅ Đ22 | ⚠️ Đ5 | T2 / **T3** | Xem cần T2; **xuất CSV cần host ở T3** và ghi `audit_log` |
+| UC-26 | Thêm / gỡ co-host | ❌ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ✅ | ❌ | T2 | Chỉ host mời; **người được mời phải ≥ T2**; tối đa 5 co-host; cần `accepted_at` |
+| UC-27 | Điểm danh QR | ❌ | ❌ | ⚠️ Đ7 | ❌ | ⚠️ Đ23 | ⚠️ Đ23 | ✅ Đ24 | ⚠️ Đ25 | — | Cửa sổ **T-2h → T+48h**; co-host cần `can_check_in = true` |
+| UC-28 | Nhân bản hoạt động cũ | ❌ | ⚠️ Đ2 | ✅ | ⚠️ Đ2 | ⚠️ Đ2 | ⚠️ Đ2 | ✅ | ❌ | T1 | Bản sao vẫn tính vào hạn mức tạo/ngày của bậc |
+
+### 12.5 EP-04 — Khám phá & tìm kiếm/lọc
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-29 | Feed "Tuần này ở Đà Nẵng" | ⚠️ Đ1 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — | Host/co-host thấy thêm `draft` của chính mình |
+| UC-30 | Tìm kiếm toàn văn | ⚠️ Đ1 | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | — | Rate limit tìm kiếm theo bậc (§11.2); guest theo IP |
+| UC-31 | Lọc nâng cao | ⚠️ Đ1 | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | — | Bộ lọc khu vực dùng đúng **6 khu vực MVP** (Đ46) |
+| UC-32 | Tìm quanh vị trí hiện tại | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | Cần quyền định vị của OS; toạ độ **không** lưu lịch sử |
+| UC-33 | Bản đồ | ⚠️ Đ1 | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | — | Guest và T0/T1 thấy ghim ở tâm khu vực, bán kính 500 m |
+| UC-34 | Lưu bộ lọc & cảnh báo | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T1 | Tối đa 5 bộ lọc có cảnh báo/tài khoản; tôn trọng khung giờ yên tĩnh (UC-53) |
+| UC-35 | Lưu vào quan tâm | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | Riêng tư, không hiện cho host |
+| UC-36 | Gợi ý cá nhân hoá | 🕓 | 🕓 | 🕓 | 🕓 | 🕓 | 🕓 | — | — | 🕓 | **Won't** ở GĐ1 |
+| UC-37 | Lịch tháng | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | Hiển thị theo Asia/Ho_Chi_Minh, dữ liệu lưu UTC |
+
+### 12.6 EP-05 — RSVP & tham gia
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-38 | Đăng ký tham gia | ❌ Đ14 | ⚠️ Đ15 | ⚠️ Đ15 | ⚠️ Đ15 | ⚠️ Đ15 | ⚠️ Đ15 | ❌ Đ16 | ❌ Đ16 | **T1** | Gắn vào `occurrence_id`. T0 chỉ RSVP occurrence có `trust_gate = 'none'` |
+| UC-39 | Huỷ đăng ký | ❌ | ✅ Đ17 | ✅ Đ17 | ✅ Đ17 | ✅ Đ17 | ✅ Đ17 | ⚠️ Đ18 | ⚠️ Đ18 | T0 | Huỷ trong 6 h ⇒ `trust_signal` `late_cancel` |
+| UC-40 | Waitlist & tự thăng hạng | ❌ | ⚠️ Đ15 | ⚠️ Đ15 | ⚠️ Đ15 | ⚠️ Đ15 | ⚠️ Đ15 | ⚠️ | ⚠️ Đ5 | T1 | **MUST của MVP.** FIFO, cửa sổ xác nhận 12 h; host/co-host đôn tay được (`waitlist.promote`) |
+| UC-41 | Trả lời câu hỏi khi đăng ký | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ đặt câu hỏi | ⚠️ Đ5 | T1 | Tối đa 3 câu; câu trả lời chỉ host/co-host xem (Đ22) |
+| UC-42 | Thêm vào lịch cá nhân | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | T0 | ICS sinh theo UTC + `TZID=Asia/Ho_Chi_Minh` |
+| UC-43 | Xem danh sách người tham dự | ❌ Đ19 | ⚠️ Đ20 | ⚠️ Đ7 | ⚠️ Đ21 | ⚠️ Đ21 | ⚠️ Đ21 | ✅ Đ22 | ✅ Đ22 | **T2** | Member cần **vừa T2 vừa đã RSVP**; guest chỉ thấy số đếm |
+| UC-44 | Mời người khác cùng tham gia | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ | ✅ | **T2** | Link mời có gắn nguồn; hạn mức lời mời/ngày theo bậc để chống spam |
+
+### 12.7 EP-06 — Tương tác
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-45 | Bình luận trong trang hoạt động | ❌ | ⚠️ Đ28 | ✅ | ✅ | ✅ | ✅ | ✅ + ghim 1 comment | ✅ | **T1** | Quyền chèn link theo bậc; comment đầu của tài khoản < 48 h qua bộ lọc UC-64 |
+| UC-46 | Chat nhóm của hoạt động | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ | ✅ | **T2** | Chỉ người có RSVP `going`; phòng mở từ T-48h, đóng T+48h |
+| UC-47 | Nhắn tin riêng 1-1 | ❌ | ⚠️ Đ29 | ⚠️ Đ30 | ⚠️ Đ31 | ⚠️ Đ31 | ⚠️ Đ31 | ⚠️ Đ32 | ⚠️ Đ32 | **T2** | Cần từng chung ≥ 1 occurrence; host/co-host được miễn điều kiện đó |
+| UC-48 | Chia sẻ ra ngoài | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — | Ảnh xem trước **không** chứa địa chỉ chính xác |
+| UC-49 | Ảnh tổng kết sau hoạt động | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | **T4** mở album / T2 thêm ảnh | Album mở 72 h sau khi kết thúc; chỉ người `checked_in` thêm ảnh được |
+| UC-50 | Theo dõi organizer | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T1 | Người bị theo dõi tắt được; không lộ danh sách người theo dõi |
+
+### 12.8 EP-07 — Thông báo
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-51 | Đăng ký & hiển thị push | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | T0 | Xin quyền đúng thời điểm (sau RSVP đầu tiên), không xin ở màn hình mở app |
+| UC-52 | Nhắc lịch trước giờ diễn ra | — | — | — | — | — | — | — | — | sys | Hai mốc **T-24h** và **T-2h**; huỷ & đặt lại job khi có thay đổi trọng yếu |
+| UC-53 | Cấu hình nhận thông báo | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | Khung giờ yên tĩnh theo Asia/Ho_Chi_Minh; nhắc T-2h **không** bị chặn bởi giờ yên tĩnh |
+| UC-54 | Trung tâm thông báo trong app | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — | T0 | Hợp nhất push + in-app; deep link về đúng occurrence |
+| UC-55 | Bản tin tổng hợp hằng tuần | — | — | — | — | — | — | — | — | sys | Gửi sáng thứ Năm; nội dung theo `home_area` + sở thích |
+
+### 12.9 EP-08 — Nhu cầu ad-hoc *(Won't ở GĐ1 — thiết kế trước)*
+
+| UC | Tên rút gọn | Trạng thái GĐ1 | Trust min dự kiến | Ghi chú phân quyền cần chừa chỗ |
+|---|---|---|---|---|
+| UC-56 | Đăng nhu cầu tức thời | 🕓 Won't | T2 | Ngưỡng cao hơn tạo event vì nội dung ngắn, khó kiểm duyệt, dễ thành kênh rao vặt |
+| UC-57 | Phản hồi một nhu cầu | 🕓 Won't | T2 | Mở luồng nhắn tin nhẹ ⇒ chịu cùng ràng buộc `blocks` như Đ29 |
+| UC-58 | Tự hết hạn sau 24 h | 🕓 Won't | sys | Job BullMQ, cùng khuôn với `moderation:expire` |
+| UC-59 | Nâng thành hoạt động chính thức | 🕓 Won't | T2 | Khi chuyển thành `event`, người đăng trở thành `host_user_id` và chịu Đ2 |
+
+### 12.10 EP-09 — Báo cáo vi phạm & kiểm duyệt
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-60 | Báo cáo nội dung / người dùng | ⚠️ Đ33 | ✅ | ✅ | ⚠️ Đ34 | ⚠️ Đ34 | ⚠️ Đ34 | ✅ | ✅ | **T0** | Cố ý **không** đặt ngưỡng trust — chặn báo cáo là chặn kênh an toàn |
+| UC-61 | Xử lý hàng đợi báo cáo | ❌ | ❌ | ⚠️ Đ40 | ✅ Đ41 | ✅ | ✅ | ❌ | ❌ | T3¹ | ¹Không kiểm ở guard mà ở **điều kiện gán role** (§8.3 quy tắc 5): chỉ tài khoản ≥ T3 mới được nâng lên `moderator` |
+| UC-62 | Gỡ nội dung & đình chỉ tài khoản | ❌ | ❌ | ❌ | ✅ Đ35 Đ37 | ✅ Đ38 | ✅ Đ39 | ⚠️ Đ36 | ⚠️ Đ36 | T3¹ | `moderator` ≤ 7 ngày `restricted` / ≤ 30 ngày `suspended`, **không** `banned` |
+| UC-63 | Khiếu nại quyết định kiểm duyệt | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | T0 | Một lần/quyết định; **bắt buộc người xử lý khác** người ra quyết định gốc (INV-4) |
+| UC-64 | Lọc tự động spam & nội dung nhạy cảm | — | — | — | — | — | — | — | — | sys | Ngưỡng lọc **nới dần theo trust level** (§11.2), không phải một ngưỡng chung |
+
+### 12.11 EP-10 — Curate nội dung của đội sáng lập
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-65 | Nhập hoạt động curate thủ công | ❌ | ❌ | ✅ Đ42 | ❌ | ✅ Đ42 | ✅ Đ42 | — | — | T5² | ²`curator` thực tế luôn ở T5 (§11.1 điều kiện (b)), nhưng guard kiểm **role**, không kiểm trust |
+| UC-66 | Gắn nhãn nguồn & trạng thái chưa có chủ | ❌ | ❌ | ✅ Đ42 | ❌ | ✅ | ✅ | — | — | — | Nhãn công khai "Curated by Da Nang Connect", **không** hiện tên cá nhân curator |
+| UC-67 | Mời organizer gốc nhận listing | ❌ | ❌ | ✅ Đ30 | ❌ | ✅ | ✅ | — | — | — | Tối đa 3 lần liên hệ/listing; token 14 ngày; template cố định, không DM tự do |
+| UC-68 | Organizer nhận quyền sở hữu listing | ❌ | ⚠️ | ❌ | ❌ | ❌ | ❌ | — | — | **T2** | Cần token hợp lệ **+** T2 **+** email khớp domain nguồn hoặc `admin` xác minh tay. Claim xong ⇒ Đ7 tắt, curator mất quyền sửa |
+| UC-69 | Theo dõi hiệu quả chuyển đổi curate | ❌ | ❌ | ⚠️ Đ44 | ❌ | ✅ | ✅ | — | — | — | Curator chỉ thấy phễu curate, không thấy dữ liệu toàn hệ thống |
+
+### 12.12 EP-11 — Quản trị & analytics
+
+| UC | Tên rút gọn | guest | member | curator | mod | admin | s.admin | host | co-host | Trust min | Ghi chú |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UC-70 | Quản lý khu vực & loại hình | ❌ | ❌ | ❌ Đ45 | ❌ Đ45 | ⚠️ Đ46 Đ47 | ⚠️ Đ46 Đ47 | — | — | — | **6 khu vực MVP** có `is_mvp_filter = true`, không xoá/ẩn được |
+| UC-71 | Dashboard analytics sản phẩm | ❌ | ❌ | ⚠️ Đ44 | ❌ | ✅ | ✅ | — | — | — | Chỉ số gate M6 đọc ở đây: **≥ 25 sự kiện đang mở mới mỗi tuần**, không khu vực MVP nào bằng 0 |
+| UC-72 | Analytics cho organizer | ❌ | ❌ | ⚠️ Đ7 | ❌ | ✅ | ✅ | ✅ Đ43 | ✅ Đ43 | **T2** | Số liệu tổng hợp; không khoan xuống danh tính ngoài phạm vi quyền #8 (§9.2) |
+| UC-73 | Quản lý người dùng & phân quyền | ❌ | ❌ | ❌ | ❌ | ⚠️ | ✅ | — | — | — | **Tách đôi**: `admin` tìm user, xem lịch sử xử lý vi phạm, đình chỉ (Đ38); **gán/thu hồi role chỉ `super_admin`** (`user.role.assign`, §9.4) |
+| UC-74 | Cấu hình feature flag | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | — | — | — | Flag ảnh hưởng bảo mật/phân quyền chỉ `super_admin` bật được |
+| UC-75 | Nhật ký audit hành động quản trị | ❌ | ⚠️ Đ48 | ⚠️ Đ48 | ⚠️ Đ49 | ⚠️ Đ50 | ✅ Đ51 | ❌ | ❌ | — | Append-only; thu hồi quyền `UPDATE/DELETE` của DB role ứng dụng |
+| UC-76 | Giám sát sức khoẻ hệ thống | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | — | — | — | SLA báo cáo mức `critical`: **2 giờ** — cảnh báo đẩy thẳng vào kênh trực |
+
+### 12.13 Tổng hợp ngưỡng trust theo use case
+
+Đây là danh sách **duy nhất** các UC có gắn ngưỡng trust. Mọi UC không nằm trong bảng này thì **không** được
+thêm `@MinTrust()` — thêm ngưỡng ngoài danh sách là lỗi review.
+
+| Ngưỡng | Use case | Vì sao đặt ở đây |
+|---|---|---|
+| **T0** (mọi tài khoản đăng nhập) | UC-07, UC-10, UC-11 (trừ avatar ảnh), UC-13, UC-17, UC-32, UC-35, UC-37, UC-39, UC-42, UC-51, UC-53, UC-54, UC-60, UC-63 | Đọc, tự quản lý dữ liệu của mình, và **kênh an toàn** — không bao giờ chặn |
+| **T1** (email verified) | UC-05, UC-11 (avatar ảnh), UC-16, UC-18, UC-19, UC-20 (`area_only`), UC-21, UC-28, UC-34, UC-38, UC-40, UC-41, UC-45, UC-50 | Ngưỡng chống tài khoản dùng một lần; đủ thấp để không cản nguồn cung |
+| **T2** (phone verified) | UC-20 (`exact`), UC-25 (xem), UC-26 (được mời co-host), UC-43, UC-44, UC-46, UC-47, UC-49 (thêm ảnh), UC-68, UC-72 | Mọi thứ dẫn tới **gặp mặt ngoài đời** hoặc **liên hệ riêng tư** (nguyên tắc P4) |
+| **T3** (active member) | UC-24, UC-25 (xuất CSV), điều kiện được nâng lên `moderator` (§8.3 quy tắc 5) | Rủi ro nhân bản (recurring) và rủi ro dữ liệu cá nhân hàng loạt (CSV) |
+| **T4** (trusted) | UC-49 (mở album), `community_vouch` (§11.2) | Quyền tác động tới trust của người khác phải nằm ở tay người đã có trust |
+| **T5** (community leader) | Không có UC nào **bắt buộc** T5 | T5 chỉ mở **hạn mức** và badge, không mở thêm bề mặt chức năng — có chủ đích |
+
+### 12.14 Bề mặt use case theo role — sơ đồ
+
+```mermaid
+flowchart LR
+    G["guest<br/>(trang thai phien)"]
+    M["member<br/>(mac dinh)"]
+    HOST["ngu canh: host<br/>events.host_user_id"]
+    CH["ngu canh: co-host<br/>event_cohosts"]
+    CU["curator"]
+    MO["moderator"]
+    AD["admin"]
+    SA["super_admin"]
+
+    EP1["EP-01 Onboarding"]
+    EP2["EP-02 Ho so & Trust"]
+    EP3["EP-03 Tao & quan ly su kien"]
+    EP4["EP-04 Kham pha"]
+    EP5["EP-05 RSVP"]
+    EP6["EP-06 Tuong tac"]
+    EP7["EP-07 Thong bao"]
+    EP9["EP-09 Kiem duyet"]
+    EP10["EP-10 Curate"]
+    EP11["EP-11 Quan tri"]
+
+    G --> EP1
+    G --> EP4
+    G -.->|"chi UC-60 (Do33)"| EP9
+
+    M --> EP1
+    M --> EP2
+    M --> EP4
+    M --> EP5
+    M --> EP6
+    M --> EP7
+    M -->|"UC-19 can T1"| EP3
+    M -->|"chi UC-60, UC-63"| EP9
+    M -->|"chi UC-68 claim"| EP10
+
+    M -.->|"tao event / claim listing"| HOST
+    HOST -->|"UC-22,23,25,27,41,72"| EP3
+    HOST --> CH
+    CH -->|"theo co-host flags"| EP3
+
+    CU -->|"UC-65..69"| EP10
+    CU -.->|"chi tab curated (Do40)"| EP9
+    CU -.->|"chi phieu curate (Do44)"| EP11
+
+    MO -->|"UC-61,62,63"| EP9
+    AD -->|"UC-70,71,73*,74,75,76"| EP11
+    AD --> EP9
+    SA -->|"toan bo + user.role.assign"| EP11
+    SA --> EP9
+
+    style G fill:#f5f5f5,stroke:#999
+    style M fill:#e6f7e6,stroke:#2e9e4f
+    style HOST fill:#fff4e5,stroke:#d98d00
+    style CH fill:#fff9ee,stroke:#d9b26f
+    style SA fill:#ffe5e5,stroke:#d63a3a
+```
+
+> `*` UC-73 chỉ mở một phần cho `admin` — xem ghi chú ở §12.12.
+
+### 12.15 Ba mâu thuẫn giữa `02-use-case.md` và mô hình phân quyền — đã xử lý
+
+| # | Chỗ lệch trong `02-use-case.md` | Xử lý trong tài liệu này |
+|---|---|---|
+| L-1 | Cột "Actor" của EP-03 và UC-72 ghi `Organizer` như thể là role | Đọc là **ngữ cảnh theo sự kiện** (cột `host` / `co-host`), không phải `users.role`. Không có `UserRole.ORGANIZER` |
+| L-2 | UC-73 "Quản lý người dùng và phân quyền — Actor: Admin" | Tách đôi: quản lý user thuộc `admin`; **gán/thu hồi role chỉ `super_admin`** (§9.4). Màn hình admin ẩn nút đổi role với `admin` |
+| L-3 | UC-38/UC-39/UC-40 mô tả RSVP gắn với "hoạt động" | RSVP gắn `occurrence_id`. Endpoint chuẩn `POST /api/v1/occurrences/{occurrenceId}/rsvps`; `POST /api/v1/events/{eventId}/rsvps` là đường tắt, trả **409** khi event có nhiều occurrence sắp tới (Đ15) |
+
+---
+
+## 13. Ghi chú triển khai kỹ thuật
+
+### 13.1 Sáu lớp kiểm tra và thứ tự chạy bắt buộc
+
+Ba trục ở §8.2 được hiện thực bằng **bốn guard lõi** cộng hai lớp phụ trợ. Thứ tự **không được đổi**: nó phản
+ánh đúng thứ tự "trạng thái → role → quan hệ → trust" và cả chi phí (rẻ trước, truy vấn DB sau).
+
+| # | Lớp | Loại | Trục | Nguồn dữ liệu | Có chạm DB? | Lỗi trả về |
+|---|---|---|---|---|---|---|
+| 0 | `ThrottlerGuard` | Global | — | Redis `rl:{action}:{scope}` | Không (Redis) | `429 RATE_LIMIT_EXCEEDED` + `Retry-After` |
+| 1 | `JwtAuthGuard` | Global | — | Chữ ký JWT (RS256) + `revoked:sid:{sid}` | Không (Redis) | `401 AUTH_TOKEN_INVALID` / `AUTH_TOKEN_EXPIRED` |
+| 2 | `AccountStatusGuard` | Global | **Trục 0** | Claim `st` + `usr:{id}:status` (Redis, TTL 60 s) | Chỉ khi cache miss | `403 ACCOUNT_RESTRICTED` / `ACCOUNT_SUSPENDED` / `ACCOUNT_BANNED` |
+| 3 | `RolesGuard` | Global | **Trục 1** | Claim `role` | Không | `403 PERM_ROLE_REQUIRED` |
+| 4 | `EventOwnershipGuard` | Route | **Trục 2** | `events` / `event_cohosts` (1 truy vấn, có cache request-scope) | **Có** | `403 PERM_NOT_EVENT_HOST` / `404 EVENT_NOT_FOUND` |
+| 5 | `TrustTierGuard` | Global | **Trục 3** | Claim `tier` | Không | `403 PERM_TRUST_TIER_TOO_LOW` + `requiredTier` |
+| 6 | Hạn mức nghiệp vụ (`QuotaService`) | Service | Trục 3 (mở rộng) | Redis cửa sổ trượt 24 h | Không (Redis) | `429 QUOTA_EXCEEDED` + `resetAt` |
+
+**Vì sao `EventOwnershipGuard` chạy TRƯỚC `TrustTierGuard`** — đây là điểm dễ làm sai nhất: ngưỡng trust của
+một endpoint **phụ thuộc vào quan hệ đã giải được**. Ví dụ `GET /occurrences/:id/attendees` cần **T2** nếu người
+gọi là attendee (Đ20) nhưng **không cần ngưỡng nào** nếu người gọi là host (Đ22), và cần **T3** nếu là host xin
+xuất CSV. `TrustTierGuard` vì vậy phải đọc được `request.eventContext` do `EventOwnershipGuard` gắn vào.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Client
+    participant TH as ThrottlerGuard
+    participant JW as JwtAuthGuard
+    participant ST as AccountStatusGuard
+    participant RO as RolesGuard
+    participant EO as EventOwnershipGuard
+    participant TT as TrustTierGuard
+    participant SV as Service + QuotaService
+
+    C->>TH: POST /api/v1/occurrences/{id}/rsvps
+    TH-->>C: 429 neu vuot rate limit
+    TH->>JW: pass
+    JW->>JW: verify RS256 + EXISTS revoked:sid
+    JW-->>C: 401 neu token hong/thu hoi
+    JW->>ST: request.user = { sub, role, tier, st, sid }
+    ST->>ST: status != 'active' -> chan
+    ST-->>C: 403 ACCOUNT_SUSPENDED
+    ST->>RO: pass
+    RO->>RO: doc @Roles() metadata
+    RO-->>C: 403 PERM_ROLE_REQUIRED
+    RO->>EO: pass
+    EO->>EO: giai occurrenceId -> eventId -> quan he
+    EO->>EO: request.eventContext = { eventId, isHost, isCoHost, flags }
+    EO-->>C: 403 PERM_NOT_EVENT_HOST (neu route doi quan he)
+    EO->>TT: pass
+    TT->>TT: tier >= @MinTrust() (co the phu thuoc eventContext)
+    TT-->>C: 403 PERM_TRUST_TIER_TOO_LOW + requiredTier
+    TT->>SV: pass
+    SV->>SV: QuotaService.consume(...) + logic nghiep vu
+    SV-->>C: 201 Created | 409 | 429 QUOTA_EXCEEDED
+```
+
+> **Cạm bẫy NestJS**: guard khai báo ở `APP_GUARD` chạy **trước** guard khai báo bằng `@UseGuards()` ở
+> controller/handler. Do đó `EventOwnershipGuard` (route-scoped) mặc định sẽ chạy **sau** `TrustTierGuard`
+> (global) — **ngược với thứ tự ta cần**. Cách xử lý đã chốt: đăng ký **cả sáu lớp ở `APP_GUARD`** theo đúng
+> thứ tự trên; `EventOwnershipGuard` và `TrustTierGuard` tự no-op khi handler không có metadata tương ứng.
+
+### 13.2 Vị trí file trong monorepo
+
+Theo quy ước ở `04-tech-stack-va-kien-truc.md` §5.4.6 — mối quan tâm xuyên suốt **không** nằm trong thư mục
+module:
+
+```text
+apps/api/src/common/
+├── guards/
+│   ├── jwt-auth.guard.ts
+│   ├── account-status.guard.ts
+│   ├── roles.guard.ts
+│   ├── event-ownership.guard.ts
+│   └── trust-tier.guard.ts
+├── decorators/
+│   ├── public.decorator.ts          # @Public()
+│   ├── current-user.decorator.ts    # @CurrentUser()
+│   ├── roles.decorator.ts           # @Roles()
+│   ├── min-trust.decorator.ts       # @MinTrust()
+│   └── event-context.decorator.ts   # @EventContext() + @RequireEventRole()
+├── authz/
+│   ├── authz.module.ts
+│   ├── event-context.resolver.ts    # occurrenceId|rsvpId|commentId -> eventId
+│   ├── quota.service.ts             # han muc §11.2, cua so truot Redis
+│   └── permission-matrix.const.ts   # ban sao may doc duoc cua §9.2 + §12
+└── enums/                            # enum CHI dung o backend
+
+packages/shared-types/src/
+├── enums/
+│   ├── user-role.enum.ts            # 5 gia tri
+│   ├── trust-level.enum.ts          # T0-T5
+│   ├── user-status.enum.ts          # 8 trang thai §10
+│   ├── rsvp-status.enum.ts
+│   └── event-status.enum.ts
+├── authz/
+│   ├── permission.const.ts          # 22 permission key §9.2 + §9.4
+│   └── event-role.enum.ts           # HOST | CO_HOST | NONE
+└── index.ts
+```
+
+**Quy tắc**: enum nào web/mobile cũng cần đọc (hiển thị badge, ẩn nút, sinh nhãn i18n) thì nằm ở
+`packages/shared-types`. Enum thuần backend (ví dụ `TrustSignalType` dùng cho job) ở `apps/api/src/common/enums/`.
+Không nhân bản.
+
+### 13.3 Enum & hằng số dùng chung — `packages/shared-types`
+
+```ts
+// packages/shared-types/src/enums/user-role.enum.ts
+// Gia tri PHAI trung tuyet doi voi DB enum user_role_enum (chu thuong, snake_case).
+export const UserRole = {
+  MEMBER: 'member',
+  CURATOR: 'curator',
+  MODERATOR: 'moderator',
+  ADMIN: 'admin',
+  SUPER_ADMIN: 'super_admin',
+} as const;
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+
+// Thu tu de so sanh "cao hon hoac bang". KHONG dung de suy ra quyen —
+// chi dung cho quy tac "khong ai gan role >= role cua chinh minh" (§8.3).
+export const ROLE_RANK: Record<UserRole, number> = {
+  member: 0,
+  curator: 1,
+  moderator: 2,
+  admin: 3,
+  super_admin: 4,
+};
+```
+
+```ts
+// packages/shared-types/src/enums/trust-level.enum.ts
+// Thang DUY NHAT cua san pham. Khong ton tai thang 0-100,
+// khong ton tai enum new/verified/established/trusted/ambassador.
+export const TrustLevel = { T0: 0, T1: 1, T2: 2, T3: 3, T4: 4, T5: 5 } as const;
+export type TrustLevel = (typeof TrustLevel)[keyof typeof TrustLevel];
+
+export const TRUST_LEVEL_I18N_KEY: Record<TrustLevel, string> = {
+  0: 'trust.level.t0.label', // New
+  1: 'trust.level.t1.label', // Email verified
+  2: 'trust.level.t2.label', // Phone verified
+  3: 'trust.level.t3.label', // Active member
+  4: 'trust.level.t4.label', // Trusted
+  5: 'trust.level.t5.label', // Community leader
+};
+```
+
+```ts
+// packages/shared-types/src/authz/event-role.enum.ts
+export const EventRole = { HOST: 'host', CO_HOST: 'co_host', NONE: 'none' } as const;
+export type EventRole = (typeof EventRole)[keyof typeof EventRole];
+
+export interface EventContext {
+  eventId: string;
+  occurrenceId?: string;
+  eventRole: EventRole;
+  canEdit: boolean;      // host = true; co-host = event_cohosts.can_edit
+  canCancel: boolean;    // host = true; co-host mac dinh FALSE (Do13)
+  canMessage: boolean;
+  canCheckIn: boolean;
+}
+```
+
+**Test đồng bộ enum DB ↔ TS** (chạy trong CI, chặn merge):
+
+```ts
+it('user_role_enum trong DB trung khop UserRole trong shared-types', async () => {
+  const rows = await ds.query(
+    `SELECT e.enumlabel FROM pg_enum e
+       JOIN pg_type t ON t.oid = e.enumtypid
+      WHERE t.typname = 'user_role_enum' ORDER BY e.enumsortorder`,
+  );
+  expect(rows.map((r) => r.enumlabel)).toEqual([
+    'member', 'curator', 'moderator', 'admin', 'super_admin',
+  ]);
+});
+```
+
+Test tương tự cho `user_status_enum` (8 giá trị), `rsvp_status_enum`, `event_status_enum`. Mọi nhãn enum trong
+DB viết **chữ thường snake_case** (`published`, `checked_in`, `no_show`) — có một test regex quét toàn bộ
+`pg_enum` để chặn nhãn viết hoa hoặc camelCase lọt vào migration.
+
+### 13.4 Decorator `@Roles()` và `@MinTrust()`
+
+```ts
+// apps/api/src/common/decorators/roles.decorator.ts
+import { SetMetadata } from '@nestjs/common';
+import { UserRole } from '@dnc/shared-types';
+
+export const ROLES_KEY = 'authz:roles';
+/** Cho phep NEU role toan cuc nam trong danh sach. Khong truyen = khong kiem tra truc 1. */
+export const Roles = (...roles: UserRole[]) => SetMetadata(ROLES_KEY, roles);
+```
+
+```ts
+// apps/api/src/common/decorators/min-trust.decorator.ts
+import { SetMetadata } from '@nestjs/common';
+import { TrustLevel } from '@dnc/shared-types';
+
+export const MIN_TRUST_KEY = 'authz:minTrust';
+
+export interface MinTrustOptions {
+  /** Nguong ap dung khi nguoi goi KHONG phai host/co-host cua resource. */
+  default: TrustLevel;
+  /** Nguong rieng khi la host — thuong thap hon hoac bang. */
+  asHost?: TrustLevel;
+  /** Nguong rieng khi la co-host. */
+  asCoHost?: TrustLevel;
+}
+
+export const MinTrust = (opts: TrustLevel | MinTrustOptions) =>
+  SetMetadata(MIN_TRUST_KEY, typeof opts === 'number' ? { default: opts } : opts);
+```
+
+Ví dụ dùng thật — đúng ba trường hợp khó của §12:
+
+```ts
+// 1) Tao su kien: chi can truc 1 (moi role deu la "member" ve nghiep vu) + truc 3
+@Post('/events')
+@MinTrust(TrustLevel.T1)                       // Do2
+create(@CurrentUser() u: AuthUser, @Body() dto: CreateEventRequest) {}
+
+// 2) Xem danh sach attendee: nguong KHAC nhau theo quan he (Do20 vs Do22)
+@Get('/occurrences/:occurrenceId/attendees')
+@EventContext({ param: 'occurrenceId', source: 'occurrence' })
+@MinTrust({ default: TrustLevel.T2, asHost: TrustLevel.T0, asCoHost: TrustLevel.T0 })
+listAttendees() {}
+
+// 3) Xuat CSV: bat buoc la host/co-host VA host phai >= T3 (Do22)
+@Get('/occurrences/:occurrenceId/attendees.csv')
+@EventContext({ param: 'occurrenceId', source: 'occurrence' })
+@RequireEventRole(EventRole.HOST, EventRole.CO_HOST)
+@MinTrust({ default: TrustLevel.T3, asHost: TrustLevel.T3, asCoHost: TrustLevel.T3 })
+@Audit('pii_access')                            // Do22: bat buoc ghi audit_log
+exportCsv() {}
+
+// 4) Hang doi kiem duyet: chi truc 1
+@Get('/admin/moderation/queue')
+@Roles(UserRole.MODERATOR, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+queue() {}
+```
+
+> **Quy tắc review**: một handler **không** được vừa có `@Roles(UserRole.MEMBER)` vừa có `@RequireEventRole()`
+> — `member` là sàn, khai báo nó ở `@Roles()` là thừa và che mất ý định thật. Có test lint chặn tổ hợp này.
+
+### 13.5 Truyền ngữ cảnh sự kiện vào guard — vấn đề khó nhất
+
+Quan hệ host/co-host gắn ở cấp **`events`**, nhưng phần lớn endpoint nhận **`occurrenceId`** (RSVP, check-in),
+và một số nhận `rsvpId` / `commentId`. Guard vì vậy phải **giải ngược** về `event_id` trước khi kiểm tra
+quan hệ (§8.4). Ba nguyên tắc:
+
+1. **Không đọc param bằng tay trong guard.** Route khai báo tường minh nguồn ngữ cảnh bằng `@EventContext()`.
+2. **Đúng một truy vấn**, kết quả gắn vào `request.eventContext` và **tái dùng** ở service — service không
+   truy vấn lại quan hệ.
+3. **Không tìm thấy resource ⇒ `404`, không phải `403`** — tránh dò tồn tại (enumeration).
+
+```ts
+// apps/api/src/common/decorators/event-context.decorator.ts
+export const EVENT_CONTEXT_KEY = 'authz:eventContext';
+export const REQUIRE_EVENT_ROLE_KEY = 'authz:requireEventRole';
+
+export type EventContextSource = 'event' | 'occurrence' | 'rsvp' | 'comment';
+
+export interface EventContextOptions {
+  param: string;                 // ten route param, vd 'occurrenceId'
+  source: EventContextSource;    // quyet dinh cau SQL giai nguoc
+  optional?: boolean;            // true = khong tim thay thi eventRole = NONE thay vi 404
+}
+
+export const EventContext = (opts: EventContextOptions) =>
+  SetMetadata(EVENT_CONTEXT_KEY, opts);
+
+/** Bat buoc nguoi goi phai co MOT trong cac quan he liet ke. */
+export const RequireEventRole = (...roles: EventRole[]) =>
+  SetMetadata(REQUIRE_EVENT_ROLE_KEY, roles);
+```
+
+`EventContextResolver` gom bốn câu truy vấn, mỗi câu trả về **một dòng** và đã bao gồm cờ quyền của co-host —
+không có N+1, không cần load entity:
+
+```sql
+-- source = 'occurrence' (dung cho RSVP, check-in, attendee list, chat nhom)
+SELECT
+  o.id                                   AS occurrence_id,
+  e.id                                   AS event_id,
+  e.host_user_id,
+  (e.host_user_id = $2)                  AS is_host,
+  (ch.user_id IS NOT NULL)               AS is_cohost,
+  COALESCE(ch.can_edit,     false)       AS can_edit,
+  COALESCE(ch.can_cancel,   false)       AS can_cancel,
+  COALESCE(ch.can_message,  false)       AS can_message,
+  COALESCE(ch.can_check_in, false)       AS can_check_in
+FROM event_occurrences o
+JOIN events e ON e.id = o.event_id
+LEFT JOIN event_cohosts ch
+       ON ch.event_id = e.id
+      AND ch.user_id  = $2
+      AND ch.accepted_at IS NOT NULL      -- loi moi chua chap nhan KHONG tinh
+WHERE o.id = $1;
+```
+
+| `source` | Bảng gốc | Đường giải ngược | Dùng cho UC |
+|---|---|---|---|
+| `event` | `events` | trực tiếp | UC-22, UC-23, UC-26, UC-28, UC-72 |
+| `occurrence` | `event_occurrences` | `→ events` | UC-25, UC-27, UC-38, UC-40, UC-41, UC-43, UC-46, UC-49 |
+| `rsvp` | `rsvps` | `→ event_occurrences → events` | UC-25 (gỡ attendee, Đ18), UC-39 |
+| `comment` | `comments` | `→ events` (comment gắn `event_id`) | UC-45, Đ36 (host ẩn comment) |
+
+```ts
+// apps/api/src/common/guards/event-ownership.guard.ts (rut gon)
+@Injectable()
+export class EventOwnershipGuard implements CanActivate {
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly resolver: EventContextResolver,
+  ) {}
+
+  async canActivate(ctx: ExecutionContext): Promise<boolean> {
+    const opts = this.reflector.getAllAndOverride<EventContextOptions>(
+      EVENT_CONTEXT_KEY, [ctx.getHandler(), ctx.getClass()],
+    );
+    if (!opts) return true;                        // route khong can truc 2 -> no-op
+
+    const req = ctx.switchToHttp().getRequest();
+    const resourceId = req.params[opts.param];
+    const userId = req.user?.sub ?? null;
+
+    const row = await this.resolver.resolve(opts.source, resourceId, userId);
+    if (!row) {
+      if (opts.optional) { req.eventContext = null; return true; }
+      throw new NotFoundException(ErrorCode.EVENT_NOT_FOUND);   // 404, khong phai 403
+    }
+
+    req.eventContext = {
+      eventId: row.event_id,
+      occurrenceId: row.occurrence_id ?? undefined,
+      eventRole: row.is_host ? EventRole.HOST
+               : row.is_cohost ? EventRole.CO_HOST
+               : EventRole.NONE,
+      canEdit:    row.is_host || row.can_edit,
+      canCancel:  row.is_host || row.can_cancel,     // Do13: co-host mac dinh false
+      canMessage: row.is_host || row.can_message,
+      canCheckIn: row.is_host || row.can_check_in,
+    } satisfies EventContext;
+
+    const required = this.reflector.getAllAndOverride<EventRole[]>(
+      REQUIRE_EVENT_ROLE_KEY, [ctx.getHandler(), ctx.getClass()],
+    );
+    if (!required) return true;                    // chi gan ngu canh, khong bat buoc quan he
+
+    // Loi thoat cho vai tro van hanh: admin/super_admin di duong rieng (Do9),
+    // nhung PHAI qua header ly do + ghi audit_log muc high.
+    const role: UserRole = req.user?.role;
+    if (role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN) {
+      if (!req.headers['x-admin-reason']) {
+        throw new ForbiddenException(ErrorCode.ADMIN_REASON_REQUIRED);
+      }
+      req.eventContext.adminOverride = true;
+      return true;
+    }
+
+    if (!required.includes(req.eventContext.eventRole)) {
+      throw new ForbiddenException(ErrorCode.PERM_NOT_EVENT_HOST);
+    }
+    return true;
+  }
+}
+```
+
+**Cờ chi tiết của co-host** (`can_edit`, `can_cancel`, `can_check_in`) **không** kiểm ở guard mà ở service —
+guard chỉ trả lời "có phải co-host không". Lý do: một endpoint như `PATCH /events/:id` có thể chấp nhận nhiều
+loại thay đổi với yêu cầu khác nhau (Đ5: co-host không đổi được `host_user_id`), guard không nhìn thấy body.
+
+```ts
+// Trong service — dung lai ngu canh, khong truy van lai
+if (ctx.eventRole === EventRole.CO_HOST && dto.cancel && !ctx.canCancel) {
+  throw new ForbiddenException(ErrorCode.PERM_COHOST_CANNOT_CANCEL);   // Do13
+}
+```
+
+### 13.6 `TrustTierGuard` — đọc ngưỡng phụ thuộc ngữ cảnh
+
+```ts
+@Injectable()
+export class TrustTierGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
+
+  canActivate(ctx: ExecutionContext): boolean {
+    const opts = this.reflector.getAllAndOverride<MinTrustOptions>(
+      MIN_TRUST_KEY, [ctx.getHandler(), ctx.getClass()],
+    );
+    if (!opts) return true;
+
+    const req = ctx.switchToHttp().getRequest();
+    const evCtx: EventContext | null = req.eventContext ?? null;   // do lop 4 gan
+
+    const required =
+      evCtx?.eventRole === EventRole.HOST    ? (opts.asHost   ?? opts.default) :
+      evCtx?.eventRole === EventRole.CO_HOST ? (opts.asCoHost ?? opts.default) :
+      opts.default;
+
+    const tier: number = req.user?.tier ?? 0;
+    if (tier < required) {
+      throw new ForbiddenException({
+        code: ErrorCode.PERM_TRUST_TIER_TOO_LOW,
+        requiredTier: `T${required}`,
+        currentTier: `T${tier}`,
+        // UI dung key nay de hien dung buoc nang cap tiep theo
+        nextStepI18nKey: `trust.upgrade.t${required}.cta`,
+      });
+    }
+    return true;
+  }
+}
+```
+
+**Vấn đề trust cũ trong token** (đã nêu ở `04-tech-stack-va-kien-truc.md` §7.7): `tier` nằm trong access token
+TTL 15 phút, nên người vừa xác minh số điện thoại chưa thấy quyền mới ngay. Ba chỗ phải xử lý:
+
+| Tình huống | Xử lý |
+|---|---|
+| Vừa xác minh email/phone (T tăng) | Endpoint `/auth/email/verify` và `/auth/phone/otp/verify` **trả luôn cặp token mới** với `tier` cập nhật; client thay tại chỗ |
+| Job `trust:recompute` nâng bậc (T2→T3…) | Không phát token mới. Người dùng thấy quyền mới ở lần refresh kế tiếp (≤ 15 phút). Chấp nhận được vì đây là nâng quyền, không phải hạ quyền |
+| Job **hạ** bậc hoặc đổi role / khoá tài khoản | **Phải có hiệu lực ngay**: ghi `revoked:sid:{sid}` cho mọi phiên của user (TTL = TTL còn lại của token) và thu hồi refresh token. Đây là lý do `JwtAuthGuard` tra Redis mỗi request |
+
+### 13.7 Mã lỗi phân quyền
+
+Định dạng SCREAMING_SNAKE_CASE, khai báo tập trung, mỗi mã có key i18n EN + VI. Response `403` **luôn** nói rõ
+"cần gì để đủ điều kiện", không bao giờ chỉ trả chuỗi rỗng.
+
+| Mã | HTTP | Khi nào | Thông điệp UI hướng tới |
+|---|---|---|---|
+| `AUTH_TOKEN_MISSING` | 401 | Guest chạm endpoint cần đăng nhập | Mở màn hình đăng nhập, **giữ nguyên ngữ cảnh** để quay lại (Đ14) |
+| `ACCOUNT_RESTRICTED` | 403 | `status = 'restricted'` | Nêu ngày hết hạn + link khiếu nại (UC-63) |
+| `ACCOUNT_SUSPENDED` / `ACCOUNT_BANNED` | 403 | Trục 0 | Không nêu chi tiết case; chỉ link khiếu nại |
+| `PERM_ROLE_REQUIRED` | 403 | Trục 1 | Thông điệp trung tính, **không** tiết lộ role nào mới đủ |
+| `PERM_NOT_EVENT_HOST` | 403 | Trục 2 | "Chỉ người tổ chức buổi này mới làm được" |
+| `PERM_COHOST_CANNOT_CANCEL` | 403 | Đ13 | "Người tổ chức chính chưa bật quyền huỷ cho bạn" |
+| `PERM_TRUST_TIER_TOO_LOW` | 403 | Trục 3 | Kèm `requiredTier` + CTA đúng bước tiếp theo (xác minh phone…) |
+| `QUOTA_EXCEEDED` | 429 | Hạn mức §11.2 | Kèm `resetAt` và bậc hiện tại |
+| `HOST_CANNOT_RSVP` | 409 | Đ16 | "Bạn là người tổ chức, đã được tính là có mặt" |
+| `CHECK_IN_WINDOW_CLOSED` | 409 | Đ24 | Nêu cửa sổ T-2h → T+48h |
+| `AMBIGUOUS_OCCURRENCE` | 409 | Đường tắt `/events/{id}/rsvps` khi có nhiều occurrence sắp tới | Hiện danh sách buổi để người dùng chọn |
+| `ADMIN_REASON_REQUIRED` | 403 | Đ9 — admin thao tác không kèm lý do | Bắt buộc ô lý do trong màn hình admin |
+
+### 13.8 Cách test phân quyền — test bằng bảng ma trận
+
+Nguyên tắc: **ma trận §9.2 + §12 được mã hoá thành dữ liệu**, và test sinh ra từ dữ liệu đó. Không viết tay
+từng `it()` cho từng ô — 22 quyền × 8 cột đã là 176 ô, cộng 76 UC thì không ai bảo trì nổi bằng tay.
+
+#### 13.8.1 Bộ fixture người dùng chuẩn — 14 tài khoản
+
+Seed một lần cho toàn bộ test tích hợp. Tên biến là **hợp đồng**: mọi test tham chiếu đúng các tên này.
+
+| Fixture | `role` | `trust_level` | `status` | Quan hệ với event mẫu | Dùng để kiểm |
+|---|---|---|---|---|---|
+| `guestClient` | — | — | — | — | INV-1, Đ1, Đ14, Đ19, Đ33 |
+| `memberT0` | `member` | 0 | `active` | không | Đ2, Đ15 (`trust_gate`), Đ28 |
+| `memberT1` | `member` | 1 | `active` | không | Ngưỡng T1: tạo event, RSVP, bình luận |
+| `memberT2` | `member` | 2 | `active` | attendee (`going`) | Đ20, Đ29, UC-43, UC-46 |
+| `memberT2NotAttending` | `member` | 2 | `active` | không | Chốt chặn "T2 nhưng chưa RSVP" của Đ20 |
+| `memberT3` | `member` | 3 | `active` | host | UC-24 recurring, xuất CSV |
+| `memberT4` | `member` | 4 | `active` | không | `community_vouch`, UC-49 mở album |
+| `hostUser` | `member` | 2 | `active` | **host** của `EVENT_A` | Đ4, Đ12, Đ22, Đ24, Đ27 |
+| `coHostEdit` | `member` | 2 | `active` | co-host `can_edit=true`, `can_cancel=false` | Đ5, Đ13, Đ25 |
+| `coHostPending` | `member` | 2 | `active` | co-host **`accepted_at IS NULL`** | Bẫy: lời mời chưa nhận **không** cho quyền gì |
+| `restrictedUser` | `member` | 3 | `restricted` | host của `EVENT_B` | Đ0 — mất quyền ghi dù trust cao |
+| `curatorUser` | `curator` | 5 | `active` | tạo `EVENT_CURATED` | Đ7, Đ30, Đ40, Đ42, Đ44 |
+| `moderatorUser` | `moderator` | 5 | `active` | **host của `EVENT_C`** | Đ34, Đ41, INV-4 (xung đột lợi ích) |
+| `adminUser` / `superAdminUser` | `admin` / `super_admin` | 5 | `active` | không | Đ9, Đ38, Đ39, §9.4 |
+
+Ba event mẫu: `EVENT_A` (self-serve, `hostUser`), `EVENT_B` (của `restrictedUser`), `EVENT_CURATED`
+(`source_type='curated'`, `claim_status='not_claimed'`), cộng `EVENT_C` do `moderatorUser` host. Mỗi event có
+đúng 1 occurrence trừ `EVENT_A` có 2 occurrence sắp tới — để kiểm `409 AMBIGUOUS_OCCURRENCE`.
+
+#### 13.8.2 Ma trận máy đọc được
+
+```ts
+// apps/api/src/common/authz/permission-matrix.const.ts
+// Ban sao may doc duoc cua §9.2. Doi bang trong tai lieu -> PHAI doi file nay.
+export type Expectation = 'allow' | 'deny' | 'conditional';
+
+export interface MatrixRow {
+  permission: string;                       // 'rsvp.create'
+  ucRefs: string[];                         // ['UC-38']
+  route: { method: 'GET'|'POST'|'PATCH'|'DELETE'; path: string };
+  expect: Record<FixtureName, Expectation>;
+  minTrust?: TrustLevel;
+  conditionRefs?: string[];                 // ['D15','D16']
+}
+
+export const PERMISSION_MATRIX: MatrixRow[] = [
+  {
+    permission: 'rsvp.create',
+    ucRefs: ['UC-38'],
+    route: { method: 'POST', path: '/api/v1/occurrences/:occurrenceId/rsvps' },
+    minTrust: TrustLevel.T1,
+    conditionRefs: ['D15', 'D16'],
+    expect: {
+      guestClient: 'deny', memberT0: 'conditional', memberT1: 'allow',
+      memberT2: 'allow', memberT3: 'allow', memberT4: 'allow',
+      hostUser: 'deny',            // Do16 HOST_CANNOT_RSVP
+      coHostEdit: 'deny',          // Do16
+      coHostPending: 'allow',      // chua chap nhan loi moi -> van la member thuong
+      restrictedUser: 'deny',      // Do0
+      curatorUser: 'allow', moderatorUser: 'allow',
+      adminUser: 'allow', superAdminUser: 'allow',
+    },
+  },
+  // ... 21 dong con lai cua §9.2 + 12 dong cua §9.4
+];
+```
+
+#### 13.8.3 Test sinh tự động từ ma trận
+
+```ts
+describe.each(PERMISSION_MATRIX)('$permission ($ucRefs)', (row) => {
+  it.each(Object.entries(row.expect))('%s -> %s', async (fixture, expectation) => {
+    const res = await callAs(fixture as FixtureName, row.route);
+
+    if (expectation === 'allow') {
+      expect(res.status).toBeLessThan(400);
+    } else if (expectation === 'deny') {
+      expect([401, 403, 404, 409]).toContain(res.status);
+      expect(res.body.code).toMatch(/^(AUTH_|PERM_|ACCOUNT_|HOST_)/);
+    } else {
+      // 'conditional' phai co it nhat mot test rieng vien dan dieu kien
+      expect(CONDITIONAL_CASES).toHaveProperty(`${row.permission}.${fixture}`);
+    }
+  });
+});
+```
+
+#### 13.8.4 Năm nhóm test bắt buộc
+
+| Nhóm | Nội dung | Chặn merge? |
+|---|---|---|
+| **T-1 Ma trận** | Toàn bộ `PERMISSION_MATRIX` × 14 fixture, chạy thật qua HTTP (`supertest`) chứ không gọi service trực tiếp | ✅ |
+| **T-2 Bất biến** | INV-1 → INV-4 (§9.5). INV-1 quét `router.stack`: mọi route thiếu `@Public()` phải nằm sau `JwtAuthGuard` | ✅ |
+| **T-3 Thứ tự guard** | Giả lập user `suspended` + `super_admin` + thiếu trust ⇒ **phải** trả `ACCOUNT_SUSPENDED`, không phải `PERM_TRUST_TIER_TOO_LOW`. Chứng minh thứ tự §13.1 | ✅ |
+| **T-4 Trôi ma trận (drift)** | Quét mọi handler có `@Roles` / `@MinTrust` / `@RequireEventRole`; route nào **không** xuất hiện trong `PERMISSION_MATRIX` ⇒ **fail**. Ngăn thêm endpoint mà quên khai báo kỳ vọng | ✅ |
+| **T-5 State machine** | 8 × 8 ô chuyển trạng thái (§10.3); ô không hợp lệ phải ném `InvalidStateTransitionException` | ✅ |
+
+```ts
+// T-3: bang chung ve thu tu guard — test de doc, gia tri rat cao
+it('trang thai tai khoan duoc kiem TRUOC role va trust', async () => {
+  const res = await callAs('suspendedSuperAdmin', {
+    method: 'POST', path: '/api/v1/events',
+  });
+  expect(res.status).toBe(403);
+  expect(res.body.code).toBe('ACCOUNT_SUSPENDED');   // KHONG phai PERM_*
+});
+```
+
+```ts
+// T-4: chan endpoint moi khong khai bao ky vong phan quyen
+it('moi route co metadata phan quyen deu co dong trong PERMISSION_MATRIX', () => {
+  const declared = new Set(
+    PERMISSION_MATRIX.map((r) => `${r.route.method} ${r.route.path}`),
+  );
+  const missing = collectGuardedRoutes(app).filter((r) => !declared.has(r));
+  expect(missing).toEqual([]);   // thong bao loi in ra danh sach route thieu
+});
+```
+
+#### 13.8.5 Test phân quyền ở tầng web & mobile
+
+Frontend **không** được tự suy luận quyền bằng cách so sánh chuỗi role rải rác trong component. Một hàm duy
+nhất ở `packages/shared-types` trả lời, và cả `apps/web` lẫn `apps/mobile` cùng dùng:
+
+```ts
+// packages/shared-types/src/authz/can.ts
+export function can(
+  viewer: { role: UserRole; trustLevel: TrustLevel; status: UserStatus } | null,
+  action: PermissionKey,
+  ctx?: { eventRole?: EventRole; hasRsvp?: boolean },
+): boolean { /* ... */ }
+```
+
+- Test snapshot: `can()` chạy trên **cùng** `PERMISSION_MATRIX` và phải khớp kết quả backend cho mọi ô `allow`/`deny`.
+- Quy tắc UI: `can()` sai lệch chỉ làm **ẩn/hiện nút**, không bao giờ là lớp bảo vệ. Backend luôn kiểm lại.
+- Ngoại lệ có chủ đích: nút RSVP **vẫn hiện** với `guest` (Đ14) — đây là quyết định sản phẩm, không phải lỗ hổng.
+
+### 13.9 Checklist review PR chạm vào phân quyền
+
+- [ ] Route mới có đúng một trong: `@Public()`, `@Roles()`, `@MinTrust()`, `@RequireEventRole()` — không để trống mặc định
+- [ ] Ngưỡng trust dùng **chỉ** các giá trị có trong §12.13; không phát minh ngưỡng mới
+- [ ] Endpoint chạm dữ liệu của event dùng `@EventContext()`, **không** tự đọc `req.params` trong service để kiểm quyền
+- [ ] Service **tái dùng** `request.eventContext`, không truy vấn lại `event_cohosts`
+- [ ] Hành động của `curator`/`moderator`/`admin`/`super_admin` trên dữ liệu người khác có `@Audit(...)` (INV-2)
+- [ ] Không tìm thấy resource ⇒ `404`, thiếu quyền ⇒ `403`; không lẫn lộn
+- [ ] Có dòng mới trong `PERMISSION_MATRIX` và test T-1 xanh
+- [ ] Enum mới (nếu có) đặt đúng chỗ (`packages/shared-types` vs `src/common/enums`) và có test đồng bộ với `pg_enum`
+- [ ] Thông điệp lỗi có key i18n **cả EN và VI**, không hard-code chuỗi tiếng Anh
+
+---
+
+## 14. Rủi ro phân quyền & câu hỏi mở
+
+### 14.1 Cách xếp hạng
+
+`Khả năng` × `Tác động`, mỗi trục 3 mức (Thấp / TB / Cao). Ưu tiên xử lý = ô có ít nhất một trục ở mức Cao.
+Mỗi rủi ro có **hai** loại biện pháp tách bạch: **Ngăn** (chặn trước, ở guard/DB) và **Phát hiện** (nhận ra sau,
+ở job/dashboard) — chỉ có "ngăn" mà không có "phát hiện" thì không đủ, vì kẻ lạm dụng luôn tìm được đường vòng.
+
+### 14.2 Bảng rủi ro
+
+| Mã | Rủi ro | Kịch bản khai thác cụ thể | KN | TĐ | Ngăn | Phát hiện | Chủ sở hữu | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| **R-01** | **Leo thang đặc quyền qua co-host** | Kẻ xấu tạo event rác, mời chính tài khoản phụ của mình làm co-host với `can_edit=true`, rồi dùng tài khoản phụ đó để nhắn tin cho attendee của event (bỏ qua điều kiện "từng chung occurrence" của Đ29) | TB | **Cao** | (a) Người được mời phải **≥ T2**; (b) `accepted_at IS NOT NULL` mới có quyền; (c) `can_cancel` mặc định `false`; (d) co-host **không** sửa được `host_user_id`, `host_type` và danh sách co-host (Đ5); (e) tối đa 5 co-host/event; (f) broadcast tới attendee giới hạn **1 lượt/occurrence/ngày** (Đ32) | Cảnh báo khi một user được mời làm co-host ở **> 5 event trong 7 ngày**; cảnh báo khi cụm host–co-host dùng chung thiết bị/IP; tỉ lệ DM của co-host trên số attendee > 80 % | Backend lead | **Đã thiết kế** |
+| **R-02** | **Moderator tự kiểm duyệt nội dung của chính mình** | `moderatorUser` đồng thời là host của `EVENT_C`. Có report về `EVENT_C`; moderator tự vào hàng đợi và đóng case "không vi phạm" | TB | **Cao** | Conflict-of-interest guard **chặn cứng** ở tầng service: lọc khỏi hàng đợi các case mà `reported_by = actor` **hoặc** `target_user_id = actor` **hoặc** event liên quan có `host_user_id = actor` hoặc actor là co-host (Đ34, Đ41). Bất biến INV-4 có test | Job hằng đêm đối chiếu `moderation_cases.resolved_by` với quan hệ host/co-host tại **thời điểm xử lý** (không phải hiện tại); mọi vi phạm gửi cảnh báo tới `super_admin` | Trust & Safety | **Đã thiết kế** |
+| **R-03** | **Admin xem dữ liệu cá nhân không để lại dấu vết** | `admin` mở màn hình quản lý user, xem email/số điện thoại/danh sách attendee của nhiều người mà không gắn với case nào — tò mò, hoặc rò rỉ cho bên thứ ba | **Cao** | **Cao** | (a) **Không có** màn hình duyệt danh sách attendee tự do (Đ21); (b) mọi truy cập PII bắt buộc kèm `moderation_case_id` hoặc `support_ticket_id`; (c) decorator `@Audit('pii_access')` là **bắt buộc** trên mọi endpoint trả PII, có test T-4 chặn thiếu; (d) `audit_log` append-only, DB role ứng dụng bị thu hồi `UPDATE/DELETE` | Dashboard "PII access" hiển thị số lượt/người/tuần; ngưỡng cảnh báo **> 20 lượt/tuần/người**; `super_admin` nhận báo cáo tuần; `admin` **không** xem được log của `super_admin` nhưng `super_admin` xem được tất cả (Đ50, Đ51) | Super admin | **Đã thiết kế — cần rà lại khi có màn hình admin thật** |
+| **R-04** | **Farm trust level bằng sự kiện ảo** | Tạo 5 tài khoản, lần lượt host các "buổi cà phê" không có thật ở An Thượng, RSVP chéo cho nhau và bấm `checked_in` lẫn nhau. Sau ~3 tuần cả 5 đạt T3, một tài khoản lên T4 rồi dùng `community_vouch` kéo tài khoản thứ 6 lên | **Cao** | **Cao** | (a) `event_hosted_completed` chỉ tính khi occurrence có **≥ 3 người `checked_in`**; (b) T3 cần tài khoản ≥ 14 ngày, T4 ≥ 60 ngày; (c) **T5 không bao giờ tự động** — luôn cần `staff_endorsement` của `admin`; (d) `community_vouch` trần **3 lượt nhận/người**, chỉ T4/T5 cấp được, hết hạn 12 tháng; (e) đánh giá UC-16 chỉ tính khi hai bên **không** cùng cụm | Job `trust:fraud_scan` hằng đêm chấm điểm cụm: đồ thị attendee–host, phát hiện **thành phần liên thông nhỏ, dày, khép kín** (≥ 80 % lượt tham gia chỉ diễn ra trong cụm ≤ 8 người, lặp ≥ 3 lần); cờ vàng đưa vào hàng đợi kiểm duyệt, **không** tự hạ bậc | Trust & Safety | ⚠️ **Còn hở — thuật toán chấm cụm chưa chốt, xem Q-04** |
+| **R-05** | **Chiếm listing bằng claim giả mạo** | Kẻ xấu bắt được link mời claim (UC-67) chuyển tiếp trong nhóm chat, dùng token nhận một listing đông người quan tâm rồi đổi địa điểm/nội dung | TB | **Cao** | Token 14 ngày, **một lần dùng**, gắn `listing_id` + email đích; cần đồng thời **T2** + email khớp domain nguồn, hoặc `admin` xác minh tay; sau khi claim, thay đổi trọng yếu trong 7 ngày đầu đưa vào `pending_review` | Cảnh báo khi listing vừa claim bị đổi `venue`/`starts_at` trong 48 h; curator nhận thông báo và có nút "thu hồi claim" trong 7 ngày | Curator lead | **Đã thiết kế** |
+| **R-06** | **Host lạm dụng `no_show` để trả đũa** | Host bực vì bị chê trong bình luận, đánh dấu `no_show` cho toàn bộ attendee, kéo trust của họ xuống | TB | TB | Cửa sổ gắn nhãn **T+2h → T+48h** (Đ27); nếu host đánh dấu `no_show` cho **> 50 %** attendee của một occurrence thì bản ghi tự vào hàng đợi kiểm duyệt; attendee khiếu nại trong 7 ngày, gỡ nhãn **hoàn lại** `trust_signal` âm | Thống kê `no_show_rate` do host gắn so với trung vị toàn nền tảng; host lệch > 3σ bị rà | Trust & Safety | **Đã thiết kế** |
+| **R-07** | **Impersonate bị dùng như cửa hậu** | `admin` dùng `user.impersonate.readonly` để đọc tin nhắn riêng của một user, viện cớ hỗ trợ | Thấp | **Cao** | Chỉ đọc, tối đa **30 phút/phiên**; **bắt buộc** gửi thông báo cho chính user đó; banner đỏ hiện trên toàn UI trong phiên; `audit_log` mức `critical`; **không** đọc được nội dung DM (chỉ metadata) | Báo cáo tuần gửi `super_admin`; user nhận thông báo nên tự phát hiện được và khiếu nại | Super admin | ⚠️ **Cần chốt: có bật ở MVP không — xem Q-06** |
+| **R-08** | **Đổi role nhưng token cũ còn hiệu lực** | Hạ một `moderator` về `member` lúc 10:00; access token cũ còn hạn tới 10:14 vẫn gọi được API kiểm duyệt | TB | **Cao** | Đổi role ⇒ **thu hồi toàn bộ refresh token** (§8.3 quy tắc 4) **và** ghi `revoked:sid:{sid}` cho mọi phiên; `JwtAuthGuard` tra Redis mỗi request | Test T-3 có ca "đổi role rồi gọi lại bằng token cũ ⇒ 401"; cảnh báo nếu có request mang `role` khác `users.role` hiện tại | Backend lead | **Đã thiết kế** |
+| **R-09** | **Khoá chết `super_admin`** | Hai `super_admin`, một người mất thiết bị 2FA, người kia vô tình bị `suspended` ⇒ không ai gán được role, không ai gỡ khoá | Thấp | **Cao** | Hệ thống **chặn cứng** thao tác làm số `super_admin` đang `active` xuống dưới **2** (INV-3); `super_admin` không tự khoá được chính mình; quy trình khôi phục ngoài băng (break-glass) có tài liệu riêng, dùng khoá dự phòng cất offline | Health check hằng ngày đếm `super_admin` active; cảnh báo nếu = 2 (không còn dư) | CTO | ⚠️ **Quy trình break-glass chưa viết — Q-07** |
+| **R-10** | **Curator dùng kênh mời claim như kênh spam** | Curator gửi thư mời claim tới hàng loạt organizer chỉ để kéo họ vào app, không thực sự có listing | Thấp | TB | `curator` **không** DM tự do (Đ30); chỉ template cố định `claim_invitation`; **tối đa 3 lần liên hệ/listing**; rate limit **30 listing/giờ/tài khoản** (Đ42); cấm crawler | Dashboard phễu curate (UC-69): tỉ lệ mời → claim tụt dưới 10 % thì rà lại chất lượng nguồn | Curator lead | **Đã thiết kế** |
+| **R-11** | **`guest` báo cáo hàng loạt để dìm đối thủ** | Đối thủ tạo 50 báo cáo ẩn danh vào các sự kiện của một studio để đẩy chúng vào hàng đợi và ẩn tạm | TB | TB | Guest báo cáo có captcha, **3 báo cáo/IP/ngày**, mặc định mức `normal`, **không** báo cáo được người dùng (chỉ nội dung, Đ33); báo cáo từ guest **không bao giờ** tự động ẩn nội dung — luôn cần moderator | Gộp báo cáo trùng đối tượng; `trust_signal` `report_abuse` cho tài khoản báo cáo sai ≥ 3 lần; theo dõi cụm IP/ASN | Trust & Safety | **Đã thiết kế** |
+| **R-12** | **Rò rỉ danh sách attendee qua analytics** | Host ở T2 dùng UC-72 khoan xuống "phân bố khu vực của attendee" trên một occurrence chỉ có 2 người ⇒ suy ra danh tính và nơi ở | TB | **Cao** | Analytics là **số liệu tổng hợp**; **k-anonymity**: không hiển thị chiều phân rã nào có nhóm < **5** người, thay bằng "không đủ dữ liệu"; xuất CSV cần host ở **T3** + ghi `audit_log` | Rà các truy vấn analytics trả về nhóm nhỏ; đếm lượt xuất CSV/host/tuần | Data / Backend | ⚠️ **Ngưỡng k = 5 cần xác nhận — Q-08** |
+| **R-13** | **Hạ bậc trust dùng như hình phạt lộ ra ngoài** | Người dùng bị tụt bậc, badge "Trusted" biến mất khỏi hồ sơ công khai, cộng đồng suy ra người đó vừa bị kỷ luật | TB | TB | **Không badge nào mang nghĩa tiêu cực**; số `no_show`, số lần bị báo cáo, điểm thành phần **không bao giờ** hiển thị công khai; thông báo tụt bậc dùng ngôn ngữ trung tính, gửi riêng; ràng buộc không tụt quá **1 bậc/7 ngày** | Rà nội dung mẫu thông báo mỗi lần thay đổi; đo tỉ lệ rời bỏ sau sự kiện tụt bậc | Product | **Đã thiết kế** |
+| **R-14** | **Quyền phình theo thời gian (permission creep)** | Mỗi lần thêm tính năng lại nới thêm cho `moderator` một chút; sau 6 tháng `moderator` gần bằng `admin` mà không ai nhận ra | **Cao** | TB | Ma trận §9.2 là **nguồn sự thật duy nhất**, được mã hoá thành `PERMISSION_MATRIX`; test **T-4 drift** chặn merge route không khai báo; thêm ô ✅ mới cho role vận hành phải có PR riêng gắn nhãn `authz` và cần 2 người duyệt | Rà soát ma trận định kỳ ở mốc **M3** và **M6**; báo cáo "số ô ✅ theo role" so với bản trước | Backend lead | **Đã thiết kế** |
+
+### 14.3 Chuỗi tấn công R-04 — farm trust bằng sự kiện ảo
+
+Vẽ ra để thấy **điểm chặn rẻ nhất** không nằm ở cuối chuỗi mà ở hai chỗ: điều kiện `≥ 3 người checked_in` và
+cổng thủ công của T5.
+
+```mermaid
+flowchart LR
+    A1["Tao 5 tai khoan<br/>email khac nhau"] --> A2["Xac minh email<br/>-> T1"]
+    A2 --> A3{"Xac minh phone<br/>-> T2"}
+    A3 -->|"chan 1: can 5 SIM that<br/>1 so = 1 tai khoan active"| B1["Chi phi that tang"]
+    A3 --> A4["Tao su kien ao<br/>o An Thuong"]
+    A4 --> A5["RSVP cheo"]
+    A5 --> A6{"Host bam checked_in"}
+    A6 -->|"chan 2: event_hosted_completed<br/>can >= 3 nguoi checked_in"| B2["Phai duy tri >= 3 tai khoan/buoi"]
+    A6 --> A7["Lap 3 buoi + cho 14 ngay"]
+    A7 --> A8["Dat T3"]
+    A8 --> A9["Lap 8 buoi + cho 60 ngay<br/>+ danh gia >= 4,5"]
+    A9 --> A10{"Dat T4"}
+    A10 -->|"chan 3: job trust:fraud_scan<br/>phat hien cum khep kin"| B3["Co vang -> hang doi kiem duyet"]
+    A10 --> A11["Dung community_vouch<br/>keo tai khoan thu 6"]
+    A11 --> A12{"Muon len T5"}
+    A12 -->|"CHAN CUNG: T5 luon can<br/>staff_endorsement cua admin"| B4["Khong bao gio tu dong"]
+
+    style B1 fill:#fff4e5,stroke:#d98d00
+    style B2 fill:#fff4e5,stroke:#d98d00
+    style B3 fill:#fff4e5,stroke:#d98d00
+    style B4 fill:#ffe5e5,stroke:#d63a3a
+```
+
+**Kết luận thiết kế**: chi phí tấn công tăng tuyến tính theo số SIM và theo thời gian chờ (14 → 60 ngày), trong
+khi phần thưởng cao nhất (T5) bị khoá sau một hành động người thật. Đây là lý do **không** cần thuật toán phát
+hiện gian lận phức tạp ở MVP — nhưng vẫn phải có job cờ vàng, vì T4 đã đủ để `community_vouch` và để được ưu
+tiên trong dải "Featured".
+
+### 14.4 Câu hỏi mở cần chủ dự án trả lời
+
+| Mã | Câu hỏi | Vì sao phải trả lời | Ảnh hưởng nếu không trả lời | Người quyết | Hạn |
+|---|---|---|---|---|---|
+| **Q-01** | Moderator tình nguyện từ cộng đồng (từ M4) có được ký **thoả thuận bảo mật** riêng và có được xem PII của người dùng không? | Người ngoài tổ chức chạm dữ liệu cá nhân là nghĩa vụ theo **Luật 91/2025/QH15** — cần cơ sở pháp lý và hợp đồng xử lý dữ liệu. **CẦN LUẬT SƯ XÁC NHẬN** | Không dám mở role cho cộng đồng ⇒ đội nội bộ gánh toàn bộ hàng đợi, không đạt SLA `critical` 2 giờ | Founder + luật sư | **Trước M4** |
+| **Q-02** | `curator` có được xem địa chỉ email của organizer gốc mà mình liên hệ không, hay chỉ thấy "đã gửi"? | Persona P5 cần theo dõi phễu claim; nhưng email lấy từ nguồn công khai vẫn là dữ liệu cá nhân theo Luật 91/2025. **CẦN LUẬT SƯ XÁC NHẬN** | Hoặc curator làm việc mù, hoặc lưu PII không có cơ sở pháp lý | Founder + luật sư | **Trước M1** |
+| **Q-03** | Có làm **organization profile** (nhiều user ↔ một tổ chức) ở GĐ1 không, hay chỉ dùng co-host? | Persona P4 (Linh) cần nhân viên đăng bài mà không dùng tài khoản cá nhân. Co-host giải quyết được 80 % nhưng gắn theo **từng event**, không theo thương hiệu | Nếu quyết muộn thì phải migrate `events.host_type` và sinh trục phân quyền thứ tư | Product owner | **Trước M2** |
+| **Q-04** | Ngưỡng cờ vàng của `trust:fraud_scan` (R-04) đặt ở đâu: kích thước cụm, độ khép kín, số lần lặp? | Quá nhạy ⇒ đội kiểm duyệt ngập cờ giả; quá lỏng ⇒ farm trust trót lọt | Job ra đời không có ngưỡng ⇒ hoặc tắt, hoặc gây phiền | Trust & Safety + Data | **Trước M3** |
+| **Q-05** | Người dùng bị `banned` rồi được khôi phục về **T1** — có công bằng không khi họ từng ở T5 sau 2 năm đóng góp? | Quy tắc hiện tại (S10) cứng và có thể đẩy người tốt bị oan rời hẳn | Rủi ro mất người dùng có giá trị nhất sau một sai sót kiểm duyệt | Product owner | Trước M4 |
+| **Q-06** | Có bật `user.impersonate.readonly` ở MVP không? | Rất hữu ích cho hỗ trợ, nhưng là quyền nguy hiểm nhất trong hệ thống (R-07) | Nếu bật mà chưa có audit + thông báo đầy đủ thì tạo rủi ro pháp lý và niềm tin | CTO | **Trước M1** |
+| **Q-07** | Quy trình **break-glass** khi mất cả hai `super_admin` là gì, ai giữ khoá dự phòng, cất ở đâu? | R-09 khoá chết toàn bộ khả năng quản trị | Sự cố hiếm nhưng không có đường thoát | CTO | **Trước M1** |
+| **Q-08** | Ngưỡng k-anonymity cho analytics organizer là **5** hay con số khác? | R-12 — Đà Nẵng ở giai đoạn đầu có nhiều sự kiện chỉ 3–6 người; k = 5 có thể làm analytics trống rỗng | Hoặc lộ danh tính, hoặc tính năng vô dụng với host nhỏ | Product + Data | Trước M3 |
+| **Q-09** | Host có được **chặn** một user cụ thể RSVP vào sự kiện của mình không, và có phải nêu lý do không? | Nhu cầu an toàn thật (đuổi người quấy rối), nhưng dễ thành công cụ loại trừ theo quốc tịch/giới | Thiếu công cụ ⇒ host bỏ nền tảng sau một sự cố; có công cụ mà không kiểm soát ⇒ rủi ro phân biệt đối xử | Product + Trust & Safety | Trước M3 |
+| **Q-10** | Sự kiện **có thu phí** ở GĐ1 được phép tới đâu (chỉ khai `price`, thu tiền ngoài app)? Ai kiểm chứng? | Persona P4 sẵn sàng trả phí và tổ chức lớp có thu tiền; ranh giới nội dung thương mại chưa rõ | `moderator` không có tiêu chí để phân biệt "hoạt động có phí" với "quảng cáo dịch vụ" | Product owner | **Trước M1** |
+| **Q-11** | `admin` có được **đề xuất** nâng role và `super_admin` chỉ bấm duyệt, hay `admin` hoàn toàn không chạm? | Quy trình hiện tại (§8.3) cho `admin` chỉ **đề xuất** — cần xác nhận có xây luồng đề xuất/duyệt hay bỏ hẳn | Nếu bỏ, `super_admin` thành nút thắt cổ chai vận hành | CTO | Trước M2 |
+| **Q-12** | Có cho phép **hạ trust level thủ công** bởi `admin` (ngoài các quy tắc tự động ở §11.4) không? | Có trường hợp con người biết rõ hơn dữ liệu; nhưng mở ra là mở cửa cho quyết định tuỳ tiện | Hoặc thiếu công cụ xử lý ca đặc biệt, hoặc mất tính nhất quán của thang trust | Trust & Safety | Trước M4 |
+
+> Mọi câu hỏi gắn nhãn **CẦN LUẬT SƯ XÁC NHẬN** (Q-01, Q-02) phải được rà theo **Luật Bảo vệ dữ liệu cá nhân
+> 91/2025/QH15** — từ **01/01/2026** đây là văn bản hiệu lực cao hơn Nghị định 13/2023/NĐ-CP, và **mọi mẫu biểu,
+> thông báo, văn bản đồng ý phải theo Luật 91/2025**. Chi tiết ở `06-phap-ly-va-tuan-thu-viet-nam.md`.
+
+---
+
+## 15. Quyết định đã chốt
+
+### 15.1 Quyết định về role toàn cục
+
+Mã `MT-xx` là số hiệu mâu thuẫn đã tồn tại giữa các bản phân tích trước; mã `D-xx` là quyết định của bản 1.0.
+**Những quyết định dưới đây là ràng buộc, không phải đề xuất** — mọi tài liệu, migration và PR sau ngày
+2026-08-31 phải tuân theo, và mọi phương án thay thế đã được cân nhắc rồi loại bỏ.
+
+| Mã | Quyết định | Lý do | Phương án bị loại | Ảnh hưởng phải thực hiện | Tham chiếu |
+|---|---|---|---|---|---|
+| **D-01** (MT-02) | `users.role` là enum **đúng 5 giá trị**: `member`, `curator`, `moderator`, `admin`, `super_admin` | Một trục role duy nhất, kiểm được bằng một claim JWT, không cần bảng nối `user_roles`. Năm giá trị phủ hết nhu cầu GĐ1 mà vẫn đọc được bằng mắt | (a) RBAC đầy đủ với bảng `roles`/`permissions`/`role_permissions` — quá nặng cho quy mô 2.000 user; (b) enum 8–10 giá trị gộp cả `organizer`, `verified_member`, `support`, `service_provider` — chính là nguồn gốc MT-02 | Migration `CREATE TYPE user_role_enum`; `packages/shared-types/src/enums/user-role.enum.ts`; test đồng bộ `pg_enum` (§13.3) | §8.1, §13.3 |
+| **D-02** | `guest` **không** là giá trị DB — chỉ là trạng thái phiên "chưa có JWT hợp lệ" | Không tồn tại hàng `users` cho người chưa đăng ký; tạo giá trị enum cho nó buộc mọi truy vấn phải lọc thêm | Thêm `'guest'` vào enum và tạo một tài khoản ẩn danh dùng chung — phá vỡ khoá ngoại và làm sai mọi thống kê | `@Public()` + `request.user === undefined`; cột `guest` trong ma trận §9.2 là cột **kiểm thử**, không phải cột dữ liệu | §8.1, §12.1 |
+| **D-03** | `organizer` **không** là role toàn cục — là **quan hệ theo sự kiện** qua `events.host_user_id` và bảng `event_cohosts` | Một người là organizer *của những sự kiện của mình*, không phải của cả nền tảng. Nguyên tắc P1: tạo hoạt động không được có "đơn xin làm organizer" | (a) Role `organizer` cấp sau khi duyệt — thêm ma sát, giết nguồn cung ở giai đoạn cold-start; (b) role `organizer` tự động khi tạo event đầu tiên — vẫn sai ngữ nghĩa vì quyền không thu hồi được theo từng sự kiện | Cột `events.host_user_id` (**tên chốt**, không dùng `organizer_id`); bảng `event_cohosts`; `EventOwnershipGuard` + `@EventContext()` | §8.4, §13.5 |
+| **D-04** | `verified_member` **không** là role — là **trust level** | Xác minh là thuộc tính liên tục có thể lên/xuống, không phải tư cách rời rạc | Role `verified_member` cấp khi verify email — sẽ phải thêm `verified_phone_member`, `established_member`… phình vô hạn | Kiểm bằng `@MinTrust()` đọc `users.trust_level`, không bao giờ bằng `@Roles()` | §8.1, §11 |
+| **D-05** | `support` **gộp vào `moderator`** — không tồn tại role riêng | Ở quy mô GĐ1 cùng một người vừa xử lý report vừa trả lời hỗ trợ. Hai role riêng tạo hai hàng đợi mà không thêm an toàn | Role `support` chỉ đọc — sẽ phải nhân đôi mọi ô trong ma trận §9.2 mà không thay đổi kết quả | Permission `user.support.*` gán cho `moderator`; UI admin gộp hai tab | §8.1, §9.2 |
+| **D-06** | `service_provider` (GĐ 2–3) **không** được thêm vào enum. Khi tới lúc, dùng `service_providers` + `provider_members(user_id, provider_id, role)` | Cùng khuôn "quan hệ theo thực thể" như `event_cohosts` — mở rộng mà không migrate phá vỡ | Chừa sẵn giá trị `service_provider` trong enum ngay từ GĐ1 — giá trị chết trong DB, mọi `switch` phải xử lý nhánh không dùng | Không có việc phải làm ở GĐ1; ghi lại để GĐ2 không tự ý mở enum | §8.1 |
+| **D-07** | Thứ tự đánh giá quyền **bất biến**: trạng thái → role → quan hệ → trust | Một `admin` đang `suspended` phải bị chặn trước khi hệ thống kịp xét role; ngưỡng trust lại phụ thuộc quan hệ đã giải được (host cần T3 để xuất CSV, attendee cần T2 để xem danh sách) | Kiểm trust trước quan hệ — làm sai Đ20/Đ22 và trả sai mã lỗi cho UI | Đăng ký **cả sáu lớp ở `APP_GUARD`** theo đúng thứ tự (§13.1); test **T-3** chứng minh thứ tự | §8.2, §13.1 |
+| **D-08** | Số `super_admin` đang `active` **luôn ≥ 2**; gán role chỉ `super_admin` làm được, four-eyes | Chống khoá chết (R-09) và chống một người tự nâng quyền | Cho `admin` gán role — mở đường leo thang đặc quyền nội bộ | Ràng buộc ở `UsersService.changeRole()`; bất biến **INV-3** có test; UC-73 tách đôi (§12.12, L-2) | §8.3, §9.4, §12.12 |
+
+### 15.2 Quyết định về trust level *(MT-12)*
+
+| Mã | Quyết định | Lý do | Phương án bị loại | Ảnh hưởng phải thực hiện |
+|---|---|---|---|---|
+| **D-09** (MT-12) | Thang tin cậy **duy nhất** của sản phẩm là **T0–T5**, lưu ở `users.trust_level smallint CHECK (0..5)` | Một thang, một cột, một nơi ghi. Đọc được bằng mắt trong log và trong claim JWT; ánh xạ thẳng sang badge và hạn mức | (a) **Thang điểm 0–100** — không giải thích được cho người dùng "vì sao tôi 63 điểm", và mọi ngưỡng thành con số tuỳ tiện; (b) **Enum `new`/`verified`/`established`/`trusted`/`ambassador`** — trùng lặp với thang số, tạo mâu thuẫn MT-12; (c) **Cả hai song song** — chính là hiện trạng sai đang phải sửa | Xoá mọi tham chiếu tới thang 0–100 và enum 5 nhãn khỏi toàn bộ tài liệu và code; `TrustLevel` ở `packages/shared-types` |
+| **D-10** | Nhãn hiển thị cố định: **T0 New · T1 Email verified · T2 Phone verified · T3 Active member · T4 Trusted · T5 Community leader** | Nhãn mô tả **bằng chứng**, không mô tả phán xét. "Email verified" nói rõ người dùng cần làm gì tiếp; "Level 2" thì không | Nhãn cảm tính (`Bronze`/`Silver`/`Gold`) — gợi ý game hoá và tạo áp lực xã hội sai chỗ | Key i18n `trust.level.t0..t5.label`, có bản EN **và** VI; hằng số `TRUST_LEVEL_I18N_KEY` (§13.3) |
+| **D-11** | Tín hiệu lưu ở **`trust_signals` (append-only)**; bậc tính lại bằng **job BullMQ `trust:recompute`**; job là **nơi duy nhất** ghi `users.trust_level` | Bậc luôn truy nguyên được về bằng chứng; sửa công thức là chạy lại job, không phải migrate dữ liệu. Tránh mọi service tự cộng trừ điểm rải rác | Cộng điểm trực tiếp vào cột mỗi khi có sự kiện — không hoàn tác được, không giải thích được, và chạy đua khi hai sự kiện đồng thời | Bảng `trust_signals` + index `(user_id, type) WHERE status='verified' AND revoked_at IS NULL`; job chạy sau mỗi domain event **và** quét toàn bộ 02:00 Asia/Ho_Chi_Minh |
+| **D-12** | **T5 không bao giờ đạt được hoàn toàn tự động** — luôn cần một hành động thủ công của `admin` (`staff_endorsement`) | T5 mở hạn mức gần như không giới hạn và badge có trọng lượng xã hội thật. Cổng thủ công là hàng rào rẻ nhất chống farm trust (R-04) | Tự động hoá T5 theo ngưỡng số — biến T5 thành mục tiêu để nuôi tài khoản | Màn hình admin cấp/thu hồi `staff_endorsement` kèm lý do bắt buộc |
+| **D-13** | Badge là **lớp hiển thị**, **không cấp quyền**; **không badge nào mang nghĩa tiêu cực**; số `no_show`, số lần bị báo cáo, điểm thành phần **không hiển thị công khai** | Nhãn tiêu cực công khai đẩy người dùng rời nền tảng thay vì sửa hành vi (R-13) | Hiển thị "tỉ lệ vắng mặt" trên hồ sơ như một chỉ số minh bạch — gây hiệu ứng bêu tên | Guard **không bao giờ** đọc badge; badge sinh từ `trust_level` + điều kiện phụ ở tầng hiển thị |
+| **D-14** | Ngưỡng trust chỉ dùng các giá trị liệt kê ở **§12.13**; không phát minh ngưỡng mới trong PR | Ngăn permission creep theo trục trust (R-14) và giữ thông điệp nâng cấp trong UI nhất quán | Để mỗi đội tự chọn ngưỡng theo cảm tính | Test **T-4 drift** + checklist review §13.9 |
+
+### 15.3 Quyết định về mô hình dữ liệu và phạm vi
+
+| Mã | Quyết định | Lý do | Ảnh hưởng phải thực hiện |
+|---|---|---|---|
+| **D-15** (MT-03) | **RSVP gắn vào `event_occurrences`**, không gắn vào `events`. Bảng `rsvps(id, occurrence_id, user_id, status, guest_count, …)`. Sự kiện không lặp lại vẫn có **đúng 1 occurrence** | Sức chứa, waitlist, nhắc lịch và điểm danh đều là thuộc tính của **một buổi cụ thể**. Không có ngoại lệ "sự kiện đơn thì gắn vào events" — ngoại lệ đó sinh ra hai đường code cho cùng một nghiệp vụ | Endpoint chính `POST /api/v1/occurrences/{occurrenceId}/rsvps`; `EventContextResolver` phải giải `occurrenceId → event_id` trước khi kiểm quan hệ (§13.5) |
+| **D-16** | `POST /api/v1/events/{eventId}/rsvps` là **đường tắt** trỏ tới occurrence sắp diễn ra gần nhất; trả **409 `AMBIGUOUS_OCCURRENCE`** nếu event có nhiều occurrence sắp tới | Giữ trải nghiệm một chạm cho sự kiện đơn mà không che giấu sự mơ hồ ở sự kiện lặp | Client bắt `409` và hiện danh sách buổi để người dùng chọn; fixture test có `EVENT_A` với 2 occurrence sắp tới |
+| **D-17** | **Waitlist là MUST của MVP** — không hoãn sang bản sau | Sự kiện đông chỗ là tín hiệu tốt nhất của product-market fit; mất người ở đúng lúc đông là mất người vĩnh viễn. Waitlist còn là nguồn dữ liệu cầu vượt cung theo khu vực | UC-40 vào phạm vi M1; FIFO, cửa sổ xác nhận **12 giờ**; huỷ RSVP kích hoạt thăng hạng ngay (Đ17) |
+| **D-18** | **6 khu vực MVP**: An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn | Đủ phủ nơi expat thực sự sống và sinh hoạt, đủ ít để bộ lọc dùng được bằng một tay trên điện thoại | `areas.is_mvp_filter = true` cho đúng 6 hàng; **không xoá, không ẩn** được (Đ46); đổi polygon cần xác nhận hai bước |
+| **D-19** | Tên cột chốt là **`events.host_user_id`**; mọi nhãn enum trong DB viết **chữ thường snake_case** (`published`, `checked_in`, `no_show`) | Một quy ước duy nhất, khớp giữa DB, TypeORM entity và `packages/shared-types`; tránh sai lệch hoa/thường giữa môi trường | Test regex quét toàn bộ `pg_enum` chặn nhãn viết hoa/camelCase (§13.3) |
+| **D-20** | Thời gian **lưu UTC**, hiển thị theo **Asia/Ho_Chi_Minh** | Sự kiện chỉ diễn ra ở Đà Nẵng nhưng người dùng đến từ nhiều múi giờ và hay đặt lịch khi còn ở nước ngoài | Cột `timestamptz`; ICS sinh kèm `TZID=Asia/Ho_Chi_Minh` (UC-42); cửa sổ check-in và job nhắc tính theo UTC |
+
+### 15.4 Quyết định vận hành và đo lường
+
+| Mã | Quyết định | Lý do | Ảnh hưởng phải thực hiện |
+|---|---|---|---|
+| **D-21** | Nhắc lịch đúng **hai mốc: T-24h và T-2h** | T-24h để sắp xếp lịch, T-2h để nhớ đi. Thêm mốc nữa làm phiền và làm tăng tỉ lệ tắt push | Job BullMQ đặt/huỷ theo `starts_at`; thay đổi trọng yếu ⇒ huỷ và đặt lại (Đ4); nhắc **T-2h không bị chặn** bởi khung giờ yên tĩnh (UC-53) |
+| **D-22** | **SLA cho báo cáo mức `critical`: 2 giờ** | An toàn thân thể không chờ được. Đây cũng là ngưỡng khả thi với 1–2 moderator ở M1 nếu có cảnh báo đẩy | Cảnh báo `critical` vào kênh trực, không chỉ nằm trong hàng đợi; UC-76 giám sát độ trễ hàng đợi; là lý do `moderator` phải bắt buộc 2FA |
+| **D-23** | Mục tiêu **WCA tại M6: 220–280 lượt/tuần** | Con số phản ánh quy mô thực tế của cộng đồng expat Đà Nẵng ở giai đoạn đầu và kiểm chứng được bằng dữ liệu tham dự thật | Dashboard UC-71 theo dõi theo tuần; **không** dùng con số 550 ở bất kỳ tài liệu hay báo cáo nào |
+| **D-24** | Gate M6 đo bằng **dòng chảy**, không đo tồn kho: **≥ 25 sự kiện đang mở mới mỗi tuần** và **không khu vực MVP nào bằng 0** | Tồn kho lớn có thể toàn sự kiện cũ hoặc dồn vào một khu vực; dòng chảy đo đúng sức sống nguồn cung và độ phủ địa lý | Truy vấn dashboard tính theo tuần và theo `area`; **không** dùng chỉ tiêu "≥ 80 sự kiện" |
+| **D-25** | Mọi hành động của `curator`/`moderator`/`admin`/`super_admin` trên dữ liệu người khác ghi **`audit_log` bất biến**; truy cập PII bắt buộc kèm `moderation_case_id` hoặc `support_ticket_id` | Nguyên tắc P5 và là điều kiện để mở role cho tình nguyện viên cộng đồng từ M4 (R-03) | Decorator `@Audit()`; DB role ứng dụng bị thu hồi `UPDATE, DELETE` trên `audit_log`; bất biến **INV-2** có test |
+| **D-26** | Danh tính cá nhân của `moderator` **không bao giờ** hiển thị công khai — mọi thông báo kiểm duyệt ký tên "Da Nang Connect Moderation Team" | Yêu cầu bắt buộc của persona P6; không có nó thì không tuyển được moderator tình nguyện | `moderation_action.actor_id` chỉ `admin`/`super_admin` xem được; badge `moderation_team` chỉ hiện trong khu vực admin |
+
+### 15.5 Quyết định pháp lý liên quan phân quyền
+
+| Mã | Quyết định | Ghi chú |
+|---|---|---|
+| **D-27** | Nêu **cả** Nghị định 13/2023/NĐ-CP **và** Luật Bảo vệ dữ liệu cá nhân **91/2025/QH15** trong mọi tài liệu tuân thủ; ghi rõ **từ 01/01/2026 Luật 91/2025 là văn bản hiệu lực cao hơn**, và **mọi mẫu biểu phải theo Luật 91/2025** | **CẦN LUẬT SƯ XÁC NHẬN** — chi tiết ở `06-phap-ly-va-tuan-thu-viet-nam.md` |
+| **D-28** | Quyền `user.anonymize`, `content.purge` và mọi thao tác thực thi quyền của chủ thể dữ liệu chỉ nằm ở **`super_admin`** | Gắn với nghĩa vụ theo Luật 91/2025; ẩn danh hoá giữ lại bản ghi tham gia ở dạng không định danh để không phá vỡ số liệu lịch sử và hồ sơ an toàn của người khác. **CẦN LUẬT SƯ XÁC NHẬN** |
+| **D-29** | Người ngoài tổ chức (moderator tình nguyện từ M4) **chưa được** chạm PII cho tới khi có thoả thuận xử lý dữ liệu theo Luật 91/2025 | Chốt tạm thời cho tới khi Q-01 được trả lời; hàng đợi kiểm duyệt cho tình nguyện viên **che PII mặc định**. **CẦN LUẬT SƯ XÁC NHẬN** |
+
+### 15.6 Những gì **chưa** chốt
+
+Danh sách này tồn tại để không ai nhầm "chưa nói tới" thành "đã đồng ý ngầm". Mỗi mục trỏ tới câu hỏi ở §14.4.
+
+| Chủ đề | Trạng thái | Câu hỏi | Ai chặn ai |
+|---|---|---|---|
+| Organization profile (nhiều user ↔ một tổ chức) | Chỉ chừa chỗ ở `events.host_type`, **chưa xây** | Q-03 | Chặn thiết kế màn hình tạo sự kiện cho persona P4 |
+| Ngưỡng cờ vàng `trust:fraud_scan` | Job có trong kế hoạch, **ngưỡng chưa có** | Q-04 | Chặn bật job ở production |
+| `user.impersonate.readonly` ở MVP | **Chưa quyết bật hay tắt** | Q-06 | Chặn ước lượng công việc màn hình admin |
+| Quy trình break-glass `super_admin` | **Chưa viết** | Q-07 | Chặn go-live M1 |
+| Ngưỡng k-anonymity analytics | Đề xuất k = 5, **chưa xác nhận** | Q-08 | Chặn phát hành UC-72 |
+| Host chặn user cụ thể RSVP | **Chưa có trong ma trận §9.2** | Q-09 | Chặn xử lý sự cố an toàn kiểu "người quấy rối quay lại" |
+| Ranh giới sự kiện có thu phí | **Chưa có tiêu chí kiểm duyệt** | Q-10 | Chặn viết hướng dẫn cho moderator |
+| Luồng `admin` đề xuất → `super_admin` duyệt role | **Chưa quyết xây hay bỏ** | Q-11 | Chặn thiết kế UC-73 |
+| Hạ trust level thủ công bởi `admin` | **Chưa cho phép** (mặc định là không) | Q-12 | — |
+
+### 15.7 Nhật ký quyết định
+
+| Ngày | Bản | Nội dung |
+|---|---|---|
+| 2026-08-31 | 1.0 | Chốt D-01 → D-29. Giải quyết MT-02 (enum role 5 giá trị), MT-03 (RSVP gắn `event_occurrences`), MT-12 (thang trust duy nhất T0–T5). Thống nhất tên guard/decorator: `JwtAuthGuard`, `AccountStatusGuard`, `RolesGuard`, `EventOwnershipGuard`, `TrustTierGuard`, `@Roles()`, `@MinTrust()`, `@EventContext()`, `@RequireEventRole()` |
+
+---
+
+*Hết tài liệu 01. Tài liệu tiếp theo: `02-use-case.md` (đặc tả luồng use case) và `03-domain-va-du-lieu.md` (lược đồ dữ liệu chi tiết).*

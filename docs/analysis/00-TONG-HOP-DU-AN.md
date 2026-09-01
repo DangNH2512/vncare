@@ -5,8 +5,8 @@
 | Tài liệu | Bản tổng hợp chủ (master synthesis) của 10 tài liệu phân tích |
 | Sản phẩm | **Da Nang Connect** — nền tảng kết nối cộng đồng người nước ngoài tại Đà Nẵng |
 | Phạm vi | Giai đoạn 1 — Kết nối cộng đồng (sự kiện, thể thao, trao đổi ngôn ngữ). Địa lý: **chỉ Đà Nẵng** |
-| Ngày lập | 2026-08-31 · Phiên bản 1.0 |
-| Trạng thái | **Draft để chủ dự án ra quyết định** — chứa 16 câu hỏi còn mở và 15 mâu thuẫn giữa các tài liệu |
+| Ngày lập | 2026-08-31 · **Phiên bản 1.1** — cập nhật sau khi sáu tài liệu `01`, `02`, `03`, `05`, `07`, `08` được viết tiếp cho đủ mục lục |
+| Trạng thái | **Draft để chủ dự án ra quyết định.** **Cả 10 tài liệu nguồn nay đã đầy đủ theo đúng mục lục của chính chúng — không còn tài liệu nào bị cắt cụt** (MT-13 đã giải). Trong 15 mâu thuẫn ghi ở bản 1.0: **12 đã giải · 3 còn mở** (MT-06, MT-08, MT-14); phát hiện thêm **5 mâu thuẫn mới** khi viết tiếp (MT-16 → MT-20). Trong 16 câu hỏi: **8 đã có câu trả lời chốt · 8 còn mở** |
 | Nguồn | `docs/analysis/01` → `docs/analysis/10`, `docs/source/Da_Nang_Connect_Brief.txt` |
 | Đối tượng đọc | Chủ dự án / Founder, Tech Lead, Product Owner, nhà đầu tư, luật sư |
 
@@ -17,17 +17,17 @@
 ## Mục lục
 
 1. [Tóm tắt điều hành](#1-tóm-tắt-điều-hành)
-2. [Tác nhân & role](#2-tác-nhân--role)
-3. [Use case MVP theo MoSCoW](#3-use-case-mvp-theo-moscow)
+2. [Tác nhân & role](#2-tác-nhân--role) — *role enum 5 giá trị · ma trận RBAC · trust T0–T5, đã chốt*
+3. [Use case MVP theo MoSCoW](#3-use-case-mvp-theo-moscow) — *45 Must (waitlist đã lên Must) · L1→L7 điều kiện ra mắt*
 4. [Kiến trúc & tech stack đã chốt](#4-kiến-trúc--tech-stack-đã-chốt)
-5. [Roadmap & milestone](#5-roadmap--milestone)
+5. [Roadmap & milestone](#5-roadmap--milestone) — *13 sprint lập lịch, 11 trước M6 · kịch bản tinh gọn 2 dev*
 6. [Top 10 rủi ro và cách xử lý](#6-top-10-rủi-ro-và-cách-xử-lý)
 7. [Yêu cầu pháp lý bắt buộc trước khi ra mắt](#7-yêu-cầu-pháp-lý-bắt-buộc-trước-khi-ra-mắt)
-8. [Decision log](#8-decision-log)
-9. [Câu hỏi còn mở cần chủ dự án trả lời](#9-câu-hỏi-còn-mở-cần-chủ-dự-án-trả-lời)
+8. [Decision log](#8-decision-log) — *QĐ-01 → QĐ-76, trong đó QĐ-54 → QĐ-76 chốt ngày 31/08/2026*
+9. [Câu hỏi còn mở cần chủ dự án trả lời](#9-câu-hỏi-còn-mở-cần-chủ-dự-án-trả-lời) — *8/16 đã có câu trả lời chốt*
 10. [Việc cần làm ngay: 01/09 → 14/09/2026](#10-việc-cần-làm-ngay-0109--14092026)
 11. [Mục lục liên kết tới 10 tài liệu chi tiết](#11-mục-lục-liên-kết-tới-10-tài-liệu-chi-tiết)
-12. [Mâu thuẫn cần giải quyết](#12-mâu-thuẫn-cần-giải-quyết)
+12. [Mâu thuẫn cần giải quyết](#12-mâu-thuẫn-cần-giải-quyết) — *12 đã giải · 3 còn mở · 5 mới (MT-16 → MT-20)*
 
 ---
 
@@ -95,12 +95,12 @@ Hai chỉ số trả lời câu hỏi duy nhất thực sự quan trọng — *s
 | Nhóm | Mã | Tác nhân | Vai trò trong sản phẩm | Thiết bị chính | Trạng thái GĐ1 |
 |---|---|---|---|---|---|
 | Primary | A1 | **Expat / Member** | Tìm hoạt động, RSVP, gặp người. Actor đông nhất, là lý do tồn tại của sản phẩm | Mobile ~80% | ✅ Kích hoạt |
-| Primary | A2 | **Event Organizer** | Tạo & quản lý hoạt động. Hai nhánh: nghiệp dư (mobile 100%) và chuyên nghiệp (web cho tạo & phân tích) | Mobile / Web | ✅ Kích hoạt |
+| Primary | A2 | **Event Organizer** | Tạo & quản lý hoạt động. Hai nhánh: nghiệp dư (mobile 100%) và chuyên nghiệp (web cho tạo & phân tích) | Mobile / Web | ✅ Kích hoạt — nhưng **không phải role toàn cục** (D-03): là **quan hệ theo sự kiện** qua `events.host_user_id` + `event_cohosts` |
 | Primary | A3 | **Local Bilingual Host** | Người Việt nói tiếng Anh dẫn dắt hoạt động — nguồn cung quý, cầu nối văn hoá | Mobile (Android) | ✅ Kích hoạt, có badge `local_host` |
-| Primary | A4 | **Local Service Provider** | Nhà cung cấp dịch vụ nhà ở / y tế | — | ❌ Chỉ giữ chỗ enum, không có UI, không có endpoint |
+| Primary | A4 | **Local Service Provider** | Nhà cung cấp dịch vụ nhà ở / y tế | — | ❌ GĐ2–3. **Không** thêm giá trị `service_provider` vào `user_role_enum` (D-06); khi tới lúc dùng bảng `service_providers` + `provider_members` |
 | Secondary | B1 | **Content Curator** | Nhập tay sự kiện công khai, mời organizer gốc nhận listing. **Quan trọng bậc nhất tháng 1–6** | Web/desktop 95% | ✅ Kích hoạt |
 | Secondary | B2 | **Community Moderator** | Xử lý hàng đợi báo cáo, gỡ nội dung, đình chỉ tài khoản | Web + mobile | ✅ Kích hoạt |
-| Secondary | B3 | **Support Agent** | Sự cố tài khoản, gửi lại xác minh, impersonate chỉ đọc | Web | ⚠️ Có thể gộp vào `admin` ở MVP |
+| Secondary | B3 | **Support Agent** | Sự cố tài khoản, gửi lại xác minh, impersonate chỉ đọc | Web | ✅ **Đã chốt gộp vào `moderator`** (D-05) — không tồn tại role `support` riêng; permission `user.support.*` gán cho `moderator` |
 | Secondary | B4 | **Admin** | Taxonomy khu vực & danh mục, feature flag, analytics toàn hệ thống | Web/desktop | ✅ Kích hoạt |
 | Secondary | B5 | **Super Admin** | Gán/thu hồi role, xoá vĩnh viễn, ẩn danh hoá, audit log đầy đủ | Web, bắt buộc 2FA | ✅ 2–3 tài khoản |
 | System | C1–C7 | Push (Expo), Email/SMS, Map/geocoding, Object Storage + CDN, BullMQ scheduler, Socket.IO gateway, Sentry | Dịch vụ tự động | ✅ Kích hoạt |
@@ -119,18 +119,93 @@ Hai chỉ số trả lời câu hỏi duy nhất thực sự quan trọng — *s
 | **P5 Minh** | Nam 27, Việt, Content Curator nội bộ | Form curate nhớ giá trị cũ; bảng theo dõi vòng đời claim | Công cụ nhập liệu tệ |
 | **P6 Anna** | Nữ 38, Đức, Moderator tình nguyện | Hàng đợi ưu tiên; **tên cá nhân không bao giờ xuất hiện trên thông báo cấm** | Kiệt sức, lộ danh tính |
 
-### 2.3 Hệ thống role — ⚠️ chưa thống nhất
+### 2.3 Hệ thống role — ✅ **ĐÃ CHỐT** (giải MT-02)
 
-Bốn tài liệu định nghĩa bốn tập role khác nhau. Đây là **mâu thuẫn MT-02**, phải chốt trước Sprint 1.
+> **Cột `users.role` kiểu `user_role_enum` có đúng 5 giá trị: `member` | `curator` | `moderator` | `admin` | `super_admin`.**
+> Không có giá trị nào khác, không có giá trị "dự trữ cho giai đoạn sau".
+> Nguồn có thẩm quyền: `01-tac-nhan-va-phan-quyen.md` §8.1 và §15.1 (D-01 → D-08). Bốn tập role cũ ở bảng lịch sử bên dưới **hết hiệu lực** kể từ 31/08/2026.
 
-| Nguồn | Tập role |
-|---|---|
-| `01` (§3–§5) | `member` → `verified_member` → `organizer`, `curator`, `support`, `moderator`, `admin`, `super_admin` |
-| `02` (§3) | Guest, Member, Organizer, **Co-host**, Curator, Moderator, Admin (không có Support, không có Super Admin) |
-| `03` (§4.1 enum) | `member` \| `curator` \| `moderator` \| `admin` — **nói rõ "không có role `organizer`"** |
-| `08` (E2-S7) | `user` \| `organizer` \| `moderator` \| `admin` |
+```sql
+CREATE TYPE user_role_enum AS ENUM (
+  'member',       -- mặc định cho mọi tài khoản
+  'curator',      -- đội sáng lập, nhập listing từ nguồn ngoài
+  'moderator',    -- kiểm duyệt + hỗ trợ tài khoản (đã gộp 'support')
+  'admin',        -- vận hành nền tảng, taxonomy, analytics
+  'super_admin'   -- gán role, xoá vĩnh viễn, audit đầy đủ
+);
+```
 
-**Khuyến nghị chốt** (chờ chủ dự án xác nhận — [CH-02](#9-câu-hỏi-còn-mở-cần-chủ-dự-án-trả-lời)): lấy enum của `03` làm chuẩn kỹ thuật (`member`, `curator`, `moderator`, `admin`, `super_admin`), coi **organizer là vai trò theo ngữ cảnh** (`events.host_user_id`), `verified_member` là **trạng thái xác minh** chứ không phải role, `co-host` là bảng nối cấp sự kiện, `support` gộp vào `admin` + feature flag ở MVP.
+**Bốn thứ trông giống role nhưng KHÔNG phải role** — đây chính là nguồn gốc của MT-02:
+
+| Khái niệm | Bản chất thật | Lưu ở đâu | Kiểm bằng gì | Quyết định |
+|---|---|---|---|---|
+| `guest` | **Trạng thái phiên** — "chưa có JWT hợp lệ", không phải hàng trong `users` | Không lưu ở đâu cả | `@Public()` + `request.user === undefined` | D-02 |
+| `organizer` | **Quan hệ theo sự kiện** — organizer *của những sự kiện của mình*, không phải của cả nền tảng | `events.host_user_id`, bảng `event_cohosts` | `EventOwnershipGuard` + `@EventContext()` | D-03 |
+| `verified_member` | **Trust level** — một bậc trên thang T0–T5 | `users.trust_level` smallint 0–5 | `@MinTrust(2)` | D-04 |
+| `support` | **Đã gộp vào `moderator`** — không tồn tại role riêng | — | Permission `user.support.*` gán cho `moderator` | D-05 |
+
+**Bốn trục phân quyền — thứ tự đánh giá là BẤT BIẾN** (D-07, `01` §8.2 và §13.1). Cả sáu lớp guard đăng ký ở `APP_GUARD` theo đúng thứ tự này; hai guard cuối tự no-op khi thiếu metadata:
+
+```mermaid
+flowchart LR
+    REQ["Request"] --> G0["Truc 0 - Trang thai tai khoan<br/>AccountStatusGuard"]
+    G0 --> G1["Truc 1 - Role toan cuc<br/>RolesGuard - @Roles()"]
+    G1 --> G2["Truc 2 - Quan he theo su kien<br/>EventOwnershipGuard - @EventContext()"]
+    G2 --> G3["Truc 3 - Trust level<br/>TrustTierGuard - @MinTrust()"]
+    G3 --> OK["Cho phep + ghi audit_log neu la hanh dong quan tri"]
+    G0 -.->|"restricted / suspended / banned"| NO["403 + ly do i18n"]
+    G1 -.-> G2
+    G3 -.-> NO
+```
+
+**Bộ tên chuẩn duy nhất** (nhật ký `01` §15.7): `JwtAuthGuard` · `AccountStatusGuard` · `RolesGuard` · `EventOwnershipGuard` · `TrustTierGuard` · `@Roles()` · `@MinTrust()` · `@EventContext()` · `@RequireEventRole()`. **Không** dùng `EventRoleGuard`, `TrustLevelGuard`, `@RequireTrust()`, `@MinTrustTier()` — xem MT-17.
+
+#### Ma trận RBAC rút gọn — 12 quyền tiêu biểu
+
+Bản đầy đủ **22 quyền × 8 cột** cùng 51 mã điều kiện `Đn` nằm ở `01-tac-nhan-va-phan-quyen.md` §9.2 – §9.3. Hai cột cuối là **lớp cộng thêm theo ngữ cảnh**, mở ra bất kể role toàn cục là gì.
+
+| Quyền | Permission key | guest | member | curator | moderator | admin | super_admin | host | co-host |
+|---|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| Xem sự kiện công khai | `event.view_public` | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Tạo sự kiện | `event.create` | ❌ | ⚠️ T1 | ✅ | ⚠️ | ⚠️ | ⚠️ | — | — |
+| Sửa sự kiện của mình | `event.update.own` | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ | ⚠️ |
+| Sửa sự kiện người khác | `event.update.any` | ❌ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ❌ |
+| RSVP | `rsvp.create` | ❌ | ⚠️ T1 | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ❌ |
+| Xem danh sách người tham gia | `attendee.list` | ❌ | ⚠️ T2 | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ | ✅ |
+| Đánh dấu check-in | `attendance.check_in` | ❌ | ❌ | ⚠️ | ❌ | ⚠️ | ⚠️ | ✅ | ⚠️ |
+| Nhắn tin 1-1 | `dm.send` | ❌ | ⚠️ T2 | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| Ẩn nội dung | `content.hide` | ❌ | ❌ | ⚠️ | ✅ | ✅ | ✅ | ⚠️ | ⚠️ |
+| Khoá tài khoản | `user.suspend` | ❌ | ❌ | ❌ | ⚠️ | ⚠️ | ✅ | ❌ | ❌ |
+| **Gán / thu hồi role** | `user.role.assign` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ four-eyes | ❌ | ❌ |
+| Curate sự kiện từ nguồn ngoài | `curation.create` | ❌ | ❌ | ✅ | ❌ | ✅ | ✅ | — | — |
+
+> **Hai bất biến phải có test** (`01` §13.8): **INV-2** — `audit_log` bị thu hồi `UPDATE`/`DELETE` ở tầng DB role ứng dụng. **INV-3** — số `super_admin` đang `active` luôn ≥ 2, và **chỉ `super_admin`** gán được role (D-08). Vì thế UC-73 bị **tách đôi**: `admin` tìm user / xem lịch sử / đình chỉ; `user.role.assign` chỉ `super_admin`.
+
+### 2.4 Trust level T0–T5 — ✅ **ĐÃ CHỐT** (giải MT-12)
+
+Thang **T0–T5** là **thang duy nhất** của sản phẩm. Cột `users.trust_level smallint NOT NULL DEFAULT 0 CHECK (trust_level BETWEEN 0 AND 5)`. Mọi thang điểm 0–100 và enum `new`/`verified`/`established`/`trusted`/`ambassador` **bị xoá khỏi tài liệu và code** (D-09).
+
+| Bậc | Nhãn hiển thị EN / VI | Điều kiện cốt lõi | Mở ra điều gì (rút gọn) |
+|---|---|---|---|
+| **T0** | *New* / Mới | Mặc định khi tạo tài khoản | Chỉ xem; không tạo sự kiện, không RSVP sự kiện có `trust_gate` |
+| **T1** | *Email verified* / Đã xác minh email | Email đã xác minh (UC-02) hoặc social login trả `email_verified` | RSVP · 1 sự kiện/ngày · bình luận 5/ngày |
+| **T2** | *Phone verified* / Đã xác minh SĐT | T1 + OTP số điện thoại (UC-13) | 3 sự kiện/ngày · xem danh sách attendee · nhắn tin 1-1 · được mời co-host |
+| **T3** | *Active member* / Thành viên tích cực | T2 + tài khoản ≥ 14 ngày + ≥ 3 occurrence `checked_in`/90 ngày (hoặc host 1 buổi có ≥ 3 người) + `no_show_rate` < 25% | 5 sự kiện/ngày · chuỗi lặp lại (UC-24) · xuất CSV attendee · đủ điều kiện được mời `moderator` |
+| **T4** | *Trusted* / Đáng tin cậy | T3 + ≥ 60 ngày + ≥ 8 occurrence `checked_in`/180 ngày + đánh giá ≥ 4,5/5 với ≥ 5 lượt + `no_show_rate` < 10% | 10 sự kiện/ngày · bảo lãnh 3 lượt/tháng · vào dải Featured |
+| **T5** | *Community leader* / Người dẫn dắt cộng đồng | T4 + **một hành động thủ công của `admin`** (`staff_endorsement`) — **không bao giờ tự động hoàn toàn** (D-12) | Hạn mức gần như không giới hạn · bảo lãnh 10 lượt/tháng |
+
+Ba ràng buộc đi kèm: tín hiệu lưu ở **`trust_signals` append-only**; bậc do **job BullMQ `trust:recompute`** ghi và đó là **nơi duy nhất** ghi `users.trust_level` (D-11); **badge là lớp hiển thị, không cấp quyền**, và **không badge nào mang nghĩa tiêu cực** — số `no_show`, số lần bị báo cáo, điểm thành phần **không hiển thị công khai** (D-13). Ngưỡng trust chỉ được lấy từ danh sách ở `01` §12.13, cấm phát minh ngưỡng mới trong PR (D-14).
+
+### 2.5 Bảng lịch sử — bốn tập role của bản 1.0 (đã hết hiệu lực)
+
+Giữ lại để truy vết vì sao MT-02 tồn tại, **không dùng để triển khai**.
+
+| Nguồn | Tập role (bản cũ) | Đã xử lý thế nào |
+|---|---|---|
+| `01` (§3–§5) | `member` → `verified_member` → `organizer`, `curator`, `support`, `moderator`, `admin`, `super_admin` | `verified_member` → trust level (D-04); `organizer` → quan hệ theo sự kiện (D-03); `support` → gộp `moderator` (D-05) |
+| `02` (§3) | Guest, Member, Organizer, **Co-host**, Curator, Moderator, Admin | `Guest` → trạng thái phiên (D-02); `Co-host` → bảng `event_cohosts`; bổ sung `super_admin` |
+| `03` (§4.1 enum) | `member` \| `curator` \| `moderator` \| `admin` | Lấy làm nền, **bổ sung `super_admin`** thành đủ 5 giá trị |
+| `08` (E2-S7) | `user` \| `organizer` \| `moderator` \| `admin` | `user` → `member`; `organizer` bỏ khỏi enum. `08` M1-4 nay nghiệm thu đúng 5 giá trị bằng test đọc `pg_enum` |
 
 ---
 
@@ -140,11 +215,13 @@ Bốn tài liệu định nghĩa bốn tập role khác nhau. Đây là **mâu t
 
 ### 3.1 Phân bổ tổng
 
+> **Cập nhật bản 1.1:** `02` §10 (Ranh giới MVP) đã được viết đầy đủ. **UC-40 waitlist chuyển từ `Should` lên `Must`** theo quyết định chốt D-17 — vì thế `Must` tăng từ 44 lên **45** và `Should` giảm từ 18 xuống **17**. Đây là lời giải của MT-05.
+
 | MoSCoW | Số UC | Ước lượng | Ghi chú |
 |---|---:|---:|---|
-| **Must** | 44 | ~186 ngày-người | Thiếu thì không ra mắt được |
-| **Should** | 18 | ~80 ngày-người | Cuối MVP nếu còn thời gian |
-| **Could** | 8 | ~35 ngày-người | Cắt được không ảnh hưởng giả thuyết lõi |
+| **Must** | **45** | ~190 ngày-người | Thiếu thì không ra mắt được |
+| **Should** | **17** | ~76 ngày-người | Đợt 2, ngay sau MVP (M6 → M9) |
+| **Could** | 8 | ~35 ngày-người | Đợt 3, củng cố (M9 → M12). Cắt được không ảnh hưởng giả thuyết lõi |
 | **Won't (GĐ1)** | 6 | — | Đã thiết kế trước để không phải đập đi làm lại |
 | **Tổng** | **76** | **~301 ngày-người** | |
 
@@ -158,18 +235,45 @@ Quy đổi: `S ≈ 1,5 ngày-người` · `M ≈ 4` · `L ≈ 9` (đã gồm API
 | **EP-02 Hồ sơ & Trust** | UC-11 sửa hồ sơ · UC-12 xem hồ sơ công khai · UC-13 xác minh email + SĐT · UC-15 tính & hiển thị chỉ số tin cậy | UC-14 xác minh giấy tờ = **Won't** ở GĐ1 |
 | **EP-03 Tạo & quản lý sự kiện** | UC-19 tạo hoạt động · UC-20 chọn địa điểm trên bản đồ + gán khu vực · UC-21 nháp & xuất bản · UC-22 sửa đã xuất bản · UC-23 huỷ · UC-25 quản lý người tham dự | UC-24 lặp lại = Should; UC-26 co-host = Could; UC-27 QR check-in = Should; UC-28 nhân bản = Could |
 | **EP-04 Khám phá & tìm kiếm** | UC-29 feed "Tuần này ở Đà Nẵng" · UC-30 tìm kiếm toàn văn · UC-31 lọc nâng cao · UC-32 quanh vị trí hiện tại · UC-33 bản đồ · UC-35 lưu quan tâm | Khác biệt cạnh tranh số 1 |
-| **EP-05 RSVP & tham gia** | UC-38 đăng ký tham gia · UC-39 huỷ đăng ký · UC-43 xem danh sách người tham dự | UC-40 waitlist = **Should** ⚠️ mâu thuẫn với brief (xem MT-05) |
+| **EP-05 RSVP & tham gia** | UC-38 đăng ký tham gia · UC-39 huỷ đăng ký · **UC-40 waitlist + tự động thăng hạng** · UC-43 xem danh sách người tham dự | ✅ **UC-40 nay là `Must`** (D-17, `02` §10.2). RSVP gắn `occurrence_id`; FIFO, cửa sổ xác nhận **12 giờ** (rút còn 30 phút khi sắp tới giờ); huỷ RSVP kích hoạt thăng hạng ngay |
 | **EP-06 Tương tác** | UC-45 bình luận · UC-48 chia sẻ ra ngoài (deep link + OG image) | UC-46 chat nhóm = Should; UC-47 DM = Could |
 | **EP-07 Thông báo** | UC-51 đăng ký push · UC-52 nhắc lịch trước giờ · UC-54 trung tâm thông báo | UC-53 tuỳ chọn thông báo = Should; UC-55 digest tuần = Should |
-| **EP-09 Kiểm duyệt** | UC-60 báo cáo vi phạm · UC-61 xử lý hàng đợi · UC-62 gỡ nội dung & đình chỉ | UC-63 khiếu nại = Could ⚠️ mâu thuẫn với cam kết công khai (xem MT-08) |
+| **EP-09 Kiểm duyệt** | UC-60 báo cáo vi phạm · UC-61 xử lý hàng đợi · UC-62 gỡ nội dung & đình chỉ | UC-63 khiếu nại vẫn xếp **Could** ở `02` §10.3, trong khi `05` §8.5 nay đã có **quy trình khiếu nại đầy đủ** kèm sequenceDiagram và cam kết công khai. ⚠️ **MT-08 vẫn mở** |
 | **EP-10 Curate** | UC-65 nhập curate thủ công · UC-66 gắn nhãn nguồn · UC-67 mời organizer nhận listing · UC-68 organizer nhận quyền sở hữu | Chiến lược ra mắt, không phải tính năng phụ |
-| **EP-11 Quản trị** | UC-70 quản lý khu vực & loại hình · UC-73 quản lý người dùng & phân quyền · UC-76 giám sát sức khoẻ hệ thống | UC-71 analytics sản phẩm = Should; UC-72 analytics organizer = Could ⚠️ (xem MT-06) |
+| **EP-11 Quản trị** | UC-70 quản lý khu vực & loại hình · UC-73 quản lý người dùng & phân quyền · UC-76 giám sát sức khoẻ hệ thống | **UC-73 đã tách đôi** (D-08): `admin` tìm user / xem lịch sử / đình chỉ; `user.role.assign` **chỉ `super_admin`**. UC-71 analytics sản phẩm = Should; UC-72 analytics organizer = Could ⚠️ (MT-06 vẫn mở) |
 
 ### 3.3 Won't trong GĐ1 — đã thiết kế trước
 
 `UC-14` xác minh danh tính bằng giấy tờ · `UC-36` gợi ý cá nhân hoá · `UC-56` → `UC-59` toàn bộ EP-08 nhu cầu ad-hoc.
 
-> **Kiểm chứng độ phủ:** `docs/analysis/10-ux-luong-man-hinh-va-i18n.md` §15 xác nhận toàn bộ 44 use case Must đều có ít nhất một màn hình chịu trách nhiệm. Đây là ma trận truy vết duy nhất hiện có giữa UC → màn hình → Epic.
+`02` §11 nay ghi rõ **những gì đã chừa chỗ trong thiết kế nhưng không kích hoạt ở GĐ1**: ad-hoc UC-56 → UC-59, nhà ở UC-201 → UC-208 (GĐ2), y tế UC-301 → UC-306 (GĐ3). Chừa chỗ nghĩa là lược đồ và enum không phải migrate phá vỡ khi bật — **không** có endpoint, **không** có UI, **không** có giá trị enum chết trong DB.
+
+> **Kiểm chứng độ phủ:** `10-ux-luong-man-hinh-va-i18n.md` §15 xác nhận từng use case `Must` đều có ít nhất một màn hình chịu trách nhiệm; UC-40 có `M-26` (Waitlist status) và `W-20`. ⚠️ Câu kết luận của `10` §15 vẫn ghi con số cũ **44** — cần sửa thành **45** (xem MT-19).
+
+### 3.4 Bốn thứ **không được cắt** dù bị áp lực tiến độ
+
+Rút từ `02` §10.4. Cắt bốn thứ này không tiết kiệm được gì vì phải làm lại từ đầu, và ba trong bốn là nghĩa vụ pháp lý.
+
+| Hạng mục | Nếu cắt thì phải làm lại từ đâu |
+|---|---|
+| Tách `events` / `event_occurrences`, RSVP gắn vào occurrence (`BR-05`) | Viết lại toàn bộ module RSVP, waitlist, nhắc lịch, check-in — **25–35 ngày-người** |
+| `trust_signals` append-only + thang T0–T5 (`BR-03`) | Mất toàn bộ lịch sử tín hiệu; không tái dựng được bậc trong quá khứ |
+| `curated_sources` + `claim_tokens` (`BR-18`) | Không chứng minh được nguồn gốc nội dung mồi — rủi ro pháp lý không vá sau được |
+| `audit_logs` bất biến (`BR-25`) + `consent_records` (`BR-30`) | Không tái tạo được bằng chứng đồng ý đã thu thập. **CẦN LUẬT SƯ XÁC NHẬN** |
+
+### 3.5 Điều kiện ra mắt — definition of launch-ready (L1 → L7)
+
+MVP chỉ được coi là sẵn sàng khi **cả bảy** điều kiện đạt trên staging với dữ liệu thật (`02` §10.5). Bảng này là bản rút gọn của checklist chi tiết ở `08` §12.
+
+| # | Điều kiện | Cách kiểm |
+|---|---|---|
+| **L1** | 45 UC `Must` đã xong và qua test tích hợp | Bảng `02` §10.2 tick đủ |
+| **L2** | Vòng lặp cốt lõi chạy hết trong một phiên: đăng ký → onboarding → tìm → RSVP → nhắc → check-in | Kịch bản E2E trên **cả** web và mobile |
+| **L3** | Waitlist đúng dưới tải: 1 chỗ trống / 20 người chờ → **đúng 1** lời mời | Test tải theo tiêu chí `02` §8.15 |
+| **L4** | Đủ nội dung mồi: **≥ 25 sự kiện đang mở mỗi tuần** và **không khu vực MVP nào bằng 0** | Truy vấn kiểm tra dòng chảy theo gate M6 |
+| **L5** | Đội kiểm duyệt trực được 24/7 cho mức `critical` với **SLA 2 giờ** | Diễn tập xử lý case giả |
+| **L6** | Mọi biểu mẫu thu thập dữ liệu cá nhân nêu đủ **Nghị định 13/2023/NĐ-CP và Luật 91/2025/QH15** | Rà soát theo `BR-30`. **CẦN LUẬT SƯ XÁC NHẬN** |
+| **L7** | **Sign in with Apple** hoạt động và đứng ngang hàng Google/Facebook trên iOS | Kiểm trên thiết bị thật trước khi nộp store |
 
 ---
 
@@ -315,7 +419,11 @@ Khả dụng 99,5%/tháng · p95 API đọc < 300 ms · p95 tạo RSVP < 500 ms 
 
 *Rút gọn từ `docs/analysis/08-roadmap-va-ke-hoach-trien-khai.md`.*
 
-> ⚠️ **Lưu ý về "6 sprint".** Tài liệu `08` lập kế hoạch **11 sprint** (S0 → S10) tới ngày ra mắt, không phải 6. Bảng dưới trình bày **6 sprint xây dựng lõi (S0 → S5)** — đủ để hoàn thành toàn bộ M0 → M4, tức tất cả năng lực MVP có thể demo — rồi liệt kê 5 sprint còn lại dành cho beta, sửa lỗi và phát hành. Xem [MT-01](#12-mâu-thuẫn-cần-giải-quyết).
+> ✅ **Số sprint đã chốt (giải MT-01).** `08` §6.1 nay ghi rõ: **13 sprint được lập lịch, trong đó đúng 11 sprint (S0 → S10) nằm trước mốc ra mắt M6.** S11 và S12 là hai sprint **sau** ra mắt (ổn định + khám phá GĐ2) và **không chứa story nào** của backlog MVP 563 SP. Con số "6 sprint" trong yêu cầu tổng hợp ban đầu là hiểu nhầm: 6 sprint (S0 → S5) chỉ đủ tới M4.
+>
+> **Ba con số cần thuộc:** backlog **563 SP** · sức chứa nền của đội 5,5 FTE chỉ **545 SP** trên 11 sprint · vì thế **bắt buộc thuê 1 Backend hợp đồng toàn thời gian 10 tuần (05/10 → 11/12/2026, tức S2 → S6, +70 SP, 150 triệu VND)**. Nhánh backend gánh ≈ 289 SP trong khi sức chứa backend nội bộ chỉ 242 SP — thiếu ≈ 47 SP, tất cả nằm gọn trong S2 → S6. Đệm còn lại **52 SP (9%)**, thấp hơn mức 15% mà `08` §1 nêu; phần thiếu được hấp thụ bằng 33 SP đệm ở S7/S8, 20 SP đệm ở S10 và **danh sách 44 SP được phép cắt không cần họp** (`08` §6.16).
+>
+> Bảng §5.1 dưới đây trình bày 6 sprint xây dựng lõi (S0 → S5, đủ M0 → M4), §5.2 liệt kê phần còn lại tới ra mắt. **Bản có hiệu lực để lập kế hoạch tuần là `08` §6 (bản san tải cuối cùng), không phải §5 của `08`.**
 
 ### 5.1 Sáu sprint xây dựng lõi
 
@@ -347,10 +455,16 @@ Khả dụng 99,5%/tháng · p95 API đọc < 300 ms · p95 tạo RSVP < 500 ms 
 | **M0** | Setup hạ tầng | **18/09/2026** | S0 | Staging chạy; CI xanh; dev build cài được trên iOS + Android thật |
 | **M1** | API nền + Auth | **02/10/2026** | S1 | Auth end-to-end web + mobile; refresh rotation có test; RBAC chặn đúng |
 | **M2** | Tạo & khám phá sự kiện | **30/10/2026** | S2–S3 | Tạo từ web và mobile; lọc 4 trục hoạt động; bản đồ đúng khu vực; SEO/OG |
-| **M3** | RSVP + Thông báo | **13/11/2026** | S4 | RSVP/huỷ/waitlist đúng khi tranh chấp chỗ; push thật; nhắc T‑24h và T‑2h |
+| **M3** | **RSVP + Waitlist + Thông báo** | **13/11/2026** | S4 | RSVP/huỷ/**waitlist** đúng khi tranh chấp chỗ (200 request đồng thời vào 50 chỗ → đúng 50 `going`); push thiết bị thật; nhắc **T‑24h và T‑2h** (D-21) |
 | **M4** | Trust & Safety tối thiểu | **27/11/2026** | S5 | Report/block/kiểm duyệt/ban; Guidelines + Privacy đã công bố; trust score hiển thị |
 | **M5** | Beta kín 100 user | **25/12/2026** | S6–S7 | 100 tài khoản beta thật; ≥ 60 sự kiện curate; TestFlight + Play closed testing 14 ngày; crash-free ≥ 99% |
-| **M6** | Ra mắt công khai | **25/02/2027** | S9–S10 | App trên cả hai cửa hàng; web production; ≥ 80 sự kiện *(khuyến nghị đổi sang **≥ 25 sự kiện đang mở/tuần** — xem MT-09)*; ≥ 8 organizer tự quản lý listing; runbook đã diễn tập |
+| **M6** | Ra mắt công khai | **25/02/2027** | S9–S10 | App trên cả hai cửa hàng; web production; ✅ **gate đo bằng DÒNG CHẢY** (D-24, `08` §7.8): **≥ 25 sự kiện đang mở mỗi tuần** trung bình 4 tuần 25/01 – 21/02/2027, **không tuần nào < 20**, và **6/6 khu vực MVP** đều ≥ 1 sự kiện mỗi tuần; **WCA 220–280 lượt/tuần** (D-23); ≥ 8 organizer tự quản lý listing; tỷ lệ tự phục vụ ≥ 35%; crash-free ≥ 99,5%; runbook **đã diễn tập thật** |
+
+> **Ba mốc phụ mới xuất hiện ở `08` §7.1** vì M2 được nghiệm thu theo **ba nấc**, không phải một lần: **M2** 30/10 (web) · **M2+** 13/11 (feed khám phá mobile) · **M2++** 27/11 (tạo sự kiện trên mobile). Đây là cảnh báo đường găng của `08` §6.7 — đừng coi M2 là "xong sự kiện".
+>
+> **M1 không được trượt.** `08` §7.3 gọi đây là mắt xích đường găng cứng nhất phía kỹ thuật: toàn bộ E3, E4, E6 đều chờ nó. Phương án khẩn nếu chậm: cắt E2-S5 (Facebook login) và E2-S6 (đặt lại mật khẩu) sang S2. M0 được phép trượt tối đa **3 ngày làm việc**.
+>
+> **Bốn tiêu chí nghiệm thu M1 chốt cứng quy ước dữ liệu** (`08` §7.3): `users.role` đúng **5 giá trị** kiểm bằng test đọc `pg_enum`; guard RBAC chặn đúng (`member` gọi endpoint `moderator` → 403); `users.trust_level` smallint 0–5 mặc định 0 và bảng `trust_signals` append-only đã có; sổ đăng ký hoạt động xử lý dữ liệu cá nhân đã mở với ≥ 3 mục. M2 thêm: **`events.host_user_id`** đúng tên, `grep "creator_id\|organizer_id"` phải **rỗng**; mỗi `events` sinh **tối thiểu 1 `event_occurrences`** kể cả sự kiện không lặp; bộ lọc phơi đúng **6 khu vực MVP**.
 
 ### 5.4 Phân bổ story point theo epic
 
@@ -378,6 +492,31 @@ Khả dụng 99,5%/tháng · p95 API đọc < 300 ms · p95 tạo RSVP < 500 ms 
 | Tài khoản Google Play Console (tổ chức) + closed testing 14 ngày liên tục | 14 ngày bắt buộc | Trượt M5 |
 | Ký hợp đồng luật sư CNTT/dữ liệu | 2–3 tuần | Khoá cứng thiết kế luồng auth ở S1 |
 
+### 5.6 Kịch bản tinh gọn — nếu chỉ có 2 lập trình viên
+
+`08` §10 nay có bảng cắt scope chi tiết theo ba nhóm A/B/C. Đây là **lời giải bằng số** cho [CH-06], không còn là lời hứa suông.
+
+| Kịch bản cắt | Backlog còn lại | Số sprint *(28 SP/sprint)* | Ngày M6 khả thi |
+|---|---:|---:|---|
+| Không cắt gì | 563 SP | 21 sprint | ~22/07/2027 — **không khả thi về tiền** |
+| Chỉ cắt nhóm A | 466 SP | 17 sprint | ~27/05/2027 |
+| **Cắt A + B** | **359 SP** | **13 sprint** | **~01/04/2027** ✅ *(khuyến nghị dứt khoát của `08` §10.3)* |
+| Cắt A + B + C | 327 SP | 12 sprint | ~18/03/2027 — sản phẩm đã bị moi ruột |
+
+**Vì sao không cố ép về 25/02/2027:** kể cả cắt cả nhóm C cũng chỉ về được 18/03/2027, và tới lúc đó đã mất danh sách người tham gia, mất truy vấn bán kính và mất thông báo tiếng Việt — tức mất đúng những thứ tạo cảm giác an toàn và cảm giác "chỗ này dành cho mình". **Năm tuần chậm rẻ hơn rất nhiều so với một lần ra mắt hỏng, vì không có lần ra mắt thứ hai với cùng một người.**
+
+| | Kịch bản đủ đội | Kịch bản tinh gọn |
+|---|---|---|
+| Nhân sự | 5,5 FTE (đỉnh 6,5 FTE khi có BE hợp đồng) | 2 dev + Founder kiêm PO/Community |
+| Velocity | 50–69 SP/sprint | **28 SP/sprint** |
+| Backlog | 563 SP | 359 SP (đã cắt A + B) |
+| Số sprint tới M6 | 11 (S0 → S10) | 13 (L0 → L12) |
+| Ngày M6 | **25/02/2027** | **~01/04/2027** |
+| Ngân sách 7 tháng | ≈ **2,04 tỷ VND ≈ 78.462 USD** | ≈ **0,91 tỷ VND ≈ 35.000 USD** |
+| Bus factor | 2–3 | **1** — RK-09 chuyển sang đỏ đậm |
+
+**Không bao giờ cắt, kể cả kịch bản tinh gọn:** tách `event_occurrences` · `trust_signals` append-only · `curated_sources` + `claim_tokens` · `audit_logs` bất biến · `consent_records` · Report/Block/Contact us · Sign in with Apple · xoá tài khoản + xuất dữ liệu · tư vấn pháp lý M0 và ToS/Privacy M4.
+
 ---
 
 ## 6. Top 10 rủi ro và cách xử lý
@@ -386,7 +525,7 @@ Khả dụng 99,5%/tháng · p95 API đọc < 300 ms · p95 tạo RSVP < 500 ms 
 
 | # | Mã | Rủi ro | Điểm | Chủ sở hữu | Biện pháp chính | Dấu hiệu sớm |
 |---|---|---|:--:|---|---|---|
-| 1 | **RK-01** | **Cold-start hai phía** — không đủ sự kiện thì không có người dùng; không có người dùng thì organizer không đăng. Cung vốn chỉ chiếm ~6% bài đăng | 🔴 20 | Founder + Community Manager | Curate là hạng mục sprint có Definition of Done, không phải việc làm thêm · **chỉ tiêu tồn kho cứng: không bao giờ dưới 20 sự kiện đang mở** trải đều 4 khu vực MVP, cảnh báo tự động · 2 sự kiện signature/tuần do đội đứng tên · nạp 60 sự kiện **trước khi mời một người lạ nào** · mời organizer bằng số liệu của chính họ | Sự kiện đang mở < 20 trong 2 tuần liên tiếp; bất kỳ khu vực MVP nào = 0 trong 7 ngày; `search_zero_result_rate` > 15% |
+| 1 | **RK-01** | **Cold-start hai phía** — không đủ sự kiện thì không có người dùng; không có người dùng thì organizer không đăng. Cung vốn chỉ chiếm ~6% bài đăng | 🔴 20 | Founder + Community Manager | Curate là hạng mục sprint có Definition of Done, không phải việc làm thêm · **sàn cứng: không bao giờ dưới 20 sự kiện đang mở trong một tuần** trải đều **6 khu vực MVP**, cảnh báo tự động *(đây là chỉ tiêu dòng chảy theo D-24, không phải tồn kho tích luỹ)* · 2 sự kiện signature/tuần do đội đứng tên · nạp 60 sự kiện **trước khi mời một người lạ nào** · mời organizer bằng số liệu của chính họ | Sự kiện đang mở < 20 trong 2 tuần liên tiếp; bất kỳ khu vực MVP nào = 0 trong 7 ngày; `search_zero_result_rate` > 15% |
 | 2 | **RK-07 / L-01** | **Pháp lý** — yêu cầu xác thực tài khoản bằng **số điện thoại di động Việt Nam** theo NĐ 147/2024 xung đột trực tiếp với tệp người dùng expat; thêm giấy phép mạng xã hội, DPIA/TIA, bản đồ chủ quyền | 🔴 20 | Founder + Luật sư | Hỏi luật sư **trước khi code luồng đăng ký** · kiến trúc adapter tách rời cho OTP · cờ `FEATURE_PHONE_OTP_REQUIRED` đổi chính sách không cần deploy · mặc định chọn phương án hạn chế hơn | Luật sư chưa có kết luận bằng văn bản sau Sprint 3 |
 | 3 | **RK-06** | **Churn địa lý** — phân khúc seed (nomad) thay máu 6–10 lần/năm; kết bạn rồi người ta rời đi | 🔴 20 | Product | Tách chỉ số `retention_in_city` (loại cohort `left_city`) khỏi retention thô — **không kết luận thất bại trước khi loại cohort này** · onboarding hỏi `arrival_date` + `planned_stay_length` · hồ sơ ngủ đông thay vì xoá khi rời thành phố · badge "Community Passer" khi giới thiệu người thay thế | Retention thô giảm mà `retention_in_city` không giảm |
 | 4 | **RK-04** | **CAC cao hơn khả năng chi trả** | 🔴 16 | Founder | Không mua user trong 6 tuần đầu — quảng cáo che mất tín hiệu sản phẩm có tự nhiên hấp dẫn hay không · đo CAC biên theo `channel_code` · ngưỡng đỏ 600k VND/user | CAC biên vượt 400k VND |
@@ -481,7 +620,7 @@ Danh sách quyết định **đã chốt** qua 10 tài liệu phân tích. Một
 | **QĐ-05** | **Ngôn ngữ UI mặc định là tiếng Anh**, tiếng Việt là ngôn ngữ thứ hai. i18n từ commit đầu tiên, ESLint chặn literal string trong JSX | `04` NT6, `10` Q-10 |
 | **QĐ-06** | Thời gian lưu UTC (`timestamptz`), hiển thị theo `Asia/Ho_Chi_Minh`, kèm cảnh báo khi thiết bị lệch múi giờ | `03` D-08, `10` Q-08 |
 | **QĐ-07** | **North Star Metric = Weekly Confirmed Attendances (WCA)** | `07` §1.3 |
-| **QĐ-08** | Bốn khu vực MVP để seed: `an-thuong`, `my-an`, `my-khe`, `hai-chau`. Sơn Trà và Hải Châu mở rộng từ M3 | `07` §5.3 ⚠️ xem MT-11 |
+| **QĐ-08** | ~~Bốn khu vực MVP~~ → **ĐÃ ĐẢO NGƯỢC bởi QĐ-58 ngày 31/08/2026**: chốt **6 khu vực MVP** — An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn. Giữ dòng này để truy vết, không dùng để seed | `07` §5.3 (bản cũ) → `01` D-18, `07` T3, `08` M2-4 |
 
 ### 8.2 Kiến trúc & kỹ thuật
 
@@ -548,11 +687,73 @@ Danh sách quyết định **đã chốt** qua 10 tài liệu phân tích. Một
 | **QĐ-52** | **PV-4 (nhảy sớm sang Giai đoạn 2 Nhà ở) bị loại** khỏi mọi kịch bản phản ứng với thất bại | `09` §8.4 |
 | **QĐ-53** | Tỷ giá quy đổi thống nhất toàn bộ tài liệu: **1 USD = 26.000 VND** | `08` A6, `04` G1 |
 
+### 8.6 Quyết định chốt ngày 31/08/2026 — bản 1.1
+
+Đây là **lời giải chính thức** cho 12 trong 15 mâu thuẫn của bản 1.0. Nguồn có thẩm quyền là `01` §15 (D-01 → D-29), được `02`, `03`, `05`, `07`, `08` áp dụng đồng loạt. **Ràng buộc, không phải đề xuất** — mọi tài liệu, migration và PR sau 31/08/2026 phải tuân theo.
+
+**Phân quyền và danh tính**
+
+| # | Quyết định | Giải | Nguồn |
+|---|---|---|---|
+| **QĐ-54** | `users.role` là **enum đúng 5 giá trị** `member` / `curator` / `moderator` / `admin` / `super_admin`. Không có giá trị nào khác, không có giá trị dự trữ | **MT-02** | `01` D-01, §8.1 |
+| **QĐ-55** | `guest` là **trạng thái phiên**, không phải giá trị DB · `organizer` là **quan hệ theo sự kiện** (`events.host_user_id` + `event_cohosts`) · `verified_member` là **trust level** · `support` **gộp vào `moderator`** · `service_provider` **không** vào enum ở GĐ1 | **MT-02** | `01` D-02 → D-06 |
+| **QĐ-56** | Thứ tự đánh giá quyền **bất biến**: trạng thái → role → quan hệ → trust. Cả sáu lớp guard đăng ký ở `APP_GUARD` theo đúng thứ tự; hai guard cuối no-op khi thiếu metadata. Bộ tên chuẩn: `JwtAuthGuard`, `AccountStatusGuard`, `RolesGuard`, `EventOwnershipGuard`, `TrustTierGuard`, `@Roles()`, `@MinTrust()`, `@EventContext()`, `@RequireEventRole()` | **MT-02** | `01` D-07, §13.1, §15.7 |
+| **QĐ-57** | Số `super_admin` đang `active` **luôn ≥ 2**; **chỉ `super_admin`** gán/thu hồi được role, cơ chế four-eyes. UC-73 **tách đôi**: `admin` tìm user / xem lịch sử / đình chỉ · `user.role.assign` chỉ `super_admin` | **MT-02** | `01` D-08, §12.12 |
+| **QĐ-58** | Thang tin cậy **duy nhất** là **T0–T5**, lưu ở `users.trust_level smallint CHECK (0..5)`. Nhãn cố định: **T0 New · T1 Email verified · T2 Phone verified · T3 Active member · T4 Trusted · T5 Community leader**. Xoá mọi thang 0–100 và enum `new`/`verified`/`established`/`trusted`/`ambassador` khỏi tài liệu và code | **MT-12** | `01` D-09, D-10 |
+| **QĐ-59** | Tín hiệu lưu ở **`trust_signals` append-only**; bậc do **job BullMQ `trust:recompute`** tính lại và đó là **nơi duy nhất** ghi `users.trust_level`. **T5 không bao giờ tự động hoàn toàn** — luôn cần `staff_endorsement` thủ công của `admin`. **Badge là lớp hiển thị, không cấp quyền**; không badge nào mang nghĩa tiêu cực; `no_show`, số lần bị báo cáo, điểm thành phần **không hiển thị công khai** | **MT-12** | `01` D-11 → D-14 |
+
+**Mô hình dữ liệu và phạm vi**
+
+| # | Quyết định | Giải | Nguồn |
+|---|---|---|---|
+| **QĐ-60** | **RSVP gắn vào `event_occurrences`**, không gắn vào `events`. Bảng `rsvps(id, occurrence_id, user_id, status, guest_count, …)`. **Sự kiện không lặp lại vẫn có đúng 1 occurrence** — không có ngoại lệ | **MT-03** | `01` D-15, `03` §6.1 |
+| **QĐ-61** | Endpoint chính **`POST /api/v1/occurrences/{occurrenceId}/rsvps`**. `POST /api/v1/events/{eventId}/rsvps` là **đường tắt** trỏ tới occurrence sắp diễn ra gần nhất, trả **409 `AMBIGUOUS_OCCURRENCE`** nếu event có nhiều occurrence sắp tới | **MT-03** | `01` D-16, `02` §12 |
+| **QĐ-62** | **Waitlist là MUST của MVP** — UC-40 chuyển từ `Should` lên `Must`. FIFO theo `queued_at`, cửa sổ xác nhận **12 giờ** (rút còn 30 phút khi occurrence sắp bắt đầu); huỷ RSVP kích hoạt thăng hạng **ngay** | **MT-05** | `01` D-17, `02` §10.2 |
+| **QĐ-63** | **6 khu vực MVP**: An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn. `areas.is_mvp_filter = true` cho đúng 6 hàng, **không xoá, không ẩn được**; đổi polygon cần xác nhận hai bước. *(Đảo ngược QĐ-08)* | **MT-11** | `01` D-18, `03` §7.1, `07` T3 |
+| **QĐ-64** | Tên cột chốt là **`events.host_user_id`** — cấm `creator_id` và `organizer_id`. Mọi nhãn enum trong DB viết **chữ thường snake_case** (`published`, `checked_in`, `no_show`). Có test regex quét `pg_enum` chặn nhãn viết hoa/camelCase | **MT-15 (c)** | `01` D-19, `08` M2-3, DoD-8 |
+| **QĐ-65** | Quy ước viết `area_slug` là **kebab-case** (`an-thuong`, `my-khe`) vì đây là URL slug, **không** phải giá trị enum DB. Tên event tracking và tên thuộc tính luôn **snake_case** | quy ước | `07` §11.2 |
+
+**Vận hành và đo lường**
+
+| # | Quyết định | Giải | Nguồn |
+|---|---|---|---|
+| **QĐ-66** | Nhắc lịch đúng **hai mốc: T‑24h và T‑2h**. Thay đổi trọng yếu ⇒ huỷ và đặt lại job; nhắc **T‑2h không bị chặn** bởi khung giờ yên tĩnh | **MT-15 (a)** | `01` D-21, `02` UC-52 |
+| **QĐ-67** | **SLA báo cáo mức `critical` là 2 giờ**, tính 24/7 (`high` 12 giờ · `normal` 48 giờ). Cảnh báo `critical` phải đẩy vào kênh trực, không chỉ nằm trong hàng đợi. Đây là lý do `moderator` **bắt buộc 2FA** | **MT-15 (b)** | `01` D-22, `02` BR-19, `05` §7.3 |
+| **QĐ-68** | Mục tiêu **WCA tại M6 là 220–280 lượt/tuần** (ngưỡng đỏ < 110). **Không** dùng con số 550 ở bất kỳ tài liệu hay báo cáo nào trong cửa sổ 6 tháng | **MT-10** | `01` D-23, `08` M6-3 |
+| **QĐ-69** | Gate M6 đo bằng **DÒNG CHẢY, không đo TỒN KHO**: **≥ 25 sự kiện đang mở mỗi tuần** (trung bình 4 tuần 25/01 – 21/02/2027, không tuần nào < 20) và **6/6 khu vực MVP** đều ≥ 1 sự kiện mỗi tuần. **Không** dùng chỉ tiêu "≥ 80 sự kiện". Trượt M6-1 hoặc M6-2 ⇒ **không ra mắt đúng hạn**, lùi 2–4 tuần | **MT-09** | `01` D-24, `08` §7.8 |
+| **QĐ-70** | Hàng đợi waitlist hiện thực bằng `rsvps.status = 'waitlisted'` + `position` + `promotion_expires_at` theo `02` §9.1 — ⚠️ **`03` §6.2 lại thiết kế bảng sổ cái `waitlist_entries` riêng. Chưa hợp nhất — xem MT-20** | *(một phần)* | `02` §9.1 vs `03` §6.2 |
+| **QĐ-71** | **13 sprint được lập lịch, đúng 11 sprint (S0 → S10) trước M6**; S11–S12 là sau ra mắt. Bản có hiệu lực để lập kế hoạch tuần là **`08` §6 (bản san tải)**, không phải `08` §5. Bắt buộc **1 Backend hợp đồng 10 tuần (S2 → S6, +70 SP, 150 triệu VND)** | **MT-01** | `08` §6.1 |
+| **QĐ-72** | Mọi con số GTM **trước 13/11/2026 là số tiền-app** và phải ghi rõ giai đoạn đo (P‑A tiền-app · P‑B RSVP live · P‑C beta kín · P‑D công khai). Hai hệ đánh số mốc **không được lẫn**: `M1`–`M6` là **tháng GTM**, `KT‑M0`–`KT‑M6` là **mốc kỹ thuật** của `08` | **MT-07** | `07` §12.1, §10.2 |
+
+**Pháp lý**
+
+| # | Quyết định | Giải | Nguồn |
+|---|---|---|---|
+| **QĐ-73** | Nêu **cả** Nghị định 13/2023/NĐ-CP **và** Luật Bảo vệ dữ liệu cá nhân **91/2025/QH15** trong mọi tài liệu tuân thủ; ghi rõ **từ 01/01/2026 Luật 91/2025 là văn bản hiệu lực cao hơn** và **mọi mẫu biểu phải theo Luật 91/2025**. **CẦN LUẬT SƯ XÁC NHẬN** | **MT-04** | `01` D-27, `02` PL-01, `06` #1 |
+| **QĐ-74** | Quyền `user.anonymize`, `content.purge` và mọi thao tác thực thi quyền của chủ thể dữ liệu **chỉ nằm ở `super_admin`**. **CẦN LUẬT SƯ XÁC NHẬN** | — | `01` D-28 |
+| **QĐ-75** | Moderator tình nguyện ngoài tổ chức (từ M4) **chưa được chạm PII** cho tới khi có thoả thuận xử lý dữ liệu theo Luật 91/2025; hàng đợi kiểm duyệt cho tình nguyện viên **che PII mặc định**. **CẦN LUẬT SƯ XÁC NHẬN** | — | `01` D-29 |
+| **QĐ-76** | Mọi hành động của `curator`/`moderator`/`admin`/`super_admin` trên dữ liệu người khác ghi **`audit_log` bất biến**; truy cập PII **bắt buộc kèm** `moderation_case_id` hoặc `support_ticket_id`. DB role ứng dụng bị thu hồi `UPDATE`/`DELETE` trên `audit_log` (bất biến INV-2, có test). Không tạo bảng audit thứ hai cho kiểm duyệt — `moderation_audit_log` chỉ là **view** `v_moderation_audit_log` lọc trên `audit_logs` | — | `01` D-25, `05` §13 |
+
 ---
 
 ## 9. Câu hỏi còn mở cần chủ dự án trả lời
 
 Mỗi câu ghi rõ **ảnh hưởng nếu trả lời khác nhau** và **deadline cần chốt**. Câu 🔴 là câu khoá cứng thiết kế — trả lời sai hoặc trả lời muộn đều tốn kém.
+
+> ✅ **Cập nhật bản 1.1 — 8 trong 16 câu đã có câu trả lời chốt.** Bảng đầy đủ giữ nguyên bên dưới để truy vết lập luận; bảng này ghi câu trả lời đã chốt.
+>
+> | Câu | Đã chốt phương án nào | Quyết định |
+> |---|---|---|
+> | **CH-02** | *(A)* Enum 5 giá trị `member`/`curator`/`moderator`/`admin`/`super_admin`; organizer là ngữ cảnh | QĐ-54, QĐ-55 |
+> | **CH-03** | Không chọn A cũng không chọn B — chốt **thang T0–T5 duy nhất** với điều kiện đạt bậc bằng bằng chứng, `trust_signals` append-only + job `trust:recompute` | QĐ-58, QĐ-59 |
+> | **CH-04** | *(A)* **Occurrence.** Endpoint chính theo `occurrenceId`; đường tắt theo `eventId` trả 409 `AMBIGUOUS_OCCURRENCE` | QĐ-60, QĐ-61 |
+> | **CH-07** | *(A)* **Waitlist là `Must`** | QĐ-62 |
+> | **CH-09** | *(B)* **SLA `critical` = 2 giờ** — cam kết công khai ở `05` đã sửa theo | QĐ-67 |
+> | **CH-10** | **T‑2h** (cùng T‑24h) | QĐ-66 |
+> | **CH-12** | *(B)* **Hiệu chỉnh về 220–280 WCA/tuần** ở M6 | QĐ-68 |
+> | **CH-13** | *(B)* **Dòng chảy** — ≥ 25 sự kiện đang mở/tuần, không khu vực nào bằng 0 | QĐ-69 |
+>
+> **Tám câu còn mở:** CH-01 🔴 (xác thực SĐT theo NĐ 147/2024) · CH-05 🔴 (ngưỡng giấy phép mạng xã hội) · CH-06 🔴 (kịch bản ngân sách — nay đã có bảng số ở [§5.6](#56-kịch-bản-tinh-gọn--nếu-chỉ-có-2-lập-trình-viên)) · CH-08 🟡 (analytics organizer) · CH-11 🟡 (UC-14 xác minh giấy tờ) · CH-14 🟢 · CH-15 🟢 · CH-16 🟢. **Thêm 12 câu hỏi phân quyền Q-01 → Q-12** ở `01` §14.4 và **14 câu Q-01 → Q-14** ở `02` §13 — cả hai đều có người quyết và hạn riêng, cần gộp vào lịch quyết định của Founder.
 
 | # | Câu hỏi | Nếu trả lời A | Nếu trả lời B | Deadline | Ai quyết |
 |---|---|---|---|---|---|
@@ -597,7 +798,7 @@ Hai tuần này quyết định việc có kịp mốc M0 (18/09) hay không. **
 #### Vận hành cộng đồng — *Founder + Community Manager*
 - [ ] **01–02/09** **Khảo sát thực địa** toàn cụm An Thượng – Mỹ An, ghi nhận 20 địa điểm kèm tên người quyết định và số liên lạc *(đầu ra: bảng 20 địa điểm)*
 - [ ] **01–05/09** **Dựng curation board và thu thập 60 sự kiện thật** trải trong 3 tuần tới. ⚠️ App chưa tồn tại — làm trên bảng tính/Notion theo đúng cấu trúc trường của `curated_sources`, để nhập thẳng vào Admin Console khi có (xem MT-07)
-- [ ] **03/09** Chốt 4 `area_slug` cho MVP: `an-thuong`, `my-an`, `my-khe`, `hai-chau`
+- [ ] **03/09** ~~Chốt 4 `area_slug`~~ → ✅ **đã chốt 6 khu vực MVP** (QĐ-63): `an-thuong`, `my-khe`, `my-an`, `hai-chau`, `son-tra`, `ngu-hanh-son` — **kebab-case** vì là URL slug (QĐ-65). Việc còn lại: **vẽ ranh giới thực tế của cả 6 khu vực trên bản đồ** và để Product ký duyệt trước khi seed bảng `areas`
 - [ ] **04/09** Thiết kế & in POSM: 20 standee A5, 200 thẻ A6, 15 poster A3 — **mỗi địa điểm một `channel_code` riêng**
 - [ ] **06/09** Chốt lịch 8 tuần sự kiện signature, giờ cố định không đổi
 - [ ] **07/09** Chụp lại số thành viên 6 nhóm Facebook + 4 nhóm Telegram làm mốc gốc *(nâng độ tin cậy dữ liệu thị trường từ `C` lên `B`)*
@@ -628,7 +829,7 @@ Hai tuần này quyết định việc có kịp mốc M0 (18/09) hay không. **
 - [ ] Dựng `packages/ui/tokens.ts` từ `docs/analysis/10` §12 và cắm vào Tailwind 4 `@theme` — *Designer + FE* · **hạn: trước Sprint S1 (21/09)**
 
 #### Quyết định cần chốt trong tuần
-- [ ] **14/09** Chốt **[CH-02] tập role hệ thống** — chặn thiết kế RBAC ở Sprint 1
+- [ ] ~~**14/09** Chốt [CH-02] tập role hệ thống~~ → ✅ **đã chốt 31/08/2026** (QĐ-54 → QĐ-57). Việc còn lại: dựng **`PERMISSION_MATRIX` máy đọc được** ở `packages/shared-types` từ `01` §9.2, cùng bộ test `describe.each` T-1 → T-5 — *Tech Lead, hạn 21/09*
 - [ ] **14/09** Xác nhận với luật sư đã nhận bộ 30 câu hỏi và có lịch trả lời trước 21/09 — chặn **[CH-01]**
 
 ### Tổng hợp người chịu trách nhiệm
@@ -647,24 +848,76 @@ Hai tuần này quyết định việc có kịp mốc M0 (18/09) hay không. **
 
 ## 11. Mục lục liên kết tới 10 tài liệu chi tiết
 
-| # | Tài liệu | Nội dung chính | Trạng thái |
-|---|---|---|---|
-| 01 | [`01-tac-nhan-va-phan-quyen.md`](./01-tac-nhan-va-phan-quyen.md) | 5 nguyên tắc phân quyền · bản đồ tác nhân · 4 nhóm actor (primary/secondary/system/external) · 6 persona chi tiết · ranh giới curate | ⚠️ **Thiếu §8–§14** (hệ thống role, ma trận RBAC, vòng đời tài khoản, trust level & badge, mapping role→UC, ghi chú kỹ thuật, rủi ro phân quyền) — xem MT-13 |
-| 02 | [`02-use-case.md`](./02-use-case.md) | 76 use case / 11 epic · bảng MoSCoW đầy đủ · 13 actor · 10 sơ đồ Mermaid (use case, state machine, sequence RSVP, sequence chuyển giao listing) | ⚠️ **Thiếu đặc tả chi tiết 19 use case trọng yếu** và mục ranh giới MVP đã hứa ở §1 |
-| 03 | [`03-domain-va-du-lieu.md`](./03-domain-va-du-lieu.md) | 12 quyết định dữ liệu · 8 bounded context · quy ước đặt tên & kiểu · base entity · **Nhóm A**: `users`, `social_accounts`, `auth_sessions`, `profiles`, `trust_signals`, `push_tokens`, `notification_preferences` | ⚠️ **Thiếu Nhóm B–D** (Geo, Events, Attendance, Community & Safety, Messaging, Curation) và mục 15.2 được tham chiếu |
-| 04 | [`04-tech-stack-va-kien-truc.md`](./04-tech-stack-va-kien-truc.md) | Bảng chốt stack · 7 nguyên tắc kiến trúc · sơ đồ triển khai & ranh giới module · giải trình từng lớp công nghệ · monorepo · quy ước API · auth · realtime & push · PostGIS · migration · CI/CD · **chi phí hạ tầng 3 mốc** · quyết định hosting · bảo mật · quan sát · 12 rủi ro kỹ thuật · **20 ADR** | ✅ Đầy đủ |
-| 05 | [`05-trust-safety-va-kiem-duyet.md`](./05-trust-safety-va-kiem-duyet.md) | 10 nguyên tắc T&S · 3 cam kết công khai · **14 loại rủi ro an toàn R-01→R-14** · xác thực theo tầng · trust score & quyền hạn · rate limit theo tier · chống bot · phát hiện trùng lặp | ⚠️ **Thiếu §7–§13** (quy trình báo cáo & hàng đợi kiểm duyệt, thang cưỡng chế & khiếu nại, đánh giá hai chiều, an toàn khi gặp mặt, chuẩn đạo đức curate, checklist an toàn sự kiện, data model) |
-| 06 | [`06-phap-ly-va-tuan-thu-viet-nam.md`](./06-phap-ly-va-tuan-thu-viet-nam.md) | **12 kết luận pháp lý** · bản đồ khung pháp luật · bảo vệ dữ liệu cá nhân · an ninh mạng & lưu trữ trong nước · NĐ 147/2024 · thương mại điện tử · pháp nhân & thuế · rủi ro curate · yêu cầu App Store/Google Play · **16 tài liệu pháp lý phải soạn** · nội dung tuyệt đối tránh · ma trận rủi ro L-01→L-14 · **checklist M0→M6** · ngân sách · **30 câu hỏi gửi luật sư** | ✅ Đầy đủ |
-| 07 | [`07-go-to-market-da-nang.md`](./07-go-to-market-da-nang.md) | North Star WCA · TAM/SAM/SOM (15.000 / 10.000 / 820 MAU) · 5 phân khúc · bản đồ kênh · **chiến lược seed 100 user theo tuần** · thư viện tin nhắn mẫu tiếng Anh | ⚠️ **Thiếu §7–§14** (playbook curate, kịch bản chuyển đổi organizer, growth loop, hệ thống chỉ số, event tracking, tính mùa vụ, ngân sách & nhân sự GTM, rủi ro GTM) |
-| 08 | [`08-roadmap-va-ke-hoach-trien-khai.md`](./08-roadmap-va-ke-hoach-trien-khai.md) | Tóm tắt điều hành · 8 giả định lập kế hoạch · **milestone M0→M6** · Gantt + lịch 26 tuần · **12 epic / 563 SP với user story và task mẫu** | ⚠️ **Thiếu §6 trở đi** — trong đó có §10.2 (kịch bản cắt scope cho đội tinh gọn) được tham chiếu từ chính §1 |
-| 09 | [`09-canh-tranh-va-rui-ro.md`](./09-canh-tranh-va-rui-ro.md) | 9 kết luận · khung chấm điểm · phân tích 11 đối thủ · bảng so sánh tính năng · rào cản gia nhập thật · **risk register 17 rủi ro RK-01→RK-17** · phân tích độ nhạy · **ngưỡng thất bại & 6 phương án xoay trục** · theo dõi cạnh tranh | ✅ Đầy đủ |
-| 10 | [`10-ux-luong-man-hinh-va-i18n.md`](./10-ux-luong-man-hinh-va-i18n.md) | **10 quyết định UX** · 7 nguyên tắc · ràng buộc từ persona · sitemap & mã màn hình · danh sách màn hình mobile/web/console · **10 user flow Mermaid** · 6 wireframe · thiết kế bộ lọc & bản đồ · onboarding & aha moment · 37 empty state · hệ thống thiết kế · **i18n chi tiết** · accessibility · **ma trận truy vết UC ↔ màn hình** · rủi ro UX | ✅ Đầy đủ |
+> ✅ **Cập nhật bản 1.1 — MT-13 đã giải.** Cả 10 tài liệu nay **đầy đủ theo đúng mục lục của chính chúng**. Tổng cộng **23.505 dòng**. Sáu tài liệu được viết tiếp trong đợt này (`01`, `02`, `03`, `05`, `07`, `08`) tăng từ ~4.900 lên **15.295 dòng**. Cột "Trạng thái" ghi phần **mới bổ sung**, không lặp lại phần đã có.
+
+| # | Tài liệu | Dòng | Nội dung chính | Trạng thái |
+|---|---|---:|---|---|
+| 01 | [`01-tac-nhan-va-phan-quyen.md`](./01-tac-nhan-va-phan-quyen.md) | 2.154 | 5 nguyên tắc phân quyền · bản đồ tác nhân · 4 nhóm actor · 6 persona · ranh giới curate · **§8 hệ thống role (enum 5 giá trị, 3 trục phân quyền)** · **§9 ma trận RBAC 22 quyền × 8 cột + 51 mã điều kiện** · **§10 vòng đời tài khoản** · **§11 trust level T0–T5 & badge** · **§12 mapping role → 76 UC** · **§13 ghi chú triển khai (6 lớp guard, decorator, test ma trận)** · **§14 rủi ro R-01→R-14 + 12 câu hỏi mở** · **§15 quyết định D-01→D-29** | ✅ **Đầy đủ** — bổ sung §12 → §15 |
+| 02 | [`02-use-case.md`](./02-use-case.md) | 3.393 | 76 use case / 11 epic · MoSCoW · 13 actor · 10 sơ đồ Mermaid · 30 business rule · **§8 đặc tả đủ 19 use case trọng yếu** · **§9 ma trận truy vết UC → endpoint → màn hình → bảng** · **§10 ranh giới MVP (45 Must / 17 Should / 8 Could / 6 Won't) + L1→L7** · **§11 chừa chỗ GĐ2–3** · **§12 phụ lục endpoint** · **§13 câu hỏi mở Q-01→Q-14, PL-01→PL-10** | ✅ **Đầy đủ** — bổ sung 20 mục |
+| 03 | [`03-domain-va-du-lieu.md`](./03-domain-va-du-lieu.md) | 3.231 | 12 quyết định dữ liệu · 8 bounded context · quy ước đặt tên & kiểu · **Nhóm A→G đủ 30 bảng** (`events`, `event_occurrences`, `rsvps`, `waitlist_entries`, `areas`, `reports`, `conversations`, `audit_logs`…) · **§11 ERD đầy đủ** · **§12 state machine** · **§13 DDL SQL mẫu + trigger** · **§14 truy vấn bán kính 1500 m + EXPLAIN** · **§15 FTS tiếng Việt (mục 15.2 đã có)** · **§16 chính sách xoá 3 tầng** · **§17 extension bắt buộc** | ✅ **Đầy đủ** — bổ sung §5 → §17 |
+| 04 | [`04-tech-stack-va-kien-truc.md`](./04-tech-stack-va-kien-truc.md) | 2.202 | Bảng chốt stack · 7 nguyên tắc kiến trúc · sơ đồ triển khai & ranh giới module · monorepo · quy ước API · auth · realtime & push · PostGIS · migration · CI/CD · chi phí hạ tầng 3 mốc · hosting · bảo mật · quan sát · 12 rủi ro kỹ thuật · **20 ADR** | ⚠️ Đầy đủ, **cần 2 sửa nhỏ**: `@MinTrustTier()` → `@MinTrust()`, và 3 chỗ `status = 'PUBLISHED'` chữ hoa → chữ thường (xem MT-17) |
+| 05 | [`05-trust-safety-va-kiem-duyet.md`](./05-trust-safety-va-kiem-duyet.md) | 2.215 | 10 nguyên tắc T&S · 3 cam kết công khai · 14 loại rủi ro R-01→R-14 · xác thực theo tầng · trust score & quyền hạn · rate limit theo tier · **§7 quy trình báo cáo & hàng đợi (28 mã vi phạm, 4 mức SLA)** · **§8 thang cưỡng chế E1→E6 + khiếu nại** · **§9 đánh giá hai chiều** · **§10 an toàn khi gặp mặt** · **§11 chuẩn đạo đức curate + takedown** · **§12 checklist an toàn sự kiện** · **§13 data model + 3 module NestJS + 9 job BullMQ** · **§14 14 chỉ số MQ-01→MQ-14** · **§15 lộ trình** · **§16 phụ lục** | ✅ **Đầy đủ** — bổ sung §7 → §16 |
+| 06 | [`06-phap-ly-va-tuan-thu-viet-nam.md`](./06-phap-ly-va-tuan-thu-viet-nam.md) | 1.715 | 12 kết luận pháp lý · bản đồ khung pháp luật · bảo vệ dữ liệu cá nhân · an ninh mạng & lưu trữ trong nước · NĐ 147/2024 · thương mại điện tử · pháp nhân & thuế · rủi ro curate · yêu cầu App Store/Google Play · 16 tài liệu pháp lý phải soạn · nội dung tuyệt đối tránh · ma trận L-01→L-14 · checklist M0→M6 · ngân sách · **30 câu hỏi gửi luật sư** | ✅ Đầy đủ — còn **MT-14** (ngưỡng giấy phép lệch 10 lần) chờ luật sư |
+| 07 | [`07-go-to-market-da-nang.md`](./07-go-to-market-da-nang.md) | 2.362 | North Star WCA · TAM/SAM/SOM · 5 phân khúc · bản đồ kênh · chiến lược seed 100 user · thư viện tin nhắn mẫu · **§7 playbook curate** · **§8 kịch bản chuyển đổi organizer** · **§9 growth loop + 12 luật chống lạm dụng** · **§10 hệ thống chỉ số (NSM + 20 chỉ số × 6 tháng)** · **§11 54 event tracking + 6 phễu** · **§12 tính mùa vụ, Tết Đinh Mùi, mùa mưa bão + đồng bộ lịch GTM ↔ kỹ thuật** · **§13 ngân sách & 13 công cụ** · **§14 16 rủi ro GR-01→GR-16 + 6 cổng quyết định** · **§15 checklist khảo sát tuần 0** | ✅ **Đầy đủ** — bổ sung §9 → §15 |
+| 08 | [`08-roadmap-va-ke-hoach-trien-khai.md`](./08-roadmap-va-ke-hoach-trien-khai.md) | 1.940 | Tóm tắt điều hành · 8 giả định · milestone M0→M6 · Gantt 26 tuần · 12 epic / 563 SP · **§6 sprint S0→S12 (bản san tải + DoD 12 điều + van an toàn 44 SP)** · **§7 tiêu chí nghiệm thu từng mốc** · **§8 đường găng + 22 phụ thuộc chặn** · **§9 cấu trúc đội (5,5 FTE / tinh gọn)** · **§10 kịch bản cắt scope 2 dev** · **§11 ngân sách 3 giai đoạn** · **§12 launch readiness 50 mục** · **§13 cửa go/no-go 17:00 24/02/2027** | ✅ **Đầy đủ** — bổ sung §6 → §13 |
+| 09 | [`09-canh-tranh-va-rui-ro.md`](./09-canh-tranh-va-rui-ro.md) | 1.547 | 9 kết luận · khung chấm điểm · 11 đối thủ · bảng so sánh tính năng · rào cản gia nhập thật · risk register RK-01→RK-17 · phân tích độ nhạy · ngưỡng thất bại & 6 phương án xoay trục · theo dõi cạnh tranh | ⚠️ Đầy đủ, **cần rà lại số liệu**: vài chỗ còn "4 khu vực MVP" và mục tiêu 550 WCA như mốc sống (xem MT-18). Phần **lập luận** dẫn tới 220–280 thì giữ nguyên vì chính nó là căn cứ của QĐ-68 |
+| 10 | [`10-ux-luong-man-hinh-va-i18n.md`](./10-ux-luong-man-hinh-va-i18n.md) | 2.049 | 10 quyết định UX · 7 nguyên tắc · ràng buộc từ persona · sitemap & mã màn hình · màn hình mobile/web/console · 10 user flow Mermaid · 6 wireframe · thiết kế bộ lọc & bản đồ · onboarding & aha moment · 37 empty state · hệ thống thiết kế · i18n · accessibility · **ma trận truy vết UC ↔ màn hình** · rủi ro UX | ⚠️ Đầy đủ, **cần 2 sửa nhỏ**: §15 ghi "44 use case Must" → **45**; sơ đồ dòng 823 dùng `organizer_id` → `host_user_id` (xem MT-19) |
+
+**Kiểm tra liên kết:** cả 10 đường dẫn tương đối ở trên đều trỏ tới file có thật trong `docs/analysis/`. Không có liên kết hỏng.
 
 ---
 
 ## 12. Mâu thuẫn cần giải quyết
 
 Bảng này ghi nhận **mọi chỗ tài liệu này nói khác tài liệu kia**. Không lờ đi mâu thuẫn nào. Mỗi dòng có mức nghiêm trọng, ảnh hưởng và người phải giải quyết.
+
+### 12.1 Bảng trạng thái — cập nhật 31/08/2026 (bản 1.1)
+
+**Đây là bảng có thẩm quyền.** Bảng gốc bản 1.0 giữ nguyên ở [§12.4](#124-bảng-gốc-bản-10--giữ-nguyên-để-truy-vết) để truy vết lập luận.
+
+| Mã | Mâu thuẫn | Mức | Trạng thái | Giải bằng cách nào | Ở tài liệu nào |
+|---|---|:--:|:--:|---|---|
+| **MT-01** | Số sprint: 6 hay 11? | 🟡 | ✅ **ĐÃ GIẢI** | **13 sprint lập lịch, đúng 11 sprint (S0 → S10) trước M6**; S11–S12 là sau ra mắt và không chứa story MVP. Bản có hiệu lực để lập kế hoạch tuần là bản san tải, không phải bảng epic. Kèm kết luận bắt buộc: thuê 1 BE hợp đồng 10 tuần S2 → S6 | `08` §6.1 · QĐ-71 |
+| **MT-02** | Bốn tập role khác nhau | 🔴 | ✅ **ĐÃ GIẢI** | `users.role` là enum **đúng 5 giá trị** `member`/`curator`/`moderator`/`admin`/`super_admin`. `guest` = trạng thái phiên · `organizer` = quan hệ theo sự kiện (`events.host_user_id` + `event_cohosts`) · `verified_member` = trust level · `support` gộp `moderator` · `service_provider` không vào enum. Thứ tự guard bất biến trạng thái → role → quan hệ → trust; bộ tên guard/decorator thống nhất | `01` §8.1, §9, §13.1, D-01→D-08 · `08` M1-4, M1-5 · [§2.3](#23-hệ-thống-role--đã-chốt-giải-mt-02) · QĐ-54→57 |
+| **MT-03** | RSVP gắn vào `Event` hay `EventOccurrence`? | 🔴 | ✅ **ĐÃ GIẢI** | **Occurrence.** Bảng `rsvps(occurrence_id, …)`, sự kiện không lặp vẫn có đúng 1 occurrence. Endpoint chính `POST /api/v1/occurrences/{occurrenceId}/rsvps`; đường tắt theo `eventId` trả **409 `AMBIGUOUS_OCCURRENCE`**. Ràng buộc migration: `rsvps` **không có** cột `event_id` | `01` D-15, D-16 · `02` §12, §13.5 · `03` §6.1 · `08` M2-2 · QĐ-60, QĐ-61 |
+| **MT-04** | NĐ 13/2023 hay Luật 91/2025? | 🔴 | ✅ **ĐÃ GIẢI** | Nêu **cả hai**, ghi rõ **từ 01/01/2026 Luật 91/2025/QH15 là văn bản hiệu lực cao hơn** và **mọi mẫu biểu phải theo Luật 91/2025**. Ràng buộc áp cho mọi trang pháp lý kể cả `M-71`. **CẦN LUẬT SƯ XÁC NHẬN** | `01` D-27 · `02` §13.4 mục 3, PL-01, L6 · `06` #1 · QĐ-73 |
+| **MT-05** | Waitlist: Must hay Should? | 🟡 | ✅ **ĐÃ GIẢI** | **`Must`.** UC-40 lên `Must` ⇒ `Must` 44 → **45**, `Should` 18 → **17**. FIFO theo `queued_at`, cửa sổ xác nhận **12 giờ** (30 phút khi sắp tới giờ), huỷ RSVP thăng hạng ngay. Điều kiện ra mắt **L3**: 1 chỗ trống / 20 người chờ → đúng 1 lời mời | `01` D-17 · `02` §8.15, §10.2, §10.5 · `08` M3 · QĐ-62 |
+| **MT-06** | Analytics organizer + nhân bản/lặp lại: MVP hay không? | 🟡 | 🔶 **CÒN MỞ** | `02` §10.3 vẫn xếp UC-24 = `Should`, UC-28 = `Could`, UC-72 = `Could`, và đã ghi rõ chi phí của việc hoãn. `01` §7.3–§7.4 vẫn nói là MVP. Chưa ai chốt | xem [§12.2](#122-ba-mâu-thuẫn-còn-mở--chi-tiết-và-hạn-xử-lý) |
+| **MT-07** | Lịch GTM đi trước lịch kỹ thuật ~3 tháng | 🔴 | ✅ **ĐÃ GIẢI** | Chọn phương án **định nghĩa lại "seed user" cho giai đoạn tiền-app** (không dời cửa sổ 1). Bốn giai đoạn đo lường **P‑A tiền-app** (01/09 → 12/11/2026) · **P‑B RSVP live** (từ 13/11) · **P‑C beta kín** · **P‑D công khai**, mỗi giai đoạn có đơn vị đo riêng (`WCA-proxy` sổ check-in giấy ↔ `WCA` từ `rsvps`). Hai hệ mốc tách bạch: `M1`–`M6` = tháng GTM, `KT‑M0`–`KT‑M6` = mốc kỹ thuật. Có **tuần chạy song song 13–19/11** để đo hệ số lệch giữa hai đơn vị | `07` §12.1, §10.2 · QĐ-72 |
+| **MT-08** | Khiếu nại kiểm duyệt: Could hay bắt buộc? | 🟡 | 🔶 **CÒN MỞ** *(đã thu hẹp)* | `05` §8.5 nay **đã có quy trình khiếu nại đầy đủ** (sequenceDiagram, chống mồi neo, tách người quyết ≠ người xử lý) và §8.6 có cam kết công khai + báo cáo minh bạch hằng quý. Nhưng `02` §10.3 vẫn xếp UC-63 = `Could` với giải pháp tạm "xử lý qua email hỗ trợ". **Chưa hợp nhất** | xem [§12.2](#122-ba-mâu-thuẫn-còn-mở--chi-tiết-và-hạn-xử-lý) |
+| **MT-09** | Gate M6: tồn kho hay dòng chảy | 🟡 | ✅ **ĐÃ GIẢI** | **Dòng chảy.** ≥ 25 sự kiện đang mở mỗi tuần (trung bình 4 tuần 25/01 – 21/02/2027, **không tuần nào < 20**) và **6/6 khu vực MVP** ≥ 1 sự kiện mỗi tuần. Bỏ hẳn chỉ tiêu "≥ 80 sự kiện". Trượt M6-1 hoặc M6-2 ⇒ **không ra mắt đúng hạn**, lùi 2–4 tuần | `01` D-24 · `08` §1, §3, §7.8 (M6-1, M6-2) · `02` §10.5 L4 · `07` §1.2 · QĐ-69 |
+| **MT-10** | Mục tiêu WCA M6: 550 hay 220–280 | 🟡 | ✅ **ĐÃ GIẢI** | **220–280 lượt/tuần**, ngưỡng đỏ < 110. Suy ra từ 25 sự kiện/tuần × 12–14 người × `show_rate` 70%. Cấm dùng con số 550 trong cửa sổ 6 tháng; con số 550 chỉ còn là mốc M9/gate GĐ2 và **phải lập lại nền** bằng số thật của M6 vào tuần đầu 03/2027 | `01` D-23 · `08` M6-3 · `07` §10.1.3 · `02` GD-01 · QĐ-68 |
+| **MT-11** | Số khu vực MVP: 4, 6 hay 12? | 🟢 | ✅ **ĐÃ GIẢI** | **6 khu vực**: An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn. `areas.is_mvp_filter = true` cho đúng 6 hàng, **không xoá, không ẩn được**; đổi polygon cần xác nhận hai bước. `area_slug` viết **kebab-case** vì là URL slug | `01` D-18 · `03` §7.1 seed · `07` T3, §15 · `08` M2-4 · `02` UC-70 · QĐ-63, QĐ-65 |
+| **MT-12** | Ba mô hình trust score không tương thích | 🔴 | ✅ **ĐÃ GIẢI** | **Thang T0–T5 duy nhất**, `users.trust_level smallint CHECK (0..5)`. Xoá thang 0–100 và enum `new`/`verified`/`established`/`trusted`/`ambassador`. Tín hiệu ở `trust_signals` append-only; **job `trust:recompute` là nơi duy nhất ghi cột**. T5 luôn cần `staff_endorsement` thủ công. Badge không cấp quyền, không badge tiêu cực | `01` §11, D-09→D-14 · `03` §4 · `05` §5 · `08` M1-6 · [§2.4](#24-trust-level-t0t5--đã-chốt-giải-mt-12) · QĐ-58, QĐ-59 |
+| **MT-13** | Sáu tài liệu bị cắt cụt so với mục lục của chúng | 🔴 | ✅ **ĐÃ GIẢI** | Cả 6 đã viết xong: `01` +1.010 dòng (§12→§15) · `02` +2.215 (§7→§13) · `03` +2.768 (§5→§17) · `05` +1.640 (§7→§16) · `07` +1.349 (§9→§15) · `08` +1.422 (§6→§13). Tổng bộ tài liệu **23.505 dòng**. Mọi tham chiếu treo trước đây đã có đích thật: `03` mục 15.2, `08` §10.2, `02` đặc tả 19 UC, `01` ma trận RBAC | [§11](#11-mục-lục-liên-kết-tới-10-tài-liệu-chi-tiết) |
+| **MT-14** | Ngưỡng cấp giấy phép mạng xã hội lệch 10 lần | 🔴 | 🔶 **CÒN MỞ** | `06` #4 ghi ~10.000 lượt/tháng, `09` #8 ghi > 1.000 người dùng thường xuyên/tháng. **Chỉ luật sư trả lời được** — nằm trong bộ 30 câu hỏi của `06` §15 | xem [§12.2](#122-ba-mâu-thuẫn-còn-mở--chi-tiết-và-hạn-xử-lý) |
+| **MT-15** | Ba mốc thời gian nhỏ không khớp | 🟢 | ✅ **ĐÃ GIẢI** | **(a) Nhắc lịch: T‑24h và T‑2h** — `T‑3h` không còn xuất hiện ở tài liệu nào. **(b) SLA `critical`: 2 giờ** — `05` đã sửa cam kết công khai theo, kèm `high` 12 giờ · `normal` 48 giờ. **(c) Tên cột: `events.host_user_id`**, cấm `creator_id`/`organizer_id`; mọi enum DB **chữ thường snake_case**, có test regex quét `pg_enum` và tiêu chí nghiệm thu M2-3 yêu cầu `grep` trả về rỗng. *Còn 2 vết sót ở `04` và `10` — theo dõi bằng MT-17 và MT-19* | `01` D-19, D-21, D-22 · `02` BR-19, §6.8 · `05` §7.3 · `08` M2-3, DoD-8 · QĐ-64, QĐ-66, QĐ-67 |
+
+### 12.2 Ba mâu thuẫn **CÒN MỞ** — chi tiết và hạn xử lý
+
+| Mã | Mức | Vì sao chưa giải được | Hai phương án | Ảnh hưởng nếu để trôi | Người giải · **Hạn** |
+|---|:--:|---|---|---|---|
+| **MT-06** | 🟡 | Đây là đánh đổi phạm vi, không phải mâu thuẫn dữ kiện. `01` §7.3–§7.4 nói `duplicate`, `recurrence_rule` và analytics cấp organizer "là tính năng MVP, không phải để sau"; `02` §10.3 vẫn xếp UC-24 `Should`, UC-28 `Could`, UC-72 `Could` | **(A)** Kéo UC-24 (chuỗi lặp lại) lên `Must` — lược đồ `event_occurrences` đã sẵn sàng nên chi phí chỉ là API + UI. **(B)** Giữ nguyên và chấp nhận organizer lớp học hằng tuần phải tạo tay từng buổi trong 3 tháng đầu | Mất hai persona nguồn cung: P3 Tom (cầu lông T3 & T5 hằng tuần) và P4 Linh (studio yoga, nhóm duy nhất sẵn sàng trả phí sau này). Nguồn cung là bên yếu của thị trường hai phía — mất nó là mất RK-01 | PO · **30/11/2026** (đầu S6) — [CH-08] |
+| **MT-08** | 🟡 | `05` đã viết xong quy trình nhưng `02` chưa nâng UC-63 lên tương ứng. Nếu công bố cam kết ở `05` §8.6 mà UC-63 vẫn là `Could` thì **công bố một quyền không có đường thực hiện trong sản phẩm** | **(A)** Nâng UC-63 lên `Should` sớm nhất trong đợt 2 và **công bố đường email khiếu nại có SLA** ngay trong Community Guidelines ở M4. **(B)** Hạ cam kết ở `05` §8.6 xuống mức "khiếu nại qua email hỗ trợ" — rẻ hơn nhưng phải sửa cả trang Safety trước khi công bố | Rủi ro danh tiếng và có thể là rủi ro pháp lý: cam kết công khai mà không có tính năng thực hiện. `05` §8.5 còn bắt buộc **người ra quyết định ≠ người xử lý khiếu nại từ ngày đầu** — quy trình email cũng phải thoả điều này | PO + Founder · **27/11/2026** (M4, **trước khi công bố Guidelines**) |
+| **MT-14** | 🔴 | Không đội nào tự trả lời được — phụ thuộc cách cơ quan quản lý diễn giải NĐ 147/2024. Đã nằm trong bộ 30 câu hỏi gửi luật sư | **(A)** 10.000 lượt/tháng → khởi động hồ sơ giấy phép ở M6. **(B)** > 1.000 người dùng thường xuyên/tháng → **chạm ngưỡng trước cả mục tiêu MAU M6 (700–820)**, phải khởi động hồ sơ ở **M4 · 11/2026** | Lệch **4 tháng** trên đường găng pháp lý và một khoản **40–120 triệu VND** chưa có trong dòng tiền. Nếu (B) đúng mà phát hiện muộn thì phải hoãn ra mắt hoặc chạy không phép | Founder + Luật sư · **30/09/2026** — [CH-05] |
+
+### 12.3 Năm mâu thuẫn **MỚI** phát hiện khi viết tiếp (MT-16 → MT-20)
+
+Xuất hiện vì các tài liệu nay đi sâu tới mức lược đồ và tên định danh — độ chi tiết mà bản 1.0 chưa chạm tới.
+
+| Mã | Mâu thuẫn | Mức | Chi tiết | Ảnh hưởng nếu không giải | Người giải · **Hạn** |
+|---|---|:--:|---|---|---|
+| **MT-16** | **`user_status_enum`: 8 giá trị hay 5?** | 🔴 | `01` §10.3 khai enum **8 giá trị** có `restricted` và `banned`; `03` §4.1 khai **5 giá trị** **không** có hai giá trị đó. Thang cưỡng chế E1 → E6 ở `05` §8.1 **cần cả `restricted` lẫn `banned`** để biểu diễn bậc 4 và bậc 6, và `05` đã chèn hộp cảnh báo yêu cầu hợp nhất trước khi viết migration | Trục 0 của mô hình phân quyền (`AccountStatusGuard`) không chặn được đúng bậc cưỡng chế; migration `user_status_enum` sai ngay ở M1 và enum Postgres **không xoá được giá trị** — sửa sau phải tạo type mới và ép kiểu toàn bảng | Tech Lead · **02/10/2026** (**trước migration M1**) |
+| **MT-17** | **Tên decorator và chữ hoa/thường enum ở `04`** | 🟡 | `04` §7.7 dùng `@MinTrustTier()` trong khi tên chốt ở `01` §13.4 và §15.7 là **`@MinTrust()`**. `04` còn 3 chỗ viết `status = 'PUBLISHED'` **chữ hoa**, trái QĐ-64 và DoD-8 (mọi enum DB chữ thường snake_case). `01` đã tự sửa 3 chỗ của mình sang bộ tên chuẩn và ghi rõ "để `04` chỉnh theo, không sửa file `04`" | Hai tên decorator cùng tồn tại ⇒ hai guard, hai đường kiểm trust. Chữ hoa trong ví dụ SQL bị sao chép vào migration ⇒ index partial `WHERE status = 'PUBLISHED'` **không bao giờ khớp** dữ liệu thật, truy vấn feed rơi về seq scan mà không ai nhận ra | Tech Lead · **21/09/2026** (trước S1) |
+| **MT-18** | **`09` còn dùng số liệu bản cũ** | 🟢 | `09` vẫn ghi "4 khu vực MVP" ở §6, §8.4 (PV-1) và giữ 550 WCA như mốc sống ở vài chỗ. Đây là tài liệu **đã khuyến nghị** đổi sang 220–280 và sang gate dòng chảy — phần lập luận §7.1 phải giữ nguyên vì nó chính là căn cứ của QĐ-68 và QĐ-69 | PV-1 ("thu hẹp địa lý còn 2 khu vực") tính sai điểm xuất phát nếu nền là 6 chứ không phải 4. Người đọc nhanh lấy nhầm 550 làm mục tiêu M6 | PO · **19/10/2026** (cửa sổ quyết định 1) |
+| **MT-19** | **`10` còn số cũ và một tên cột cũ** | 🟢 | `10` §15 kết luận "toàn bộ **44** use case `Must`" trong khi nay là **45**; sơ đồ chuyển giao listing (dòng 823) dùng `organizer_id` thay vì `host_user_id`. **Độ phủ thực tế vẫn đủ** — UC-40 đã có màn hình `M-26` (Waitlist status) và `W-20`, chỉ sai con số tổng | Ma trận truy vết là công cụ kiểm độ phủ trước ra mắt (điều kiện **L1**); sai số tổng làm checklist tick thiếu một dòng. `organizer_id` trong sơ đồ bị lập trình viên chép vào code, vi phạm M2-3 | Designer + PO · **30/09/2026** |
+| **MT-20** | **Waitlist: một bảng hay hai?** | 🔴 | `02` §9.1 và §13.4 mục 2 quy định **KHÔNG tạo bảng `waitlist_entries`** — hàng đợi hiện thực bằng `rsvps.status = 'waitlisted'` + `position` + `promotion_expires_at`. Nhưng `03` §6.2 **đã thiết kế bảng `waitlist_entries` đầy đủ** như một sổ cái có thứ tự (`queued_at` là nguồn sự thật FIFO, `offer_attempt`, `resolution_reason`, `waitlist_state_enum`), với lập luận: `rsvps.status` chỉ nói *đang* xếp hàng, không tra được "ai đợi trước mà người ta được vào trước" | **Waitlist là `Must` (QĐ-62) và nằm trên đường găng M3.** Hai thiết kế ⇒ hai bộ migration, hai thuật toán thăng hạng, hai cách đo `waitlist_conversion_rate`. Test tải L3 (1 chỗ / 20 người chờ → đúng 1 lời mời) không viết được khi chưa biết nguồn sự thật của thứ tự nằm ở đâu | Tech Lead + PO · **02/11/2026** (**trước S4**) |
+
+> **Khuyến nghị cho MT-20** (chờ Tech Lead xác nhận): giữ **cả hai nhưng phân vai rõ** — `rsvps.status = 'waitlisted'` là **trạng thái hiện tại** dùng cho mọi truy vấn hiển thị và ràng buộc sức chứa; `waitlist_entries` là **sổ cái append-oriented** dùng cho thứ tự FIFO, lịch sử lời mời và giải quyết khiếu nại. Điều kiện bắt buộc nếu chọn phương án này: đúng **một** nguồn sự thật cho thứ tự (`waitlist_entries.queued_at`), `rsvps.position` chỉ là giá trị hiển thị tính lại theo lô, và có test bất biến chứng minh hai bảng không bao giờ lệch trạng thái.
+
+### 12.4 Bảng gốc bản 1.0 — giữ nguyên để truy vết
+
+Không sửa dòng nào. Cột "Người giải · Hạn" của các dòng **ĐÃ GIẢI** nay chỉ còn giá trị lịch sử.
 
 | Mã | Mâu thuẫn | Mức | Chi tiết | Ảnh hưởng nếu không giải | Người giải · Hạn |
 |---|---|:--:|---|---|---|
@@ -684,14 +937,30 @@ Bảng này ghi nhận **mọi chỗ tài liệu này nói khác tài liệu kia
 | **MT-14** | **Ngưỡng cấp giấy phép mạng xã hội lệch 10 lần** | 🔴 | `06` kết luận #4: "khoảng **10.000 lượt truy cập thường xuyên/tháng**". `09` kết luận #8: "**> 1.000 người dùng thường xuyên/tháng**", và kết luận rằng ngưỡng sẽ bị chạm khoảng M6–M7 | Nếu `09` đúng, hồ sơ giấy phép (40–120 triệu VND, thời gian xử lý chưa rõ) phải khởi động ở **M4 · 11/2026** chứ không phải sau M6 — lệch 4 tháng và một khoản ngân sách lớn | Founder + Luật sư · **30/09/2026** — [CH-05] |
 | **MT-15** | **Ba mốc thời gian nhỏ không khớp** | 🟢 | (a) **Nhắc lịch**: `01` §5 và `07` tuần 4 ghi T‑24h và **T‑3h**; `02` UC-52, `08` E7-S8, `10` đều ghi T‑24h và **T‑2h**. (b) **SLA report critical**: `05` cam kết công khai **1 giờ**; `01` §4.2 và `08` E8-S3 ghi **2 giờ**. (c) **Đặt tên cột**: `03` dùng `host_user_id`, `05` dùng `creator_id`, `08` dùng `organizer_id` cho cùng một khái niệm; `03` dùng enum chữ thường, `05` dùng `status = 'PUBLISHED'` chữ hoa | (a) và (b) ảnh hưởng trực tiếp tỷ lệ no-show và cam kết công khai. (c) gây lỗi migration và code review lặp lại | PO + Tech Lead · 02/11/2026 — [CH-09], [CH-10] |
 
-### Tổng kết mức nghiêm trọng
+### 12.5 Tổng kết mức nghiêm trọng — cập nhật bản 1.1
 
-| Mức | Số lượng | Mã |
+| Trạng thái | Số lượng | Mã |
 |---|---:|---|
-| 🔴 **Chặn — phải giải trước Sprint 2** | 7 | MT-02, MT-03, MT-04, MT-07, MT-12, MT-13, MT-14 |
-| 🟡 **Quan trọng — giải trong M2–M4** | 6 | MT-01, MT-05, MT-06, MT-08, MT-09, MT-10 |
-| 🟢 **Nhỏ — giải trước khi seed dữ liệu** | 2 | MT-11, MT-15 |
+| ✅ **ĐÃ GIẢI** — có quyết định chốt, đã áp dụng đồng loạt vào các tài liệu con | **12** | MT-01, MT-02, MT-03, MT-04, MT-05, MT-07, MT-09, MT-10, MT-11, MT-12, MT-13, MT-15 |
+| 🔶 **CÒN MỞ** từ bản 1.0 | **3** | MT-06 🟡, MT-08 🟡, MT-14 🔴 |
+| 🆕 **MỚI phát hiện** khi viết tiếp | **5** | MT-16 🔴, MT-17 🟡, MT-18 🟢, MT-19 🟢, MT-20 🔴 |
+| | **Tổng còn phải xử lý: 8** | |
+
+**Tám mâu thuẫn còn lại xếp theo hạn, đây là thứ tự phải xử lý:**
+
+| Hạn | Mã | Mức | Người giải | Chặn cái gì |
+|---|---|:--:|---|---|
+| **21/09/2026** | MT-17 | 🟡 | Tech Lead | Sprint 1 — tên guard/decorator và chữ hoa/thường enum trong migration |
+| **30/09/2026** | MT-14 | 🔴 | Founder + Luật sư | Ngân sách và lịch hồ sơ giấy phép mạng xã hội (lệch 4 tháng) |
+| **30/09/2026** | MT-19 | 🟢 | Designer + PO | Ma trận truy vết UC ↔ màn hình, điều kiện ra mắt L1 |
+| **02/10/2026** | MT-16 | 🔴 | Tech Lead | **Migration M1** — enum Postgres không xoá được giá trị, sai là phải tạo type mới |
+| **19/10/2026** | MT-18 | 🟢 | PO | Cửa sổ quyết định 1 — điểm xuất phát của phương án xoay trục PV-1 |
+| **02/11/2026** | MT-20 | 🔴 | Tech Lead + PO | **Sprint 4 / M3** — waitlist là `Must` và nằm trên đường găng |
+| **27/11/2026** | MT-08 | 🟡 | PO + Founder | M4 — trước khi công bố Community Guidelines |
+| **30/11/2026** | MT-06 | 🟡 | PO | Sprint 6 — nguồn cung, hai persona organizer |
+
+> **Ba mâu thuẫn 🔴 còn lại đều có hạn trước 03/11/2026, và cả ba đều chặn một artefact không sửa lại được rẻ:** MT-14 chặn dòng tiền pháp lý, MT-16 chặn migration enum, MT-20 chặn thiết kế bảng waitlist. Đặt cả ba vào lịch quyết định của Founder ngay tuần đầu tiên.
 
 ---
 
-*Tài liệu 00 — Tổng hợp dự án Da Nang Connect. Lập ngày 31/08/2026, phiên bản 1.0. Đây là bản tổng hợp có thẩm quyền để ra quyết định; mọi chi tiết triển khai nằm ở 10 tài liệu phân tích gốc. Khi một tài liệu con được cập nhật, tài liệu này phải được đối chiếu lại, đặc biệt là §8 Decision log và §12 Mâu thuẫn cần giải quyết.*
+*Tài liệu 00 — Tổng hợp dự án Da Nang Connect. Lập ngày 31/08/2026, **phiên bản 1.1** (cập nhật sau khi `01`, `02`, `03`, `05`, `07`, `08` được viết tiếp; 12/15 mâu thuẫn bản 1.0 đã giải, 5 mâu thuẫn mới ghi nhận). Đây là bản tổng hợp có thẩm quyền để ra quyết định; mọi chi tiết triển khai nằm ở 10 tài liệu phân tích gốc. Khi một tài liệu con được cập nhật, tài liệu này phải được đối chiếu lại, đặc biệt là §8 Decision log và §12 Mâu thuẫn cần giải quyết.*
