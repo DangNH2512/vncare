@@ -60,7 +60,7 @@ Mỗi dòng phải truy được về một artifact thật. Đọc artifact TR�
 Artifact mơ hồ → status dòng đó là `Cần làm rõ` — **không bao giờ bịa bước tái hiện**.
 
 ⚠️ **Che dữ liệu cá nhân trước khi lưu ảnh vào repo**: thông tin liên hệ, toạ độ nhà,
-danh sách người tham gia sự kiện (Nghị định 13/2023/NĐ-CP). Ảnh bằng chứng vẫn phải
+danh sách người tham gia sự kiện. Ảnh bằng chứng vẫn phải
 đọc được chỗ lỗi, nhưng PII thì bôi.
 
 ## Rule 2 — One row = one defect (split and de-duplicate)

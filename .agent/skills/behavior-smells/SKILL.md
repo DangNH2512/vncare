@@ -120,8 +120,7 @@ kết quả tìm kiếm.
 **Câu hỏi soi:**
 - Quyền enforce ở **controller/guard** hay chỉ ẩn ở UI?
 - Response DTO là **allow-list các trường** hay `return entity` nguyên cục?
-- Dữ liệu cá nhân nào thực sự cần cho tính năng này? (nguyên tắc tối thiểu hoá theo
-  Nghị định 13/2023/NĐ-CP)
+- Dữ liệu cá nhân nào thực sự cần cho tính năng này? (nguyên tắc tối thiểu hoá dữ liệu)
 - Người dùng có kiểm soát được mức hiển thị hồ sơ (public / attendees-only / private) không?
 - Toạ độ trả về là điểm hẹn công khai hay vị trí thật của cá nhân?
 

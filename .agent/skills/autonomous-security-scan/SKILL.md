@@ -18,8 +18,7 @@ allowed-tools: Read, Bash, Edit
 
 **Ngữ cảnh:** Da Nang Connect — `apps/api` (NestJS + TypeORM + PostgreSQL/PostGIS +
 Redis/BullMQ + socket.io), `apps/web` (Next.js), `apps/mobile` (Expo). Dữ liệu nhạy cảm
-chính là **hồ sơ cá nhân, vị trí, và nội dung do người dùng tạo**, chịu ràng buộc của
-Nghị định 13/2023/NĐ-CP.
+chính là **hồ sơ cá nhân, vị trí, và nội dung do người dùng tạo**.
 
 ## Chặng 1 — Threat Model (read-only)
 
