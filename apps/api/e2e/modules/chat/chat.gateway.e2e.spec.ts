@@ -5,7 +5,12 @@ import request from 'supertest';
 import { io, type Socket } from 'socket.io-client';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { CHAT_SOCKET_EVENTS, type MessageResponseT } from '@dnc/contracts';
-import { asUser, createTestApp, newUserId, seedArea } from '../../support/harness.js';
+import {
+  createActor,
+  createTestApp,
+  seedArea,
+  type Actor,
+} from '../../support/harness.js';
 
 /**
  * Realtime delivery, end to end over a real socket.
@@ -20,16 +25,18 @@ describe('chat gateway', () => {
   let url: string;
   const sockets: Socket[] = [];
 
-  const speaker = newUserId();
-  const listener = newUserId();
-  const outsider = newUserId();
+  let speaker: Actor;
+  let listener: Actor;
+  let outsider: Actor;
   let conversationId: string;
 
-  const connect = (userId: string): Promise<Socket> =>
+  const connect = (actor: Actor): Promise<Socket> =>
     new Promise((resolve, reject) => {
       const socket = io(`${url}/chat`, {
         transports: ['websocket'],
-        auth: { userId },
+        // The socket presents the same access token as HTTP; there is no
+        // second authentication path to get wrong.
+        auth: { token: actor.accessToken },
       });
       sockets.push(socket);
       socket.on('connect', () => resolve(socket));
@@ -48,20 +55,23 @@ describe('chat gateway', () => {
   beforeAll(async () => {
     ({ cleanup } = await seedArea());
     app = await createTestApp();
-    await app.listen(0);
+    speaker = await createActor(app, { trustLevel: 2 });
+    listener = await createActor(app, { trustLevel: 2 });
+    outsider = await createActor(app, { trustLevel: 2 });
+    // createTestApp already bound the port; read it rather than listening twice.
     const address = app.getHttpServer().address() as AddressInfo;
     url = `http://127.0.0.1:${address.port}`;
 
     const conversation = await request(app.getHttpServer())
       .post('/api/v1/conversations')
-      .set(asUser(speaker))
-      .send({ type: 'direct', recipientUserId: listener })
+      .set(speaker.headers)
+      .send({ type: 'direct', recipientUserId: listener.id })
       .expect(201);
     conversationId = conversation.body.data.id;
 
     await request(app.getHttpServer())
       .put(`/api/v1/conversations/${conversationId}/request`)
-      .set(asUser(listener))
+      .set(listener.headers)
       .send({ decision: 'accepted' })
       .expect(200);
   });
@@ -72,11 +82,24 @@ describe('chat gateway', () => {
     await cleanup();
   });
 
-  it('refuses a socket with no identity', async () => {
+  it('refuses a socket with no credential', async () => {
     const anonymous = io(`${url}/chat`, { transports: ['websocket'] });
     sockets.push(anonymous);
     const disconnected = await new Promise<boolean>((resolve) => {
       anonymous.on('disconnect', () => resolve(true));
+      setTimeout(() => resolve(false), 2000);
+    });
+    expect(disconnected).toBe(true);
+  });
+
+  it('refuses a socket presenting a forged token', async () => {
+    const forged = io(`${url}/chat`, {
+      transports: ['websocket'],
+      auth: { token: 'not.a.real.token' },
+    });
+    sockets.push(forged);
+    const disconnected = await new Promise<boolean>((resolve) => {
+      forged.on('disconnect', () => resolve(true));
       setTimeout(() => resolve(false), 2000);
     });
     expect(disconnected).toBe(true);
@@ -101,7 +124,7 @@ describe('chat gateway', () => {
     const delivered = waitFor<MessageResponseT>(socket, CHAT_SOCKET_EVENTS.messageCreated);
     const sent = await request(app.getHttpServer())
       .post(`/api/v1/conversations/${conversationId}/messages`)
-      .set(asUser(speaker))
+      .set(speaker.headers)
       .send({ type: 'text', body: 'Realtime hello', clientMessageId: randomUUID() })
       .expect(201);
 
@@ -120,7 +143,7 @@ describe('chat gateway', () => {
 
     await request(app.getHttpServer())
       .post(`/api/v1/conversations/${conversationId}/messages`)
-      .set(asUser(speaker))
+      .set(speaker.headers)
       .send({ type: 'text', body: 'Inbox ping', clientMessageId: randomUUID() })
       .expect(201);
 
@@ -136,7 +159,7 @@ describe('chat gateway', () => {
 
     await request(app.getHttpServer())
       .post(`/api/v1/conversations/${conversationId}/messages`)
-      .set(asUser(speaker))
+      .set(speaker.headers)
       .send({ type: 'text', body: 'Private', clientMessageId: randomUUID() })
       .expect(201);
 

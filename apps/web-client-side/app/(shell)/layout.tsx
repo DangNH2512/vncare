@@ -1,13 +1,22 @@
 import type { ReactNode } from 'react';
 
 import { AppShell } from '../_components/shell/app-shell';
+import { LoginPrompt } from '../_components/login-prompt';
 
 /**
- * Every signed-in screen lives in this route group so it renders inside the
- * social shell (side nav / bottom tabs / right rail). Screens that must NOT
- * carry the shell — a future standalone auth or share page — go outside the
- * group instead.
+ * Every screen that carries the social shell (side nav / bottom tabs / right
+ * rail) lives in this route group. Screens that must NOT carry it — sign-in,
+ * sign-up — go outside the group instead.
+ *
+ * The sign-in dialog is mounted once here rather than per screen: any gated
+ * action calls `requireAuth()` and the provider raises this one instance, so no
+ * component owns a copy of the same dialog.
  */
 export default function ShellLayout({ children }: { children: ReactNode }) {
-  return <AppShell>{children}</AppShell>;
+  return (
+    <AppShell>
+      {children}
+      <LoginPrompt />
+    </AppShell>
+  );
 }

@@ -117,7 +117,7 @@ export class EventRepository {
   }
 
   /** Non-published events are visible only to their organizer. */
-  async findById(id: string, viewerUserId: string): Promise<EventRow | null> {
+  async findById(id: string, viewerUserId: string | null): Promise<EventRow | null> {
     const { rows } = await this.pool.query<EventRow>(
       `SELECT ${SELECT_COLUMNS}
          FROM events e ${OCCURRENCE_JOIN}
@@ -147,7 +147,7 @@ export class EventRepository {
    */
   async list(
     query: ListEventQueryT,
-    viewerUserId: string,
+    viewerUserId: string | null,
   ): Promise<{ rows: EventRow[]; limit: number }> {
     const cursor = decodeCursor<EventCursor>(query.cursor);
     const { rows } = await this.pool.query<EventRow>(

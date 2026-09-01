@@ -45,17 +45,17 @@ export class PostService {
     }
   }
 
-  async findOne(id: string, viewer: CurrentUserContext): Promise<PostResponseT> {
-    const row = await this.posts.findById(id, viewer.id);
+  async findOne(id: string, viewer: CurrentUserContext | null): Promise<PostResponseT> {
+    const row = await this.posts.findById(id, viewer?.id ?? null);
     if (!row) throw this.notFound();
     return toPostResponse(row, await this.media.resolveGallery(row.media_ids));
   }
 
   async list(
     query: ListPostQueryT,
-    viewer: CurrentUserContext,
+    viewer: CurrentUserContext | null,
   ): Promise<{ items: PostResponseT[]; nextCursor: string | null }> {
-    const { rows, limit } = await this.posts.list(query, viewer.id);
+    const { rows, limit } = await this.posts.list(query, viewer?.id ?? null);
     // One resolution for the whole page: signing a URL per row would turn a
     // 20-item feed into 20 round trips to storage.
     const galleries = await this.resolveGalleries(rows);

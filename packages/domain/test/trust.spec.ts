@@ -123,4 +123,48 @@ describe('nextTrustRequirement', () => {
       expect(key).toMatch(/^trust\.requirement\./);
     }
   });
+
+  /**
+   * The stored level wins.
+   *
+   * `users.trust_level` is the single source of truth for the ladder. A screen
+   * that recomputes it from the signals a client happens to hold will disagree
+   * with the badge rendered beside it — which is exactly what happened on the
+   * profile page before this override existed.
+   */
+  it('describes the gap from a supplied level rather than a recomputed one', () => {
+    const signals: TrustSignals = {
+      hasVerifiedContact: false,
+      accountAgeDays: 0,
+      attendedCount: 0,
+      hostedCount: 0,
+      noShowCount: 0,
+      upheldReportsAgainst: 0,
+    };
+
+    // Recomputed, these signals are T0.
+    expect(computeTrustLevel(signals)).toBe(0);
+    expect(nextTrustRequirement(signals).nextLevel).toBe(1);
+
+    // Told the account is already T1, it explains the step to T2 instead.
+    const fromStored = nextTrustRequirement(signals, 1);
+    expect(fromStored.nextLevel).toBe(2);
+    expect(fromStored.missingKeys).toContain('trust.requirement.attendFirstEvent');
+  });
+
+  it('reports nothing left to do at the top of the ladder', () => {
+    const requirement = nextTrustRequirement(
+      {
+        hasVerifiedContact: true,
+        accountAgeDays: 400,
+        attendedCount: 40,
+        hostedCount: 9,
+        noShowCount: 0,
+        upheldReportsAgainst: 0,
+      },
+      5,
+    );
+    expect(requirement.nextLevel).toBeNull();
+    expect(requirement.missingKeys).toEqual([]);
+  });
 });

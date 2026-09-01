@@ -22,6 +22,31 @@ Khi thiết kế module backend MỚI dưới `apps/api/src/modules/<name>/`, mo
 `apps/web-admin-side`, `apps/mobile`). Không
 module nào được bỏ qua layer này.
 
+> ### ⚠️ Phần còn lại của §2 đã lỗi thời — đọc mục này trước
+>
+> Mô tả bên dưới (thư mục `dto/`, class `class-validator`, `@ApiProperty`,
+> mapped type của `@nestjs/swagger`) **không còn khớp code**. Kể từ NestJS 12,
+> hợp đồng được khai báo bằng **Zod schema trong `packages/contracts/src/`**:
+>
+> | Vai trò trong §2 | Hiện thực thật |
+> |---|---|
+> | `dto/request/*.request.ts` | `packages/contracts/src/<name>.ts` — vd `PostCreateRequest` |
+> | `dto/response/*.response.ts` | cùng file — vd `PostResponse`, bọc bằng `envelope()` |
+> | `ValidationPipe` + `class-validator` | `StandardSchemaValidationPipe` + `@Body({ schema })` |
+> | `@ApiProperty` sinh Swagger | OpenAPI sinh thẳng từ schema Zod |
+> | `OmitType` / `PickType` / `PartialType` | `.pick()` / `.omit()` / `.partial()` / `.extend()` của Zod |
+> | Lọc trường nội bộ khi trả về | `@SerializeOptions({ schema })` cắt theo schema |
+>
+> **Vẫn còn nguyên hiệu lực:** ranh giới hợp đồng là bắt buộc; `<name>.mapper.ts`
+> là hàm thuần liệt kê **từng trường một** (không spread); ranh giới riêng tư
+> dùng danh sách trắng chứ không danh sách đen (vd `PublicProfileResponse` khai
+> báo đủ trường thay vì `.omit()` từ bản của chủ sở hữu); thời gian là ISO-8601 UTC;
+> toạ độ PostGIS đổi thành `{lat,lng}` tại mapper; phân trang dùng `cursorPage()`.
+>
+> Lý do đổi: một class `class-validator` không import được vào React component,
+> nên web/mobile sẽ phải gõ tay interface lần hai và trôi dạt. Xem
+> [DECISIONS.md](../memory/DECISIONS.md) mục 2026-09-01.
+
 ```text
 apps/api/src/modules/<name>/
 ├── <name>.controller.ts

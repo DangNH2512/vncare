@@ -5,6 +5,37 @@ export {
   type ApiErrorT,
 } from './common';
 export {
+  AuthSessionResponse,
+  LoginRequest,
+  Password,
+  RegisterRequest,
+  SessionUserResponse,
+  UserRole,
+  UserStatus,
+  type AuthSessionResponseT,
+  type LoginRequestT,
+  type RegisterRequestT,
+  type SessionUserResponseT,
+  type UserRoleT,
+  type UserStatusT,
+} from './auth';
+export {
+  ExpatType,
+  Gender,
+  MyProfileResponse,
+  ProfileUpdateRequest,
+  ProfileVisibility,
+  PublicProfileResponse,
+  SpokenLanguage,
+  type ExpatTypeT,
+  type GenderT,
+  type MyProfileResponseT,
+  type ProfileUpdateRequestT,
+  type ProfileVisibilityT,
+  type PublicProfileResponseT,
+  type SpokenLanguageT,
+} from './profile';
+export {
   BodyLocale,
   ContentStatus,
   CursorQuery,

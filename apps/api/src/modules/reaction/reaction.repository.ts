@@ -90,7 +90,7 @@ export class ReactionRepository {
    */
   async summary(
     target: ReactionTargetRef,
-    viewerUserId: string,
+    viewerUserId: string | null,
   ): Promise<ReactionSummaryRow> {
     const column = REACTION_COLUMN[target.type];
     const { rows } = await this.pool.query<ReactionSummaryRow>(

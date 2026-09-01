@@ -49,10 +49,10 @@
   },
   "trust": {
     "requirement": {
-      "resolveReports": "Resolve open reports against your account",
-      "verifyContact": "Verify your email or phone number",
+      "resolveReports": "Resolve the open reports on your account",
+      "verifyContact": "Verify your email address",
       "attendFirstEvent": "Attend your first event",
-      "accountAge7d": "Account must be at least 7 days old",
+      "accountAge7d": "Be a member for 7 days",
       "attend5Events": "Attend 5 events",
       "attend10Events": "Attend 10 events",
       "hostFirstEvent": "Host your first event",
@@ -257,7 +257,15 @@
     },
     "auth": {
       "unauthenticated": "Please sign in to continue.",
-      "trustLevelTooLow": "Your account needs a higher trust level for this."
+      "trustLevelTooLow": "Your account needs a higher trust level for this.",
+      "invalidCredentials": "That email and password do not match.",
+      "invalidToken": "Your session has expired. Please sign in again.",
+      "invalidRefresh": "Your session has expired. Please sign in again.",
+      "emailTaken": "An account with that email already exists.",
+      "handleTaken": "That username is already taken.",
+      "handleFormat": "Use 3-24 lowercase letters, numbers or underscores.",
+      "accountSuspended": "This account is suspended.",
+      "accountUnavailable": "This account is not available."
     },
     "event": {
       "notFound": "This event no longer exists.",
@@ -291,6 +299,9 @@
       "tooLarge": "That file is too large.",
       "notUploaded": "The upload did not finish. Please try again.",
       "notFound": "That attachment no longer exists."
+    },
+    "profile": {
+      "notFound": "That profile no longer exists."
     }
   },
   "post": {
@@ -352,6 +363,133 @@
       "labelField": "Place name",
       "remove": "Remove",
       "mapUnavailable": "The map could not load. You can still post without a location."
+    }
+  },
+  "auth": {
+    "action": {
+      "signIn": "Sign in",
+      "signUp": "Create account",
+      "signOut": "Sign out",
+      "working": "Please wait..."
+    },
+    "field": {
+      "email": "Email",
+      "password": "Password",
+      "displayName": "Your name",
+      "handle": "Username"
+    },
+    "hint": {
+      "handle": "This becomes your profile link.",
+      "password": "At least {count} characters."
+    },
+    "switch": {
+      "haveAccount": "Already have an account?",
+      "noAccount": "New here?"
+    },
+    "page": {
+      "signInTitle": "Welcome back",
+      "signInBody": "Sign in to post, comment and RSVP.",
+      "signUpTitle": "Join the community",
+      "signUpBody": "Free, and takes about a minute."
+    },
+    "prompt": {
+      "title": "Sign in to continue",
+      "body": "You can read everything without an account. Posting, reacting and commenting need one."
+    },
+    "error": {
+      "generic": "Something went wrong. Please try again.",
+      "offline": "Cannot reach the server. Please check your connection."
+    }
+  },
+  "profile": {
+    "action": {
+      "edit": "Edit profile",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "field": {
+      "displayName": "Display name",
+      "headline": "Headline",
+      "bio": "About you",
+      "homeArea": "Home area",
+      "noArea": "Not saying",
+      "visibility": "Who can see this profile",
+      "showArea": "Show my area on my public profile",
+      "since": "In Da Nang since {date}",
+      "memberSince": "Member since {date}"
+    },
+    "hint": {
+      "headline": "One line, e.g. \"Yoga teacher · An Thuong\"."
+    },
+    "visibility": {
+      "public": "Anyone",
+      "members_only": "Members only",
+      "private": "Only me"
+    },
+    "visibilityHint": {
+      "public": "Visible to anyone with the link, including people without an account.",
+      "members_only": "Only signed-in members can open your profile.",
+      "private": "Nobody but you can open your profile."
+    },
+    "section": {
+      "about": "About"
+    },
+    "stat": {
+      "hosted": "Hosted",
+      "attended": "Attended",
+      "rating": "Rating"
+    },
+    "trust": {
+      "next": "To reach trust level {level}"
+    },
+    "language": {
+      "en": "English",
+      "vi": "Vietnamese",
+      "ko": "Korean",
+      "ja": "Japanese",
+      "zh": "Chinese",
+      "ru": "Russian",
+      "fr": "French",
+      "de": "German",
+      "es": "Spanish",
+      "other": "Other"
+    },
+    "level": {
+      "basic": "basic",
+      "conversational": "conversational",
+      "fluent": "fluent",
+      "native": "native"
+    },
+    "missing": {
+      "title": "No such member",
+      "body": "This profile may have been removed, or the link is wrong."
+    },
+    "error": {
+      "save": "Could not save your profile. Please try again."
+    }
+  },
+  "blank": {
+    "backHome": "Back to the feed",
+    "notFound": {
+      "title": "There is nothing at this address",
+      "body": "The link may be old, or the page may have moved. The feed is still where it was."
+    },
+    "discover": {
+      "title": "Discover is being built",
+      "body": "Browsing by area and by map is next. For now the feed carries every event, and the area chips filter it."
+    },
+    "myEvents": {
+      "title": "Your events will collect here",
+      "body": "Everything you host and everything you have joined, in one place. Not built yet."
+    },
+    "notifications": {
+      "title": "No notifications yet",
+      "body": "Replies, RSVPs and event changes will arrive here once notifications are switched on."
+    },
+    "createEvent": {
+      "title": "Creating an event is not ready yet",
+      "body": "The form is being built. In the meantime you can post to the community feed and arrange something there."
     }
   }
 }

@@ -9,6 +9,7 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import type { Server, Socket } from 'socket.io';
 import { CHAT_SOCKET_EVENTS, type MessageResponseT } from '@dnc/contracts';
+import { AuthService } from '../auth/index.js';
 import { ChatRepository } from './chat.repository.js';
 
 const UUID_PATTERN =
@@ -40,10 +41,13 @@ export class ChatGateway implements OnGatewayConnection {
   @WebSocketServer()
   private readonly server!: Server;
 
-  constructor(private readonly chats: ChatRepository) {}
+  constructor(
+    private readonly chats: ChatRepository,
+    private readonly auth: AuthService,
+  ) {}
 
-  handleConnection(client: Socket): void {
-    const userId = this.authenticate(client);
+  async handleConnection(client: Socket): Promise<void> {
+    const userId = await this.authenticate(client);
     if (!userId) {
       client.disconnect(true);
       return;
@@ -63,7 +67,7 @@ export class ChatGateway implements OnGatewayConnection {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: unknown,
   ): Promise<{ joined: boolean }> {
-    const userId = this.authenticate(client);
+    const userId = await this.authenticate(client);
     const conversationId = this.readConversationId(payload);
     if (!userId || !conversationId) return { joined: false };
 
@@ -93,8 +97,11 @@ export class ChatGateway implements OnGatewayConnection {
    * scoped to a room the socket has already been authorized into.
    */
   @SubscribeMessage(CHAT_SOCKET_EVENTS.typing)
-  typing(@ConnectedSocket() client: Socket, @MessageBody() payload: unknown): void {
-    const userId = this.authenticate(client);
+  async typing(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: unknown,
+  ): Promise<void> {
+    const userId = await this.authenticate(client);
     const conversationId = this.readConversationId(payload);
     if (!userId || !conversationId) return;
     if (!client.rooms.has(room.conversation(conversationId))) return;
@@ -125,19 +132,33 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   /**
-   * Development-stub authentication, mirroring AuthenticatedGuard. Replace the
-   * handshake read with JWT verification when the auth module lands; nothing
-   * else in this file depends on where the id comes from.
+   * Verifies the access token from the socket handshake.
+   *
+   * The same token and the same verifier as HTTP, because a socket that
+   * authenticates differently from the REST API is a second front door with its
+   * own bugs. Every message handler re-reads it rather than trusting a value
+   * cached at connect time, so a revoked session stops working mid-connection.
    */
-  private authenticate(client: Socket): string | null {
-    if (process.env['NODE_ENV'] === 'production') {
-      throw new Error(
-        'ChatGateway is using the development identity stub; wire JWT verification first',
-      );
+  private async authenticate(client: Socket): Promise<string | null> {
+    // Read defensively: a socket reconnecting mid-upgrade can reach a handler
+    // with a partially populated handshake, and a throw here would surface as
+    // an unanswered acknowledgement rather than a refused connection.
+    const handshake = client.handshake as
+      | {
+          auth?: Record<string, unknown>;
+          headers?: Record<string, string | string[] | undefined>;
+        }
+      | undefined;
+    const raw = handshake?.auth?.['token'] ?? handshake?.headers?.['authorization'];
+    const value = Array.isArray(raw) ? raw[0] : raw;
+    if (typeof value !== 'string' || value.length === 0) return null;
+
+    const token = value.toLowerCase().startsWith('bearer ') ? value.slice(7) : value;
+    try {
+      return (await this.auth.verifyAccessToken(token)).sub;
+    } catch {
+      return null;
     }
-    const raw = client.handshake.auth?.['userId'] ?? client.handshake.headers['x-user-id'];
-    const userId = Array.isArray(raw) ? raw[0] : raw;
-    return typeof userId === 'string' && UUID_PATTERN.test(userId) ? userId : null;
   }
 
   private readConversationId(payload: unknown): string | null {

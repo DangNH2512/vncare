@@ -5,6 +5,7 @@ import type { PostKindT, PostResponseT } from '@dnc/contracts';
 import type { MessageKey } from '@dnc/i18n';
 
 import { Avatar, Button, Select } from '../../_components/ui';
+import { useAuth } from '../../_components/auth-provider';
 import { useLocale, useTranslate } from '../../_components/locale-provider';
 import { AREAS, areaName } from '../../_lib/areas';
 import { ApiError, createPost } from '../../_lib/api';
@@ -48,6 +49,7 @@ export interface PostComposerProps {
 export function PostComposer({ open, onClose, onCreated }: PostComposerProps) {
   const t = useTranslate();
   const { locale } = useLocale();
+  const { user } = useAuth();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const bodyId = useId();
 
@@ -291,8 +293,14 @@ export function PostComposer({ open, onClose, onCreated }: PostComposerProps) {
 
           <section className="flex min-w-0 flex-col gap-4 p-4 md:overflow-y-auto">
             <div className="flex items-center gap-2">
-              <Avatar name="You" size="sm" />
-              <span className="text-sm font-semibold">{t('post.composer.you')}</span>
+              <Avatar
+                name={user?.displayName ?? 'You'}
+                size="sm"
+                {...(user?.avatarUrl ? { src: user.avatarUrl } : {})}
+              />
+              <span className="text-sm font-semibold">
+                {user?.displayName ?? t('post.composer.you')}
+              </span>
             </div>
 
             <div className="flex min-w-0 flex-col gap-1.5">

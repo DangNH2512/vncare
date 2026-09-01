@@ -142,7 +142,7 @@ export class CommentRepository {
     return rows[0] as CommentRow;
   }
 
-  async findById(id: string, viewerUserId: string): Promise<CommentRow | null> {
+  async findById(id: string, viewerUserId: string | null): Promise<CommentRow | null> {
     const { rows } = await this.pool.query<CommentRow>(
       `SELECT ${SELECT_COLUMNS}
          FROM comments c
@@ -173,7 +173,7 @@ export class CommentRepository {
   async list(
     target: CommentTargetRef,
     query: ListCommentQueryT,
-    viewerUserId: string,
+    viewerUserId: string | null,
   ): Promise<{ rows: CommentRow[]; limit: number; branch: boolean }> {
     const column = target.type === 'post' ? 'post_id' : 'event_id';
 

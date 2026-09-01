@@ -217,7 +217,8 @@ Khi thêm module backend mới, làm ĐỦ các bước theo thứ tự (xem
 [backend-module-structure.md](backend-module-structure.md)):
 
 ```
-□ 1. Tạo dto/ (validate bằng class-validator hoặc Zod pipe, @ApiProperty đầy đủ)
+□ 1. Khai báo hợp đồng bằng Zod ở packages/contracts/src/<name>.ts và export ở index.ts
+     (KHÔNG tạo thư mục dto/ trong module — web và mobile phải import được cùng schema)
 □ 2. Tạo <name>.repository.ts — toàn bộ truy cập dữ liệu, kể cả SQL PostGIS thô
 □ 3. Tạo <name>.service.ts — logic nghiệp vụ, KHÔNG viết SQL
 □ 4. Tạo <name>.controller.ts — route + Swagger, không chứa logic nghiệp vụ
@@ -226,7 +227,9 @@ Khi thêm module backend mới, làm ĐỦ các bước theo thứ tự (xem
 □ 7. Guard / decorator / enum dùng chung đặt ở src/common/, không nhét trong module
 □ 8. Viết migration nếu có thay đổi schema (không sửa DB bằng tay)
 □ 9. Viết spec ở apps/api/e2e/modules/<name>/ (không đặt cạnh src)
-□ 10. Kiểm tra Swagger tại http://localhost:3001/api/docs
+□ 10. Route đọc công khai gắn @Public(); guard JwtAuthGuard là deny-by-default toàn cục
+□ 11. Kiểm tra Swagger tại http://localhost:3001/api/docs (OpenAPI sinh từ schema Zod,
+      không từ @ApiProperty)
 ```
 
 ---

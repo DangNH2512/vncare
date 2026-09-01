@@ -50,12 +50,12 @@
   "trust": {
     "requirement": {
       "resolveReports": "Giải quyết các báo cáo đang mở về tài khoản của bạn",
-      "verifyContact": "Xác minh email hoặc số điện thoại",
-      "attendFirstEvent": "Tham dự sự kiện đầu tiên",
-      "accountAge7d": "Tài khoản cần đủ 7 ngày tuổi",
-      "attend5Events": "Tham dự 5 sự kiện",
-      "attend10Events": "Tham dự 10 sự kiện",
-      "hostFirstEvent": "Tổ chức sự kiện đầu tiên",
+      "verifyContact": "Xác minh địa chỉ email",
+      "attendFirstEvent": "Tham gia sự kiện đầu tiên",
+      "accountAge7d": "Là thành viên đủ 7 ngày",
+      "attend5Events": "Tham gia 5 sự kiện",
+      "attend10Events": "Tham gia 10 sự kiện",
+      "hostFirstEvent": "Tự tổ chức sự kiện đầu tiên",
       "host5Events": "Tổ chức 5 sự kiện"
     },
     "level": {
@@ -257,7 +257,15 @@
     },
     "auth": {
       "unauthenticated": "Vui lòng đăng nhập để tiếp tục.",
-      "trustLevelTooLow": "Tài khoản của bạn cần mức độ tin cậy cao hơn để làm việc này."
+      "trustLevelTooLow": "Tài khoản của bạn cần mức độ tin cậy cao hơn để làm việc này.",
+      "invalidCredentials": "Email và mật khẩu không khớp.",
+      "invalidToken": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+      "invalidRefresh": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+      "emailTaken": "Email này đã có tài khoản.",
+      "handleTaken": "Tên người dùng này đã có người lấy.",
+      "handleFormat": "Dùng 3-24 ký tự thường, số hoặc dấu gạch dưới.",
+      "accountSuspended": "Tài khoản này đang bị đình chỉ.",
+      "accountUnavailable": "Tài khoản này không khả dụng."
     },
     "event": {
       "notFound": "Sự kiện này không còn tồn tại.",
@@ -291,6 +299,9 @@
       "tooLarge": "Tệp quá lớn.",
       "notUploaded": "Tải lên chưa hoàn tất. Vui lòng thử lại.",
       "notFound": "Tệp đính kèm không còn tồn tại."
+    },
+    "profile": {
+      "notFound": "Hồ sơ này không còn tồn tại."
     }
   },
   "post": {
@@ -352,6 +363,133 @@
       "labelField": "Tên địa điểm",
       "remove": "Bỏ",
       "mapUnavailable": "Không tải được bản đồ. Bạn vẫn đăng bài được mà không cần địa điểm."
+    }
+  },
+  "auth": {
+    "action": {
+      "signIn": "Đăng nhập",
+      "signUp": "Tạo tài khoản",
+      "signOut": "Đăng xuất",
+      "working": "Vui lòng chờ..."
+    },
+    "field": {
+      "email": "Email",
+      "password": "Mật khẩu",
+      "displayName": "Tên của bạn",
+      "handle": "Tên người dùng"
+    },
+    "hint": {
+      "handle": "Đây sẽ là đường dẫn hồ sơ của bạn.",
+      "password": "Tối thiểu {count} ký tự."
+    },
+    "switch": {
+      "haveAccount": "Đã có tài khoản?",
+      "noAccount": "Bạn mới đến?"
+    },
+    "page": {
+      "signInTitle": "Chào mừng trở lại",
+      "signInBody": "Đăng nhập để đăng bài, bình luận và tham gia sự kiện.",
+      "signUpTitle": "Tham gia cộng đồng",
+      "signUpBody": "Miễn phí, chỉ mất khoảng một phút."
+    },
+    "prompt": {
+      "title": "Đăng nhập để tiếp tục",
+      "body": "Bạn đọc được mọi thứ mà không cần tài khoản. Đăng bài, thả cảm xúc và bình luận thì cần."
+    },
+    "error": {
+      "generic": "Có lỗi xảy ra. Vui lòng thử lại.",
+      "offline": "Không kết nối được máy chủ. Vui lòng kiểm tra đường truyền."
+    }
+  },
+  "profile": {
+    "action": {
+      "edit": "Sửa hồ sơ",
+      "save": "Lưu",
+      "saving": "Đang lưu...",
+      "cancel": "Huỷ"
+    },
+    "field": {
+      "displayName": "Tên hiển thị",
+      "headline": "Dòng giới thiệu",
+      "bio": "Về bạn",
+      "homeArea": "Khu vực đang ở",
+      "noArea": "Không tiết lộ",
+      "visibility": "Ai xem được hồ sơ này",
+      "showArea": "Hiện khu vực của tôi trên hồ sơ công khai",
+      "since": "Ở Đà Nẵng từ {date}",
+      "memberSince": "Thành viên từ {date}"
+    },
+    "hint": {
+      "headline": "Một dòng, ví dụ \"Giáo viên yoga · An Thượng\"."
+    },
+    "visibility": {
+      "public": "Tất cả mọi người",
+      "members_only": "Chỉ thành viên",
+      "private": "Chỉ mình tôi"
+    },
+    "visibilityHint": {
+      "public": "Ai có đường dẫn cũng xem được, kể cả người chưa có tài khoản.",
+      "members_only": "Chỉ thành viên đã đăng nhập mới mở được hồ sơ của bạn.",
+      "private": "Không ai ngoài bạn mở được hồ sơ này."
+    },
+    "section": {
+      "about": "Giới thiệu"
+    },
+    "stat": {
+      "hosted": "Đã tổ chức",
+      "attended": "Đã tham gia",
+      "rating": "Đánh giá"
+    },
+    "trust": {
+      "next": "Để đạt mức tin cậy {level}"
+    },
+    "language": {
+      "en": "Tiếng Anh",
+      "vi": "Tiếng Việt",
+      "ko": "Tiếng Hàn",
+      "ja": "Tiếng Nhật",
+      "zh": "Tiếng Trung",
+      "ru": "Tiếng Nga",
+      "fr": "Tiếng Pháp",
+      "de": "Tiếng Đức",
+      "es": "Tiếng Tây Ban Nha",
+      "other": "Khác"
+    },
+    "level": {
+      "basic": "cơ bản",
+      "conversational": "giao tiếp",
+      "fluent": "thành thạo",
+      "native": "bản ngữ"
+    },
+    "missing": {
+      "title": "Không có thành viên này",
+      "body": "Hồ sơ có thể đã bị gỡ, hoặc đường dẫn sai."
+    },
+    "error": {
+      "save": "Không lưu được hồ sơ. Vui lòng thử lại."
+    }
+  },
+  "blank": {
+    "backHome": "Về trang chủ",
+    "notFound": {
+      "title": "Không có gì ở địa chỉ này",
+      "body": "Có thể đường dẫn đã cũ, hoặc trang đã chuyển đi. Bảng tin vẫn ở chỗ cũ."
+    },
+    "discover": {
+      "title": "Trang Khám phá đang được dựng",
+      "body": "Duyệt theo khu vực và theo bản đồ là phần tiếp theo. Hiện tại bảng tin đã có đủ sự kiện, và các chip khu vực lọc được chúng."
+    },
+    "myEvents": {
+      "title": "Sự kiện của bạn sẽ nằm ở đây",
+      "body": "Những buổi bạn tổ chức và những buổi bạn đã tham gia, gom về một chỗ. Chưa dựng xong."
+    },
+    "notifications": {
+      "title": "Chưa có thông báo nào",
+      "body": "Trả lời, RSVP và thay đổi sự kiện sẽ về đây khi thông báo được bật."
+    },
+    "createEvent": {
+      "title": "Tạo sự kiện chưa sẵn sàng",
+      "body": "Biểu mẫu đang được dựng. Trong lúc chờ, bạn có thể đăng lên bảng tin cộng đồng và hẹn nhau ở đó."
     }
   }
 }

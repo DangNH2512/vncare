@@ -2,7 +2,12 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { envelope, MediaUploadResponse, PostResponse } from '@dnc/contracts';
-import { asUser, createTestApp, newUserId, seedArea } from '../../support/harness.js';
+import {
+  createActor,
+  createTestApp,
+  seedArea,
+  type Actor,
+} from '../../support/harness.js';
 
 /** A 4x4 PNG, small enough to inline and real enough for storage to accept. */
 const PNG = Buffer.from(
@@ -15,14 +20,14 @@ describe('media module', () => {
   let areaId: string;
   let cleanup: () => Promise<void>;
 
-  const author = newUserId();
-  const stranger = newUserId();
+  let author: Actor;
+  let stranger: Actor;
 
   /** Walks the full handshake: reserve, PUT to storage, confirm. */
-  const uploadImage = async (user: string): Promise<string> => {
+  const uploadImage = async (user: Actor): Promise<string> => {
     const reserved = await request(app.getHttpServer())
       .post('/api/v1/media/uploads')
-      .set(asUser(user))
+      .set(user.headers)
       .send({ kind: 'image', mimeType: 'image/png', byteSize: PNG.byteLength })
       .expect(201);
 
@@ -37,7 +42,7 @@ describe('media module', () => {
 
     await request(app.getHttpServer())
       .put(`/api/v1/media/${mediaId}/complete`)
-      .set(asUser(user))
+      .set(user.headers)
       .send({ width: 4, height: 4 })
       .expect(200);
 
@@ -47,6 +52,8 @@ describe('media module', () => {
   beforeAll(async () => {
     ({ areaId, cleanup } = await seedArea());
     app = await createTestApp();
+    author = await createActor(app);
+    stranger = await createActor(app);
   });
 
   afterAll(async () => {
@@ -57,7 +64,7 @@ describe('media module', () => {
   it('issues a presigned upload the client can use directly', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/media/uploads')
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'image', mimeType: 'image/jpeg', byteSize: 1024 })
       .expect(201);
 
@@ -71,13 +78,13 @@ describe('media module', () => {
   it('refuses a disallowed type and an oversized file', async () => {
     await request(app.getHttpServer())
       .post('/api/v1/media/uploads')
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'image', mimeType: 'application/pdf', byteSize: 1024 })
       .expect(400);
 
     await request(app.getHttpServer())
       .post('/api/v1/media/uploads')
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'image', mimeType: 'image/png', byteSize: 90 * 1024 * 1024 })
       .expect(400);
   });
@@ -86,13 +93,13 @@ describe('media module', () => {
   it('refuses to complete an upload whose bytes never arrived', async () => {
     const reserved = await request(app.getHttpServer())
       .post('/api/v1/media/uploads')
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'image', mimeType: 'image/png', byteSize: PNG.byteLength })
       .expect(201);
 
     await request(app.getHttpServer())
       .put(`/api/v1/media/${reserved.body.data.mediaId}/complete`)
-      .set(asUser(author))
+      .set(author.headers)
       .send({})
       .expect(400);
   });
@@ -102,7 +109,7 @@ describe('media module', () => {
 
     const post = await request(app.getHttpServer())
       .post('/api/v1/posts')
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'recommendation', body: 'Photo post', areaId, mediaIds: [mediaId] })
       .expect(201);
 
@@ -119,13 +126,13 @@ describe('media module', () => {
   it('hides someone else’s media from completion', async () => {
     const reserved = await request(app.getHttpServer())
       .post('/api/v1/media/uploads')
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'image', mimeType: 'image/png', byteSize: PNG.byteLength })
       .expect(201);
 
     await request(app.getHttpServer())
       .put(`/api/v1/media/${reserved.body.data.mediaId}/complete`)
-      .set(asUser(stranger))
+      .set(stranger.headers)
       .send({})
       .expect(404);
   });
@@ -140,7 +147,7 @@ describe('media module', () => {
 
     const post = await request(app.getHttpServer())
       .post('/api/v1/posts')
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'notice', body: 'Mixed gallery', areaId, mediaIds: [mine, theirs] })
       .expect(201);
 
@@ -150,15 +157,12 @@ describe('media module', () => {
 
   /** A gallery has no item ceiling; the feed's preview budget is a rendering concern. */
   it('accepts a gallery larger than the feed preview budget', async () => {
-    const mine: string[] = [];
-    // Sequential on purpose: supertest starts an ephemeral server per request,
-    // and fanning seven of those out at once resets connections for reasons
-    // that have nothing to do with the API.
-    for (let i = 0; i < 7; i += 1) mine.push(await uploadImage(author));
+    // In parallel, the way a picker full of photos actually uploads them.
+    const mine = await Promise.all(Array.from({ length: 7 }, () => uploadImage(author)));
 
     const res = await request(app.getHttpServer())
       .post('/api/v1/posts')
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'notice', body: 'Seven photos', areaId, mediaIds: mine })
       .expect(201);
 
@@ -178,7 +182,7 @@ describe('media module', () => {
       Array.from({ length: 8 }, () =>
         request(app.getHttpServer())
           .post('/api/v1/media/uploads')
-          .set(asUser(author))
+          .set(author.headers)
           .send({ kind: 'image', mimeType: 'image/png', byteSize: PNG.byteLength }),
       ),
     );
@@ -191,7 +195,7 @@ describe('media module', () => {
   it('stores a location and returns it as plain coordinates', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/posts')
-      .set(asUser(author))
+      .set(author.headers)
       .send({
         kind: 'recommendation',
         body: 'Great banh mi here',
@@ -212,7 +216,7 @@ describe('media module', () => {
   it('refuses a location with no label', async () => {
     await request(app.getHttpServer())
       .post('/api/v1/posts')
-      .set(asUser(author))
+      .set(author.headers)
       .send({
         kind: 'notice',
         body: 'Unlabelled pin',

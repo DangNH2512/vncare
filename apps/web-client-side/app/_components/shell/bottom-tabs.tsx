@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { cn } from '../../_lib/cn';
+import { useAuth } from '../auth-provider';
 import { useTranslate } from '../locale-provider';
 import { PlusIcon } from './icons';
-import { CREATE_EVENT_HREF, isActivePath, NAV_ITEMS } from './nav-items';
+import { CREATE_EVENT_HREF, isActivePath, NAV_ITEMS, profileHref } from './nav-items';
 
 /**
  * Mobile-only bottom tab bar: Home, Discover, a raised Create action in the
@@ -19,6 +20,7 @@ import { CREATE_EVENT_HREF, isActivePath, NAV_ITEMS } from './nav-items';
 export function BottomTabs() {
   const pathname = usePathname();
   const t = useTranslate();
+  const { user, requireAuth } = useAuth();
 
   const tabs = NAV_ITEMS.filter((item) => item.inBottomTabs);
   // Create sits between Discover and Notifications — visual centre of five.
@@ -26,29 +28,41 @@ export function BottomTabs() {
 
   const renderTab = (item: (typeof NAV_ITEMS)[number] | undefined) => {
     if (item === undefined) return null;
-    const active = isActivePath(pathname, item.href);
+    // A null href is the profile tab: it resolves to the signed-in member's own
+    // handle, and to the sign-in prompt when there is nobody signed in.
+    const href = item.href ?? (user === null ? null : profileHref(user.handle));
+    const active = isActivePath(pathname, href);
     const Icon = item.icon;
-    return (
-      <li key={item.href} className="min-w-0">
-        <Link
-          href={item.href}
-          aria-current={active ? 'page' : undefined}
+    const shared = cn(
+      'flex min-h-12 w-full flex-col items-center justify-center gap-0.5 px-1 py-1.5',
+      'transition-colors duration-150',
+      active ? 'text-accent-text' : 'text-fg-muted',
+    );
+    const inner = (
+      <>
+        <Icon className="size-6 shrink-0" />
+        <span
           className={cn(
-            'flex min-h-12 flex-col items-center justify-center gap-0.5 px-1 py-1.5',
-            'transition-colors duration-150',
-            active ? 'text-accent-text' : 'text-fg-muted',
+            'block w-full min-w-0 text-center text-[11px] leading-tight break-words',
+            active && 'font-semibold',
           )}
         >
-          <Icon className="size-6 shrink-0" />
-          <span
-            className={cn(
-              'block w-full min-w-0 text-center text-[11px] leading-tight break-words',
-              active && 'font-semibold',
-            )}
-          >
-            {t(item.labelKey)}
-          </span>
-        </Link>
+          {t(item.labelKey)}
+        </span>
+      </>
+    );
+
+    return (
+      <li key={item.labelKey} className="min-w-0">
+        {href === null ? (
+          <button type="button" onClick={() => requireAuth()} className={shared}>
+            {inner}
+          </button>
+        ) : (
+          <Link href={href} aria-current={active ? 'page' : undefined} className={shared}>
+            {inner}
+          </Link>
+        )}
       </li>
     );
   };

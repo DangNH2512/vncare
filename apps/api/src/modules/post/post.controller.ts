@@ -9,7 +9,6 @@ import {
   Post,
   Query,
   SerializeOptions,
-  UseGuards,
 } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -23,11 +22,11 @@ import {
   type PostCreateRequestT,
   type PostUpdateRequestT,
 } from '@dnc/contracts';
-import { AuthenticatedGuard } from '../../common/guards/authenticated.guard.js';
-import { TrustLevelGuard } from '../../common/guards/trust-level.guard.js';
 import { MinTrustLevel } from '../../common/decorators/min-trust-level.decorator.js';
+import { Public } from '../../common/decorators/public.decorator.js';
 import {
   CurrentUser,
+  OptionalUser,
   type CurrentUserContext,
 } from '../../common/decorators/current-user.decorator.js';
 import { PostService } from './post.service.js';
@@ -37,7 +36,6 @@ const PostPageEnvelope = envelope(cursorPage(PostResponse));
 const UuidParam = z.uuid();
 
 @Controller('api/v1/posts')
-@UseGuards(AuthenticatedGuard, TrustLevelGuard)
 export class PostController {
   constructor(private readonly posts: PostService) {}
 
@@ -52,20 +50,22 @@ export class PostController {
     return { success: true, data: await this.posts.create(body, viewer) };
   }
 
+  @Public()
   @Get()
   @SerializeOptions({ schema: PostPageEnvelope })
   async list(
     @Query({ schema: ListPostQuery }) query: ListPostQueryT,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     return { success: true, data: await this.posts.list(query, viewer) };
   }
 
+  @Public()
   @Get(':id')
   @SerializeOptions({ schema: PostEnvelope })
   async findOne(
     @Param('id', { schema: UuidParam }) id: string,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     return { success: true, data: await this.posts.findOne(id, viewer) };
   }

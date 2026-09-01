@@ -17,6 +17,10 @@ export class TrustLevelGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    // See JwtAuthGuard: the trust gate is an HTTP concern, and no socket
+    // handler carries a @MinTrustLevel today.
+    if (context.getType() !== 'http') return true;
+
     const required = this.reflector.getAllAndOverride<number | undefined>(
       MIN_TRUST_LEVEL_KEY,
       [context.getHandler(), context.getClass()],

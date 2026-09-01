@@ -5,7 +5,6 @@ import {
   Post,
   Put,
   SerializeOptions,
-  UseGuards,
 } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -17,8 +16,6 @@ import {
   type MediaCompleteRequestT,
   type MediaUploadRequestT,
 } from '@dnc/contracts';
-import { AuthenticatedGuard } from '../../common/guards/authenticated.guard.js';
-import { TrustLevelGuard } from '../../common/guards/trust-level.guard.js';
 import { MinTrustLevel } from '../../common/decorators/min-trust-level.decorator.js';
 import {
   CurrentUser,
@@ -38,7 +35,6 @@ const UuidParam = z.uuid();
  * not occupy a request thread for its whole duration.
  */
 @Controller('api/v1/media')
-@UseGuards(AuthenticatedGuard, TrustLevelGuard)
 export class MediaController {
   constructor(private readonly media: MediaService) {}
 

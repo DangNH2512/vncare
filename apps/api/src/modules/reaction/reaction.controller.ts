@@ -7,7 +7,6 @@ import {
   Param,
   Put,
   SerializeOptions,
-  UseGuards,
 } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -18,11 +17,11 @@ import {
   type ReactionSetRequestT,
   type ReactionTargetT,
 } from '@dnc/contracts';
-import { AuthenticatedGuard } from '../../common/guards/authenticated.guard.js';
-import { TrustLevelGuard } from '../../common/guards/trust-level.guard.js';
 import { MinTrustLevel } from '../../common/decorators/min-trust-level.decorator.js';
+import { Public } from '../../common/decorators/public.decorator.js';
 import {
   CurrentUser,
+  OptionalUser,
   type CurrentUserContext,
 } from '../../common/decorators/current-user.decorator.js';
 import { ReactionService } from './reaction.service.js';
@@ -38,7 +37,6 @@ const UuidParam = z.uuid();
  * hold at most one per target, which is exactly the semantics of a replace.
  */
 @Controller('api/v1')
-@UseGuards(AuthenticatedGuard, TrustLevelGuard)
 export class ReactionController {
   constructor(private readonly reactions: ReactionService) {}
 
@@ -62,11 +60,12 @@ export class ReactionController {
     return this.reactions.remove({ type: 'post', id }, viewer);
   }
 
+  @Public()
   @Get('posts/:id/reactions')
   @SerializeOptions({ schema: SummaryEnvelope })
   summaryOnPost(
     @Param('id', { schema: UuidParam }) id: string,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     return this.summary('post', id, viewer);
   }
@@ -91,11 +90,12 @@ export class ReactionController {
     return this.reactions.remove({ type: 'comment', id }, viewer);
   }
 
+  @Public()
   @Get('comments/:id/reactions')
   @SerializeOptions({ schema: SummaryEnvelope })
   summaryOnComment(
     @Param('id', { schema: UuidParam }) id: string,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     return this.summary('comment', id, viewer);
   }
@@ -125,11 +125,12 @@ export class ReactionController {
     return this.reactions.remove({ type: 'event', id }, viewer);
   }
 
+  @Public()
   @Get('events/:id/reactions')
   @SerializeOptions({ schema: SummaryEnvelope })
   summaryOnEvent(
     @Param('id', { schema: UuidParam }) id: string,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     return this.summary('event', id, viewer);
   }
@@ -143,7 +144,11 @@ export class ReactionController {
     return { success: true, data: await this.reactions.set({ type, id }, body, viewer) };
   }
 
-  private async summary(type: ReactionTargetT, id: string, viewer: CurrentUserContext) {
+  private async summary(
+    type: ReactionTargetT,
+    id: string,
+    viewer: CurrentUserContext | null,
+  ) {
     return { success: true, data: await this.reactions.summary({ type, id }, viewer) };
   }
 }

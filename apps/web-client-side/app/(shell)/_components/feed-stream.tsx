@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { PostResponseT } from '@dnc/contracts';
 
 import { Avatar, Button, Card, Chip, ChipRow, EmptyState } from '../../_components/ui';
+import { useAuth } from '../../_components/auth-provider';
 import { useLocale, useTranslate } from '../../_components/locale-provider';
 import { AREAS, areaName, type AreaSlug } from '../../_lib/areas';
 import { listPosts } from '../../_lib/api';
@@ -54,6 +55,7 @@ function matches(event: MockEvent, filter: Filter): boolean {
 export function FeedStream() {
   const t = useTranslate();
   const { locale } = useLocale();
+  const { user, requireAuth } = useAuth();
   const [filter, setFilter] = useState<Filter>('all');
   const [composerOpen, setComposerOpen] = useState(false);
   const [posts, setPosts] = useState<PostResponseT[]>([]);
@@ -72,7 +74,9 @@ export function FeedStream() {
     return () => {
       cancelled = true;
     };
-  }, []);
+    // Reloaded on sign-in as well: the same posts come back carrying the
+    // viewer's own reactions, which anonymous responses do not have.
+  }, [user?.id]);
 
   // Prepended rather than refetched: the author must see their post land
   // immediately, and a round trip would put a spinner between the tap and the
@@ -104,10 +108,16 @@ export function FeedStream() {
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <Card padding="sm" className="flex items-center gap-3">
-        <Avatar name="You" size="md" />
+        <Avatar
+          name={user?.displayName ?? 'You'}
+          size="md"
+          {...(user?.avatarUrl ? { src: user.avatarUrl } : {})}
+        />
         <button
           type="button"
-          onClick={() => setComposerOpen(true)}
+          // The gate lives here, not inside the composer: a visitor should meet
+          // the sign-in step before writing a post, not after.
+          onClick={() => requireAuth(() => setComposerOpen(true))}
           aria-label={t('post.composer.open')}
           className="min-h-11 min-w-0 flex-1 truncate rounded-full border border-line bg-surface-sunken px-4 text-left text-sm text-fg-muted hover:border-line-strong"
         >

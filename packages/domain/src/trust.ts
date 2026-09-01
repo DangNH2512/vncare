@@ -40,9 +40,20 @@ export interface TrustRequirement {
   missingKeys: string[];
 }
 
-/** Lists what the user still needs to reach the next trust level. */
-export function nextTrustRequirement(s: TrustSignals): TrustRequirement {
-  const current = computeTrustLevel(s);
+/**
+ * Lists what the user still needs to reach the next trust level.
+ *
+ * @param currentLevel - Overrides the level derived from `s`. Pass the stored
+ *   `users.trust_level` when displaying this to someone: that column is the
+ *   single source of truth for the ladder, and recomputing it here from partial
+ *   client-side signals produces a card that contradicts the badge next to it.
+ *   Omit it in the recompute job, which is the one caller that decides the level.
+ */
+export function nextTrustRequirement(
+  s: TrustSignals,
+  currentLevel?: number,
+): TrustRequirement {
+  const current = currentLevel ?? computeTrustLevel(s);
   if (current >= 5) return { nextLevel: null, missingKeys: [] };
 
   const missing: string[] = [];

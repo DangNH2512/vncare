@@ -8,6 +8,37 @@ export type MessageKey =
   | 'area.all'
   | 'area.eventCount'
   | 'area.label'
+  | 'auth.action.signIn'
+  | 'auth.action.signOut'
+  | 'auth.action.signUp'
+  | 'auth.action.working'
+  | 'auth.error.generic'
+  | 'auth.error.offline'
+  | 'auth.field.displayName'
+  | 'auth.field.email'
+  | 'auth.field.handle'
+  | 'auth.field.password'
+  | 'auth.hint.handle'
+  | 'auth.hint.password'
+  | 'auth.page.signInBody'
+  | 'auth.page.signInTitle'
+  | 'auth.page.signUpBody'
+  | 'auth.page.signUpTitle'
+  | 'auth.prompt.body'
+  | 'auth.prompt.title'
+  | 'auth.switch.haveAccount'
+  | 'auth.switch.noAccount'
+  | 'blank.backHome'
+  | 'blank.createEvent.body'
+  | 'blank.createEvent.title'
+  | 'blank.discover.body'
+  | 'blank.discover.title'
+  | 'blank.myEvents.body'
+  | 'blank.myEvents.title'
+  | 'blank.notFound.body'
+  | 'blank.notFound.title'
+  | 'blank.notifications.body'
+  | 'blank.notifications.title'
   | 'common.appName'
   | 'common.comingSoon'
   | 'common.free'
@@ -48,6 +79,14 @@ export type MessageKey =
   | 'discover.view.label'
   | 'discover.view.list'
   | 'discover.view.map'
+  | 'errors.auth.accountSuspended'
+  | 'errors.auth.accountUnavailable'
+  | 'errors.auth.emailTaken'
+  | 'errors.auth.handleFormat'
+  | 'errors.auth.handleTaken'
+  | 'errors.auth.invalidCredentials'
+  | 'errors.auth.invalidRefresh'
+  | 'errors.auth.invalidToken'
   | 'errors.auth.trustLevelTooLow'
   | 'errors.auth.unauthenticated'
   | 'errors.chat.cannotMessageSelf'
@@ -77,6 +116,7 @@ export type MessageKey =
   | 'errors.media.typeNotAllowed'
   | 'errors.post.notFound'
   | 'errors.post.notOwner'
+  | 'errors.profile.notFound'
   | 'event.card.almostFull'
   | 'event.card.attendees'
   | 'event.card.hostedBy'
@@ -210,6 +250,48 @@ export type MessageKey =
   | 'post.media.rejectedSize'
   | 'post.media.rejectedType'
   | 'post.media.remove'
+  | 'profile.action.cancel'
+  | 'profile.action.edit'
+  | 'profile.action.save'
+  | 'profile.action.saving'
+  | 'profile.error.save'
+  | 'profile.field.bio'
+  | 'profile.field.displayName'
+  | 'profile.field.headline'
+  | 'profile.field.homeArea'
+  | 'profile.field.memberSince'
+  | 'profile.field.noArea'
+  | 'profile.field.showArea'
+  | 'profile.field.since'
+  | 'profile.field.visibility'
+  | 'profile.hint.headline'
+  | 'profile.language.de'
+  | 'profile.language.en'
+  | 'profile.language.es'
+  | 'profile.language.fr'
+  | 'profile.language.ja'
+  | 'profile.language.ko'
+  | 'profile.language.other'
+  | 'profile.language.ru'
+  | 'profile.language.vi'
+  | 'profile.language.zh'
+  | 'profile.level.basic'
+  | 'profile.level.conversational'
+  | 'profile.level.fluent'
+  | 'profile.level.native'
+  | 'profile.missing.body'
+  | 'profile.missing.title'
+  | 'profile.section.about'
+  | 'profile.stat.attended'
+  | 'profile.stat.hosted'
+  | 'profile.stat.rating'
+  | 'profile.trust.next'
+  | 'profile.visibility.members_only'
+  | 'profile.visibility.private'
+  | 'profile.visibility.public'
+  | 'profile.visibilityHint.members_only'
+  | 'profile.visibilityHint.private'
+  | 'profile.visibilityHint.public'
   | 'rsvp.error.alreadyRsvped'
   | 'rsvp.error.occurrenceClosed'
   | 'rsvp.error.suspended'
@@ -257,6 +339,37 @@ export const MESSAGE_KEYS = [
   'area.all',
   'area.eventCount',
   'area.label',
+  'auth.action.signIn',
+  'auth.action.signOut',
+  'auth.action.signUp',
+  'auth.action.working',
+  'auth.error.generic',
+  'auth.error.offline',
+  'auth.field.displayName',
+  'auth.field.email',
+  'auth.field.handle',
+  'auth.field.password',
+  'auth.hint.handle',
+  'auth.hint.password',
+  'auth.page.signInBody',
+  'auth.page.signInTitle',
+  'auth.page.signUpBody',
+  'auth.page.signUpTitle',
+  'auth.prompt.body',
+  'auth.prompt.title',
+  'auth.switch.haveAccount',
+  'auth.switch.noAccount',
+  'blank.backHome',
+  'blank.createEvent.body',
+  'blank.createEvent.title',
+  'blank.discover.body',
+  'blank.discover.title',
+  'blank.myEvents.body',
+  'blank.myEvents.title',
+  'blank.notFound.body',
+  'blank.notFound.title',
+  'blank.notifications.body',
+  'blank.notifications.title',
   'common.appName',
   'common.comingSoon',
   'common.free',
@@ -297,6 +410,14 @@ export const MESSAGE_KEYS = [
   'discover.view.label',
   'discover.view.list',
   'discover.view.map',
+  'errors.auth.accountSuspended',
+  'errors.auth.accountUnavailable',
+  'errors.auth.emailTaken',
+  'errors.auth.handleFormat',
+  'errors.auth.handleTaken',
+  'errors.auth.invalidCredentials',
+  'errors.auth.invalidRefresh',
+  'errors.auth.invalidToken',
   'errors.auth.trustLevelTooLow',
   'errors.auth.unauthenticated',
   'errors.chat.cannotMessageSelf',
@@ -326,6 +447,7 @@ export const MESSAGE_KEYS = [
   'errors.media.typeNotAllowed',
   'errors.post.notFound',
   'errors.post.notOwner',
+  'errors.profile.notFound',
   'event.card.almostFull',
   'event.card.attendees',
   'event.card.hostedBy',
@@ -459,6 +581,48 @@ export const MESSAGE_KEYS = [
   'post.media.rejectedSize',
   'post.media.rejectedType',
   'post.media.remove',
+  'profile.action.cancel',
+  'profile.action.edit',
+  'profile.action.save',
+  'profile.action.saving',
+  'profile.error.save',
+  'profile.field.bio',
+  'profile.field.displayName',
+  'profile.field.headline',
+  'profile.field.homeArea',
+  'profile.field.memberSince',
+  'profile.field.noArea',
+  'profile.field.showArea',
+  'profile.field.since',
+  'profile.field.visibility',
+  'profile.hint.headline',
+  'profile.language.de',
+  'profile.language.en',
+  'profile.language.es',
+  'profile.language.fr',
+  'profile.language.ja',
+  'profile.language.ko',
+  'profile.language.other',
+  'profile.language.ru',
+  'profile.language.vi',
+  'profile.language.zh',
+  'profile.level.basic',
+  'profile.level.conversational',
+  'profile.level.fluent',
+  'profile.level.native',
+  'profile.missing.body',
+  'profile.missing.title',
+  'profile.section.about',
+  'profile.stat.attended',
+  'profile.stat.hosted',
+  'profile.stat.rating',
+  'profile.trust.next',
+  'profile.visibility.members_only',
+  'profile.visibility.private',
+  'profile.visibility.public',
+  'profile.visibilityHint.members_only',
+  'profile.visibilityHint.private',
+  'profile.visibilityHint.public',
   'rsvp.error.alreadyRsvped',
   'rsvp.error.occurrenceClosed',
   'rsvp.error.suspended',

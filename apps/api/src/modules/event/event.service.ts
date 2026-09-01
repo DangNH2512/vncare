@@ -48,17 +48,17 @@ export class EventService {
     }
   }
 
-  async findOne(id: string, viewer: CurrentUserContext): Promise<EventResponseT> {
-    const row = await this.events.findById(id, viewer.id);
+  async findOne(id: string, viewer: CurrentUserContext | null): Promise<EventResponseT> {
+    const row = await this.events.findById(id, viewer?.id ?? null);
     if (!row) throw this.notFound();
     return toEventResponse(row);
   }
 
   async list(
     query: ListEventQueryT,
-    viewer: CurrentUserContext,
+    viewer: CurrentUserContext | null,
   ): Promise<{ items: EventResponseT[]; nextCursor: string | null }> {
-    const { rows, limit } = await this.events.list(query, viewer.id);
+    const { rows, limit } = await this.events.list(query, viewer?.id ?? null);
     return toPage(rows, limit, toEventResponse, eventCursorOf);
   }
 

@@ -10,7 +10,6 @@ import {
   Put,
   Query,
   SerializeOptions,
-  UseGuards,
 } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -26,11 +25,11 @@ import {
   type EventUpdateRequestT,
   type ListEventQueryT,
 } from '@dnc/contracts';
-import { AuthenticatedGuard } from '../../common/guards/authenticated.guard.js';
-import { TrustLevelGuard } from '../../common/guards/trust-level.guard.js';
 import { MinTrustLevel } from '../../common/decorators/min-trust-level.decorator.js';
+import { Public } from '../../common/decorators/public.decorator.js';
 import {
   CurrentUser,
+  OptionalUser,
   type CurrentUserContext,
 } from '../../common/decorators/current-user.decorator.js';
 import { EventService } from './event.service.js';
@@ -40,7 +39,6 @@ const EventPageEnvelope = envelope(cursorPage(EventResponse));
 const UuidParam = z.uuid();
 
 @Controller('api/v1/events')
-@UseGuards(AuthenticatedGuard, TrustLevelGuard)
 export class EventController {
   constructor(private readonly events: EventService) {}
 
@@ -61,20 +59,22 @@ export class EventController {
   }
 
   /** Discovery. A radius search needs lat, lng and radiusMeters together. */
+  @Public()
   @Get()
   @SerializeOptions({ schema: EventPageEnvelope })
   async list(
     @Query({ schema: ListEventQuery }) query: ListEventQueryT,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     return { success: true, data: await this.events.list(query, viewer) };
   }
 
+  @Public()
   @Get(':id')
   @SerializeOptions({ schema: EventEnvelope })
   async findOne(
     @Param('id', { schema: UuidParam }) id: string,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     return { success: true, data: await this.events.findOne(id, viewer) };
   }

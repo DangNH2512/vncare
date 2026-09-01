@@ -2,7 +2,13 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { envelope, ReactionSummaryResponse } from '@dnc/contracts';
-import { asUser, createTestApp, newUserId, seedArea } from '../../support/harness.js';
+import {
+  createActor,
+  createTestApp,
+  seedArea,
+  unknownId,
+  type Actor,
+} from '../../support/harness.js';
 
 describe('reaction module', () => {
   let app: INestApplication;
@@ -12,31 +18,34 @@ describe('reaction module', () => {
   let commentId: string;
   let eventId: string;
 
-  const author = newUserId();
-  const reader = newUserId();
-  const secondReader = newUserId();
+  let author: Actor;
+  let reader: Actor;
+  let secondReader: Actor;
 
   beforeAll(async () => {
     ({ areaId, cleanup } = await seedArea());
     app = await createTestApp();
+    author = await createActor(app);
+    reader = await createActor(app);
+    secondReader = await createActor(app);
 
     const post = await request(app.getHttpServer())
       .post('/api/v1/posts')
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'recommendation', body: 'Great banh mi on Le Duan.', areaId })
       .expect(201);
     postId = post.body.data.id;
 
     const comment = await request(app.getHttpServer())
       .post(`/api/v1/posts/${postId}/comments`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .send({ body: 'Seconded.' })
       .expect(201);
     commentId = comment.body.data.id;
 
     const event = await request(app.getHttpServer())
       .post('/api/v1/events')
-      .set(asUser(author))
+      .set(author.headers)
       .send({
         title: 'Reaction probe event',
         areaId,
@@ -57,13 +66,13 @@ describe('reaction module', () => {
   it('sets a reaction and reports it back in the summary', async () => {
     await request(app.getHttpServer())
       .put(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .send({ kind: 'like' })
       .expect(200);
 
     const res = await request(app.getHttpServer())
       .get(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .expect(200);
 
     const parsed = envelope(ReactionSummaryResponse).parse(res.body);
@@ -75,7 +84,7 @@ describe('reaction module', () => {
   it('reports every kind including the unused ones', async () => {
     const res = await request(app.getHttpServer())
       .get(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(secondReader))
+      .set(secondReader.headers)
       .expect(200);
     expect(Object.keys(res.body.data.byKind).toSorted()).toEqual([
       'celebrate',
@@ -90,13 +99,13 @@ describe('reaction module', () => {
   it('replaces rather than duplicates when the caller changes their mind', async () => {
     await request(app.getHttpServer())
       .put(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .send({ kind: 'love' })
       .expect(200);
 
     const res = await request(app.getHttpServer())
       .get(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .expect(200);
     expect(res.body.data.total).toBe(1);
     expect(res.body.data.byKind.love).toBe(1);
@@ -106,18 +115,18 @@ describe('reaction module', () => {
   it('is idempotent when the same kind is sent twice', async () => {
     await request(app.getHttpServer())
       .put(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(secondReader))
+      .set(secondReader.headers)
       .send({ kind: 'helpful' })
       .expect(200);
     await request(app.getHttpServer())
       .put(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(secondReader))
+      .set(secondReader.headers)
       .send({ kind: 'helpful' })
       .expect(200);
 
     const res = await request(app.getHttpServer())
       .get(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .expect(200);
     expect(res.body.data.total).toBe(2);
   });
@@ -125,7 +134,7 @@ describe('reaction module', () => {
   it('keeps the post reaction_count cache in step with the rows', async () => {
     const post = await request(app.getHttpServer())
       .get(`/api/v1/posts/${postId}`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .expect(200);
     expect(post.body.data.reactionCount).toBe(2);
     expect(post.body.data.viewerReaction).toBe('love');
@@ -134,16 +143,16 @@ describe('reaction module', () => {
   it('removes a reaction, and removing it twice still succeeds', async () => {
     await request(app.getHttpServer())
       .delete(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(secondReader))
+      .set(secondReader.headers)
       .expect(204);
     await request(app.getHttpServer())
       .delete(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(secondReader))
+      .set(secondReader.headers)
       .expect(204);
 
     const res = await request(app.getHttpServer())
       .get(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .expect(200);
     expect(res.body.data.total).toBe(1);
   });
@@ -151,15 +160,15 @@ describe('reaction module', () => {
   it('rejects an unknown reaction kind', async () => {
     await request(app.getHttpServer())
       .put(`/api/v1/posts/${postId}/reactions`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .send({ kind: 'thumbs_down' })
       .expect(400);
   });
 
   it('answers 404 for a target that does not exist', async () => {
     await request(app.getHttpServer())
-      .put(`/api/v1/posts/${newUserId()}/reactions`)
-      .set(asUser(reader))
+      .put(`/api/v1/posts/${unknownId()}/reactions`)
+      .set(reader.headers)
       .send({ kind: 'like' })
       .expect(404);
   });
@@ -167,13 +176,13 @@ describe('reaction module', () => {
   it('reacts to a comment and updates that comment counter', async () => {
     await request(app.getHttpServer())
       .put(`/api/v1/comments/${commentId}/reactions`)
-      .set(asUser(author))
+      .set(author.headers)
       .send({ kind: 'celebrate' })
       .expect(200);
 
     const res = await request(app.getHttpServer())
       .get(`/api/v1/comments/${commentId}`)
-      .set(asUser(author))
+      .set(author.headers)
       .expect(200);
     expect(res.body.data.reactionCount).toBe(1);
     expect(res.body.data.viewerReaction).toBe('celebrate');
@@ -187,19 +196,19 @@ describe('reaction module', () => {
   it('records `going` on an event without touching seatsTaken', async () => {
     await request(app.getHttpServer())
       .put(`/api/v1/events/${eventId}/reactions`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .send({ kind: 'going' })
       .expect(200);
 
     const summary = await request(app.getHttpServer())
       .get(`/api/v1/events/${eventId}/reactions`)
-      .set(asUser(reader))
+      .set(reader.headers)
       .expect(200);
     expect(summary.body.data.byKind.going).toBe(1);
 
     const event = await request(app.getHttpServer())
       .get(`/api/v1/events/${eventId}`)
-      .set(asUser(author))
+      .set(author.headers)
       .expect(200);
     expect(event.body.data.seatsTaken).toBe(0);
   });

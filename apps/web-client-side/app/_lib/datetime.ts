@@ -62,33 +62,118 @@ export function minutesUntil(iso: string, now: Date = new Date()): number | null
   return date === null ? null : Math.round((date.getTime() - now.getTime()) / 60_000);
 }
 
-function format(iso: string, locale: Locale, options: Intl.DateTimeFormatOptions): string {
-  const date = parseIso(iso);
-  if (date === null) return '';
-  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
-    ...options,
-    timeZone: APP_TIME_ZONE,
-  }).format(date);
+/**
+ * Weekday and month names, owned here rather than taken from the runtime.
+ *
+ * `Intl` cannot be trusted for these across engines: for `en-GB` Node and
+ * Chromium render September as `Sept` while Safari renders `Sep`, so the server
+ * and the browser produce different text for the same instant and React reports
+ * a hydration mismatch on every card that shows a date. Numeric fields do not
+ * have this problem, so the day, the year and the clock still come from `Intl`.
+ *
+ * Owning the names also means Vietnamese reads the way Vietnamese reads, which
+ * `Intl` does not get right for a compact feed card.
+ */
+const WEEKDAY_SHORT: Readonly<Record<Locale, readonly string[]>> = {
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  vi: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+};
+
+const WEEKDAY_LONG: Readonly<Record<Locale, readonly string[]>> = {
+  en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  vi: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+};
+
+const MONTH_SHORT: Readonly<Record<Locale, readonly string[]>> = {
+  en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  vi: ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'],
+};
+
+const MONTH_LONG: Readonly<Record<Locale, readonly string[]>> = {
+  en: [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ],
+  vi: [
+    'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
+    'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12',
+  ],
+};
+
+/** Numeric field extractor. Every value here is engine-independent. */
+const partsFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: APP_TIME_ZONE,
+  weekday: 'short',
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+});
+
+const WEEKDAY_INDEX: Readonly<Record<string, number>> = {
+  Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6,
+};
+
+interface ZonedParts {
+  weekday: number;
+  day: number;
+  /** Zero-based, the way the name tables are indexed. */
+  month: number;
+  year: number;
+  hour: number;
+  minute: number;
 }
 
-/** `Thu 4 Sep` / `Th 5, 4 thg 9` — the compact form used on feed cards. */
+/**
+ * Breaks an instant into its Da Nang wall-clock fields.
+ *
+ * `en-US` with numeric options is used purely as a field extractor — the
+ * locale never reaches the output, so its formatting conventions do not matter.
+ */
+function zonedParts(date: Date): ZonedParts {
+  const parts = partsFormatter.formatToParts(date);
+  const value = (type: Intl.DateTimeFormatPartTypes): string =>
+    parts.find((part) => part.type === type)?.value ?? '';
+
+  return {
+    weekday: WEEKDAY_INDEX[value('weekday')] ?? 0,
+    day: Number(value('day')),
+    month: Number(value('month')) - 1,
+    year: Number(value('year')),
+    // `hour12: false` renders midnight as 24 in some engines; normalise it.
+    hour: Number(value('hour')) % 24,
+    minute: Number(value('minute')),
+  };
+}
+
+const pad = (value: number): string => String(value).padStart(2, '0');
+
+/** `Thu 4 Sep` / `T5 4 Th9` — the compact form used on feed cards. */
 export function formatEventDate(iso: string, locale: Locale): string {
-  return format(iso, locale, { weekday: 'short', day: 'numeric', month: 'short' });
+  const date = parseIso(iso);
+  if (date === null) return '';
+  const p = zonedParts(date);
+  return `${WEEKDAY_SHORT[locale][p.weekday]} ${p.day} ${MONTH_SHORT[locale][p.month]}`;
 }
 
 /** `Thursday 4 September 2026` — the expanded form used on the detail screen. */
 export function formatEventDateLong(iso: string, locale: Locale): string {
-  return format(iso, locale, {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  const date = parseIso(iso);
+  if (date === null) return '';
+  const p = zonedParts(date);
+  return locale === 'vi'
+    ? `${WEEKDAY_LONG.vi[p.weekday]}, ${p.day} ${MONTH_LONG.vi[p.month]} ${p.year}`
+    : `${WEEKDAY_LONG.en[p.weekday]} ${p.day} ${MONTH_LONG.en[p.month]} ${p.year}`;
 }
 
 /** 24-hour clock: minutes past midnight matter more than am/pm for a 05:30 beach run. */
-export function formatEventTime(iso: string, locale: Locale): string {
-  return format(iso, locale, { hour: '2-digit', minute: '2-digit', hour12: false });
+export function formatEventTime(iso: string, _locale: Locale): string {
+  const date = parseIso(iso);
+  if (date === null) return '';
+  const p = zonedParts(date);
+  return `${pad(p.hour)}:${pad(p.minute)}`;
 }
 
 /**

@@ -3,7 +3,12 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { envelope, EventResponse } from '@dnc/contracts';
 import { createOpenApiDocument } from '../../../src/common/openapi.js';
-import { asUser, createTestApp, newUserId, seedArea } from '../../support/harness.js';
+import {
+  createActor,
+  createTestApp,
+  seedArea,
+  type Actor,
+} from '../../support/harness.js';
 
 /**
  * Proves the contract chain end to end — Zod schema -> validation pipe ->
@@ -15,8 +20,9 @@ describe('event module', () => {
   let areaId: string;
   let cleanup: () => Promise<void>;
 
-  const organizer = newUserId();
-  const stranger = newUserId();
+  let organizer: Actor;
+  let stranger: Actor;
+  let newcomer: Actor;
 
   const validBody = () => ({
     title: 'Sunday beach volleyball',
@@ -30,6 +36,10 @@ describe('event module', () => {
   beforeAll(async () => {
     ({ areaId, cleanup } = await seedArea());
     app = await createTestApp();
+    organizer = await createActor(app);
+    stranger = await createActor(app);
+    // T0: registered but not yet trusted enough to publish anything.
+    newcomer = await createActor(app, { trustLevel: 0 });
   });
 
   afterAll(async () => {
@@ -49,7 +59,7 @@ describe('event module', () => {
   it('rejects a T0 account with 403 before the body is even considered', async () => {
     await request(app.getHttpServer())
       .post('/api/v1/events')
-      .set(asUser(organizer, 0))
+      .set(newcomer.headers)
       .send(validBody())
       .expect(403);
   });
@@ -57,7 +67,7 @@ describe('event module', () => {
   it('rejects an invalid body with 400 (title below minimum length)', async () => {
     await request(app.getHttpServer())
       .post('/api/v1/events')
-      .set(asUser(organizer))
+      .set(organizer.headers)
       .send({ ...validBody(), title: 'ab' })
       .expect(400);
   });
@@ -65,7 +75,7 @@ describe('event module', () => {
   it('rejects a body with an out-of-range coordinate', async () => {
     await request(app.getHttpServer())
       .post('/api/v1/events')
-      .set(asUser(organizer))
+      .set(organizer.headers)
       .send({ ...validBody(), lat: 123 })
       .expect(400);
   });
@@ -73,7 +83,7 @@ describe('event module', () => {
   it('accepts a valid body, applies schema defaults and persists the occurrence', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/events')
-      .set(asUser(organizer))
+      .set(organizer.headers)
       .send(validBody())
       .expect(201);
 
@@ -93,7 +103,7 @@ describe('event module', () => {
   it('keeps internal columns out of the response', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/events')
-      .set(asUser(organizer))
+      .set(organizer.headers)
       .send(validBody())
       .expect(201);
 
@@ -105,32 +115,32 @@ describe('event module', () => {
   it('hides a draft from everyone but its organizer', async () => {
     const created = await request(app.getHttpServer())
       .post('/api/v1/events')
-      .set(asUser(organizer))
+      .set(organizer.headers)
       .send(validBody())
       .expect(201);
     const id: string = created.body.data.id;
 
     await request(app.getHttpServer())
       .get(`/api/v1/events/${id}`)
-      .set(asUser(organizer))
+      .set(organizer.headers)
       .expect(200);
 
     await request(app.getHttpServer())
       .get(`/api/v1/events/${id}`)
-      .set(asUser(stranger))
+      .set(stranger.headers)
       .expect(404);
   });
 
   it('refuses an update from someone who is not the organizer', async () => {
     const created = await request(app.getHttpServer())
       .post('/api/v1/events')
-      .set(asUser(organizer))
+      .set(organizer.headers)
       .send(validBody())
       .expect(201);
 
     await request(app.getHttpServer())
       .patch(`/api/v1/events/${created.body.data.id}`)
-      .set(asUser(stranger))
+      .set(stranger.headers)
       .send({ title: 'Hijacked title' })
       .expect(403);
   });
@@ -138,21 +148,22 @@ describe('event module', () => {
   it('publishes, then finds the event by radius but not from far away', async () => {
     const created = await request(app.getHttpServer())
       .post('/api/v1/events')
-      .set(asUser(organizer))
+      .set(organizer.headers)
       .send({ ...validBody(), title: 'Radius probe event' })
       .expect(201);
     const id: string = created.body.data.id;
 
     await request(app.getHttpServer())
       .put(`/api/v1/events/${id}/status`)
-      .set(asUser(organizer))
+      .set(organizer.headers)
       .send({ status: 'published' })
       .expect(200);
 
+    // No credentials: discovery is readable by anyone, which is how a shared
+    // link works for someone who has not signed up yet.
     const near = await request(app.getHttpServer())
       .get('/api/v1/events')
       .query({ areaId, lat: 16.06, lng: 108.247, radiusMeters: 1500, limit: 50 })
-      .set(asUser(stranger))
       .expect(200);
     expect(near.body.data.items.map((e: { id: string }) => e.id)).toContain(id);
 
@@ -160,7 +171,6 @@ describe('event module', () => {
     const far = await request(app.getHttpServer())
       .get('/api/v1/events')
       .query({ areaId, lat: 15.88, lng: 108.33, radiusMeters: 1500, limit: 50 })
-      .set(asUser(stranger))
       .expect(200);
     expect(far.body.data.items.map((e: { id: string }) => e.id)).not.toContain(id);
   });
@@ -169,7 +179,6 @@ describe('event module', () => {
     await request(app.getHttpServer())
       .get('/api/v1/events')
       .query({ radiusMeters: 1500 })
-      .set(asUser(stranger))
       .expect(400);
   });
 

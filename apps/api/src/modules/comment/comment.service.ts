@@ -76,19 +76,22 @@ export class CommentService {
     };
   }
 
-  async findOne(id: string, viewer: CurrentUserContext): Promise<CommentResponseT> {
+  async findOne(
+    id: string,
+    viewer: CurrentUserContext | null,
+  ): Promise<CommentResponseT> {
     return toCommentResponse(await this.loadOrThrow(id, viewer));
   }
 
   async list(
     target: CommentTargetRef,
     query: ListCommentQueryT,
-    viewer: CurrentUserContext,
+    viewer: CurrentUserContext | null,
   ): Promise<{ items: CommentResponseT[]; nextCursor: string | null }> {
     if (!(await this.comments.targetExists(target))) {
       throw this.targetNotFound(target);
     }
-    const { rows, limit, branch } = await this.comments.list(target, query, viewer.id);
+    const { rows, limit, branch } = await this.comments.list(target, query, viewer?.id ?? null);
     return toPage(
       rows,
       limit,
@@ -180,8 +183,11 @@ export class CommentService {
     return toCommentResponse(updated);
   }
 
-  private async loadOrThrow(id: string, viewer: CurrentUserContext): Promise<CommentRow> {
-    const row = await this.comments.findById(id, viewer.id);
+  private async loadOrThrow(
+    id: string,
+    viewer: CurrentUserContext | null,
+  ): Promise<CommentRow> {
+    const row = await this.comments.findById(id, viewer?.id ?? null);
     if (!row) throw this.notFound();
     return row;
   }

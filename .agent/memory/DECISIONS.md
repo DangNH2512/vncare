@@ -159,3 +159,103 @@ dựng `storage_key` từ id đó trong cùng INSERT.
 
 **Hệ quả:** Đã thêm test bắn 8 request đặt chỗ song song — test này sẽ bắt lại đúng lỗi
 trên nếu ai đó quay về cách hai bước.
+
+## [2026-09-01] Auth: JWT RS256 trong bộ nhớ + refresh token httpOnly, proxy qua Next
+
+**Bối cảnh:** Yêu cầu "chỉ ai có tài khoản mới đăng post/react/comment".
+
+**Lựa chọn:** Access token RS256 sống 15 phút, giữ trong **biến module** phía client,
+không bao giờ vào `localStorage`. Refresh token 30 ngày là **cookie httpOnly**,
+`Path=/api/v1/auth`, `SameSite=Lax`, chỉ lưu SHA-256 trong `auth_sessions`. Mật khẩu
+băm bằng Argon2id (`@node-rs/argon2`). Đăng nhập sai và tài khoản không tồn tại trả về
+**hoàn toàn giống nhau**, và cả hai đều trả giá một lượt verify Argon2 để không dò được
+ai có tài khoản.
+
+`apps/web-client-side` proxy `/api/*` sang API qua `rewrites()` của Next. Không phải
+tiện lợi: cookie không set được cross-origin trên HTTP thường nếu thiếu
+`SameSite=None; Secure`, mà localhost không có TLS. Cùng origin thì cookie là
+first-party, và biến mất luôn preflight CORS.
+
+**Hệ quả:** Guard `JwtAuthGuard` là `APP_GUARD` toàn cục, **deny-by-default** — endpoint
+mới không truy cập được cho tới khi có `@Public()`. Guard tự bỏ qua context không phải
+HTTP; `ChatGateway` tự xác thực từng message bằng chính token đó. Chưa có xác minh
+email, nên đăng ký cấp thẳng T1 (hằng số `TRUST_LEVEL_ON_REGISTER`).
+
+## [2026-09-01] Refresh token có cửa sổ ân hạn 10 giây khi xoay vòng
+
+**Bối cảnh:** Reuse detection nghiêm ngặt đăng xuất người dùng thật. React Strict Mode
+gọi effect hai lần → hai request refresh cùng token → cái sau bị coi là replay → thu hồi
+cả họ. Hai tab khôi phục cùng lúc cũng vậy.
+
+**Lựa chọn:** Token bị thu hồi **vì rotation** và trong vòng 10 giây được coi là cùng một
+request đến hai lần, trả lời bình thường. Mọi trường hợp khác — thu hồi do logout, do
+reuse trước đó, hoặc rotation cũ hơn 10 giây — vẫn thu hồi cả họ. Phía client thêm
+single-flight cho `refresh()`.
+
+**Hệ quả:** Đánh đổi có tên: token bị đánh cắp và replay trong 10 giây sẽ thành công.
+Đó là lý do cửa sổ tính bằng giây. Test tách đôi: một test bắn hai refresh song song
+(phải cùng 200), một test làm cũ `revoked_at` bằng SQL rồi replay (phải 401).
+
+## [2026-09-01] Ngày giờ định dạng qua formatToParts, không dùng .format()
+
+**Bối cảnh:** Node và trình duyệt dùng phiên bản ICU khác nhau và bất đồng về dấu phân
+cách — Node ra `Tue 1 Sept`, Chrome ra `Tue, 1 Sept`. Server và client sinh chuỗi khác
+nhau cho cùng một mốc thời gian → React báo hydration mismatch trên mọi thẻ có ngày.
+
+**Lựa chọn:** `formatToParts()` rồi tự nối, chỉ giữ dấu hai chấm cho giờ. Locale vẫn
+quyết định thứ tự trường, tên tháng và hệ chữ số.
+
+**Hệ quả:** Đã gỡ luôn `suppressHydrationWarning` khỏi phần timestamp không còn cần.
+Script bootstrap theme chuyển sang `next/script strategy="beforeInteractive"` — React
+không bao giờ thực thi thẻ `<script>` nó tự render trên client và sẽ cảnh báo.
+
+## [2026-09-01] Theme quyết định phía server bằng cookie, không dùng script pre-paint
+
+**Bối cảnh:** Console báo *"Encountered a script tag while rendering React component"*.
+Lần sửa đầu chuyển sang `next/script strategy="beforeInteractive"` — **không ăn**:
+trong App Router nó không được hoist, mà nằm trong RSC payload nên React vẫn render
+trên client và vẫn cảnh báo.
+
+**Lựa chọn:** Bỏ hẳn script. `ThemeProvider` ghi cookie `dnc-theme` (đọc được bằng
+script, không phải credential); `app/layout.tsx` là Server Component đọc cookie và ghi
+thẳng `data-theme` vào thẻ `<html>`. Cookie vắng hoặc `system` thì không ghi thuộc tính
+— đúng nhánh `prefers-color-scheme` đã có sẵn trong `globals.css`.
+
+**Hệ quả:** Không còn script pre-paint, không còn flash, và `suppressHydrationWarning`
+trên `<html>` đã gỡ được. localStorage không còn giữ theme.
+
+## [2026-09-01] Tên thứ và tháng do dự án sở hữu, không lấy từ Intl
+
+**Bối cảnh:** Hydration mismatch trên mọi thẻ có ngày. Lần sửa đầu chỉ chuẩn hoá **dấu
+phân cách** qua `formatToParts` — không đủ, vì bất đồng nằm ở **giá trị**: `en-GB` cho
+tháng 9, Node và Chromium ra `Sept` còn Safari ra `Sep`.
+
+**Lựa chọn:** Bảng tên thứ/tháng EN+VI khai báo trong `app/_lib/datetime.ts`. `Intl`
+chỉ còn dùng để bóc trường số (ngày, năm, giờ, phút) — những giá trị không phụ thuộc
+engine.
+
+**Hệ quả:** Vietnamese đọc đúng kiểu Việt (`T5 4 Th9`) thay vì kiểu Intl. **Bài học về
+quy trình:** lần đầu tôi chỉ verify bằng Node và Chromium, cả hai đều ra `Sept`, nên
+không thấy lỗi. Từ nay verify UI phải chạy **cả WebKit**, vì chủ dự án dùng Safari.
+
+## [2026-09-01] Một màn hình hồ sơ duy nhất: /u/[handle]
+
+**Bối cảnh:** Có hai màn hình cùng vẽ một con người — `/profile` và `/u/[handle]`.
+
+**Lựa chọn:** Xoá `/profile`. Hồ sơ của chính mình là `/u/<handle của mình>`, thêm nút
+Sửa và Đăng xuất khi người xem là chủ. Mục Profile trong nav có `href: null` và được
+giải ra lúc render: đã đăng nhập thì trỏ tới handle của mình, chưa thì mở hộp thoại
+đăng nhập.
+
+**Hệ quả:** Hai bản gần giống nhau không còn cơ hội trôi dạt. Trang của chính mình gọi
+`/me/profile` (có trường riêng tư), trang người khác gọi `/profiles/:handle`.
+
+## [2026-09-01] Route được nav quảng cáo phải tồn tại
+
+**Bối cảnh:** `/discover`, `/my-events`, `/notifications` và `/events/new` đều 404 —
+trong đó `/events/new` là nút CTA to nhất màn hình.
+
+**Lựa chọn:** `app/not-found.tsx` cho URL không khớp, cộng bốn trang giữ chỗ dùng chung
+component `BlankScreen`. Một mục nav dẫn vào ngõ cụt tệ hơn một mục nói "chưa xong".
+
+**Hệ quả:** Mọi đích trong nav trả 200. Khi màn hình thật xong thì thay nguyên file.

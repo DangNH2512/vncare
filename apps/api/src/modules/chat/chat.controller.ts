@@ -9,7 +9,6 @@ import {
   Put,
   Query,
   SerializeOptions,
-  UseGuards,
 } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -30,8 +29,6 @@ import {
   type MarkReadRequestT,
   type MessageCreateRequestT,
 } from '@dnc/contracts';
-import { AuthenticatedGuard } from '../../common/guards/authenticated.guard.js';
-import { TrustLevelGuard } from '../../common/guards/trust-level.guard.js';
 import { MinTrustLevel } from '../../common/decorators/min-trust-level.decorator.js';
 import {
   CurrentUser,
@@ -53,7 +50,6 @@ const UuidParam = z.uuid();
  * message, it just learns about it later.
  */
 @Controller('api/v1/conversations')
-@UseGuards(AuthenticatedGuard, TrustLevelGuard)
 export class ChatController {
   constructor(private readonly chats: ChatService) {}
 

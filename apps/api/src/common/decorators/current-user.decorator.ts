@@ -1,8 +1,9 @@
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 
-/** Identity of the caller, as resolved by AuthenticatedGuard. */
+/** Identity of the caller, as resolved by JwtAuthGuard. */
 export interface CurrentUserContext {
   id: string;
+  role: string;
   trustLevel: number;
 }
 
@@ -23,10 +24,26 @@ export const CurrentUser = createParamDecorator(
       .getRequest<Record<string, CurrentUserContext | undefined>>();
     const user = request[CURRENT_USER_KEY];
     if (!user) {
-      // Reaching here means a handler asked for the caller on an unguarded
-      // route. Failing loudly beats handing back an anonymous identity.
-      throw new Error('CurrentUser used on a route without AuthenticatedGuard');
+      // Reaching here means a handler asked for the caller on a @Public route
+      // without checking. Failing loudly beats handing back an anonymous
+      // identity that later writes rows owned by nobody.
+      throw new Error('CurrentUser used on a route that permits anonymous access');
     }
     return user;
+  },
+);
+
+/**
+ * Injects the caller when there is one, and null otherwise.
+ *
+ * For public reads that personalise: the feed renders for everyone, but a
+ * signed-in reader also gets their own reactions marked.
+ */
+export const OptionalUser = createParamDecorator(
+  (_data: unknown, ctx: ExecutionContext): CurrentUserContext | null => {
+    const request = ctx
+      .switchToHttp()
+      .getRequest<Record<string, CurrentUserContext | undefined>>();
+    return request[CURRENT_USER_KEY] ?? null;
   },
 );

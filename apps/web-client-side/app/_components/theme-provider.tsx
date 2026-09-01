@@ -14,14 +14,24 @@ export type ThemePreference = 'light' | 'dark' | 'system';
 export type ResolvedTheme = 'light' | 'dark';
 
 /** Shared with the pre-paint script in the document head; changing it changes both. */
-export const THEME_STORAGE_KEY = 'dnc-theme';
 
 /**
  * Runs before first paint so the correct palette is applied without a flash.
  * Kept as a string because it must be inlined into the document head, ahead of
  * React. It writes the same attribute this provider later manages.
  */
-export const THEME_BOOTSTRAP_SCRIPT = `(function(){try{var s=localStorage.getItem('${THEME_STORAGE_KEY}');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.dataset.theme=(s==='light'||s==='dark')?s:(d?'dark':'light');}catch(e){}})();`;
+/**
+ * Name of the cookie the server reads to paint the right palette immediately.
+ *
+ * A cookie rather than localStorage because the *server* is what needs to know:
+ * it renders `data-theme` into the HTML, so the correct palette is present in
+ * the first byte. Storage the server cannot read forces a pre-paint script, and
+ * a script in the React tree is one React refuses to run on the client.
+ *
+ * Absent means "follow the system", which needs no attribute at all: the
+ * `prefers-color-scheme` branch in globals.css already covers it.
+ */
+export const THEME_COOKIE = 'dnc-theme';
 
 interface ThemeContextValue {
   preference: ThemePreference;
@@ -38,11 +48,32 @@ const DARK_QUERY = '(prefers-color-scheme: dark)';
 
 function readStoredPreference(): ThemePreference {
   try {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    const stored = readThemeCookie();
     return stored === 'light' || stored === 'dark' ? stored : 'system';
   } catch {
     return 'system';
   }
+}
+
+/** Reads the palette cookie; anything unrecognised means "follow the system". */
+function readThemeCookie(): string | null {
+  for (const part of document.cookie.split(';')) {
+    const [name, ...rest] = part.trim().split('=');
+    if (name === THEME_COOKIE) return decodeURIComponent(rest.join('='));
+  }
+  return null;
+}
+
+/**
+ * Persists the choice where the server will see it on the next request.
+ *
+ * Readable by script on purpose — this one is not a credential, and the toggle
+ * has to read it back. `SameSite=Lax` keeps it off cross-site requests, and a
+ * year is long enough that a returning visitor never sees the wrong palette.
+ */
+function writeThemeCookie(preference: ThemePreference): void {
+  const base = `path=/; max-age=${preference === 'system' ? 0 : 60 * 60 * 24 * 365}; samesite=lax`;
+  document.cookie = `${THEME_COOKIE}=${preference === 'system' ? '' : preference}; ${base}`;
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -74,10 +105,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setPreference = useCallback((next: ThemePreference) => {
     setPreferenceState(next);
     try {
-      if (next === 'system') window.localStorage.removeItem(THEME_STORAGE_KEY);
-      else window.localStorage.setItem(THEME_STORAGE_KEY, next);
+      writeThemeCookie(next);
     } catch {
-      // A blocked storage API must not break theming for the current session.
+      // A blocked cookie jar must not break theming for the current session;
+      // the attribute below still applies, it just will not survive a reload.
     }
   }, []);
 

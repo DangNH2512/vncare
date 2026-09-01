@@ -4,8 +4,8 @@
 
 | Năng lực | Trạng thái | apps/api | apps/web-client-side | apps/web-admin-side | apps/mobile | Tài liệu |
 |---|---|---|---|---|---|---|
-| Đăng ký / đăng nhập | chưa làm | `modules/auth` | — | — | — | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
-| Hồ sơ & trust level | chưa làm | `modules/profile` | — | — | — | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
+| Đăng ký / đăng nhập | **API + web xong** (email/mật khẩu) | `modules/auth` | /login, /register, dialog gate | — | — | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
+| Hồ sơ & trust level | **API + web xong** | `modules/profile` | /profile, /u/[handle] | — | — | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
 | Tạo & quản lý sự kiện | **CRUD xong (Postgres)** | `modules/event` | — | — | — | `docs/analysis/02-use-case.md` |
 | RSVP & waitlist | chưa làm | `modules/rsvp` | — | — | — | `docs/analysis/02-use-case.md` |
 | Khu vực & truy vấn địa lý | chưa làm | `modules/area` | — | — | — | `docs/analysis/03-domain-va-du-lieu.md` |

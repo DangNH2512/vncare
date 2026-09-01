@@ -1,10 +1,12 @@
 import { colors } from '@dnc/tokens';
 import type { Metadata, Viewport } from 'next';
+import { cookies } from 'next/headers';
 import { Be_Vietnam_Pro, Playfair_Display } from 'next/font/google';
 import type { ReactNode } from 'react';
 
+import { AuthProvider } from './_components/auth-provider';
 import { LocaleProvider } from './_components/locale-provider';
-import { THEME_BOOTSTRAP_SCRIPT, ThemeProvider } from './_components/theme-provider';
+import { THEME_COOKIE, ThemeProvider } from './_components/theme-provider';
 import './globals.css';
 
 /**
@@ -51,31 +53,36 @@ export const viewport: Viewport = {
  * `lang` starts at the default locale and LocaleProvider rewrites it when the
  * user switches, so the server markup and the first client render agree.
  */
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  /*
+   * The palette is decided here, on the server, from a cookie the toggle wrote.
+   *
+   * This used to be an inline pre-paint script. React never executes a <script>
+   * it renders on the client and warns about the attempt, and `next/script`
+   * with `beforeInteractive` does not hoist an inline script out of the App
+   * Router tree — it ends up in the flight payload and warns just the same.
+   *
+   * Reading a cookie removes the script entirely: `data-theme` is in the first
+   * byte of HTML, so there is no flash, nothing to hydrate against, and nothing
+   * for React to refuse to run. An absent or `system` cookie leaves the
+   * attribute off, which is exactly what the `prefers-color-scheme` branch in
+   * globals.css expects.
+   */
+  const stored = (await cookies()).get(THEME_COOKIE)?.value;
+  const theme = stored === 'light' || stored === 'dark' ? stored : undefined;
+
   return (
-    /*
-     * `suppressHydrationWarning` covers the one attribute the bootstrap script
-     * writes before React hydrates (`data-theme`). Without it React reports a
-     * mismatch on every load, because the server cannot know the visitor's
-     * stored palette. It suppresses this element only, not its subtree.
-     */
     <html
       lang="en"
       className={`${bodyFont.variable} ${headingFont.variable}`}
-      suppressHydrationWarning
+      {...(theme === undefined ? {} : { 'data-theme': theme })}
     >
       <body className="min-h-dvh bg-bg text-fg">
-        {/*
-         * Applies the stored palette before first paint; without it the light
-         * theme flashes. It sits at the top of <body> rather than in <head>:
-         * React never executes a <script> it renders on the client, and Next
-         * warns about one placed inside a component's head. As the first body
-         * node it still runs before anything paints.
-         */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
         {/* The app shell (side nav, tab bar, rails) is applied by the (shell) route group layout. */}
         <ThemeProvider>
-          <LocaleProvider>{children}</LocaleProvider>
+          <LocaleProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>

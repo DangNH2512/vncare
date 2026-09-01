@@ -10,7 +10,6 @@ import {
   Put,
   Query,
   SerializeOptions,
-  UseGuards,
 } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -24,11 +23,11 @@ import {
   type CommentUpdateRequestT,
   type ListCommentQueryT,
 } from '@dnc/contracts';
-import { AuthenticatedGuard } from '../../common/guards/authenticated.guard.js';
-import { TrustLevelGuard } from '../../common/guards/trust-level.guard.js';
 import { MinTrustLevel } from '../../common/decorators/min-trust-level.decorator.js';
+import { Public } from '../../common/decorators/public.decorator.js';
 import {
   CurrentUser,
+  OptionalUser,
   type CurrentUserContext,
 } from '../../common/decorators/current-user.decorator.js';
 import { CommentService } from './comment.service.js';
@@ -45,7 +44,6 @@ const UuidParam = z.uuid();
  * editing, where the target adds nothing the id does not already determine.
  */
 @Controller('api/v1')
-@UseGuards(AuthenticatedGuard, TrustLevelGuard)
 export class CommentController {
   constructor(private readonly comments: CommentService) {}
 
@@ -62,12 +60,13 @@ export class CommentController {
     return { success: true, data };
   }
 
+  @Public()
   @Get('posts/:postId/comments')
   @SerializeOptions({ schema: CommentPageEnvelope })
   async listOnPost(
     @Param('postId', { schema: UuidParam }) postId: string,
     @Query({ schema: ListCommentQuery }) query: ListCommentQueryT,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     const data = await this.comments.list({ type: 'post', id: postId }, query, viewer);
     return { success: true, data };
@@ -85,22 +84,24 @@ export class CommentController {
     return { success: true, data };
   }
 
+  @Public()
   @Get('events/:eventId/comments')
   @SerializeOptions({ schema: CommentPageEnvelope })
   async listOnEvent(
     @Param('eventId', { schema: UuidParam }) eventId: string,
     @Query({ schema: ListCommentQuery }) query: ListCommentQueryT,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     const data = await this.comments.list({ type: 'event', id: eventId }, query, viewer);
     return { success: true, data };
   }
 
+  @Public()
   @Get('comments/:id')
   @SerializeOptions({ schema: CommentEnvelope })
   async findOne(
     @Param('id', { schema: UuidParam }) id: string,
-    @CurrentUser() viewer: CurrentUserContext,
+    @OptionalUser() viewer: CurrentUserContext | null,
   ) {
     return { success: true, data: await this.comments.findOne(id, viewer) };
   }

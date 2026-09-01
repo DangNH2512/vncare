@@ -4,11 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { cn } from '../../_lib/cn';
+import { useAuth } from '../auth-provider';
 import { LanguageToggle } from '../language-toggle';
 import { useTranslate } from '../locale-provider';
 import { ThemeToggle } from '../theme-toggle';
+import { Avatar, Button } from '../ui';
 import { PlusIcon } from './icons';
-import { CREATE_EVENT_HREF, isActivePath, NAV_ITEMS } from './nav-items';
+import { CREATE_EVENT_HREF, isActivePath, NAV_ITEMS, profileHref } from './nav-items';
 
 /**
  * Left column of the shell: hidden on mobile, an icon rail on tablet (md),
@@ -21,6 +23,7 @@ import { CREATE_EVENT_HREF, isActivePath, NAV_ITEMS } from './nav-items';
 export function SideNav() {
   const pathname = usePathname();
   const t = useTranslate();
+  const { user, loading, requireAuth } = useAuth();
 
   return (
     <aside
@@ -46,28 +49,44 @@ export function SideNav() {
       <nav aria-label={t('shell.a11y.primaryNav')} className="mt-6 w-full">
         <ul className="flex list-none flex-col gap-1">
           {NAV_ITEMS.map((item) => {
-            const active = isActivePath(pathname, item.href);
+            // A null href is the profile item: it points at the signed-in
+            // member's own handle, and at the sign-in prompt when there is none.
+            const href = item.href ?? (user === null ? null : profileHref(user.handle));
+            const active = isActivePath(pathname, href);
             const Icon = item.icon;
+            const inner = (
+              <>
+                <Icon className="size-6 shrink-0" />
+                {/* min-w-0 + wrap: Vietnamese labels may exceed the column. */}
+                <span className="hidden min-w-0 text-sm break-words lg:inline">
+                  {t(item.labelKey)}
+                </span>
+              </>
+            );
+            const shared = cn(
+              'flex min-h-11 w-full min-w-11 items-center justify-center gap-3 rounded-md px-3 py-2',
+              'transition-colors duration-150 lg:justify-start',
+              active
+                ? 'bg-accent-subtle font-semibold text-accent-text'
+                : 'text-fg-muted hover:bg-surface-sunken hover:text-fg',
+            );
+
             return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  aria-current={active ? 'page' : undefined}
-                  title={t(item.labelKey)}
-                  className={cn(
-                    'flex min-h-11 min-w-11 items-center justify-center gap-3 rounded-md px-3 py-2',
-                    'transition-colors duration-150 lg:justify-start',
-                    active
-                      ? 'bg-accent-subtle font-semibold text-accent-text'
-                      : 'text-fg-muted hover:bg-surface-sunken hover:text-fg',
-                  )}
-                >
-                  <Icon className="size-6 shrink-0" />
-                  {/* min-w-0 + wrap: Vietnamese labels may exceed the column. */}
-                  <span className="hidden min-w-0 text-sm break-words lg:inline">
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
+              <li key={item.labelKey}>
+                {href === null ? (
+                  <button type="button" onClick={() => requireAuth()} className={shared}>
+                    {inner}
+                  </button>
+                ) : (
+                  <Link
+                    href={href}
+                    aria-current={active ? 'page' : undefined}
+                    title={t(item.labelKey)}
+                    className={shared}
+                  >
+                    {inner}
+                  </Link>
+                )}
               </li>
             );
           })}
@@ -91,12 +110,47 @@ export function SideNav() {
         </span>
       </Link>
 
-      <div className="mt-auto hidden items-center justify-between gap-2 pt-6 lg:flex">
+      {/* Session block above the toggles.
+          The top bar carries the same control but is md:hidden, so without this
+          a desktop visitor has no way in at all — the only sign-in affordance
+          would be inside a dialog they have to trip over first. */}
+      {!loading && (
+        <div className="mt-auto w-full pt-6">
+          {user === null ? (
+            <Button size="sm" fullWidth onClick={() => requireAuth()}>
+              <span className="lg:hidden" aria-hidden>
+                →
+              </span>
+              <span className="hidden lg:inline">{t('auth.action.signIn')}</span>
+              <span className="sr-only lg:hidden">{t('auth.action.signIn')}</span>
+            </Button>
+          ) : (
+            <Link
+              href={profileHref(user.handle)}
+              className={cn(
+                'flex min-h-11 items-center justify-center gap-2 rounded-md px-2 py-1.5',
+                'transition-colors duration-150 hover:bg-surface-sunken lg:justify-start',
+              )}
+            >
+              <Avatar
+                name={user.displayName}
+                size="sm"
+                {...(user.avatarUrl === null ? {} : { src: user.avatarUrl })}
+              />
+              <span className="hidden min-w-0 truncate text-sm font-medium lg:inline">
+                {user.displayName}
+              </span>
+            </Link>
+          )}
+        </div>
+      )}
+
+      <div className="hidden items-center justify-between gap-2 pt-4 lg:flex">
         <LanguageToggle />
         <ThemeToggle />
       </div>
       {/* Tablet rail: the segmented control stacks vertically to fit 76px. */}
-      <div className="mt-auto flex flex-col items-center gap-3 pt-6 lg:hidden">
+      <div className="flex flex-col items-center gap-3 pt-4 lg:hidden">
         <LanguageToggle className="flex-col" />
         <ThemeToggle />
       </div>

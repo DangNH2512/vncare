@@ -1,5 +1,5 @@
 /**
- * Minimal client for the Da Nang Connect API.
+ * Client for the Da Nang Connect API.
  *
  * Deliberately hand-written and small: `@dnc/api-client` (generated from the
  * OpenAPI document) replaces it, and until that generator exists a thin wrapper
@@ -7,41 +7,44 @@
  * `@dnc/contracts`, so this file owns transport only, never data shapes.
  */
 import type {
+  AuthSessionResponseT,
+  LoginRequestT,
   MediaCompleteRequestT,
   MediaResponseT,
   MediaUploadRequestT,
   MediaUploadResponseT,
+  MyProfileResponseT,
   PostCreateRequestT,
   PostResponseT,
+  ProfileUpdateRequestT,
+  PublicProfileResponseT,
+  RegisterRequestT,
 } from '@dnc/contracts';
 
-/** Overridden per environment; the default matches the API's own default port. */
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-const DEV_USER_STORAGE_KEY = 'dnc-dev-user-id';
+/**
+ * Same-origin by design.
+ *
+ * Next rewrites `/api/*` to the API process, so the refresh cookie is a
+ * first-party cookie and no request is preflighted. Nothing here should ever
+ * point at another origin.
+ */
+const API_BASE = '';
 
 /**
- * Identity for local development.
+ * The access token lives in a module variable, never in localStorage.
  *
- * The auth module does not exist yet, so the API accepts an `x-user-id` header
- * behind a guard that refuses to run in production. One id is generated per
- * browser and kept, so a post made yesterday still belongs to you today.
- * This whole function disappears when real sessions land.
+ * Storage is readable by any script that gets onto the page; a variable is not,
+ * and the cost of losing it on reload is one silent refresh call. The refresh
+ * token itself is an httpOnly cookie this code cannot read at all.
  */
-function devUserId(): string {
-  if (typeof window === 'undefined') return '';
-  try {
-    const stored = window.localStorage.getItem(DEV_USER_STORAGE_KEY);
-    if (stored) return stored;
-    const generated = crypto.randomUUID();
-    window.localStorage.setItem(DEV_USER_STORAGE_KEY, generated);
-    return generated;
-  } catch {
-    // Private browsing can throw on access rather than return null. A per-session
-    // identity is still better than no identity.
-    return crypto.randomUUID();
-  }
+let accessToken: string | null = null;
+
+export function setAccessToken(token: string | null): void {
+  accessToken = token;
+}
+
+export function getAccessToken(): string | null {
+  return accessToken;
 }
 
 /** Distinguishes "the API said no" from "the API was not reachable". */
@@ -59,6 +62,11 @@ export class ApiError extends Error {
   get isOffline(): boolean {
     return this.status === 0;
   }
+
+  /** True when the caller needs to sign in, or sign in again. */
+  get isUnauthenticated(): boolean {
+    return this.status === 401;
+  }
 }
 
 interface Envelope<T> {
@@ -75,24 +83,35 @@ interface CallInit {
   method?: string;
   body?: string;
   headers?: Record<string, string>;
+  /** Set on the retry so a failed refresh cannot loop. */
+  retried?: boolean;
 }
 
 async function call<T>(path: string, init?: CallInit): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
-      ...init,
+    response = await fetch(`${API_BASE}${path}`, {
+      // Spread rather than assign: `exactOptionalPropertyTypes` treats an
+      // explicit `undefined` as a value, and fetch does not accept one.
+      ...(init?.method === undefined ? {} : { method: init.method }),
+      ...(init?.body === undefined ? {} : { body: init.body }),
+      // The refresh cookie must ride along on the auth routes.
+      credentials: 'same-origin',
       headers: {
         'content-type': 'application/json',
-        'x-user-id': devUserId(),
-        // Trust level 3 unlocks posting and commenting while the real ladder is
-        // computed from trust signals that do not exist yet.
-        'x-trust-level': '3',
+        ...(accessToken === null ? {} : { authorization: `Bearer ${accessToken}` }),
         ...init?.headers,
       },
     });
   } catch {
     throw new ApiError(0, 'OFFLINE', undefined);
+  }
+
+  // An access token lasts fifteen minutes, so an expiry mid-session is normal
+  // rather than exceptional: refresh once, silently, and replay the call.
+  if (response.status === 401 && !init?.retried && path !== '/api/v1/auth/refresh') {
+    const renewed = await refresh().catch(() => null);
+    if (renewed) return call<T>(path, { ...init, retried: true });
   }
 
   if (!response.ok) {
@@ -104,16 +123,99 @@ async function call<T>(path: string, init?: CallInit): Promise<T> {
     throw new ApiError(response.status, error.code, error.messageKey);
   }
 
+  if (response.status === 204) return undefined as T;
   const envelope = (await response.json()) as Envelope<T>;
   return envelope.data;
 }
 
-export function createPost(body: PostCreateRequestT): Promise<PostResponseT> {
-  return call<PostResponseT>('/api/v1/posts', {
-    method: 'POST',
+/* -------------------------------------------------------------------- auth */
+
+async function adoptSession(session: AuthSessionResponseT): Promise<AuthSessionResponseT> {
+  setAccessToken(session.accessToken);
+  return session;
+}
+
+export async function register(body: RegisterRequestT): Promise<AuthSessionResponseT> {
+  return adoptSession(
+    await call<AuthSessionResponseT>('/api/v1/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  );
+}
+
+export async function login(body: LoginRequestT): Promise<AuthSessionResponseT> {
+  return adoptSession(
+    await call<AuthSessionResponseT>('/api/v1/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  );
+}
+
+/**
+ * In-flight refresh, shared by every concurrent caller.
+ *
+ * Refresh tokens rotate, so two simultaneous refreshes would spend the same
+ * token twice and look like a replay. That is not hypothetical: React re-runs
+ * effects in development, and a 401 on two parallel requests would otherwise
+ * queue two retries. One promise, shared.
+ */
+let inFlightRefresh: Promise<AuthSessionResponseT | null> | null = null;
+
+/**
+ * Exchanges the refresh cookie for a new access token.
+ *
+ * Returns null both when there is no session to restore (204, the ordinary
+ * case for a first-time visitor) and when the cookie was rejected. The caller
+ * treats the two the same: show the signed-out view.
+ */
+export function refresh(): Promise<AuthSessionResponseT | null> {
+  inFlightRefresh ??= runRefresh().finally(() => {
+    inFlightRefresh = null;
+  });
+  return inFlightRefresh;
+}
+
+async function runRefresh(): Promise<AuthSessionResponseT | null> {
+  try {
+    const session = await call<AuthSessionResponseT | undefined>('/api/v1/auth/refresh', {
+      method: 'POST',
+    });
+    if (session === undefined) {
+      setAccessToken(null);
+      return null;
+    }
+    return await adoptSession(session);
+  } catch {
+    setAccessToken(null);
+    return null;
+  }
+}
+
+export async function logout(): Promise<void> {
+  await call<void>('/api/v1/auth/logout', { method: 'POST' }).catch(() => undefined);
+  setAccessToken(null);
+}
+
+/* ----------------------------------------------------------------- profile */
+
+export function myProfile(): Promise<MyProfileResponseT> {
+  return call<MyProfileResponseT>('/api/v1/me/profile');
+}
+
+export function updateMyProfile(body: ProfileUpdateRequestT): Promise<MyProfileResponseT> {
+  return call<MyProfileResponseT>('/api/v1/me/profile', {
+    method: 'PATCH',
     body: JSON.stringify(body),
   });
 }
+
+export function publicProfile(handle: string): Promise<PublicProfileResponseT> {
+  return call<PublicProfileResponseT>(`/api/v1/profiles/${encodeURIComponent(handle)}`);
+}
+
+/* ------------------------------------------------------------------- media */
 
 export function reserveUpload(body: MediaUploadRequestT): Promise<MediaUploadResponseT> {
   return call<MediaUploadResponseT>('/api/v1/media/uploads', {
@@ -128,6 +230,15 @@ export function completeUpload(
 ): Promise<MediaResponseT> {
   return call<MediaResponseT>(`/api/v1/media/${mediaId}/complete`, {
     method: 'PUT',
+    body: JSON.stringify(body),
+  });
+}
+
+/* ------------------------------------------------------------------- posts */
+
+export function createPost(body: PostCreateRequestT): Promise<PostResponseT> {
+  return call<PostResponseT>('/api/v1/posts', {
+    method: 'POST',
     body: JSON.stringify(body),
   });
 }

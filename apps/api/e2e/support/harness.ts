@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { Pool } from 'pg';
+import request from 'supertest';
 import { AppModule } from '../../src/app.module.js';
 
 /**
@@ -14,50 +15,154 @@ import { AppModule } from '../../src/app.module.js';
  *
  * The suite runs against the local PostGIS container rather than a mock: the
  * behaviour under test is largely enforced by the database itself — partial
- * unique indexes, CHECK constraints and the counter triggers — and a mocked
- * repository would assert only that the mock was called.
+ * unique indexes, CHECK constraints, foreign keys and the counter triggers —
+ * and a mocked repository would assert only that the mock was called.
+ *
+ * Actors are real accounts created through the real registration endpoint, so
+ * every spec exercises the same authentication path a browser does.
  */
 export const DATABASE_URL =
   process.env['DATABASE_URL'] ?? 'postgresql://dnc:dnc@localhost:5433/dnc';
 
 export async function createTestApp(): Promise<INestApplication> {
   process.env['DATABASE_URL'] = DATABASE_URL;
+  // Vitest runs each spec file in its own worker, each with its own pool. Nine
+  // files at the production default of 10 is ninety connections against a
+  // max_connections of 100 — plus this file's own throwaway pools and whatever
+  // else is pointed at the same database. Four is ample for a spec and leaves
+  // the ceiling far away.
+  process.env['DATABASE_POOL_MAX'] ??= '4';
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
   const app = moduleRef.createNestApplication();
   app.useGlobalPipes(new StandardSchemaValidationPipe());
   app.useGlobalInterceptors(new StandardSchemaSerializerInterceptor(app.get(Reflector)));
   await app.init();
+
+  // Bind once on an ephemeral port. Given a server that is not yet listening,
+  // supertest starts a throwaway one per request; a handful of parallel calls
+  // then reset connections for reasons that have nothing to do with the API,
+  // which is what made the concurrency specs flaky. One listener serves them all.
+  await app.listen(0);
   return app;
 }
 
-/** Headers the development auth stub reads. Replaced by a bearer token with the auth module. */
-export function asUser(userId: string, trustLevel = 3): Record<string, string> {
-  return { 'x-user-id': userId, 'x-trust-level': String(trustLevel) };
+/** A registered account plus the headers that authenticate as it. */
+export interface Actor {
+  id: string;
+  handle: string;
+  email: string;
+  accessToken: string;
+  headers: Record<string, string>;
+}
+
+/** Every actor a spec file created, so teardown can find their rows. */
+const actors: string[] = [];
+
+/**
+ * Registers a real account.
+ *
+ * Registration grants T1, which is what most routes require. `trustLevel`
+ * overrides it directly in the database for the cases that need a different
+ * rung — a T0 account to prove the gate bites, or T2 to open a direct message.
+ */
+export async function createActor(
+  app: INestApplication,
+  options: { trustLevel?: number } = {},
+): Promise<Actor> {
+  const suffix = randomUUID().replaceAll('-', '').slice(0, 12);
+  const email = `e2e_${suffix}@example.test`;
+
+  const res = await request(app.getHttpServer())
+    .post('/api/v1/auth/register')
+    .send({
+      email,
+      password: 'e2e-password-long-enough',
+      displayName: `E2E ${suffix.slice(0, 6)}`,
+      handle: `e2e_${suffix}`,
+    })
+    .expect(201);
+
+  const { accessToken, user } = res.body.data as {
+    accessToken: string;
+    user: { id: string; handle: string };
+  };
+  actors.push(user.id);
+
+  if (options.trustLevel !== undefined && options.trustLevel !== 1) {
+    await setTrustLevel(user.id, options.trustLevel);
+    // The level is a token claim, so it only takes effect on a fresh token.
+    return refreshedActor(app, email, user.id, user.handle);
+  }
+
+  return {
+    id: user.id,
+    handle: user.handle,
+    email,
+    accessToken,
+    headers: bearer(accessToken),
+  };
+}
+
+async function refreshedActor(
+  app: INestApplication,
+  email: string,
+  id: string,
+  handle: string,
+): Promise<Actor> {
+  const res = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email, password: 'e2e-password-long-enough' })
+    .expect(200);
+  const accessToken = res.body.data.accessToken as string;
+  return { id, handle, email, accessToken, headers: bearer(accessToken) };
+}
+
+export function bearer(accessToken: string): Record<string, string> {
+  return { authorization: `Bearer ${accessToken}` };
+}
+
+/** Moves an account up or down the trust ladder without going through the job that normally does it. */
+export async function setTrustLevel(userId: string, trustLevel: number): Promise<void> {
+  const pool = new Pool({ connectionString: DATABASE_URL, max: 2 });
+  try {
+    await pool.query(
+      `UPDATE users SET trust_level = $2, trust_level_changed_at = now() WHERE id = $1`,
+      [userId, trustLevel],
+    );
+  } finally {
+    await pool.end();
+  }
 }
 
 /**
- * Every actor a spec file hands out, so teardown can find their rows.
+ * Backdates every rotation on an account past the grace window.
  *
- * Per spec file: vitest gives each file its own module instance, so two files
- * running in parallel never see each other's actors.
+ * Lets a spec assert the reuse rule without sleeping through the real window:
+ * the rule is "a rotation older than the grace is theft", and this makes one
+ * old on demand.
  */
-const actors: string[] = [];
-
-/** UUIDv4 stand-in for a user row; the users table arrives with the auth module. */
-export function newUserId(): string {
-  const id = randomUUID();
-  actors.push(id);
-  return id;
+export async function ageRotations(userId: string, seconds = 60): Promise<void> {
+  const pool = new Pool({ connectionString: DATABASE_URL, max: 2 });
+  try {
+    await pool.query(
+      `UPDATE auth_sessions
+          SET revoked_at = now() - ($2 || ' seconds')::interval
+        WHERE user_id = $1 AND revoked_reason = 'rotation'`,
+      [userId, String(seconds)],
+    );
+  } finally {
+    await pool.end();
+  }
 }
 
 /**
  * Seeds one throwaway area and returns its id plus a cleanup handle.
  *
  * Every spec gets its own area so runs do not interfere, and the teardown
- * removes the whole subtree it created rather than truncating shared tables.
+ * removes what its own actors created rather than truncating shared tables.
  */
 export async function seedArea(): Promise<{ areaId: string; cleanup: () => Promise<void> }> {
-  const pool = new Pool({ connectionString: DATABASE_URL });
+  const pool = new Pool({ connectionString: DATABASE_URL, max: 2 });
   const slug = `e2e-${randomUUID().slice(0, 8)}`;
   const { rows } = await pool.query<{ id: string }>(
     `INSERT INTO areas (slug, name_en, name_vi, boundary, center)
@@ -72,22 +177,21 @@ export async function seedArea(): Promise<{ areaId: string; cleanup: () => Promi
   return {
     areaId,
     cleanup: async () => {
-      // Rows are found by author, not only by area: a spec that moves a post to
-      // city-wide (area_id = NULL) would otherwise leave it behind forever.
+      // Ordered by dependency, and scoped to this file's actors so parallel
+      // spec files never delete each other's rows.
       await pool.query(
         `DELETE FROM reactions WHERE user_id = ANY($1::uuid[])
             OR post_id IN (SELECT id FROM posts WHERE author_user_id = ANY($1::uuid[]))
             OR comment_id IN (SELECT id FROM comments WHERE user_id = ANY($1::uuid[]))`,
         [actors],
       );
-      await pool.query(`DELETE FROM comments WHERE user_id = ANY($1::uuid[])`, [actors]);
       await pool.query(
-        `DELETE FROM comments WHERE post_id IN
-           (SELECT id FROM posts WHERE author_user_id = ANY($1::uuid[]))`,
+        `DELETE FROM comments WHERE user_id = ANY($1::uuid[])
+            OR post_id IN (SELECT id FROM posts WHERE author_user_id = ANY($1::uuid[]))
+            OR event_id IN (SELECT id FROM events WHERE organizer_id = ANY($1::uuid[]))`,
         [actors],
       );
       await pool.query(`DELETE FROM posts WHERE author_user_id = ANY($1::uuid[])`, [actors]);
-      await pool.query(`DELETE FROM media WHERE owner_user_id = ANY($1::uuid[])`, [actors]);
       await pool.query(
         `DELETE FROM messages WHERE conversation_id IN
            (SELECT conversation_id FROM conversation_participants WHERE user_id = ANY($1::uuid[]))`,
@@ -104,33 +208,17 @@ export async function seedArea(): Promise<{ areaId: string; cleanup: () => Promi
         [actors],
       );
       await pool.query(`DELETE FROM events WHERE organizer_id = ANY($1::uuid[])`, [actors]);
-
-      // Ordered by dependency: reactions and comments point at posts and
-      // events, which point at the area.
-      await pool.query(
-        `DELETE FROM reactions WHERE post_id IN (SELECT id FROM posts WHERE area_id = $1)
-            OR comment_id IN (SELECT id FROM comments WHERE post_id IN (SELECT id FROM posts WHERE area_id = $1))
-            OR event_id IN (SELECT id FROM events WHERE area_id = $1)`,
-        [areaId],
-      );
-      await pool.query(
-        `DELETE FROM comments WHERE post_id IN (SELECT id FROM posts WHERE area_id = $1)
-            OR event_id IN (SELECT id FROM events WHERE area_id = $1)`,
-        [areaId],
-      );
+      await pool.query(`UPDATE profiles SET avatar_media_id = NULL WHERE user_id = ANY($1::uuid[])`, [actors]);
+      await pool.query(`DELETE FROM media WHERE owner_user_id = ANY($1::uuid[])`, [actors]);
       await pool.query(`DELETE FROM posts WHERE area_id = $1`, [areaId]);
-      await pool.query(
-        `DELETE FROM messages WHERE conversation_id IN
-           (SELECT id FROM conversations WHERE event_id IN (SELECT id FROM events WHERE area_id = $1))`,
-        [areaId],
-      );
-      await pool.query(
-        `DELETE FROM event_occurrences WHERE event_id IN (SELECT id FROM events WHERE area_id = $1)`,
-        [areaId],
-      );
-      await pool.query(`DELETE FROM events WHERE area_id = $1`, [areaId]);
       await pool.query(`DELETE FROM areas WHERE id = $1`, [areaId]);
+      await pool.query(`DELETE FROM users WHERE id = ANY($1::uuid[])`, [actors]);
       await pool.end();
     },
   };
+}
+
+/** A uuid that belongs to nothing — for "not found" and "not yours" assertions. */
+export function unknownId(): string {
+  return randomUUID();
 }

@@ -2,7 +2,13 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { CommentResponse, envelope } from '@dnc/contracts';
-import { asUser, createTestApp, newUserId, seedArea } from '../../support/harness.js';
+import {
+  createActor,
+  createTestApp,
+  seedArea,
+  unknownId,
+  type Actor,
+} from '../../support/harness.js';
 
 describe('comment module', () => {
   let app: INestApplication;
@@ -10,23 +16,28 @@ describe('comment module', () => {
   let cleanup: () => Promise<void>;
   let postId: string;
 
-  const postAuthor = newUserId();
-  const commenter = newUserId();
-  const otherCommenter = newUserId();
+  let postAuthor: Actor;
+  let commenter: Actor;
+  let otherCommenter: Actor;
+  let newcomer: Actor;
 
-  const comment = (target: string, text: string, user: string, extra = {}) =>
+  const comment = (target: string, text: string, user: Actor, extra = {}) =>
     request(app.getHttpServer())
       .post(`/api/v1/posts/${target}/comments`)
-      .set(asUser(user))
+      .set(user.headers)
       .send({ body: text, ...extra });
 
   beforeAll(async () => {
     ({ areaId, cleanup } = await seedArea());
     app = await createTestApp();
+    postAuthor = await createActor(app);
+    commenter = await createActor(app);
+    otherCommenter = await createActor(app);
+    newcomer = await createActor(app, { trustLevel: 0 });
 
     const created = await request(app.getHttpServer())
       .post('/api/v1/posts')
-      .set(asUser(postAuthor))
+      .set(postAuthor.headers)
       .send({ kind: 'question', body: 'Best pho in Hai Chau?', areaId })
       .expect(201);
     postId = created.body.data.id;
@@ -47,7 +58,7 @@ describe('comment module', () => {
 
     const post = await request(app.getHttpServer())
       .get(`/api/v1/posts/${postId}`)
-      .set(asUser(commenter))
+      .set(commenter.headers)
       .expect(200);
     expect(post.body.data.commentCount).toBeGreaterThan(0);
   });
@@ -78,7 +89,7 @@ describe('comment module', () => {
 
     const res = await request(app.getHttpServer())
       .get(`/api/v1/comments/${rootId}`)
-      .set(asUser(commenter))
+      .set(commenter.headers)
       .expect(200);
     expect(res.body.data.replyCount).toBe(2);
   });
@@ -89,13 +100,13 @@ describe('comment module', () => {
   });
 
   it('answers 404 for a comment on a post that does not exist', async () => {
-    await comment(newUserId(), 'orphan', commenter).expect(404);
+    await comment(unknownId(), 'orphan', commenter).expect(404);
   });
 
   it('requires T1 to comment', async () => {
     await request(app.getHttpServer())
       .post(`/api/v1/posts/${postId}/comments`)
-      .set(asUser(commenter, 0))
+      .set(newcomer.headers)
       .send({ body: 'T0 should not get through' })
       .expect(403);
   });
@@ -106,14 +117,14 @@ describe('comment module', () => {
 
     const edited = await request(app.getHttpServer())
       .patch(`/api/v1/comments/${id}`)
-      .set(asUser(commenter))
+      .set(commenter.headers)
       .send({ body: 'Edited comment' })
       .expect(200);
     expect(edited.body.data.isEdited).toBe(true);
 
     await request(app.getHttpServer())
       .patch(`/api/v1/comments/${id}`)
-      .set(asUser(otherCommenter))
+      .set(otherCommenter.headers)
       .send({ body: 'Not mine' })
       .expect(403);
   });
@@ -122,7 +133,7 @@ describe('comment module', () => {
     const created = await comment(postId, 'Owner will remove this', commenter).expect(201);
     await request(app.getHttpServer())
       .delete(`/api/v1/comments/${created.body.data.id}`)
-      .set(asUser(postAuthor))
+      .set(postAuthor.headers)
       .expect(204);
   });
 
@@ -130,7 +141,7 @@ describe('comment module', () => {
     const created = await comment(postId, 'Not yours to delete', commenter).expect(201);
     await request(app.getHttpServer())
       .delete(`/api/v1/comments/${created.body.data.id}`)
-      .set(asUser(otherCommenter))
+      .set(otherCommenter.headers)
       .expect(403);
   });
 
@@ -140,22 +151,22 @@ describe('comment module', () => {
 
     await request(app.getHttpServer())
       .put(`/api/v1/comments/${first.body.data.id}/pin`)
-      .set(asUser(commenter))
+      .set(commenter.headers)
       .expect(403);
 
     await request(app.getHttpServer())
       .put(`/api/v1/comments/${first.body.data.id}/pin`)
-      .set(asUser(postAuthor))
+      .set(postAuthor.headers)
       .expect(200);
 
     await request(app.getHttpServer())
       .put(`/api/v1/comments/${second.body.data.id}/pin`)
-      .set(asUser(postAuthor))
+      .set(postAuthor.headers)
       .expect(200);
 
     const previous = await request(app.getHttpServer())
       .get(`/api/v1/comments/${first.body.data.id}`)
-      .set(asUser(postAuthor))
+      .set(postAuthor.headers)
       .expect(200);
     expect(previous.body.data.isPinned).toBe(false);
 
@@ -164,7 +175,7 @@ describe('comment module', () => {
     }).expect(201);
     await request(app.getHttpServer())
       .put(`/api/v1/comments/${reply.body.data.id}/pin`)
-      .set(asUser(postAuthor))
+      .set(postAuthor.headers)
       .expect(403);
   });
 
@@ -173,7 +184,7 @@ describe('comment module', () => {
     try {
       const post = await request(app.getHttpServer())
         .post('/api/v1/posts')
-        .set(asUser(postAuthor))
+        .set(postAuthor.headers)
         .send({ kind: 'notice', body: 'Ordering probe', areaId: threadArea })
         .expect(201);
       const target: string = post.body.data.id;
@@ -183,12 +194,12 @@ describe('comment module', () => {
       await comment(target, 'newest root', commenter).expect(201);
       await request(app.getHttpServer())
         .put(`/api/v1/comments/${oldest.body.data.id}/pin`)
-        .set(asUser(postAuthor))
+        .set(postAuthor.headers)
         .expect(200);
 
       const roots = await request(app.getHttpServer())
         .get(`/api/v1/posts/${target}/comments`)
-        .set(asUser(commenter))
+        .set(commenter.headers)
         .expect(200);
       expect(roots.body.data.items[0].id).toBe(oldest.body.data.id);
       expect(roots.body.data.items).toHaveLength(3);
@@ -200,7 +211,7 @@ describe('comment module', () => {
       const branch = await request(app.getHttpServer())
         .get(`/api/v1/posts/${target}/comments`)
         .query({ parentId })
-        .set(asUser(commenter))
+        .set(commenter.headers)
         .expect(200);
       expect(branch.body.data.items.map((c: { body: string }) => c.body)).toEqual([
         'reply one',

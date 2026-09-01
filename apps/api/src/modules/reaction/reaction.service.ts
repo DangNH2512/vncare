@@ -40,10 +40,13 @@ export class ReactionService {
 
   async summary(
     target: ReactionTargetRef,
-    viewer: CurrentUserContext,
+    viewer: CurrentUserContext | null,
   ): Promise<ReactionSummaryResponseT> {
     await this.assertTarget(target);
-    return toReactionSummaryResponse(target, await this.reactions.summary(target, viewer.id));
+    return toReactionSummaryResponse(
+      target,
+      await this.reactions.summary(target, viewer?.id ?? null),
+    );
   }
 
   private async assertTarget(target: ReactionTargetRef): Promise<void> {

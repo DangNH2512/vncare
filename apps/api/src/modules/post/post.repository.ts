@@ -111,7 +111,7 @@ export class PostRepository {
    * author, so an author can still see and fix their own post while it sits in
    * pre-publish review.
    */
-  async findById(id: string, viewerUserId: string): Promise<PostRow | null> {
+  async findById(id: string, viewerUserId: string | null): Promise<PostRow | null> {
     const { rows } = await this.pool.query<PostRow>(
       `SELECT ${SELECT_COLUMNS}
          FROM posts p
@@ -142,7 +142,7 @@ export class PostRepository {
    */
   async list(
     query: ListPostQueryT,
-    viewerUserId: string,
+    viewerUserId: string | null,
   ): Promise<{ rows: PostRow[]; limit: number }> {
     const cursor = decodeCursor<PostCursor>(query.cursor);
     const { rows } = await this.pool.query<PostRow>(
