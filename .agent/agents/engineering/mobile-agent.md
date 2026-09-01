@@ -45,7 +45,7 @@ giới hạn ở design token — Mobile không dùng component web của `@dnc/
 - `docs/analysis/04-tech-stack-va-kien-truc.md` — cấu trúc `apps/mobile`, push,
   bản đồ, EAS
 - `docs/analysis/02-use-case.md` — luồng người dùng
-- `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md` — khi đụng tới vị trí,
+- `docs/analysis/05-trust-safety-va-kiem-duyet.md` — khi đụng tới vị trí,
   danh bạ, thông báo
 - Requirement Brief của BA, task card của Tech Lead, Backend Contract
 

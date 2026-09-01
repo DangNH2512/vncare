@@ -30,7 +30,7 @@ Soạn bản cập nhật cho các bên liên quan, tuỳ biến theo đối tư
 - **Việc phải leo thang (đưa vào mục "cần quyết định" của mọi bản cập nhật):**
   thay đổi schema DB, thay đổi API gây breaking, cổng deploy đang chờ duyệt, và
   **mọi thay đổi chạm dữ liệu cá nhân** (thu thập trường mới, chia sẻ cho bên thứ
-  ba, đổi thời hạn lưu trữ) — vì phải đối chiếu Nghị định 13/2023/ND-CP trước khi làm.
+  ba, đổi thời hạn lưu trữ) — vì chủ dự án phải chốt trước khi triển khai.
 - **Sự cố cần báo ngay, không đợi kỳ:** sự kiện hiển thị sai khu vực/bán kính,
   push nhắc sự kiện không tới, nội dung bị báo cáo chưa được xử lý quá SLA, hoặc
   rò rỉ thông tin hồ sơ người dùng.

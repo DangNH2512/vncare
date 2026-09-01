@@ -98,10 +98,9 @@ Tìm thêm:
 Rút ra cho mỗi sản phẩm: họ làm tốt cái gì, người dùng phàn nàn cái gì, và luồng
 làm việc của họ cho feature này ra sao.
 
-> ⚠️ **Ranh giới pháp lý:** nghiên cứu = đọc và học. **Không** thu thập tự động dữ
+> ⚠️ **Ranh giới nghiên cứu:** nghiên cứu = đọc và học. **Không** thu thập tự động dữ
 > liệu sự kiện từ các nền tảng này. Chiến lược nội dung của Da Nang Connect là
-> **curate thủ công có xin phép** (`collection_method = manual_only`) — xem
-> [`../../../docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md`](../../../docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md).
+> **curate thủ công có xin phép** (`collection_method = manual_only`).
 
 ---
 
@@ -179,8 +178,8 @@ Ngũ Hành Sơn) hay bán kính `ST_DWithin` (mét)?
 **Trust & safety** — feature này có tạo bề mặt mới cho spam/quấy rối/lừa đảo không?
 Có cần report được không? Có cần audit log không?
 
-**Dữ liệu cá nhân** — thu thập gì, vì sao, lưu bao lâu, xoá thế nào (Nghị định
-13/2023/NĐ-CP — xem tài liệu pháp lý 06).
+**Dữ liệu cá nhân** — thu thập gì, vì sao, lưu bao lâu, xoá thế nào? Chỉ lưu
+trường thật sự dùng cho feature này.
 
 ---
 
@@ -254,7 +253,7 @@ Dùng template này:
 <Bề mặt lạm dụng mới, cơ chế report, audit>
 
 ## Dữ liệu cá nhân
-<Thu thập gì · vì sao · lưu bao lâu · xoá thế nào — Nghị định 13/2023/NĐ-CP>
+<Thu thập gì · vì sao · lưu bao lâu · xoá thế nào>
 
 ## Acceptance Criteria
 <Given/When/Then — testable, không mơ hồ>

@@ -90,7 +90,7 @@ logout, app crash, deep-link route không tồn tại).
 3. Trước khi sweep nhiều màn, **verify auth state** bằng 1 screenshot reference
    (ví dụ tab Events). Nếu ra màn đăng nhập → đăng nhập lại trước khi sweep tiếp.
 4. **Che dữ liệu cá nhân** trước khi đưa ảnh vào doc/report: thông tin liên hệ, toạ
-   độ nhà, danh sách người tham gia (Nghị định 13/2023/NĐ-CP).
+   độ nhà, danh sách người tham gia.
 
 Áp dụng cho cả web `preview_screenshot` — nếu trang chưa load xong, screenshot có
 thể chỉ là white screen / loading state. Tốt nhất `snapshot` trước (accessibility

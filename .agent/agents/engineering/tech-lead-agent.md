@@ -63,7 +63,7 @@ Coordinator giao rõ scope đó trong task card.
    của truy vấn PostGIS và index GIST, chi phí migration khi bảng đã có dữ
    liệu, chuỗi thiếu bản dịch EN/VI, lệch múi giờ quanh nửa đêm, thay đổi buộc
    build lại EAS, thay đổi làm hỏng hàng đợi BullMQ đang chạy, quyền và
-   `trust_level`, rò rỉ dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP.
+   `trust_level`, rò rỉ dữ liệu cá nhân qua response API.
 7. **Chặn việc chuyển sang implementation** khi quyền sở hữu hoặc DoD còn mơ hồ.
    Trả `blocked` kèm câu hỏi chính xác.
 8. Mở **Debate Gate** khi có đánh đổi kiến trúc/hợp đồng thật sự — nhiều phương

@@ -149,8 +149,7 @@ Khi triển khai bất kỳ thao tác xoá nào:
 □ UI hỏi xác nhận với thông điệp rõ ràng về hệ quả
 □ i18n: dùng "deactivate" / "vô hiệu hoá" thay vì "delete" / "xoá" khi thực chất
   là soft delete
-□ Yêu cầu xoá tài khoản đi theo luồng ân hạn + ẩn danh của Nghị định 13/2023/NĐ-CP,
-  không xoá thẳng hàng users
+□ Yêu cầu xoá tài khoản đi theo luồng ân hạn + ẩn danh, không xoá thẳng hàng users
 ```
 
 ---
@@ -248,13 +247,13 @@ Chạy sau bất kỳ task UI nào thêm hoặc sửa phần tử tương tác:
 
 ---
 
-## 🔐 Checklist quyền riêng tư (Nghị định 13/2023/NĐ-CP)
+## 🔐 Checklist quyền riêng tư
 
 Chạy khi task chạm dữ liệu cá nhân:
 
 ```
 □ Chỉ thu thập dữ liệu có mục đích rõ ràng đã nêu trong chính sách
-□ Có cơ sở pháp lý cho việc xử lý (đồng ý rõ ràng, có thể rút lại)
+□ Người dùng đồng ý rõ ràng trước khi xử lý, và rút lại đồng ý được
 □ Vị trí chính xác không lộ cho người lạ — chỉ hiện khu vực cho tới khi RSVP được duyệt
 □ Log và analytics không chứa PII thô (email, phone, toạ độ nhà riêng)
 □ Dữ liệu nhạy cảm (ip, user_agent, raw_profile) có lịch purge đúng hạn

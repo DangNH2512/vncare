@@ -1638,7 +1638,7 @@ gantt
 
 ### 11.6. Ràng buộc dữ liệu cá nhân trong tracking
 
-> ⚠️ **CẦN LUẬT SƯ XÁC NHẬN.** Từ **01/01/2026**, **Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15** là văn bản có hiệu lực pháp lý cao hơn **Nghị định 13/2023/NĐ-CP**; hai văn bản cùng được viện dẫn, nhưng **mọi mẫu biểu — thông báo xử lý dữ liệu, biểu mẫu đồng ý, hồ sơ đánh giá tác động — phải soạn theo Luật 91/2025**. Chi tiết đầy đủ ở tài liệu 06.
+> ⚠️ **CẦN LUẬT SƯ XÁC NHẬN.** Từ **01/01/2026**, **Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15** là văn bản có hiệu lực pháp lý cao hơn **Nghị định 13/2023/NĐ-CP**; hai văn bản cùng được viện dẫn, nhưng **mọi mẫu biểu — thông báo xử lý dữ liệu, biểu mẫu đồng ý, hồ sơ đánh giá tác động — phải soạn theo Luật 91/2025**.
 
 | # | Ràng buộc bắt buộc với lược đồ tracking | Áp dụng từ |
 |---|---|---|
@@ -2261,7 +2261,7 @@ Gọi một món đồ uống trước. Không mở laptop. Không nói "chúng 
 
 ### 15.7. Ràng buộc pháp lý và đạo đức khi khảo sát
 
-> ⚠️ **CẦN LUẬT SƯ XÁC NHẬN.** Từ **01/01/2026**, **Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15** là văn bản có hiệu lực pháp lý cao hơn **Nghị định 13/2023/NĐ-CP**. Cả hai cùng được viện dẫn, nhưng **mọi mẫu biểu — thông báo xử lý dữ liệu, biểu mẫu đồng ý, sổ ghi hoạt động xử lý — phải soạn theo Luật 91/2025**. Chi tiết đầy đủ ở tài liệu 06.
+> ⚠️ **CẦN LUẬT SƯ XÁC NHẬN.** Từ **01/01/2026**, **Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15** là văn bản có hiệu lực pháp lý cao hơn **Nghị định 13/2023/NĐ-CP**. Cả hai cùng được viện dẫn, nhưng **mọi mẫu biểu — thông báo xử lý dữ liệu, biểu mẫu đồng ý, sổ ghi hoạt động xử lý — phải soạn theo Luật 91/2025**.
 
 | # | Ràng buộc | Cách thực hiện trong Tuần 0 |
 |---|---|---|

@@ -283,7 +283,7 @@ bị đối xử như production. Xoá tài khoản làm mất luôn lịch sử
 **Câu hỏi BA soi:**
 - Dữ liệu này khi launch prod có muốn tồn tại không? (Có → **migration**; Không → **seed**.) Cây `areas` Đà Nẵng và taxonomy hệ thống là migration.
 - Xoá ở tầng nào: ẩn (`status`) → soft delete (`deleted_at`) → anonymize/hard delete? Xoá user thì RSVP cũ của họ hiển thị thế nào cho host?
-- Dữ liệu cá nhân này có thật sự cần lưu không (Nghị định 13/2023/NĐ-CP)? Lưu bao lâu? Ai xoá được?
+- Dữ liệu cá nhân này có thật sự cần lưu không? Lưu bao lâu? Ai xoá được?
 - Migration có đụng PostGIS / extension không — có cần bật extension trước khi chạy không?
 
 **Chuẩn hoá:** Spec ghi rõ dữ liệu thuộc Seed hay Migration, chính sách lưu trữ và
@@ -306,4 +306,4 @@ bị đối xử như production. Xoá tài khoản làm mất luôn lịch sử
 - [ ] Claim: quyền theo `claim_status` rõ chưa? RSVP giữ nguyên sau claim?
 - [ ] No-show / huỷ: cửa sổ thời gian, khiếu nại, ảnh hưởng trust rõ chưa?
 - [ ] Input dài nhất có phá layout? tap target ≥44×44?
-- [ ] Dữ liệu mới: Seed hay Migration? chính sách lưu trữ & xoá theo Nghị định 13/2023/NĐ-CP?
+- [ ] Dữ liệu mới: Seed hay Migration? chính sách lưu trữ & xoá rõ chưa?

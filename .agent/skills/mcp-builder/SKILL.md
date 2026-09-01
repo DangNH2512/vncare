@@ -258,8 +258,7 @@ Mỗi MCP server là một tập hợp **tool**. Trước khi viết code:
 4. **Viết thông báo lỗi trước** — "Unknown area 'Da Nang Bay'. Valid areas:
    my-khe, an-thuong, my-an, hai-chau, son-tra, ngu-hanh-son." Lỗi tốt = agent phục hồi nhanh.
 5. **Tuyệt đối không lộ dữ liệu cá nhân qua tool.** Chỉ trả số liệu tổng hợp và các trường công khai
-   của sự kiện — không địa chỉ email, không số điện thoại, không vị trí chính xác của người dùng
-   (Nghị định 13/2023/ND-CP).
+   của sự kiện — không địa chỉ email, không số điện thoại, không vị trí chính xác của người dùng.
 
 ```typescript
 // Tool schema pattern (MCP TypeScript SDK, modern registerTool API)

@@ -127,7 +127,7 @@ bổ sung vào đây.
       cả biên dưới và biên trên.
 - [ ] Trust level hiển thị nhất quán ở web, mobile và trong API response.
 
-### 8. Privacy (Nghị định 13/2023/NĐ-CP)
+### 8. Privacy — dữ liệu nhạy cảm
 - [ ] Response công khai **không lộ** thông tin liên hệ, ngày sinh, toạ độ chính xác
       nhà ở; chỉ lộ khu vực ở mức đã đồng ý.
 - [ ] Danh sách người tham gia chỉ hiện với người có quyền theo AC.

@@ -196,7 +196,7 @@ Follow-up task cards:
 | Hành vi UI, trạng thái loading/error/empty, ergonomics màn admin | Web/Mobile + BA; Tech Lead phá thế hoà về kỹ thuật |
 | Mức nghiêm trọng của finding review và mức bắt buộc sửa trước test | Code Review + Coordinator |
 | Diễn giải kết quả test và mức tự tin phát hành | Tester Lead |
-| Deploy production, thay đổi phá huỷ dữ liệu, chi phí, pháp lý (Nghị định 13/2023/NĐ-CP), đánh đổi ảnh hưởng người dùng cuối | User |
+| Deploy production, thay đổi phá huỷ dữ liệu, chi phí, pháp lý, đánh đổi ảnh hưởng người dùng cuối | User |
 
 Coordinator ghi quyết định cuối vào task board hoặc handoff. Quyết định kiến trúc
 hoặc sản phẩm có tính lâu dài ghi vào `.agent/memory/DECISIONS.md`.
@@ -220,7 +220,7 @@ Affected services:
 - packages/*:
 API/data contract notes:
 Trust & Safety impact:  # tier tối thiểu, rate limit, hàng đợi kiểm duyệt
-Privacy impact:         # dữ liệu cá nhân chạm tới, theo Nghị định 13/2023/NĐ-CP
+Privacy impact:         # dữ liệu cá nhân chạm tới, ai được nhìn thấy gì
 Open questions:
 ```
 

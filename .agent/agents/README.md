@@ -108,7 +108,7 @@ BA
   report được, ẩn được mà không cần xoá.
 - **Không thu thập tự động**: curate là thủ công (`manual_only`). Không viết
   scraper, không tích hợp API của nền tảng nguồn.
-- **Riêng tư**: tuân thủ Nghị định 13/2023/NĐ-CP. Chỉ lưu dữ liệu thực sự dùng.
-  Không lưu lịch sử vị trí. Không log token, OTP, số điện thoại đầy đủ.
+- **Riêng tư**: chỉ lưu dữ liệu thực sự dùng. Không lưu lịch sử vị trí. Không
+  log token, OTP, số điện thoại đầy đủ.
 - **Tài liệu**: dùng đường dẫn tương đối từ gốc repo, không dùng đường dẫn
   tuyệt đối của máy cá nhân.

@@ -2,15 +2,15 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Tài liệu | Bản tổng hợp chủ (master synthesis) của 10 tài liệu phân tích |
+| Tài liệu | Bản tổng hợp chủ (master synthesis) của 9 tài liệu phân tích |
 | Sản phẩm | **Da Nang Connect** — nền tảng kết nối cộng đồng người nước ngoài tại Đà Nẵng |
 | Phạm vi | Giai đoạn 1 — Kết nối cộng đồng (sự kiện, thể thao, trao đổi ngôn ngữ). Địa lý: **chỉ Đà Nẵng** |
 | Ngày lập | 2026-08-31 · **Phiên bản 1.1** — cập nhật sau khi sáu tài liệu `01`, `02`, `03`, `05`, `07`, `08` được viết tiếp cho đủ mục lục |
-| Trạng thái | **Draft để chủ dự án ra quyết định.** **Cả 10 tài liệu nguồn nay đã đầy đủ theo đúng mục lục của chính chúng — không còn tài liệu nào bị cắt cụt** (MT-13 đã giải). Trong 15 mâu thuẫn ghi ở bản 1.0: **12 đã giải · 3 còn mở** (MT-06, MT-08, MT-14); phát hiện thêm **5 mâu thuẫn mới** khi viết tiếp (MT-16 → MT-20). Trong 16 câu hỏi: **8 đã có câu trả lời chốt · 8 còn mở** |
+| Trạng thái | **Draft để chủ dự án ra quyết định.** **Cả 9 tài liệu nguồn nay đã đầy đủ theo đúng mục lục của chính chúng — không còn tài liệu nào bị cắt cụt** (MT-13 đã giải). Trong 15 mâu thuẫn ghi ở bản 1.0: **11 đã giải · 2 còn mở** (MT-06, MT-08) · **2 tạm gác** (MT-04, MT-14 — mảng pháp lý hoãn sang giai đoạn sau); phát hiện thêm **5 mâu thuẫn mới** khi viết tiếp (MT-16 → MT-20). Trong 16 câu hỏi: **8 đã có câu trả lời chốt · 8 còn mở** |
 | Nguồn | `docs/analysis/01` → `docs/analysis/10`, `docs/source/Da_Nang_Connect_Brief.txt` |
 | Đối tượng đọc | Chủ dự án / Founder, Tech Lead, Product Owner, nhà đầu tư, luật sư |
 
-> **Cách dùng tài liệu này.** Đây là bản rút gọn có thẩm quyền để ra quyết định. Mọi chi tiết triển khai vẫn nằm ở 10 tài liệu gốc (xem [§11 Mục lục](#11-mục-lục-liên-kết-tới-10-tài-liệu-chi-tiết)). Khi bản tổng hợp này mâu thuẫn với tài liệu con, **[§12 Mâu thuẫn cần giải quyết](#12-mâu-thuẫn-cần-giải-quyết)** là nơi ghi nhận, không phải chỗ để lờ đi.
+> **Cách dùng tài liệu này.** Đây là bản rút gọn có thẩm quyền để ra quyết định. Mọi chi tiết triển khai vẫn nằm ở 9 tài liệu gốc (xem [§11 Mục lục](#11-mục-lục-liên-kết-tới-9-tài-liệu-chi-tiết)). Khi bản tổng hợp này mâu thuẫn với tài liệu con, **[§12 Mâu thuẫn cần giải quyết](#12-mâu-thuẫn-cần-giải-quyết)** là nơi ghi nhận, không phải chỗ để lờ đi.
 
 ---
 
@@ -22,12 +22,12 @@
 4. [Kiến trúc & tech stack đã chốt](#4-kiến-trúc--tech-stack-đã-chốt)
 5. [Roadmap & milestone](#5-roadmap--milestone) — *13 sprint lập lịch, 11 trước M6 · kịch bản tinh gọn 2 dev*
 6. [Top 10 rủi ro và cách xử lý](#6-top-10-rủi-ro-và-cách-xử-lý)
-7. [Yêu cầu pháp lý bắt buộc trước khi ra mắt](#7-yêu-cầu-pháp-lý-bắt-buộc-trước-khi-ra-mắt)
+7. [Mảng pháp lý — tạm gác, chưa xong](#7-mảng-pháp-lý--tạm-gác-chưa-xong) — *hoãn sang giai đoạn sau; phải làm xong trước khi ra mắt công khai*
 8. [Decision log](#8-decision-log) — *QĐ-01 → QĐ-76, trong đó QĐ-54 → QĐ-76 chốt ngày 31/08/2026*
 9. [Câu hỏi còn mở cần chủ dự án trả lời](#9-câu-hỏi-còn-mở-cần-chủ-dự-án-trả-lời) — *8/16 đã có câu trả lời chốt*
 10. [Việc cần làm ngay: 01/09 → 14/09/2026](#10-việc-cần-làm-ngay-0109--14092026)
-11. [Mục lục liên kết tới 10 tài liệu chi tiết](#11-mục-lục-liên-kết-tới-10-tài-liệu-chi-tiết)
-12. [Mâu thuẫn cần giải quyết](#12-mâu-thuẫn-cần-giải-quyết) — *12 đã giải · 3 còn mở · 5 mới (MT-16 → MT-20)*
+11. [Mục lục liên kết tới 9 tài liệu chi tiết](#11-mục-lục-liên-kết-tới-9-tài-liệu-chi-tiết)
+12. [Mâu thuẫn cần giải quyết](#12-mâu-thuẫn-cần-giải-quyết) — *11 đã giải · 2 còn mở · 2 tạm gác · 5 mới (MT-16 → MT-20)*
 
 ---
 
@@ -521,7 +521,7 @@ Khả dụng 99,5%/tháng · p95 API đọc < 300 ms · p95 tạo RSVP < 500 ms 
 
 ## 6. Top 10 rủi ro và cách xử lý
 
-*Hợp nhất từ `docs/analysis/09-canh-tranh-va-rui-ro.md` (RK-xx, cấp doanh nghiệp), `docs/analysis/04` (R1–R12, kỹ thuật) và `docs/analysis/06` (L-xx, pháp lý).*
+*Hợp nhất từ `docs/analysis/09-canh-tranh-va-rui-ro.md` (RK-xx, cấp doanh nghiệp) và `docs/analysis/04` (R1–R12, kỹ thuật).*
 
 | # | Mã | Rủi ro | Điểm | Chủ sở hữu | Biện pháp chính | Dấu hiệu sớm |
 |---|---|---|:--:|---|---|---|
@@ -542,72 +542,27 @@ Khả dụng 99,5%/tháng · p95 API đọc < 300 ms · p95 tạo RSVP < 500 ms 
 
 ---
 
-## 7. Yêu cầu pháp lý bắt buộc trước khi ra mắt
+## 7. Mảng pháp lý — tạm gác, chưa xong
 
-*Rút gọn từ `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md`. Đây là bản phân tích nội bộ, **không phải ý kiến pháp lý**.*
+> ⚠️ **Ghi chú trạng thái — 01/09/2026.** Chủ dự án quyết định **chưa làm mảng pháp lý ở giai đoạn này** để dồn nguồn lực cho MVP, và tài liệu phân tích pháp lý đã được gỡ khỏi bộ tài liệu. Mục này giữ lại **để không mất dấu một rủi ro có thật**: đây là việc đã hoãn, không phải việc đã xong.
 
-### 7.1 Sáu kết luận khoá cứng thiết kế
+**Ranh giới của quyết định hoãn.** Không đầu việc nào dưới đây chặn giai đoạn dựng MVP. Nhưng tất cả **phải hoàn tất trước khi ra mắt công khai** — tức trước khi mở đăng ký cho người dùng thật và trước khi nộp app lên hai cửa hàng.
 
-| # | Kết luận | Mức | Hệ quả ngay |
-|---|---|---|---|
-| 1 | **Khung bảo vệ dữ liệu cá nhân đã đổi.** Từ 01/01/2026 vai trò trung tâm thuộc về **Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15** và nghị định hướng dẫn kế thừa NĐ 13/2023/NĐ-CP | 🟢 | Mọi mẫu Privacy Policy viết trước 2026 dựa trên NĐ 13 đều lỗi thời ⚠️ **xung đột với brief gốc — xem MT-04** |
-| 2 | Sản phẩm **là dịch vụ mạng xã hội** theo NĐ 147/2024/NĐ-CP. Không né được bằng cách tự gọi tên khác | 🟡 | Phải làm thủ tục **Thông báo trước ngày ra mắt**, chuẩn bị hồ sơ **Giấy phép** trước khi chạm ngưỡng |
-| 3 | **Yêu cầu xác thực bằng số điện thoại di động Việt Nam** — chỉ khi người dùng xác nhận không có số VN mới dùng số định danh cá nhân | 🔴 | **Rủi ro pháp lý số 1.** Phải hỏi luật sư **trước khi code luồng đăng ký** |
-| 4 | **Dữ liệu vị trí là dữ liệu cá nhân nhạy cảm.** Stack có PostGIS lưu toạ độ | 🟢 | Tách bảng `user_locations` TTL 30 ngày, consent riêng, ghi log truy cập, ghi rõ "nhạy cảm" trong thông báo |
-| 5 | **DPIA và TIA phải nộp cho A05 — Bộ Công an trong 60 ngày** kể từ ngày bắt đầu xử lý dữ liệu cá nhân thật (tức từ M5) | 🟢 | Đưa vào lịch: 25/12/2026 + 60 ngày. Không phải "khi nào rảnh" |
-| 6 | **Nội dung do đội sáng lập curate KHÔNG phải UGC** — là nội dung do chính doanh nghiệp đăng → **không có miễn trừ trách nhiệm trung gian** | 🟡 | Nội dung curate phải qua duyệt **chặt hơn** UGC, không phải lỏng hơn |
+| # | Việc còn nợ | Vì sao không bỏ được |
+|---|---|---|
+| 1 | **Đăng ký pháp nhân** | Tài khoản Apple Developer và Google Play Console dạng tổ chức, hợp đồng nhà cung cấp và tài khoản thanh toán đều đòi có pháp nhân — đây là việc có thời gian chờ dài |
+| 2 | **Terms of Service + Privacy Policy song ngữ EN/VI** | Cả hai cửa hàng đều bắt buộc có URL chính sách quyền riêng tư công khai trước khi duyệt; ToS còn là lá chắn trách nhiệm cho sự kiện gặp mặt ngoài đời |
+| 3 | **Xoá tài khoản ngay trong app + xuất dữ liệu** | Yêu cầu bắt buộc của App Store và Google Play. Thiếu là **bị từ chối duyệt**, không phải góp ý |
+| 4 | **Ngưỡng giấy phép mạng xã hội** | Ngưỡng chính xác chưa được xác nhận (xem **MT-14**). Thủ tục có thời gian chờ dài nên phải khởi động **trước** khi chạm ngưỡng, không xử lý sau |
+| 5 | **Một vòng rà soát của người có chuyên môn pháp lý** | Bốn mục trên đều cần xác nhận từ ngoài đội. Tài liệu này **không phải ý kiến pháp lý** |
 
-### 7.2 Bộ tài liệu pháp lý bắt buộc
-
-| # | Tài liệu | Ngôn ngữ | Hạn chót | Công bố ở |
-|---|---|---|---|---|
-| 1 | **Terms of Service** — Điều 7 (miễn trừ trách nhiệm với sự kiện ngoài đời thực) và Điều 8 (giao dịch giữa người dùng) là **lá chắn chính**, đừng để luật sư viết theo mẫu chung | EN chính + VI | M4 · 27/11/2026 | `/legal/terms` |
-| 2 | **Privacy Policy** — cả hai bản EN và VI đều **đầy đủ**, không phải bản tóm tắt | EN + VI | M4 | `/legal/privacy` — URL bắt buộc cho cả hai store |
-| 3 | **Community Guidelines** — phải có mục riêng giải thích cho người nước ngoài giới hạn nội dung tại Việt Nam, bằng tiếng Anh, không phán xét | EN chính + VI | M4 | `/legal/community` |
-| 4 | **Quy chế quản lý, cung cấp và sử dụng dịch vụ** | **VI có hiệu lực** | Trước hồ sơ Thông báo | `/legal/content-policy` |
-| 5 | **Organizer Agreement** — chấp nhận **một lần tại lần đầu tạo sự kiện**, ghi `consent_records` với `purpose = agreement.organizer` | EN + VI | M5 · 25/12/2026 | Hiển thị khi lần đầu tạo sự kiện |
-| 6 | Cookie / Tracking Notice | EN + VI | M4 | Banner trên web |
-| 7 | **Event Safety Disclaimer** | EN + VI | M4 | Trang chi tiết sự kiện |
-| 8 | **Photo & Media Consent** | EN + VI | M5 | Màn hình check-in |
-| 9 | **DPIA** + **TIA** | VI | Ra mắt + 60 ngày | Nội bộ, nộp A05 |
-| 10 | **ROPA** — hồ sơ hoạt động xử lý dữ liệu | VI | M4 | `ops/legal/ropa.md` |
-| 11 | **DPA với từng nhà cung cấp** | EN hoặc VI | Trước khi đưa vào production | `ops/legal/dpa/` |
-| 12 | Quy trình phản hồi cơ quan nhà nước + Runbook sự cố dữ liệu | VI | M5 | Nội bộ / `ops/runbooks/` |
-
-### 7.3 Checklist gate ra mắt (M6 · 25/02/2027)
-
-- [ ] **M6-1** Đã có Giấy xác nhận thông báo cung cấp dịch vụ mạng xã hội, hoặc bằng chứng đã nộp hồ sơ hợp lệ — *Founder*
-- [ ] **M6-2** Đã nộp DPIA và TIA trong hạn 60 ngày kể từ ngày bắt đầu xử lý dữ liệu thật — *Founder*
-- [ ] **M6-3** Kiểm tra bản đồ chủ quyền lần cuối trước phát hành, có ảnh chụp ghi ngày tháng — *Tech Lead*
-- [ ] **M6-4** Toàn bộ 12 nhóm tài liệu ở §7.2 đã công bố đúng URL — *Founder*
-- [ ] **M6-5** Kiểm thử toàn bộ luồng quyền chủ thể dữ liệu (xuất dữ liệu trong 72 giờ, xoá tài khoản trong app **và** qua đường dẫn web cho Google Play) bằng tài khoản thật — *QA*
-- [ ] **M6-6** Rà soát Data Safety form (Google Play) và Privacy Nutrition Label (App Store) khớp hành vi thật của app — *Mobile*
-- [ ] **M6-7** Cảnh báo tự động khi số liệu chạm **50% ngưỡng cấp phép** — *Product*
-- [ ] **M6-8** Kế toán xác nhận cơ chế **thuế nhà thầu nước ngoài** với từng nhà cung cấp — *Kế toán*
-- [ ] **M6-9** Ba màn hình bắt buộc đã có: Report, Block, Contact us — *FE + Mobile*
-- [ ] **M6-10** **Sign in with Apple** hoạt động trên iOS (bắt buộc khi đã có social login khác) — *Mobile*
-- [ ] **M6-11** Age gate 18+ và điều khoản đủ 18 tuổi — *Backend + FE*
-- [ ] **M6-12** Tài khoản `reviewer@` với dữ liệu mẫu cho App Review — *Mobile*
-
-### 7.4 Nghĩa vụ định kỳ sau ra mắt
-
-| Tần suất | Việc |
-|---|---|
-| Hằng tuần | Rà soát hàng đợi kiểm duyệt; kiểm tra SLA takedown 24 giờ |
-| Hằng tháng | Báo cáo số lượt truy cập thường xuyên; rà soát blocklist; rà soát listing curate chưa có phản hồi organizer |
-| Hằng quý | Rà soát quyền truy cập nhân sự; cập nhật ROPA; rà soát danh sách nhà cung cấp và DPA |
-| Khi thay đổi | Cập nhật và nộp lại DPIA/TIA khi thêm loại dữ liệu, thêm nhà cung cấp, đổi hạ tầng |
-| Trước mỗi phát hành | Map sovereignty check; rà soát khai báo quyền riêng tư nếu có thay đổi thu thập dữ liệu |
-
-### 7.5 Ngân sách pháp lý
-
-**130 – 350 triệu VND** tới M6 (+30% dự phòng khuyến nghị), chiếm 7–17% ngân sách tổng. Khoản chi quan trọng nhất là **tư vấn pháp lý ban đầu (15–40 triệu, M0–M1)** để trả lời 30 câu hỏi ở `docs/analysis/06` §15. Nếu chạy kịch bản tinh gọn: **không được cắt** hai khoản — tư vấn pháp lý M0 và ToS/Privacy Policy M4.
+**Khi mở lại mảng này, ba việc phải làm:** (1) chốt thời điểm bắt đầu — đề xuất chậm nhất là lúc khởi động beta kín; (2) dựng lại tài liệu phân tích pháp lý đã gỡ; (3) mở lại **MT-04** và **MT-14** ở [§12](#12-mâu-thuẫn-cần-giải-quyết), hiện đang ở trạng thái *tạm gác*.
 
 ---
 
 ## 8. Decision log
 
-Danh sách quyết định **đã chốt** qua 10 tài liệu phân tích. Một quyết định đã ghi ở đây chỉ được đảo ngược bằng một quyết định mới ghi rõ điều gì đã thay đổi, ai quyết và ngày nào — không sửa dòng cũ.
+Danh sách quyết định **đã chốt** qua 9 tài liệu phân tích. Một quyết định đã ghi ở đây chỉ được đảo ngược bằng một quyết định mới ghi rõ điều gì đã thay đổi, ai quyết và ngày nào — không sửa dòng cũ.
 
 ### 8.1 Phạm vi & sản phẩm
 
@@ -678,8 +633,8 @@ Danh sách quyết định **đã chốt** qua 10 tài liệu phân tích. Một
 
 | # | Quyết định | Nguồn |
 |---|---|---|
-| **QĐ-46** | Loại hình pháp nhân là **Công ty TNHH**, không đi đường vòng qua hộ kinh doanh (điều kiện cấp phép mạng xã hội yêu cầu tổ chức có trụ sở, bộ phận quản lý nội dung, tên miền `.vn`, máy chủ tại Việt Nam) | `06` #10 |
-| **QĐ-47** | Chấp nhận sản phẩm **là dịch vụ mạng xã hội** theo NĐ 147/2024 và làm thủ tục Thông báo trước ngày ra mắt | `06` #3 |
+| **QĐ-46** | Loại hình pháp nhân là **Công ty TNHH**, không đi đường vòng qua hộ kinh doanh (điều kiện cấp phép mạng xã hội yêu cầu tổ chức có trụ sở, bộ phận quản lý nội dung, tên miền `.vn`, máy chủ tại Việt Nam) | *nguồn: tài liệu pháp lý đã gỡ* |
+| **QĐ-47** | Chấp nhận sản phẩm **là dịch vụ mạng xã hội** theo NĐ 147/2024 và làm thủ tục Thông báo trước ngày ra mắt | *nguồn: tài liệu pháp lý đã gỡ* |
 | **QĐ-48** | **Không mua user trong 6 tuần đầu.** Không quảng cáo trả tiền — quảng cáo che mất tín hiệu sản phẩm có tự nhiên hấp dẫn hay không | `07` §5.5 |
 | **QĐ-49** | **Mọi RSVP đi qua app**, không có ngoại lệ kể cả với bạn bè | `07` §5.5 |
 | **QĐ-50** | **Không mở phân khúc thứ hai và không mở khu vực thứ hai** trước khi chạm mốc 100 seed user | `07` §5.5 |
@@ -729,7 +684,7 @@ Danh sách quyết định **đã chốt** qua 10 tài liệu phân tích. Một
 
 | # | Quyết định | Giải | Nguồn |
 |---|---|---|---|
-| **QĐ-73** | Nêu **cả** Nghị định 13/2023/NĐ-CP **và** Luật Bảo vệ dữ liệu cá nhân **91/2025/QH15** trong mọi tài liệu tuân thủ; ghi rõ **từ 01/01/2026 Luật 91/2025 là văn bản hiệu lực cao hơn** và **mọi mẫu biểu phải theo Luật 91/2025**. **CẦN LUẬT SƯ XÁC NHẬN** | **MT-04** | `01` D-27, `02` PL-01, `06` #1 |
+| **QĐ-73** | Nêu **cả** Nghị định 13/2023/NĐ-CP **và** Luật Bảo vệ dữ liệu cá nhân **91/2025/QH15** trong mọi tài liệu tuân thủ; ghi rõ **từ 01/01/2026 Luật 91/2025 là văn bản hiệu lực cao hơn** và **mọi mẫu biểu phải theo Luật 91/2025**. **CẦN LUẬT SƯ XÁC NHẬN** | **MT-04** | `01` D-27, `02` PL-01 |
 | **QĐ-74** | Quyền `user.anonymize`, `content.purge` và mọi thao tác thực thi quyền của chủ thể dữ liệu **chỉ nằm ở `super_admin`**. **CẦN LUẬT SƯ XÁC NHẬN** | — | `01` D-28 |
 | **QĐ-75** | Moderator tình nguyện ngoài tổ chức (từ M4) **chưa được chạm PII** cho tới khi có thoả thuận xử lý dữ liệu theo Luật 91/2025; hàng đợi kiểm duyệt cho tình nguyện viên **che PII mặc định**. **CẦN LUẬT SƯ XÁC NHẬN** | — | `01` D-29 |
 | **QĐ-76** | Mọi hành động của `curator`/`moderator`/`admin`/`super_admin` trên dữ liệu người khác ghi **`audit_log` bất biến**; truy cập PII **bắt buộc kèm** `moderation_case_id` hoặc `support_ticket_id`. DB role ứng dụng bị thu hồi `UPDATE`/`DELETE` trên `audit_log` (bất biến INV-2, có test). Không tạo bảng audit thứ hai cho kiểm duyệt — `moderation_audit_log` chỉ là **view** `v_moderation_audit_log` lọc trên `audit_logs` | — | `01` D-25, `05` §13 |
@@ -761,7 +716,7 @@ Mỗi câu ghi rõ **ảnh hưởng nếu trả lời khác nhau** và **deadlin
 | **CH-02** 🔴 | **Chốt tập role hệ thống nào?** Bốn tài liệu định nghĩa bốn tập khác nhau | *Enum tối giản của `03`* (`member`/`curator`/`moderator`/`admin`/`super_admin`, organizer là ngữ cảnh) → migration đơn giản, guard gọn | *Tập đầy đủ của `01`* (thêm `verified_member`, `support`, `organizer` là bậc tài khoản) → RBAC phức tạp hơn, nhưng khớp persona P4 (organization profile) | **14/09/2026** (trước Sprint 0 kết thúc) | Tech Lead + PO |
 | **CH-03** 🔴 | **Chốt một mô hình trust score duy nhất.** Hiện có **ba** thang điểm mâu thuẫn ở `03`, `05` và `08` | *Mô hình `05` (T1–T5 + 5 thành phần)* → giàu ngữ nghĩa, gắn với rate limit theo tier, nhưng nặng để triển khai ở M4 | *Mô hình `08` E3-S3 (9 tín hiệu cộng/trừ)* → làm được trong 8 SP, nhưng không đủ để lái rate limit theo tier | **02/10/2026** (trước Sprint 2) | Tech Lead + PO |
 | **CH-04** 🔴 | **RSVP gắn vào `Event` hay `EventOccurrence`?** `03` D-02 bắt buộc tách; `08` E6 và mọi endpoint trong `02`/`04` lại dùng `POST /events/:id/rsvp` | *Occurrence* → sự kiện lặp lại đúng ngay từ đầu, nhưng API phức tạp hơn và phải sửa toàn bộ endpoint đã đặc tả | *Event phẳng* → API đơn giản, nhưng UC-24 (chuỗi lặp lại) phải làm lại schema ở GĐ2 — nợ kỹ thuật đắt | **05/10/2026** (trước Sprint 2, là quyết định migration) | Tech Lead |
-| **CH-05** 🔴 | **Ngưỡng chuyển từ Thông báo sang Giấy phép mạng xã hội là bao nhiêu?** `06` ghi ~10.000 lượt/tháng; `09` ghi > 1.000 người dùng thường xuyên/tháng — lệch 10 lần | *10.000* → chạm ngưỡng sau M6 6–12 tháng, khởi động hồ sơ giấy phép ở M6 | *1.000* → **chạm ngưỡng trước cả mục tiêu MAU M6 (700–820)**, phải khởi động hồ sơ giấy phép ngay ở M4 (11/2026) và dự phòng 40–120 triệu VND sớm hơn | **30/09/2026** | Founder + Luật sư |
+| **CH-05** 🔴 | **Ngưỡng chuyển từ Thông báo sang Giấy phép mạng xã hội là bao nhiêu?** tài liệu pháp lý (nay đã gỡ) ghi ~10.000 lượt/tháng; `09` ghi > 1.000 người dùng thường xuyên/tháng — lệch 10 lần | *10.000* → chạm ngưỡng sau M6 6–12 tháng, khởi động hồ sơ giấy phép ở M6 | *1.000* → **chạm ngưỡng trước cả mục tiêu MAU M6 (700–820)**, phải khởi động hồ sơ giấy phép ngay ở M4 (11/2026) và dự phòng 40–120 triệu VND sớm hơn | **30/09/2026** | Founder + Luật sư |
 | **CH-06** 🔴 | **Ngân sách: kịch bản đủ đội (2,04 tỷ) hay tinh gọn (0,91 tỷ)?** | *Đủ đội (5,5 FTE)* → giữ được lịch 11 sprint, ra mắt 25/02/2027 | *Tinh gọn (2 dev + Founder)* → velocity 24–28 SP/sprint thay vì 55, **kéo dài 2–4 sprint**, ra mắt trượt sang 04–05/2027, và bus factor = 1 (RK-09 thành đỏ đậm) | **07/09/2026** (ngày khởi động) | Founder |
 | **CH-07** 🟡 | **Waitlist là Must hay Should?** Brief liệt kê waitlist trong MVP; `02` xếp UC-40 là **Should** | *Must* → +4 ngày-người ở S4, nhưng giữ đúng lời hứa với persona P3 (Tom) — waitlist tự đôn là lý do anh ta bỏ Facebook | *Should* → tiết kiệm S4, nhưng sự kiện hết chỗ trở thành ngõ cụt, giảm giá trị RSVP | **02/11/2026** (đầu Sprint 4) | PO |
 | **CH-08** 🟡 | **Analytics cho organizer là MVP hay không?** `01` §7.4 nói "là tính năng MVP, không để GĐ sau"; `02` xếp UC-72 là **Could** | *MVP* → giữ được persona P4 (Linh, business) — nhóm duy nhất sẵn sàng trả phí sau này | *Could* → tiết kiệm ~4 ngày-người, nhưng mất nhóm organizer chuyên nghiệp, tức mất nguồn cung ổn định nhất | **30/11/2026** (đầu Sprint 6) | PO |
@@ -785,7 +740,6 @@ Hai tuần này quyết định việc có kịp mốc M0 (18/09) hay không. **
 #### Pháp lý & pháp nhân — *Founder*
 - [ ] **01/09** Khởi động thủ tục thành lập **Công ty TNHH** qua đơn vị dịch vụ, với đủ mã ngành *(bằng chứng: hồ sơ đã nộp)*
 - [ ] **01/09** Bắt đầu chọn và **ký hợp đồng luật sư CNTT/dữ liệu** — ưu tiên hãng đã từng làm hồ sơ giấy phép mạng xã hội *(hạn hoàn tất: 21/09)*
-- [ ] **02/09** Gửi nguyên văn **30 câu hỏi ở `docs/analysis/06` §15** cho luật sư, yêu cầu trả lời **bằng văn bản** có trích dẫn số hiệu văn bản đang hiệu lực *(bằng chứng: email đã gửi)*
 - [ ] **02/09** Đăng ký **tên miền `.vn`** và tên miền quốc tế — *Tech Lead*
 - [ ] **02/09** Mở **tài khoản Apple Developer (tổ chức) + đăng ký mã D‑U‑N‑S** — ⏱️ thời gian chờ 2–4 tuần, đây là việc chặn M5
 - [ ] **02/09** Mở **tài khoản Google Play Console (tổ chức)** — ⏱️ 14 ngày
@@ -846,9 +800,9 @@ Hai tuần này quyết định việc có kịp mốc M0 (18/09) hay không. **
 
 ---
 
-## 11. Mục lục liên kết tới 10 tài liệu chi tiết
+## 11. Mục lục liên kết tới 9 tài liệu chi tiết
 
-> ✅ **Cập nhật bản 1.1 — MT-13 đã giải.** Cả 10 tài liệu nay **đầy đủ theo đúng mục lục của chính chúng**. Tổng cộng **23.505 dòng**. Sáu tài liệu được viết tiếp trong đợt này (`01`, `02`, `03`, `05`, `07`, `08`) tăng từ ~4.900 lên **15.295 dòng**. Cột "Trạng thái" ghi phần **mới bổ sung**, không lặp lại phần đã có.
+> ✅ **Cập nhật bản 1.1 — MT-13 đã giải.** Cả 9 tài liệu nay **đầy đủ theo đúng mục lục của chính chúng**. Tổng cộng **21.790 dòng** (đã trừ tài liệu pháp lý được gỡ khỏi bộ). Sáu tài liệu được viết tiếp trong đợt này (`01`, `02`, `03`, `05`, `07`, `08`) tăng từ ~4.900 lên **15.295 dòng**. Cột "Trạng thái" ghi phần **mới bổ sung**, không lặp lại phần đã có.
 
 | # | Tài liệu | Dòng | Nội dung chính | Trạng thái |
 |---|---|---:|---|---|
@@ -857,13 +811,12 @@ Hai tuần này quyết định việc có kịp mốc M0 (18/09) hay không. **
 | 03 | [`03-domain-va-du-lieu.md`](./03-domain-va-du-lieu.md) | 3.231 | 12 quyết định dữ liệu · 8 bounded context · quy ước đặt tên & kiểu · **Nhóm A→G đủ 30 bảng** (`events`, `event_occurrences`, `rsvps`, `waitlist_entries`, `areas`, `reports`, `conversations`, `audit_logs`…) · **§11 ERD đầy đủ** · **§12 state machine** · **§13 DDL SQL mẫu + trigger** · **§14 truy vấn bán kính 1500 m + EXPLAIN** · **§15 FTS tiếng Việt (mục 15.2 đã có)** · **§16 chính sách xoá 3 tầng** · **§17 extension bắt buộc** | ✅ **Đầy đủ** — bổ sung §5 → §17 |
 | 04 | [`04-tech-stack-va-kien-truc.md`](./04-tech-stack-va-kien-truc.md) | 2.202 | Bảng chốt stack · 7 nguyên tắc kiến trúc · sơ đồ triển khai & ranh giới module · monorepo · quy ước API · auth · realtime & push · PostGIS · migration · CI/CD · chi phí hạ tầng 3 mốc · hosting · bảo mật · quan sát · 12 rủi ro kỹ thuật · **20 ADR** | ⚠️ Đầy đủ, **cần 2 sửa nhỏ**: `@MinTrustTier()` → `@MinTrust()`, và 3 chỗ `status = 'PUBLISHED'` chữ hoa → chữ thường (xem MT-17) |
 | 05 | [`05-trust-safety-va-kiem-duyet.md`](./05-trust-safety-va-kiem-duyet.md) | 2.215 | 10 nguyên tắc T&S · 3 cam kết công khai · 14 loại rủi ro R-01→R-14 · xác thực theo tầng · trust score & quyền hạn · rate limit theo tier · **§7 quy trình báo cáo & hàng đợi (28 mã vi phạm, 4 mức SLA)** · **§8 thang cưỡng chế E1→E6 + khiếu nại** · **§9 đánh giá hai chiều** · **§10 an toàn khi gặp mặt** · **§11 chuẩn đạo đức curate + takedown** · **§12 checklist an toàn sự kiện** · **§13 data model + 3 module NestJS + 9 job BullMQ** · **§14 14 chỉ số MQ-01→MQ-14** · **§15 lộ trình** · **§16 phụ lục** | ✅ **Đầy đủ** — bổ sung §7 → §16 |
-| 06 | [`06-phap-ly-va-tuan-thu-viet-nam.md`](./06-phap-ly-va-tuan-thu-viet-nam.md) | 1.715 | 12 kết luận pháp lý · bản đồ khung pháp luật · bảo vệ dữ liệu cá nhân · an ninh mạng & lưu trữ trong nước · NĐ 147/2024 · thương mại điện tử · pháp nhân & thuế · rủi ro curate · yêu cầu App Store/Google Play · 16 tài liệu pháp lý phải soạn · nội dung tuyệt đối tránh · ma trận L-01→L-14 · checklist M0→M6 · ngân sách · **30 câu hỏi gửi luật sư** | ✅ Đầy đủ — còn **MT-14** (ngưỡng giấy phép lệch 10 lần) chờ luật sư |
 | 07 | [`07-go-to-market-da-nang.md`](./07-go-to-market-da-nang.md) | 2.362 | North Star WCA · TAM/SAM/SOM · 5 phân khúc · bản đồ kênh · chiến lược seed 100 user · thư viện tin nhắn mẫu · **§7 playbook curate** · **§8 kịch bản chuyển đổi organizer** · **§9 growth loop + 12 luật chống lạm dụng** · **§10 hệ thống chỉ số (NSM + 20 chỉ số × 6 tháng)** · **§11 54 event tracking + 6 phễu** · **§12 tính mùa vụ, Tết Đinh Mùi, mùa mưa bão + đồng bộ lịch GTM ↔ kỹ thuật** · **§13 ngân sách & 13 công cụ** · **§14 16 rủi ro GR-01→GR-16 + 6 cổng quyết định** · **§15 checklist khảo sát tuần 0** | ✅ **Đầy đủ** — bổ sung §9 → §15 |
 | 08 | [`08-roadmap-va-ke-hoach-trien-khai.md`](./08-roadmap-va-ke-hoach-trien-khai.md) | 1.940 | Tóm tắt điều hành · 8 giả định · milestone M0→M6 · Gantt 26 tuần · 12 epic / 563 SP · **§6 sprint S0→S12 (bản san tải + DoD 12 điều + van an toàn 44 SP)** · **§7 tiêu chí nghiệm thu từng mốc** · **§8 đường găng + 22 phụ thuộc chặn** · **§9 cấu trúc đội (5,5 FTE / tinh gọn)** · **§10 kịch bản cắt scope 2 dev** · **§11 ngân sách 3 giai đoạn** · **§12 launch readiness 50 mục** · **§13 cửa go/no-go 17:00 24/02/2027** | ✅ **Đầy đủ** — bổ sung §6 → §13 |
 | 09 | [`09-canh-tranh-va-rui-ro.md`](./09-canh-tranh-va-rui-ro.md) | 1.547 | 9 kết luận · khung chấm điểm · 11 đối thủ · bảng so sánh tính năng · rào cản gia nhập thật · risk register RK-01→RK-17 · phân tích độ nhạy · ngưỡng thất bại & 6 phương án xoay trục · theo dõi cạnh tranh | ⚠️ Đầy đủ, **cần rà lại số liệu**: vài chỗ còn "4 khu vực MVP" và mục tiêu 550 WCA như mốc sống (xem MT-18). Phần **lập luận** dẫn tới 220–280 thì giữ nguyên vì chính nó là căn cứ của QĐ-68 |
 | 10 | [`10-ux-luong-man-hinh-va-i18n.md`](./10-ux-luong-man-hinh-va-i18n.md) | 2.049 | 10 quyết định UX · 7 nguyên tắc · ràng buộc từ persona · sitemap & mã màn hình · màn hình mobile/web/console · 10 user flow Mermaid · 6 wireframe · thiết kế bộ lọc & bản đồ · onboarding & aha moment · 37 empty state · hệ thống thiết kế · i18n · accessibility · **ma trận truy vết UC ↔ màn hình** · rủi ro UX | ⚠️ Đầy đủ, **cần 2 sửa nhỏ**: §15 ghi "44 use case Must" → **45**; sơ đồ dòng 823 dùng `organizer_id` → `host_user_id` (xem MT-19) |
 
-**Kiểm tra liên kết:** cả 10 đường dẫn tương đối ở trên đều trỏ tới file có thật trong `docs/analysis/`. Không có liên kết hỏng.
+**Kiểm tra liên kết:** cả 9 đường dẫn tương đối ở trên đều trỏ tới file có thật trong `docs/analysis/`. Không có liên kết hỏng.
 
 ---
 
@@ -880,7 +833,7 @@ Bảng này ghi nhận **mọi chỗ tài liệu này nói khác tài liệu kia
 | **MT-01** | Số sprint: 6 hay 11? | 🟡 | ✅ **ĐÃ GIẢI** | **13 sprint lập lịch, đúng 11 sprint (S0 → S10) trước M6**; S11–S12 là sau ra mắt và không chứa story MVP. Bản có hiệu lực để lập kế hoạch tuần là bản san tải, không phải bảng epic. Kèm kết luận bắt buộc: thuê 1 BE hợp đồng 10 tuần S2 → S6 | `08` §6.1 · QĐ-71 |
 | **MT-02** | Bốn tập role khác nhau | 🔴 | ✅ **ĐÃ GIẢI** | `users.role` là enum **đúng 5 giá trị** `member`/`curator`/`moderator`/`admin`/`super_admin`. `guest` = trạng thái phiên · `organizer` = quan hệ theo sự kiện (`events.host_user_id` + `event_cohosts`) · `verified_member` = trust level · `support` gộp `moderator` · `service_provider` không vào enum. Thứ tự guard bất biến trạng thái → role → quan hệ → trust; bộ tên guard/decorator thống nhất | `01` §8.1, §9, §13.1, D-01→D-08 · `08` M1-4, M1-5 · [§2.3](#23-hệ-thống-role--đã-chốt-giải-mt-02) · QĐ-54→57 |
 | **MT-03** | RSVP gắn vào `Event` hay `EventOccurrence`? | 🔴 | ✅ **ĐÃ GIẢI** | **Occurrence.** Bảng `rsvps(occurrence_id, …)`, sự kiện không lặp vẫn có đúng 1 occurrence. Endpoint chính `POST /api/v1/occurrences/{occurrenceId}/rsvps`; đường tắt theo `eventId` trả **409 `AMBIGUOUS_OCCURRENCE`**. Ràng buộc migration: `rsvps` **không có** cột `event_id` | `01` D-15, D-16 · `02` §12, §13.5 · `03` §6.1 · `08` M2-2 · QĐ-60, QĐ-61 |
-| **MT-04** | NĐ 13/2023 hay Luật 91/2025? | 🔴 | ✅ **ĐÃ GIẢI** | Nêu **cả hai**, ghi rõ **từ 01/01/2026 Luật 91/2025/QH15 là văn bản hiệu lực cao hơn** và **mọi mẫu biểu phải theo Luật 91/2025**. Ràng buộc áp cho mọi trang pháp lý kể cả `M-71`. **CẦN LUẬT SƯ XÁC NHẬN** | `01` D-27 · `02` §13.4 mục 3, PL-01, L6 · `06` #1 · QĐ-73 |
+| **MT-04** | Căn cứ pháp lý cho việc xử lý dữ liệu người dùng | 🔴 | ⏸️ **TẠM GÁC — mảng pháp lý hoãn sang giai đoạn sau** | Chủ dự án gác toàn bộ mảng pháp lý ở giai đoạn này, nên kết luận cũ (nêu cả hai văn bản, ưu tiên văn bản mới hơn) **tạm ngưng hiệu lực** thay vì được coi là đã giải. Phải chọn lại căn cứ và cho người có chuyên môn pháp lý xác nhận **trước khi công bố bất kỳ trang chính sách nào** — xem [§7](#7-mảng-pháp-lý--tạm-gác-chưa-xong) | `01` D-27 · `02` §13.4 mục 3, PL-01, L6 · QĐ-73 |
 | **MT-05** | Waitlist: Must hay Should? | 🟡 | ✅ **ĐÃ GIẢI** | **`Must`.** UC-40 lên `Must` ⇒ `Must` 44 → **45**, `Should` 18 → **17**. FIFO theo `queued_at`, cửa sổ xác nhận **12 giờ** (30 phút khi sắp tới giờ), huỷ RSVP thăng hạng ngay. Điều kiện ra mắt **L3**: 1 chỗ trống / 20 người chờ → đúng 1 lời mời | `01` D-17 · `02` §8.15, §10.2, §10.5 · `08` M3 · QĐ-62 |
 | **MT-06** | Analytics organizer + nhân bản/lặp lại: MVP hay không? | 🟡 | 🔶 **CÒN MỞ** | `02` §10.3 vẫn xếp UC-24 = `Should`, UC-28 = `Could`, UC-72 = `Could`, và đã ghi rõ chi phí của việc hoãn. `01` §7.3–§7.4 vẫn nói là MVP. Chưa ai chốt | xem [§12.2](#122-ba-mâu-thuẫn-còn-mở--chi-tiết-và-hạn-xử-lý) |
 | **MT-07** | Lịch GTM đi trước lịch kỹ thuật ~3 tháng | 🔴 | ✅ **ĐÃ GIẢI** | Chọn phương án **định nghĩa lại "seed user" cho giai đoạn tiền-app** (không dời cửa sổ 1). Bốn giai đoạn đo lường **P‑A tiền-app** (01/09 → 12/11/2026) · **P‑B RSVP live** (từ 13/11) · **P‑C beta kín** · **P‑D công khai**, mỗi giai đoạn có đơn vị đo riêng (`WCA-proxy` sổ check-in giấy ↔ `WCA` từ `rsvps`). Hai hệ mốc tách bạch: `M1`–`M6` = tháng GTM, `KT‑M0`–`KT‑M6` = mốc kỹ thuật. Có **tuần chạy song song 13–19/11** để đo hệ số lệch giữa hai đơn vị | `07` §12.1, §10.2 · QĐ-72 |
@@ -889,8 +842,8 @@ Bảng này ghi nhận **mọi chỗ tài liệu này nói khác tài liệu kia
 | **MT-10** | Mục tiêu WCA M6: 550 hay 220–280 | 🟡 | ✅ **ĐÃ GIẢI** | **220–280 lượt/tuần**, ngưỡng đỏ < 110. Suy ra từ 25 sự kiện/tuần × 12–14 người × `show_rate` 70%. Cấm dùng con số 550 trong cửa sổ 6 tháng; con số 550 chỉ còn là mốc M9/gate GĐ2 và **phải lập lại nền** bằng số thật của M6 vào tuần đầu 03/2027 | `01` D-23 · `08` M6-3 · `07` §10.1.3 · `02` GD-01 · QĐ-68 |
 | **MT-11** | Số khu vực MVP: 4, 6 hay 12? | 🟢 | ✅ **ĐÃ GIẢI** | **6 khu vực**: An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn. `areas.is_mvp_filter = true` cho đúng 6 hàng, **không xoá, không ẩn được**; đổi polygon cần xác nhận hai bước. `area_slug` viết **kebab-case** vì là URL slug | `01` D-18 · `03` §7.1 seed · `07` T3, §15 · `08` M2-4 · `02` UC-70 · QĐ-63, QĐ-65 |
 | **MT-12** | Ba mô hình trust score không tương thích | 🔴 | ✅ **ĐÃ GIẢI** | **Thang T0–T5 duy nhất**, `users.trust_level smallint CHECK (0..5)`. Xoá thang 0–100 và enum `new`/`verified`/`established`/`trusted`/`ambassador`. Tín hiệu ở `trust_signals` append-only; **job `trust:recompute` là nơi duy nhất ghi cột**. T5 luôn cần `staff_endorsement` thủ công. Badge không cấp quyền, không badge tiêu cực | `01` §11, D-09→D-14 · `03` §4 · `05` §5 · `08` M1-6 · [§2.4](#24-trust-level-t0t5--đã-chốt-giải-mt-12) · QĐ-58, QĐ-59 |
-| **MT-13** | Sáu tài liệu bị cắt cụt so với mục lục của chúng | 🔴 | ✅ **ĐÃ GIẢI** | Cả 6 đã viết xong: `01` +1.010 dòng (§12→§15) · `02` +2.215 (§7→§13) · `03` +2.768 (§5→§17) · `05` +1.640 (§7→§16) · `07` +1.349 (§9→§15) · `08` +1.422 (§6→§13). Tổng bộ tài liệu **23.505 dòng**. Mọi tham chiếu treo trước đây đã có đích thật: `03` mục 15.2, `08` §10.2, `02` đặc tả 19 UC, `01` ma trận RBAC | [§11](#11-mục-lục-liên-kết-tới-10-tài-liệu-chi-tiết) |
-| **MT-14** | Ngưỡng cấp giấy phép mạng xã hội lệch 10 lần | 🔴 | 🔶 **CÒN MỞ** | `06` #4 ghi ~10.000 lượt/tháng, `09` #8 ghi > 1.000 người dùng thường xuyên/tháng. **Chỉ luật sư trả lời được** — nằm trong bộ 30 câu hỏi của `06` §15 | xem [§12.2](#122-ba-mâu-thuẫn-còn-mở--chi-tiết-và-hạn-xử-lý) |
+| **MT-13** | Sáu tài liệu bị cắt cụt so với mục lục của chúng | 🔴 | ✅ **ĐÃ GIẢI** | Cả 6 đã viết xong: `01` +1.010 dòng (§12→§15) · `02` +2.215 (§7→§13) · `03` +2.768 (§5→§17) · `05` +1.640 (§7→§16) · `07` +1.349 (§9→§15) · `08` +1.422 (§6→§13). Tổng bộ tài liệu **21.790 dòng** sau khi tài liệu pháp lý được gỡ. Mọi tham chiếu treo trước đây đã có đích thật: `03` mục 15.2, `08` §10.2, `02` đặc tả 19 UC, `01` ma trận RBAC | [§11](#11-mục-lục-liên-kết-tới-9-tài-liệu-chi-tiết) |
+| **MT-14** | Ngưỡng cấp giấy phép mạng xã hội lệch 10 lần | 🔴 | ⏸️ **TẠM GÁC — mảng pháp lý hoãn sang giai đoạn sau** | Hai nguồn từng ghi hai ngưỡng lệch nhau 10 lần; nguồn ghi mức cao nằm trong tài liệu pháp lý đã gỡ, còn `09` #8 ghi > 1.000 người dùng thường xuyên/tháng. Không đội nào tự chốt được, nên câu hỏi này chỉ mở lại cùng lúc với mảng pháp lý — xem [§7](#7-mảng-pháp-lý--tạm-gác-chưa-xong) và [§12.2](#122-ba-mâu-thuẫn-còn-mở--chi-tiết-và-hạn-xử-lý) |
 | **MT-15** | Ba mốc thời gian nhỏ không khớp | 🟢 | ✅ **ĐÃ GIẢI** | **(a) Nhắc lịch: T‑24h và T‑2h** — `T‑3h` không còn xuất hiện ở tài liệu nào. **(b) SLA `critical`: 2 giờ** — `05` đã sửa cam kết công khai theo, kèm `high` 12 giờ · `normal` 48 giờ. **(c) Tên cột: `events.host_user_id`**, cấm `creator_id`/`organizer_id`; mọi enum DB **chữ thường snake_case**, có test regex quét `pg_enum` và tiêu chí nghiệm thu M2-3 yêu cầu `grep` trả về rỗng. *Còn 2 vết sót ở `04` và `10` — theo dõi bằng MT-17 và MT-19* | `01` D-19, D-21, D-22 · `02` BR-19, §6.8 · `05` §7.3 · `08` M2-3, DoD-8 · QĐ-64, QĐ-66, QĐ-67 |
 
 ### 12.2 Ba mâu thuẫn **CÒN MỞ** — chi tiết và hạn xử lý
@@ -899,7 +852,7 @@ Bảng này ghi nhận **mọi chỗ tài liệu này nói khác tài liệu kia
 |---|:--:|---|---|---|---|
 | **MT-06** | 🟡 | Đây là đánh đổi phạm vi, không phải mâu thuẫn dữ kiện. `01` §7.3–§7.4 nói `duplicate`, `recurrence_rule` và analytics cấp organizer "là tính năng MVP, không phải để sau"; `02` §10.3 vẫn xếp UC-24 `Should`, UC-28 `Could`, UC-72 `Could` | **(A)** Kéo UC-24 (chuỗi lặp lại) lên `Must` — lược đồ `event_occurrences` đã sẵn sàng nên chi phí chỉ là API + UI. **(B)** Giữ nguyên và chấp nhận organizer lớp học hằng tuần phải tạo tay từng buổi trong 3 tháng đầu | Mất hai persona nguồn cung: P3 Tom (cầu lông T3 & T5 hằng tuần) và P4 Linh (studio yoga, nhóm duy nhất sẵn sàng trả phí sau này). Nguồn cung là bên yếu của thị trường hai phía — mất nó là mất RK-01 | PO · **30/11/2026** (đầu S6) — [CH-08] |
 | **MT-08** | 🟡 | `05` đã viết xong quy trình nhưng `02` chưa nâng UC-63 lên tương ứng. Nếu công bố cam kết ở `05` §8.6 mà UC-63 vẫn là `Could` thì **công bố một quyền không có đường thực hiện trong sản phẩm** | **(A)** Nâng UC-63 lên `Should` sớm nhất trong đợt 2 và **công bố đường email khiếu nại có SLA** ngay trong Community Guidelines ở M4. **(B)** Hạ cam kết ở `05` §8.6 xuống mức "khiếu nại qua email hỗ trợ" — rẻ hơn nhưng phải sửa cả trang Safety trước khi công bố | Rủi ro danh tiếng và có thể là rủi ro pháp lý: cam kết công khai mà không có tính năng thực hiện. `05` §8.5 còn bắt buộc **người ra quyết định ≠ người xử lý khiếu nại từ ngày đầu** — quy trình email cũng phải thoả điều này | PO + Founder · **27/11/2026** (M4, **trước khi công bố Guidelines**) |
-| **MT-14** | 🔴 | Không đội nào tự trả lời được — phụ thuộc cách cơ quan quản lý diễn giải NĐ 147/2024. Đã nằm trong bộ 30 câu hỏi gửi luật sư | **(A)** 10.000 lượt/tháng → khởi động hồ sơ giấy phép ở M6. **(B)** > 1.000 người dùng thường xuyên/tháng → **chạm ngưỡng trước cả mục tiêu MAU M6 (700–820)**, phải khởi động hồ sơ ở **M4 · 11/2026** | Lệch **4 tháng** trên đường găng pháp lý và một khoản **40–120 triệu VND** chưa có trong dòng tiền. Nếu (B) đúng mà phát hiện muộn thì phải hoãn ra mắt hoặc chạy không phép | Founder + Luật sư · **30/09/2026** — [CH-05] |
+| **MT-14** | 🔴 | Không đội nào tự trả lời được — phụ thuộc cách cơ quan quản lý diễn giải NĐ 147/2024. Đã nằm trong bộ 30 câu hỏi gửi luật sư | **(A)** 10.000 lượt/tháng → khởi động hồ sơ giấy phép ở M6. **(B)** > 1.000 người dùng thường xuyên/tháng → **chạm ngưỡng trước cả mục tiêu MAU M6 (700–820)**, phải khởi động hồ sơ ở **M4 · 11/2026** | Lệch **4 tháng** trên đường găng pháp lý và một khoản **40–120 triệu VND** chưa có trong dòng tiền. Nếu (B) đúng mà phát hiện muộn thì phải hoãn ra mắt | Founder · ⏸️ **tạm gác cùng mảng pháp lý** — đặt lại hạn khi mở lại, chậm nhất trước beta kín — [CH-05] |
 
 ### 12.3 Năm mâu thuẫn **MỚI** phát hiện khi viết tiếp (MT-16 → MT-20)
 
@@ -924,7 +877,7 @@ Không sửa dòng nào. Cột "Người giải · Hạn" của các dòng **Đ�
 | **MT-01** | **Số sprint: 6 hay 11?** | 🟡 | Yêu cầu tổng hợp nói "roadmap 6 sprint"; `08` lập kế hoạch **11 sprint (S0→S10) + S11, S12**. 6 sprint (S0→S5) chỉ đủ tới M4, chưa có beta, chưa phát hành | Kỳ vọng sai về ngày ra mắt giữa đội kỹ thuật và nhà đầu tư | Founder · 07/09/2026 |
 | **MT-02** | **Bốn tập role khác nhau** | 🔴 | `01`: 8 role có `verified_member`/`support`/`super_admin` · `02`: 7 actor có `Co-host`, không có Support/Super Admin · `03` enum: chỉ 4 giá trị và **nói rõ không có role `organizer`** · `08` E2-S7: `user`/`organizer`/`moderator`/`admin` | Migration `user_role_enum` sai ngay từ Sprint 1; guard RBAC viết lại; audit log không truy vết được | Tech Lead + PO · **14/09/2026** — [CH-02] |
 | **MT-03** | **RSVP gắn vào `Event` hay `EventOccurrence`?** | 🔴 | `03` D-02 tuyên bố "RSVP luôn gắn vào **occurrence**, không gắn vào event" và coi việc tách là **bắt buộc**. Nhưng `08` E4/E6 định nghĩa bảng `event_rsvps(event_id, user_id)` phẳng, và mọi endpoint ở `02` §6.9, `04` §3.3, `10` Q-06 đều là `POST /events/:id/rsvp` | Migration đắt nếu đổi sau; sự kiện lặp lại (UC-24) là ca phổ biến nhất của cộng đồng expat sẽ sai ngữ nghĩa | Tech Lead · **05/10/2026** — [CH-04] |
-| **MT-04** | **Căn cứ pháp lý bảo vệ dữ liệu: NĐ 13/2023 hay Luật 91/2025?** | 🔴 | Brief gốc và yêu cầu dự án ghi "tuân thủ **Nghị định 13/2023/NĐ-CP**". `06` kết luận #1 và `04` §14.1 khẳng định từ 01/01/2026 vai trò trung tâm thuộc về **Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15** và nghị định hướng dẫn, và cảnh báo mọi mẫu dựa trên NĐ 13 đều **lỗi thời** | Privacy Policy trích sai văn bản; hồ sơ DPIA/TIA dùng sai biểu mẫu; mức phạt có thể tính theo % doanh thu | Founder + Luật sư · **30/09/2026** (nằm trong câu hỏi số 12 gửi luật sư) |
+| **MT-04** | **Căn cứ pháp lý bảo vệ dữ liệu: NĐ 13/2023 hay Luật 91/2025?** | 🔴 | Brief gốc và yêu cầu dự án ghi "tuân thủ **Nghị định 13/2023/NĐ-CP**". tài liệu pháp lý (nay đã gỡ) kết luận #1 và `04` §14.1 khẳng định từ 01/01/2026 vai trò trung tâm thuộc về **Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15** và nghị định hướng dẫn, và cảnh báo mọi mẫu dựa trên NĐ 13 đều **lỗi thời** | Privacy Policy trích sai văn bản; hồ sơ DPIA/TIA dùng sai biểu mẫu; mức phạt có thể tính theo % doanh thu | Founder + Luật sư · **30/09/2026** (nằm trong câu hỏi số 12 gửi luật sư) |
 | **MT-05** | **Waitlist: Must hay Should?** | 🟡 | Brief liệt kê "RSVP có sức chứa + waitlist" là năng lực MVP. `02` xếp UC-40 (danh sách chờ và tự động thăng hạng) là **Should**. `08` E6-S3 lại xếp vào Sprint 4 cùng M3 | Nếu cắt, sự kiện hết chỗ thành ngõ cụt; mất ràng buộc thiết kế bắt buộc của persona P3 | PO · 02/11/2026 — [CH-07] |
 | **MT-06** | **Analytics organizer và tính năng nhân bản/lặp lại: MVP hay không?** | 🟡 | `01` §7.3 ghi "`duplicate` và `recurrence_rule` là tính năng MVP, **không phải để sau**" và §7.4 ghi "analytics cấp organizer là tính năng MVP". `02` xếp UC-28 nhân bản = **Could**, UC-24 lặp lại = **Should**, UC-72 analytics organizer = **Could** | Mất hai persona organizer (P3 nghiệp dư và P4 chuyên nghiệp) — tức mất nguồn cung | PO · 30/11/2026 — [CH-08] |
 | **MT-07** | **Lịch GTM đi trước lịch kỹ thuật ~3 tháng** | 🔴 | `07` §5.3 đặt mốc **100 seed user vào 12/10/2026** và yêu cầu "nạp 60 sự kiện vào app" trong tuần 01–07/09, "RSVP chỉ qua app" từ tuần 1. Nhưng `08` cho biết RSVP chỉ hoạt động từ **M3 · 13/11/2026** và beta kín 100 user là **M5 · 25/12/2026**. `09` FT-1 đo seed user tại **19/10/2026** khi app chưa có RSVP | Toàn bộ ngưỡng thất bại của cửa sổ 1 (FT-1 → FT-6) không đo được; đội community làm việc không có công cụ; nguy cơ kết luận sai là "thất bại sản phẩm" | Founder + PO · **07/09/2026** — phải hoặc dời cửa sổ 1 về sau M3, hoặc định nghĩa lại "seed user" cho giai đoạn tiền-app |
@@ -934,24 +887,24 @@ Không sửa dòng nào. Cột "Người giải · Hạn" của các dòng **Đ�
 | **MT-11** | **Số khu vực MVP: 4, 6 hay 12?** | 🟢 | Brief liệt kê 6 khu vực (An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn). `07` §5.3 chốt **4** (`an-thuong`, `my-an`, `my-khe`, `hai-chau`). `08` E5-S1 seed **12** khu vực. `09` RK-01 nói "4 khu vực MVP" | Seed data không khớp bộ lọc; chỉ tiêu "không khu vực nào bằng 0" đo trên tập nào? | PO · 19/10/2026 (Sprint 3, khi seed `areas`) |
 | **MT-12** | **Ba mô hình trust score không tương thích** | 🔴 | `01` dùng thang **T0–T5**. `03` §4.5 dùng enum `new`/`verified`/`established`/`trusted`/`ambassador` với ngưỡng <10/10–29/30–54/55–79/≥80 và trọng số riêng (email +8, phone +12, social +6, id_document +25…). `05` §5 dùng công thức 5 thành phần với `base_tier_points` T1=5…T5=50 và dải hiển thị 0–19/20–39/40–64/65–84/85–100. `08` E3-S3 dùng 9 tín hiệu khác hẳn (email +15, social +15, phone +15, avatar +10, ≥3 sự kiện +20…) | Trust level là đầu vào của rate limit theo tier (`05` §6.1), của quyền chat 1-1, của badge hiển thị. Bốn cách tính khác nhau nghĩa là hệ thống hạn chế hoạt động sai | Tech Lead + PO · **02/10/2026** — [CH-03] |
 | **MT-13** | **Bốn tài liệu bị cắt cụt so với chính mục lục của chúng** | 🔴 | `01` có mục lục 14 mục nhưng dừng ở §7 — **thiếu toàn bộ ma trận RBAC, vòng đời tài khoản, định nghĩa trust level & badge, mapping role→use case**. `02` hứa đặc tả chi tiết 19 use case trọng yếu nhưng dừng ở §6. `03` chỉ có Nhóm A — **thiếu toàn bộ lược đồ `events`, `rsvps`, `areas`, `reports`, `conversations`**. `05` dừng ở §6 — **thiếu quy trình kiểm duyệt, thang cưỡng chế, data model**. `07` dừng ở §6 — **thiếu hệ thống chỉ số và ngân sách GTM**. `08` dừng ở §5 — **thiếu §10.2 kịch bản cắt scope** mà chính §1 tham chiếu | Đội không có đặc tả để implement `events`/`rsvps` — tức toàn bộ M2 và M3. Không có ma trận RBAC để viết guard. Không có kịch bản cắt scope nếu chọn đội tinh gọn | Tác giả tài liệu · **hoàn thiện trước 21/09/2026** (trước Sprint 1) |
-| **MT-14** | **Ngưỡng cấp giấy phép mạng xã hội lệch 10 lần** | 🔴 | `06` kết luận #4: "khoảng **10.000 lượt truy cập thường xuyên/tháng**". `09` kết luận #8: "**> 1.000 người dùng thường xuyên/tháng**", và kết luận rằng ngưỡng sẽ bị chạm khoảng M6–M7 | Nếu `09` đúng, hồ sơ giấy phép (40–120 triệu VND, thời gian xử lý chưa rõ) phải khởi động ở **M4 · 11/2026** chứ không phải sau M6 — lệch 4 tháng và một khoản ngân sách lớn | Founder + Luật sư · **30/09/2026** — [CH-05] |
+| **MT-14** | **Ngưỡng cấp giấy phép mạng xã hội lệch 10 lần** | 🔴 | Tài liệu pháp lý (nay đã gỡ) kết luận #4: "khoảng **10.000 lượt truy cập thường xuyên/tháng**". `09` kết luận #8: "**> 1.000 người dùng thường xuyên/tháng**", và kết luận rằng ngưỡng sẽ bị chạm khoảng M6–M7 | Nếu `09` đúng, hồ sơ giấy phép (40–120 triệu VND, thời gian xử lý chưa rõ) phải khởi động ở **M4 · 11/2026** chứ không phải sau M6 — lệch 4 tháng và một khoản ngân sách lớn | Founder + Luật sư · **30/09/2026** — [CH-05] |
 | **MT-15** | **Ba mốc thời gian nhỏ không khớp** | 🟢 | (a) **Nhắc lịch**: `01` §5 và `07` tuần 4 ghi T‑24h và **T‑3h**; `02` UC-52, `08` E7-S8, `10` đều ghi T‑24h và **T‑2h**. (b) **SLA report critical**: `05` cam kết công khai **1 giờ**; `01` §4.2 và `08` E8-S3 ghi **2 giờ**. (c) **Đặt tên cột**: `03` dùng `host_user_id`, `05` dùng `creator_id`, `08` dùng `organizer_id` cho cùng một khái niệm; `03` dùng enum chữ thường, `05` dùng `status = 'PUBLISHED'` chữ hoa | (a) và (b) ảnh hưởng trực tiếp tỷ lệ no-show và cam kết công khai. (c) gây lỗi migration và code review lặp lại | PO + Tech Lead · 02/11/2026 — [CH-09], [CH-10] |
 
 ### 12.5 Tổng kết mức nghiêm trọng — cập nhật bản 1.1
 
 | Trạng thái | Số lượng | Mã |
 |---|---:|---|
-| ✅ **ĐÃ GIẢI** — có quyết định chốt, đã áp dụng đồng loạt vào các tài liệu con | **12** | MT-01, MT-02, MT-03, MT-04, MT-05, MT-07, MT-09, MT-10, MT-11, MT-12, MT-13, MT-15 |
-| 🔶 **CÒN MỞ** từ bản 1.0 | **3** | MT-06 🟡, MT-08 🟡, MT-14 🔴 |
+| ✅ **ĐÃ GIẢI** — có quyết định chốt, đã áp dụng đồng loạt vào các tài liệu con | **11** | MT-01, MT-02, MT-03, MT-05, MT-07, MT-09, MT-10, MT-11, MT-12, MT-13, MT-15 |
+| ⏸️ **TẠM GÁC** — mảng pháp lý hoãn sang giai đoạn sau, phải mở lại trước khi ra mắt công khai ([§7](#7-mảng-pháp-lý--tạm-gác-chưa-xong)) | **2** | MT-04 🔴, MT-14 🔴 |
+| 🔶 **CÒN MỞ** từ bản 1.0 | **2** | MT-06 🟡, MT-08 🟡 |
 | 🆕 **MỚI phát hiện** khi viết tiếp | **5** | MT-16 🔴, MT-17 🟡, MT-18 🟢, MT-19 🟢, MT-20 🔴 |
-| | **Tổng còn phải xử lý: 8** | |
+| | **Tổng còn phải xử lý ngay: 7** (chưa kể 2 mục tạm gác) | |
 
-**Tám mâu thuẫn còn lại xếp theo hạn, đây là thứ tự phải xử lý:**
+**Bảy mâu thuẫn phải xử lý ngay, xếp theo hạn:**
 
 | Hạn | Mã | Mức | Người giải | Chặn cái gì |
 |---|---|:--:|---|---|
 | **21/09/2026** | MT-17 | 🟡 | Tech Lead | Sprint 1 — tên guard/decorator và chữ hoa/thường enum trong migration |
-| **30/09/2026** | MT-14 | 🔴 | Founder + Luật sư | Ngân sách và lịch hồ sơ giấy phép mạng xã hội (lệch 4 tháng) |
 | **30/09/2026** | MT-19 | 🟢 | Designer + PO | Ma trận truy vết UC ↔ màn hình, điều kiện ra mắt L1 |
 | **02/10/2026** | MT-16 | 🔴 | Tech Lead | **Migration M1** — enum Postgres không xoá được giá trị, sai là phải tạo type mới |
 | **19/10/2026** | MT-18 | 🟢 | PO | Cửa sổ quyết định 1 — điểm xuất phát của phương án xoay trục PV-1 |
@@ -959,8 +912,8 @@ Không sửa dòng nào. Cột "Người giải · Hạn" của các dòng **Đ�
 | **27/11/2026** | MT-08 | 🟡 | PO + Founder | M4 — trước khi công bố Community Guidelines |
 | **30/11/2026** | MT-06 | 🟡 | PO | Sprint 6 — nguồn cung, hai persona organizer |
 
-> **Ba mâu thuẫn 🔴 còn lại đều có hạn trước 03/11/2026, và cả ba đều chặn một artefact không sửa lại được rẻ:** MT-14 chặn dòng tiền pháp lý, MT-16 chặn migration enum, MT-20 chặn thiết kế bảng waitlist. Đặt cả ba vào lịch quyết định của Founder ngay tuần đầu tiên.
+> **Hai mâu thuẫn 🔴 phải xử lý ngay đều có hạn trước 03/11/2026, và cả hai đều chặn một artefact không sửa lại được rẻ:** MT-16 chặn migration enum, MT-20 chặn thiết kế bảng waitlist. Đặt cả hai vào lịch quyết định của Founder ngay tuần đầu tiên. **MT-04 và MT-14 cũng ở mức 🔴 nhưng đang tạm gác** cùng mảng pháp lý — chúng không có hạn cho tới khi mảng đó được mở lại, và phải xong trước khi ra mắt công khai.
 
 ---
 
-*Tài liệu 00 — Tổng hợp dự án Da Nang Connect. Lập ngày 31/08/2026, **phiên bản 1.1** (cập nhật sau khi `01`, `02`, `03`, `05`, `07`, `08` được viết tiếp; 12/15 mâu thuẫn bản 1.0 đã giải, 5 mâu thuẫn mới ghi nhận). Đây là bản tổng hợp có thẩm quyền để ra quyết định; mọi chi tiết triển khai nằm ở 10 tài liệu phân tích gốc. Khi một tài liệu con được cập nhật, tài liệu này phải được đối chiếu lại, đặc biệt là §8 Decision log và §12 Mâu thuẫn cần giải quyết.*
+*Tài liệu 00 — Tổng hợp dự án Da Nang Connect. Lập ngày 31/08/2026, **phiên bản 1.1** (cập nhật sau khi `01`, `02`, `03`, `05`, `07`, `08` được viết tiếp; 11/15 mâu thuẫn bản 1.0 đã giải, 2 tạm gác cùng mảng pháp lý, 5 mâu thuẫn mới ghi nhận). Đây là bản tổng hợp có thẩm quyền để ra quyết định; mọi chi tiết triển khai nằm ở 9 tài liệu phân tích gốc. Khi một tài liệu con được cập nhật, tài liệu này phải được đối chiếu lại, đặc biệt là §8 Decision log và §12 Mâu thuẫn cần giải quyết.*

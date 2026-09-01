@@ -1322,7 +1322,7 @@ Bốn kiểm tra bắt buộc: chữ ký hợp lệ theo `kid`; `iss` đúng; `a
 
 ### 7.6 Xác thực số điện thoại bằng OTP
 
-**Hai lý do phải có:** trust tier T2 (`phone_verified`, +12 điểm theo tài liệu 03 mục 4) và nghĩa vụ pháp lý theo Nghị định 147/2024/NĐ-CP. Tài liệu 06 (kết luận #5) đã đánh dấu đây là **rủi ro pháp lý số 1** vì luật yêu cầu số di động Việt Nam, trong khi người dùng mục tiêu là expat, nhiều người dùng số nước ngoài. Kiến trúc dưới đây chuẩn bị cho cả hai đường, nhưng **quyết định cuối cùng phải có ý kiến luật sư** trước khi khoá luồng đăng ký.
+**Hai lý do phải có:** trust tier T2 (`phone_verified`, +12 điểm theo tài liệu 03 mục 4) và nghĩa vụ pháp lý theo Nghị định 147/2024/NĐ-CP. Đây từng được đánh dấu là **rủi ro pháp lý số 1** vì luật yêu cầu số di động Việt Nam, trong khi người dùng mục tiêu là expat, nhiều người dùng số nước ngoài. Kiến trúc dưới đây chuẩn bị cho cả hai đường, nhưng **quyết định cuối cùng phải có ý kiến luật sư** trước khi khoá luồng đăng ký.
 
 **Định tuyến lai theo mã quốc gia:**
 
@@ -1358,7 +1358,7 @@ flowchart TD
 
 **Chốt:** `OtpSenderService` là một interface với hai adapter — `VnBrandnameOtpAdapter` (mặc định eSMS, cấu hình đổi được sang VietGuys mà không sửa code) và `GlobalOtpAdapter` (Twilio Verify). Định tuyến theo `country_code` đã chuẩn hoá bằng `libphonenumber-js`.
 
-**Điều kiện vận hành phải chuẩn bị trước mốc M3 (13/11/2026):** đăng ký brandname với nhà mạng cần giấy phép kinh doanh và mất 5–10 ngày làm việc — tức là phụ thuộc vào việc thành lập công ty TNHH (tài liệu 06, kết luận #10). Đưa việc này vào lịch từ Sprint 4, không để đến lúc cần mới làm.
+**Điều kiện vận hành phải chuẩn bị trước mốc M3 (13/11/2026):** đăng ký brandname với nhà mạng cần giấy phép kinh doanh và mất 5–10 ngày làm việc — tức là phụ thuộc vào việc thành lập công ty TNHH. Đưa việc này vào lịch từ Sprint 4, không để đến lúc cần mới làm.
 
 **Bảo mật OTP:**
 
@@ -1619,9 +1619,9 @@ CREATE INDEX idx_events_area_time     ON events (area_id, start_at) WHERE status
 
 ### 9.3 Hai ràng buộc không được quên
 
-**Chủ quyền trên bản đồ.** Tài liệu 06 (kết luận #11): bản đồ thể hiện sai chủ quyền Việt Nam bị phạt 60–100 triệu đồng đối với tổ chức và buộc gỡ bỏ. Stack dùng tile của bên thứ ba nên rủi ro là thật. Việc bắt buộc: kiểm thử tile ở vùng Biển Đông ở mọi mức zoom trước M6; nếu nhà cung cấp không đạt thì tự host tile cho vùng Đà Nẵng (vùng phủ nhỏ nên hoàn toàn khả thi) và chỉ tải tile vùng ngoài ở mức zoom thấp có kiểm soát. Đây là **gate phát hành**, không phải việc làm sau.
+**Chủ quyền trên bản đồ.** Bản đồ thể hiện sai chủ quyền Việt Nam bị phạt 60–100 triệu đồng đối với tổ chức và buộc gỡ bỏ. Stack dùng tile của bên thứ ba nên rủi ro là thật. Việc bắt buộc: kiểm thử tile ở vùng Biển Đông ở mọi mức zoom trước M6; nếu nhà cung cấp không đạt thì tự host tile cho vùng Đà Nẵng (vùng phủ nhỏ nên hoàn toàn khả thi) và chỉ tải tile vùng ngoài ở mức zoom thấp có kiểm soát. Đây là **gate phát hành**, không phải việc làm sau.
 
-**Vị trí là dữ liệu cá nhân nhạy cảm.** Tài liệu 06 (kết luận #6). Hệ quả kỹ thuật: toạ độ người dùng cho tính năng "gần tôi" chỉ đi qua tham số truy vấn, **không ghi vào database**; không có bảng lịch sử vị trí; ảnh bị strip EXIF GPS trước khi công khai (mục 4.7); toạ độ sự kiện là địa điểm công cộng nên không thuộc diện này, nhưng sự kiện tại nhà riêng phải có tuỳ chọn chỉ hiện địa chỉ cho người đã được duyệt.
+**Vị trí là dữ liệu cá nhân nhạy cảm.** Hệ quả kỹ thuật: toạ độ người dùng cho tính năng "gần tôi" chỉ đi qua tham số truy vấn, **không ghi vào database**; không có bảng lịch sử vị trí; ảnh bị strip EXIF GPS trước khi công khai (mục 4.7); toạ độ sự kiện là địa điểm công cộng nên không thuộc diện này, nhưng sự kiện tại nhà riêng phải có tuỳ chọn chỉ hiện địa chỉ cho người đã được duyệt.
 
 ---
 
@@ -1981,7 +1981,7 @@ Phiên bản theo SemVer; backend và web dùng tag `v*`, mobile dùng tag `mobi
 | Đăng ký brandname SMS với nhà mạng | 1–3 triệu VND thiết lập + phí duy trì | Trước M3 |
 | Kiểm thử thâm nhập (khi có người dùng thật) | 2.000–5.000 USD | Trước hoặc ngay sau M6 |
 
-Chi phí pháp lý (thủ tục thông báo / giấy phép mạng xã hội, tư vấn luật sư) thuộc phạm vi tài liệu 06, không tính trong bảng hạ tầng này.
+Chi phí pháp lý (thủ tục thông báo / giấy phép mạng xã hội, tư vấn luật sư) không tính trong bảng hạ tầng này.
 
 ### 13.5 Đòn bẩy giảm chi phí, xếp theo hiệu quả
 
@@ -1989,7 +1989,7 @@ Chi phí pháp lý (thủ tục thông báo / giấy phép mạng xã hội, tư
 |---|---|---|
 | Nâng tỷ lệ trúng cache CDN từ 90% lên 97% | 30–40% chi phí CDN | Đặt `immutable` cho biến thể ảnh, key bất biến (mục 4.7) |
 | Phục vụ AVIF trước, WebP dự phòng | 25–35% khối lượng ảnh | Worker sinh sẵn cả hai định dạng |
-| Ưu tiên đăng nhập social và email thay vì bắt buộc OTP | 40–60% chi phí OTP | Nhưng phụ thuộc kết luận pháp lý ở tài liệu 06 |
+| Ưu tiên đăng nhập social và email thay vì bắt buộc OTP | 40–60% chi phí OTP | Nhưng phụ thuộc kết luận pháp lý, hiện chưa chốt |
 | Hoãn read replica tới khi p95 truy vấn đọc > 80 ms | ~88 USD/tháng ở mốc B | Có số đo mới bật, không bật theo cảm tính |
 | Nén và lấy mẫu log; giữ log chi tiết 14 ngày, log tổng hợp 90 ngày | 20–30% chi phí lưu trữ và Sentry | |
 | Lấy mẫu trace của Sentry 10% ở production | 30–50% hạn mức Sentry | Lỗi vẫn giữ 100%, chỉ lấy mẫu trace hiệu năng |
@@ -2013,9 +2013,9 @@ Ba khoản có thể tăng gấp mười trong một đêm — bắt buộc đ�
 
 | Ràng buộc | Nội dung |
 |---|---|
-| **Pháp lý** | Nghị định 147/2024/NĐ-CP (dịch vụ mạng xã hội), Luật An ninh mạng 116/2025/QH15 (hiệu lực 01/07/2026), Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15 và Nghị định 356/2025/NĐ-CP (thay thế Nghị định 13/2023/NĐ-CP). Chuyển dữ liệu cá nhân ra nước ngoài buộc phải lập **TIA** và nộp trong 60 ngày; vi phạm phạt tới 5% doanh thu năm liền kề hoặc tối đa 3 tỷ đồng (tài liệu 06, kết luận #8) |
+| **Pháp lý** | Nghị định 147/2024/NĐ-CP (dịch vụ mạng xã hội), Luật An ninh mạng 116/2025/QH15 (hiệu lực 01/07/2026), Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15 và Nghị định 356/2025/NĐ-CP (thay thế Nghị định 13/2023/NĐ-CP). Chuyển dữ liệu cá nhân ra nước ngoài buộc phải lập **TIA** và nộp trong 60 ngày; vi phạm phạt tới 5% doanh thu năm liền kề hoặc tối đa 3 tỷ đồng |
 | **Độ trễ** | Người dùng ở Đà Nẵng, dùng 4G và Wi-Fi gia đình. Chất lượng đường truyền quốc tế của Việt Nam phụ thuộc vài tuyến cáp quang biển, và sự cố đứt cáp là chuyện xảy ra vài lần mỗi năm |
-| **Chi phí** | Xem [mục 13](#13-ước-tính-chi-phí-hạ-tầng). Thêm nghĩa vụ khấu trừ thuế nhà thầu nước ngoài khi trả tiền cho nhà cung cấp ngoài (tài liệu 06, kết luận #12) |
+| **Chi phí** | Xem [mục 13](#13-ước-tính-chi-phí-hạ-tầng). Thêm nghĩa vụ khấu trừ thuế nhà thầu nước ngoài khi trả tiền cho nhà cung cấp ngoài |
 | **Năng lực vận hành** | Đội nhỏ. Càng ít dịch vụ managed thì càng nhiều việc tự làm |
 
 ### 14.2 Độ trễ tham chiếu từ Đà Nẵng
@@ -2092,7 +2092,7 @@ Ba điều kiện, chạm bất kỳ điều nào thì mở lại thảo luận 
 
 ## 15. Bảo mật, quyền riêng tư và tuân thủ
 
-Chi tiết pháp lý thuộc tài liệu 06; chi tiết an toàn cộng đồng thuộc tài liệu 05. Mục này chỉ liệt kê nghĩa vụ **kỹ thuật** tương ứng.
+Chi tiết an toàn cộng đồng thuộc tài liệu 05. Mục này chỉ liệt kê nghĩa vụ **kỹ thuật** tương ứng.
 
 | Lớp | Biện pháp bắt buộc ở MVP |
 |---|---|
@@ -2103,7 +2103,7 @@ Chi tiết pháp lý thuộc tài liệu 06; chi tiết an toàn cộng đồng 
 | Bí mật | Xem mục 10.3; `gitleaks` chạy ở CI |
 | Phụ thuộc | Dependabot hằng tuần; `pnpm audit` mức `high` chặn merge; `osv-scanner` |
 | Tối thiểu hoá dữ liệu | Không thu thập thứ chưa dùng đến. Không lưu lịch sử vị trí. Số điện thoại lưu dạng băm để so trùng, dạng mã hoá chỉ để gửi lại tin |
-| Dữ liệu nhạy cảm | Toạ độ là dữ liệu nhạy cảm (tài liệu 06, kết luận #6) → tách bảng, có consent riêng, ghi log truy cập |
+| Dữ liệu nhạy cảm | Toạ độ là dữ liệu nhạy cảm → tách bảng, có consent riêng, ghi log truy cập |
 | Quyền của chủ thể dữ liệu | `GET /me/data-export` (xuất JSON qua job nền, gửi link có hạn), `POST /me/deletion-request` (xoá mềm ngay, ẩn danh hoá theo lịch 30 ngày, giữ lại tối thiểu bản ghi cần cho an toàn cộng đồng) |
 | Lưu trữ và xoá | Log chi tiết 14 ngày, log tổng hợp 90 ngày, `notification_log` 180 ngày, ảnh của tài khoản đã xoá gỡ trong 30 ngày |
 | Ghi vết | `audit_log` cho hành động quản trị: ai, lúc nào, trên tài nguyên nào, giá trị trước và sau |
@@ -2142,7 +2142,7 @@ Chi tiết pháp lý thuộc tài liệu 06; chi tiết an toàn cộng đồng 
 
 | # | Rủi ro | Xác suất | Tác động | Cách giảm thiểu | Dấu hiệu sớm |
 |---|---|---|---|---|---|
-| R1 | Xác thực số điện thoại xung đột với người dùng expat (tài liệu 06, #5) | Cao | Rất cao | Kiến trúc adapter tách rời (7.6); cờ `FEATURE_PHONE_OTP_REQUIRED` để đổi chính sách không cần deploy; xin ý kiến luật sư trước Sprint 4 | Luật sư chưa có kết luận sau Sprint 3 |
+| R1 | Xác thực số điện thoại xung đột với người dùng expat | Cao | Rất cao | Kiến trúc adapter tách rời (7.6); cờ `FEATURE_PHONE_OTP_REQUIRED` để đổi chính sách không cần deploy; xin ý kiến luật sư trước Sprint 4 | Luật sư chưa có kết luận sau Sprint 3 |
 | R2 | Tranh chấp chỗ khi RSVP làm vượt sức chứa | Trung bình | Cao | `SELECT ... FOR UPDATE` trên bản ghi sự kiện + ràng buộc `CHECK` ở DB + test tải đồng thời trong CI | Test tranh chấp bị bỏ qua khi vội |
 | R3 | Metro bundler gãy trong monorepo pnpm | Cao | Trung bình | `node-linker=hoisted` từ Sprint 0 (mục 5.1); ghim phiên bản; ghi rõ trong README | Lỗi "unable to resolve module" ngay tuần đầu |
 | R4 | Deep link Android hỏng ở bản phát hành | Cao | Trung bình | Khai vân tay SHA-256 của cả khoá Play App Signing (8.4); checklist kiểm thử là gate của M5 | Link chỉ chạy ở bản debug |

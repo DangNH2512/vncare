@@ -2063,7 +2063,7 @@ tiên trong dải "Featured".
 
 > Mọi câu hỏi gắn nhãn **CẦN LUẬT SƯ XÁC NHẬN** (Q-01, Q-02) phải được rà theo **Luật Bảo vệ dữ liệu cá nhân
 > 91/2025/QH15** — từ **01/01/2026** đây là văn bản hiệu lực cao hơn Nghị định 13/2023/NĐ-CP, và **mọi mẫu biểu,
-> thông báo, văn bản đồng ý phải theo Luật 91/2025**. Chi tiết ở `06-phap-ly-va-tuan-thu-viet-nam.md`.
+> thông báo, văn bản đồng ý phải theo Luật 91/2025**.
 
 ---
 
@@ -2123,7 +2123,7 @@ Mã `MT-xx` là số hiệu mâu thuẫn đã tồn tại giữa các bản phâ
 
 | Mã | Quyết định | Ghi chú |
 |---|---|---|
-| **D-27** | Nêu **cả** Nghị định 13/2023/NĐ-CP **và** Luật Bảo vệ dữ liệu cá nhân **91/2025/QH15** trong mọi tài liệu tuân thủ; ghi rõ **từ 01/01/2026 Luật 91/2025 là văn bản hiệu lực cao hơn**, và **mọi mẫu biểu phải theo Luật 91/2025** | **CẦN LUẬT SƯ XÁC NHẬN** — chi tiết ở `06-phap-ly-va-tuan-thu-viet-nam.md` |
+| **D-27** | Nêu **cả** Nghị định 13/2023/NĐ-CP **và** Luật Bảo vệ dữ liệu cá nhân **91/2025/QH15** trong mọi tài liệu tuân thủ; ghi rõ **từ 01/01/2026 Luật 91/2025 là văn bản hiệu lực cao hơn**, và **mọi mẫu biểu phải theo Luật 91/2025** | **CẦN LUẬT SƯ XÁC NHẬN** |
 | **D-28** | Quyền `user.anonymize`, `content.purge` và mọi thao tác thực thi quyền của chủ thể dữ liệu chỉ nằm ở **`super_admin`** | Gắn với nghĩa vụ theo Luật 91/2025; ẩn danh hoá giữ lại bản ghi tham gia ở dạng không định danh để không phá vỡ số liệu lịch sử và hồ sơ an toàn của người khác. **CẦN LUẬT SƯ XÁC NHẬN** |
 | **D-29** | Người ngoài tổ chức (moderator tình nguyện từ M4) **chưa được** chạm PII cho tới khi có thoả thuận xử lý dữ liệu theo Luật 91/2025 | Chốt tạm thời cho tới khi Q-01 được trả lời; hàng đợi kiểm duyệt cho tình nguyện viên **che PII mặc định**. **CẦN LUẬT SƯ XÁC NHẬN** |
 

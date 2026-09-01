@@ -42,7 +42,7 @@ scorecard mặc định là chỉ số của một nền tảng sự kiện, kh�
   số "hôm nay" sẽ lệch — đặc biệt với sự kiện buổi tối gần mốc 00:00 UTC (07:00 giờ VN).
 - **Quyền riêng tư khi phân tích:** báo cáo ở mức tổng hợp. Không xuất email, số
   điện thoại hay toạ độ chính xác của người dùng ra scorecard; nhóm nhỏ hơn 5
-  người thì gộp lại để không định danh ngược (Nghị định 13/2023/ND-CP).
+  người thì gộp lại để không định danh ngược.
 - **Output:** scorecard + hành động đề xuất; đầu việc rơi vào `DAILY_TASKS.md`
   hoặc `.agent/future-plans/` qua [roadmap-update](../roadmap-update/SKILL.md).
 

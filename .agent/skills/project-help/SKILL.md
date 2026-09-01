@@ -157,8 +157,8 @@ Quy tắc cần nhắc khi liên quan:
   đồng thời `en.json` + `vi.json`.
 - **UGC:** mọi nội dung do người dùng tạo (sự kiện, ảnh, bình luận, hồ sơ) phải
   đi qua luồng kiểm duyệt — report, ẩn tạm, duyệt/từ chối.
-- **Quyền riêng tư:** tuân thủ Nghị định 13/2023/ND-CP — có cơ sở pháp lý cho mỗi
-  loại dữ liệu cá nhân, cho phép người dùng tự xoá tài khoản/dữ liệu.
+- **Quyền riêng tư:** chỉ thu thập trường dữ liệu thật sự dùng tới, mặc định ẩn,
+  cho phép người dùng tự xoá tài khoản/dữ liệu.
 - **Done = `tsc` pass + luồng thật đã xác nhận** (API/trình duyệt/thiết bị), chứ
   không chỉ compile.
 - Tính năng lớn (>8 file): DỪNG -> lập kế hoạch đầy đủ -> chờ duyệt.

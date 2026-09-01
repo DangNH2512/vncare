@@ -106,7 +106,7 @@ open -a "Visual Studio Code" _evidence/*.png   # hoặc: code -r _evidence/*.png
 - Nói thẳng đây là ảnh chụp thật từ `simctl`/browser, và agent **không** chụp được
   cửa sổ VS Code của người dùng.
 - **Che dữ liệu cá nhân** trước khi đưa ảnh vào doc hay chia sẻ: thông tin liên hệ,
-  toạ độ nhà, danh sách người tham gia sự kiện (Nghị định 13/2023/NĐ-CP).
+  toạ độ nhà, danh sách người tham gia sự kiện.
 
 ### 4b. Surface cần đăng nhập mà không có tài khoản — bằng chứng an toàn
 

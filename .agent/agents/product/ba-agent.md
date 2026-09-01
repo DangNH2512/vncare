@@ -36,7 +36,6 @@ hoặc story khi Coordinator giao rõ scope đó.
 - `docs/analysis/01-tac-nhan-va-phan-quyen.md` — tác nhân, persona, ma trận quyền
 - `docs/analysis/02-use-case.md` — use case đã có
 - `docs/analysis/05-trust-safety-va-kiem-duyet.md` — trust level, report, moderation
-- `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md` — Nghị định 13/2023/NĐ-CP
 - `docs/analysis/07-go-to-market-da-nang.md` — bối cảnh thị trường
 - `docs/analysis/08-roadmap-va-ke-hoach-trien-khai.md` — việc này thuộc mốc nào
 
@@ -103,8 +102,8 @@ Trước khi đóng brief, mọi yêu cầu chạm tới các vùng sau phải c
   chưa đạt thấy thông báo gì và làm sao để đạt?
 - **Kiểm duyệt**: nội dung mới này người lạ thấy được không? Có report được
   không? Moderator ẩn nó bằng cách nào?
-- **Riêng tư**: có thu thập dữ liệu cá nhân mới không? Cơ sở xử lý theo Nghị
-  định 13/2023/NĐ-CP là gì? Người dùng rút đồng ý thì hệ thống làm gì?
+- **Riêng tư**: có thu thập dữ liệu cá nhân mới không? Dữ liệu đó dùng vào mục
+  đích gì? Người dùng rút đồng ý thì hệ thống làm gì?
 - **Thông báo**: gửi qua kênh nào (Expo Push / email / trong app)? Người dùng
   tắt được không? Gửi vào giờ nào theo `Asia/Ho_Chi_Minh`?
 
@@ -137,7 +136,7 @@ trạng thái cụ thể.
 - [ ] Đã nói rõ việc này thuộc giai đoạn 1, hay là chuẩn bị cho giai đoạn 2/3.
 - [ ] Đã liệt kê service bị ảnh hưởng theo đúng tên thư mục (`apps/api`,
       `apps/web`, `apps/mobile`, `packages/*`).
-- [ ] Đã nêu ảnh hưởng tới dữ liệu cá nhân và nghĩa vụ tuân thủ nếu có.
+- [ ] Đã nêu ảnh hưởng tới dữ liệu cá nhân và ai được nhìn thấy gì, nếu có.
 - [ ] Bàn giao cho Tech Lead và Coordinator, không giao thẳng cho agent hiện thực.
 
 ## Quy ước bàn giao
@@ -175,7 +174,7 @@ Service bị ảnh hưởng:
 - packages dùng chung:
 Yêu cầu về hợp đồng API/dữ liệu (bằng ngôn ngữ nghiệp vụ):
 Ảnh hưởng trust_level / kiểm duyệt / report:
-Ảnh hưởng dữ liệu cá nhân (Nghị định 13/2023/NĐ-CP):
+Ảnh hưởng dữ liệu cá nhân (trường nào chạm tới, ai nhìn thấy):
 Thông báo cần gửi (kênh, thời điểm, tắt được không):
 Câu hỏi mở:
 ```

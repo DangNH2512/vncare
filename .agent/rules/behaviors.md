@@ -146,8 +146,8 @@ Trước khi sửa, kiểm tra kích thước bằng `wc -l`.
   key, hoặc thông tin DB production.
 - Thay đổi chạm auth, thanh toán (giai đoạn sau), RSVP, kiểm duyệt, hoặc dữ liệu
   cá nhân phải xác minh trọn đường request.
-- Dữ liệu cá nhân xử lý theo Nghị định 13/2023/NĐ-CP: có mục đích rõ ràng, có cơ
-  sở pháp lý, không log PII thô, tôn trọng quyền xoá và rút lại đồng ý.
+- Dữ liệu cá nhân chỉ xử lý khi có mục đích rõ ràng và có đồng ý của người dùng:
+  không log PII thô, tôn trọng yêu cầu xoá và rút lại đồng ý.
 
 ---
 
@@ -162,7 +162,6 @@ cùng task.
 | Schema DB | `docs/analysis/03-domain-va-du-lieu.md` |
 | Vai trò, phân quyền, tier tin cậy | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
 | Kiểm duyệt, an toàn cộng đồng | `docs/analysis/05-trust-safety-va-kiem-duyet.md` |
-| Quyền riêng tư, tuân thủ | `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md` |
 | Docker / deploy / topology server | `ops/**` + `docs/analysis/04-tech-stack-va-kien-truc.md` |
 | Tech stack / runtime | `README.md` |
 

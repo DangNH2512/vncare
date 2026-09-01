@@ -43,8 +43,6 @@ description: Checklist kết phiên tự động — chạy vào cuối mỗi ph
 □ Có DTO/enum dùng chung mới → export ở packages/shared-types và ghi tài liệu
 □ Có hook/component mới (apps/web hoặc apps/mobile) → cập nhật docs/analysis/10-ux-luong-man-hinh-va-i18n.md
 □ Có lệnh/fixture E2E mới → cập nhật .agent/rules/test-file-placement.md
-□ Có trường dữ liệu cá nhân mới được thu thập → cập nhật docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md (Nghị
-  định 13/2023/ND-CP: mục đích, cơ sở pháp lý, thời hạn lưu trữ)
 ```
 
 ### 4. Ảnh chụp ngữ cảnh (cho phiên sau)

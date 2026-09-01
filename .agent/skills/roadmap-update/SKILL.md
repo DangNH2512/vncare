@@ -32,7 +32,7 @@ Cập nhật, tạo mới hoặc sắp xếp lại thứ tự ưu tiên cho road
   **chi phí cao** mọi sáng kiến chạm vào:
   - schema DB (cổng STOP cho migration) hoặc mở rộng PostGIS,
   - API công khai (cổng breaking-change) và `packages/shared-types`,
-  - dữ liệu cá nhân (phải rà Nghị định 13/2023/ND-CP trước khi làm),
+  - dữ liệu cá nhân (phải rà lại phạm vi thu thập và thời hạn lưu trữ trước khi làm),
   - luồng kiểm duyệt UGC hoặc trust level (chạm cả sản phẩm lẫn vận hành),
   - phát hành store (App Store/Play Store review chặn ngày ra mắt, không rút ngắn được).
 

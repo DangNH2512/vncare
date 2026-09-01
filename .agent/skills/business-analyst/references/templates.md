@@ -69,7 +69,7 @@ controller · service · repository · module + `dto/`. Kiểu dùng chung:
 
 - Ai thấy gì ở mỗi `trust_level` / `location_precision` / `status`.
 - Đường report → hành động → `audit_log` → khiếu nại.
-- Dữ liệu cá nhân thu thập: gì · vì sao · lưu bao lâu (Nghị định 13/2023/NĐ-CP).
+- Dữ liệu cá nhân thu thập: gì · vì sao · lưu bao lâu · xoá thế nào.
 
 ## UI Files
 

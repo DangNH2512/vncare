@@ -67,7 +67,7 @@ Truy ngược sự thật, **ưu tiên quan sát trực tiếp**:
    cả 2 platform ở cả `en` lẫn `vi`; chụp lại hành vi thực tế. How-to + checklist
    quan sát: [`../qa-tester/references/observe-reality.md`](../qa-tester/references/observe-reality.md).
 1. **Tài liệu phân tích nền** — [`docs/analysis/`](../../../docs/analysis/): actor & RBAC (01),
-   use case (02), domain & dữ liệu (03), tech stack (04), trust & safety (05), pháp lý (06),
+   use case (02), domain & dữ liệu (03), tech stack (04), trust & safety (05),
    go-to-market (07), roadmap (08). Đây là canon nghiệp vụ.
 2. **Feature doc** — `docs/features/<feature>.md` (đối chiếu với cái vừa nhìn thấy).
 3. **Screen spec** — `docs/specs/screens/`, `docs/specs/features/`.
@@ -182,7 +182,7 @@ Ví dụ đầy đủ + nhiều mẫu trong [`references/templates.md`](referenc
    và điều gì xảy ra khi token hết hạn.
 9. **SEO cho trang public web** (Next.js 15 App Router): SSR, `generateMetadata()`,
    `notFound()` cho 404 (không render "không tìm thấy" thủ công → soft-404).
-10. **Quyền riêng tư theo Nghị định 13/2023/NĐ-CP.** Không lưu dữ liệu không dùng
+10. **Quyền riêng tư & tối thiểu hoá dữ liệu.** Không lưu dữ liệu không dùng
     (không lưu lịch sử vị trí, không lưu ảnh giấy tờ sau khi xác minh). Spec đụng
     dữ liệu cá nhân phải nêu: thu thập gì, vì sao, lưu bao lâu, xoá thế nào.
 11. **Đặt đúng giai đoạn.** GĐ1 = kết nối cộng đồng (đang làm). GĐ2 = nhà ở.

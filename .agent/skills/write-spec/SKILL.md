@@ -42,7 +42,7 @@ Viết đặc tả tính năng (feature spec) hoặc tài liệu yêu cầu sả
   | **Kiểm duyệt UGC** | Nội dung có report được không? Ẩn được mà không xoá? Hành động vận hành ghi `audit_log` bất biến? |
   | **Cross-platform parity** | Hành vi tồn tại ở cả `apps/web` và `apps/mobile`? Khác biệt chính đáng đã ghi lý do? |
   | **SEO** | Trang public trên web có SSR + `generateMetadata()` + JSON-LD `Event` + `notFound()` cho 404? |
-  | **Dữ liệu cá nhân** | Thu thập gì, vì sao, lưu bao lâu, xoá thế nào — Nghị định 13/2023/NĐ-CP. |
+  | **Dữ liệu cá nhân** | Thu thập gì, vì sao, lưu bao lâu, xoá thế nào — thu tối thiểu, trả về qua DTO allow-list. |
   | **Migration** | Có đổi schema không? Nếu có → DỪNG xin phê duyệt (skill [`database-migrations`](../database-migrations/SKILL.md)). |
 
 - Với feature còn mơ hồ hoặc hoàn toàn mới, chạy [feature-discovery](../feature-discovery/SKILL.md)
@@ -72,7 +72,7 @@ cái quan trọng nhất trước, lấp chỗ trống dần:
 - **Vấn đề của người dùng**: giải quyết vấn đề gì? Ai gặp phải?
 - **Người dùng mục tiêu**: phục vụ nhóm nào (member mới tới · organizer nghiệp dư · organizer chuyên nghiệp · local host · curator · moderator)?
 - **Chỉ số thành công**: làm sao biết là đã thành công?
-- **Ràng buộc**: kỹ thuật, thời gian, pháp lý (Nghị định 13/2023/NĐ-CP), phụ thuộc.
+- **Ràng buộc**: kỹ thuật, thời gian, phụ thuộc.
 - **Giai đoạn**: thuộc GĐ1 (kết nối cộng đồng), GĐ2 (nhà ở) hay GĐ3 (y tế/dịch vụ chuyên môn)?
 - **Đã có gì trước đó**: đã từng thử chưa? Có giải pháp sẵn không (xem tài liệu phân tích trong `docs/analysis/`)?
 
@@ -107,7 +107,7 @@ tiết từng mục:
 - **Requirements**: phân loại Must-Have (P0), Nice-to-Have (P1), Future (P2), mỗi cái kèm acceptance criteria
 - **NFR**: điền hết bảng NFR checklist ở phần "Tích hợp vào dự án" phía trên
 - **Success Metrics**: chỉ số dẫn (đổi nhanh) và chỉ số trễ (đổi chậm), kèm mục tiêu cụ thể
-- **Open Questions**: câu hỏi chưa có lời giải, gắn nhãn ai cần trả lời (engineering, design, legal, data)
+- **Open Questions**: câu hỏi chưa có lời giải, gắn nhãn ai cần trả lời (engineering, design, data)
 - **Timeline Considerations**: hạn cứng, phụ thuộc, và cách chia pha
 
 ### 5. Rà soát & lặp
@@ -171,7 +171,7 @@ Với mỗi requirement:
 
 ### Open Questions
 - Câu hỏi cần lời giải trước hoặc trong lúc triển khai
-- Gắn nhãn ai nên trả lời (engineering, design, legal, data, stakeholder)
+- Gắn nhãn ai nên trả lời (engineering, design, data, stakeholder)
 - Phân biệt câu hỏi chặn (phải trả lời trước khi bắt đầu) và không chặn (giải quyết dần)
 
 ### Timeline Considerations

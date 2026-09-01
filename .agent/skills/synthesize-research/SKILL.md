@@ -28,8 +28,8 @@ Synthesize user research from multiple sources into structured insights and reco
   chủ đề chỉ xuất hiện ở một khu vực, hãy nói rõ điều đó thay vì báo cáo mức toàn thành phố.
 - **Ưu tiên chủ đề liên quan an toàn:** mọi phát hiện chạm tới quấy rối, danh tính
   giả, hoặc rủi ro khi gặp mặt trực tiếp được nâng mức nghiêm trọng bất kể tần suất.
-- **Quyền riêng tư:** khi trích dẫn, ẩn danh người dùng theo Nghị định 13/2023/NĐ-CP —
-  không đưa họ tên đầy đủ, số điện thoại, email hay ảnh nhận diện vào báo cáo.
+- **Quyền riêng tư:** khi trích dẫn, luôn ẩn danh người dùng — không đưa họ tên đầy
+  đủ, số điện thoại, email hay ảnh nhận diện vào báo cáo.
 - **Đường đi của đầu ra:** chủ đề → [feature-discovery](../feature-discovery/SKILL.md)
   (năng lực mới) hoặc [write-spec](../write-spec/SKILL.md) (thay đổi có phạm vi rõ);
   khuyến nghị đã xếp ưu tiên → [roadmap-update](../roadmap-update/SKILL.md) /

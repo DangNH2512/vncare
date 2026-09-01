@@ -42,7 +42,7 @@ Key mới cần thêm, cả hai ngôn ngữ EN và VI.
 ## Riêng tư và an toàn
 
 Dữ liệu cá nhân nào bị chạm tới, ai được nhìn thấy gì. Đối chiếu
-`docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md`.
+`docs/analysis/05-trust-safety-va-kiem-duyet.md`.
 
 ## Tiêu chí nghiệm thu
 

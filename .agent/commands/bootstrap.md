@@ -23,7 +23,6 @@ Tài liệu nghiệp vụ gốc (đọc theo nhu cầu, không nạp hết):
 - `docs/analysis/03-domain-va-du-lieu.md` — mô hình dữ liệu.
 - `docs/analysis/04-tech-stack-va-kien-truc.md` — tech stack và kiến trúc monorepo.
 - `docs/analysis/05-trust-safety-va-kiem-duyet.md` — trust score và kiểm duyệt.
-- `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md` — tuân thủ Nghị định 13/2023/NĐ-CP.
 - `docs/analysis/08-roadmap-va-ke-hoach-trien-khai.md` — roadmap ba giai đoạn.
 
 Sau khi nạp, báo lại đã đọc những file nào và chế độ phòng ban dev L8 có sẵn sàng

@@ -48,7 +48,6 @@ giao tường minh trong task card.
 - `docs/analysis/01-tac-nhan-va-phan-quyen.md` — khi đụng tới quyền hạn
 - `docs/analysis/05-trust-safety-va-kiem-duyet.md` — khi đụng tới trust level,
   rate limit, report, moderation
-- `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md` — khi đụng tới dữ liệu cá nhân
 - Requirement Brief của BA và task card của Tech Lead
 
 ## Nguyên tắc làm việc
@@ -166,9 +165,8 @@ giao tường minh trong task card.
 
 ### Riêng tư
 
-- Tuân thủ Nghị định 13/2023/NĐ-CP: chỉ lưu dữ liệu thực sự dùng. Không lưu
-  lịch sử vị trí người dùng. Không lưu ảnh giấy tờ tuỳ thân — chỉ lưu kết quả
-  xác minh và mã tham chiếu.
+- Chỉ lưu dữ liệu thực sự dùng. Không lưu lịch sử vị trí người dùng. Không lưu
+  ảnh giấy tờ tuỳ thân — chỉ lưu kết quả xác minh và mã tham chiếu.
 - Số điện thoại và email lưu dạng hash có pepper khi dùng để đối chiếu.
 - Không log token, OTP, số điện thoại đầy đủ hay toạ độ chính xác của người dùng.
 

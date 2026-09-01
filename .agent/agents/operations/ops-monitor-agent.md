@@ -38,7 +38,6 @@ công, và cảnh báo mọi trường hợp dữ liệu cá nhân của ngườ
 - `.agent/rules/ownership.md`
 - `.agent/workflows/deploy.md`
 - `docs/analysis/04-tech-stack-va-kien-truc.md` — kiến trúc triển khai, môi trường
-- `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md` — nghĩa vụ với dữ liệu cá nhân
 - `docs/analysis/05-trust-safety-va-kiem-duyet.md` — tín hiệu lạm dụng ở tầng sản phẩm
 - `ops/**` khi đã tồn tại
 
@@ -92,7 +91,7 @@ công, và cảnh báo mọi trường hợp dữ liệu cá nhân của ngườ
 - Response API trả trường không dành cho người gọi.
 
 Mọi phát hiện thuộc nhóm này là **P0** và phải nêu ngay ở đầu báo cáo, kèm
-đánh giá nghĩa vụ thông báo theo Nghị định 13/2023/NĐ-CP.
+phạm vi dữ liệu bị ảnh hưởng và đề xuất cách chặn rò rỉ.
 
 ## Checklist trước khi bàn giao
 

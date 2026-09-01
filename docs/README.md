@@ -13,7 +13,6 @@ Bắt đầu từ [bản tổng hợp](analysis/00-TONG-HOP-DU-AN.md).
 | 03 | [Domain & dữ liệu](analysis/03-domain-va-du-lieu.md) | Entity, ERD, state machine, chiến lược PostGIS và tìm kiếm |
 | 04 | [Tech stack & kiến trúc](analysis/04-tech-stack-va-kien-truc.md) | Lựa chọn công nghệ, monorepo, hợp đồng API, CI/CD, chi phí hạ tầng |
 | 05 | [Trust & safety](analysis/05-trust-safety-va-kiem-duyet.md) | Rủi ro, xác thực theo tầng, kiểm duyệt, an toàn khi gặp mặt |
-| 06 | [Pháp lý & tuân thủ](analysis/06-phap-ly-va-tuan-thu-viet-nam.md) | Nghị định 13/2023, an ninh mạng, giấy phép, yêu cầu app store |
 | 07 | [Go-to-market Đà Nẵng](analysis/07-go-to-market-da-nang.md) | Bản đồ kênh, seed 100 user đầu, playbook curate, hệ thống chỉ số |
 | 08 | [Roadmap & triển khai](analysis/08-roadmap-va-ke-hoach-trien-khai.md) | Epic, sprint, milestone, đội ngũ, ngân sách |
 | 09 | [Cạnh tranh & rủi ro](analysis/09-canh-tranh-va-rui-ro.md) | Phân tích đối thủ, risk register, phân tích độ nhạy |

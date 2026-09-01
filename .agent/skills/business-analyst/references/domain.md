@@ -7,7 +7,6 @@
 > [03 — Domain & dữ liệu](../../../../docs/analysis/03-domain-va-du-lieu.md) ·
 > [04 — Tech stack & kiến trúc](../../../../docs/analysis/04-tech-stack-va-kien-truc.md) ·
 > [05 — Trust & safety](../../../../docs/analysis/05-trust-safety-va-kiem-duyet.md) ·
-> [06 — Pháp lý](../../../../docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md) ·
 > [08 — Roadmap](../../../../docs/analysis/08-roadmap-va-ke-hoach-trien-khai.md).
 > Khi bản này lệch canon → canon thắng, và sửa lại bản này.
 
@@ -126,7 +125,7 @@ chính xác, chat 1-1, rate limit tạo sự kiện. **Enforce ở tầng API.**
    *chưa có chủ* (`claim_status`), và ai đang liên hệ với chủ thật (`CurationTask`).
    Khi organizer gốc claim: quyền quản lý chuyển giao, RSVP đã có **giữ nguyên**.
 6. **Không tự động thu thập dữ liệu.** `collection_method = manual_only` + CHECK
-   constraint. Rủi ro pháp lý được chặn từ tầng schema.
+   constraint. Rủi ro được chặn ngay từ tầng schema.
 7. **Địa lý:** lọc theo `area_id` (cây phân cấp) **và/hoặc** bán kính
    `ST_DWithin(geography, geography, mét)`. Đừng dùng `geometry` rồi so sánh bằng
    độ — sai đơn vị là bug âm thầm.
@@ -135,7 +134,7 @@ chính xác, chat 1-1, rate limit tạo sự kiện. **Enforce ở tầng API.**
    "tối nay" / "cuối tuần này" tính theo `Asia/Ho_Chi_Minh`.
 9. **Xoá 3 tầng:** `status` (ẩn) → `deleted_at` (soft delete) → anonymize/hard
    delete theo lịch. Giữ được toàn vẹn lịch sử tham gia và hồ sơ an toàn.
-10. **Dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP:** không lưu cái không dùng
+10. **Tối thiểu hoá dữ liệu cá nhân:** không lưu cái không dùng
     (không lưu lịch sử vị trí, không lưu ảnh giấy tờ). Có quyền truy cập, chỉnh
     sửa, rút đồng ý, xoá tài khoản.
 11. **i18n:** UI tiếng Anh mặc định, tiếng Việt thứ hai (`en.json` / `vi.json`).

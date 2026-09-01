@@ -3,7 +3,7 @@
 > **Sản phẩm:** Da Nang Connect — nền tảng kết nối cộng đồng người nước ngoài (expat) tại Đà Nẵng.
 > **Phạm vi tài liệu:** Giai đoạn 1 (Kết nối cộng đồng: sự kiện, thể thao, trao đổi ngôn ngữ), cửa sổ 09/2026 → 03/2027, chỉ thị trường Đà Nẵng.
 > **Ngày lập:** 31/08/2026 · **Phiên bản:** 1.0 · **Chu kỳ rà soát:** risk register rà soát thứ Hai hằng tuần, đối thủ rà soát ngày 01 hằng tháng.
-> **Tài liệu liên quan:** `docs/analysis/05-trust-safety-va-kiem-duyet.md` (rủi ro an toàn nội dung, mã `R-xx`), `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md` (khung pháp lý), `docs/analysis/07-go-to-market-da-nang.md` (thị trường, kênh, phễu seed), `docs/analysis/08-roadmap-va-ke-hoach-trien-khai.md` (mốc M0–M6, ngân sách).
+> **Tài liệu liên quan:** `docs/analysis/05-trust-safety-va-kiem-duyet.md` (rủi ro an toàn nội dung, mã `R-xx`), `docs/analysis/07-go-to-market-da-nang.md` (thị trường, kênh, phễu seed), `docs/analysis/08-roadmap-va-ke-hoach-trien-khai.md` (mốc M0–M6, ngân sách).
 
 > ⚠️ **Không trùng mã:** tài liệu 05 dùng mã `R-01 … R-14` cho **rủi ro an toàn & nội dung ở cấp người dùng**. Tài liệu này dùng mã `RK-01 … RK-17` cho **rủi ro cấp doanh nghiệp**. Bảng tra cứu chéo ở Phụ lục A.
 
@@ -532,7 +532,7 @@ D4 = 4 là **điểm cao nhất toàn bảng**: đây là công ty có vốn, c�
 
 **Mức độ đe dọa: 🟡 Thấp — 5/20 (D1=2, D2=1, D3=1, D4=1)**
 
-**Cách thắng:** không cần chiến lược riêng. **Điểm cần lưu ý là cơ hội, không phải đe dọa:** khi Da Nang Connect mở tính năng sự kiện thu phí (ngoài phạm vi Giai đoạn 1), Eventbrite là chuẩn tham chiếu về luồng thanh toán và chính sách hoàn tiền — nhưng lưu ý ràng buộc thuế và pháp lý ở `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md`.
+**Cách thắng:** không cần chiến lược riêng. **Điểm cần lưu ý là cơ hội, không phải đe dọa:** khi Da Nang Connect mở tính năng sự kiện thu phí (ngoài phạm vi Giai đoạn 1), Eventbrite là chuẩn tham chiếu về luồng thanh toán và chính sách hoàn tiền — nhưng ràng buộc thuế và pháp lý của mô hình thu phí phải được rà lại trước khi mở tính năng đó.
 
 ---
 
@@ -661,7 +661,7 @@ Hệ quả: mọi nỗ lực xây "trang sự kiện Đà Nẵng" trước đây
 
 #### Lý do 3 — Rào cản pháp lý Việt Nam loại bỏ hầu hết đối thủ nước ngoài
 
-Theo `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md`:
+Các ràng buộc chính:
 
 - Sản phẩm có tài khoản + hồ sơ + đăng nội dung + tương tác = **dịch vụ mạng xã hội** theo Nghị định 147/2024/NĐ-CP. Không né được bằng cách gọi tên khác.
 - Điều kiện cấp phép yêu cầu **tổ chức/doanh nghiệp có trụ sở tại Việt Nam**, có bộ phận quản lý nội dung, và **nhân sự chịu trách nhiệm nội dung là công dân Việt Nam**.

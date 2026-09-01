@@ -39,12 +39,12 @@ Mọi thay đổi bảng/cột/enum/index đều phải qua
 [`.agent/skills/database-migrations/SKILL.md`](../database-migrations/SKILL.md)
 và cần người dùng duyệt **trước khi** viết migration. `synchronize` luôn `false`.
 
-### Bước 0.3 — Cổng dữ liệu cá nhân
+### Bước 0.3 — Cổng dữ liệu nhạy cảm
 
-Tính năng nào chạm vào dữ liệu cá nhân (hồ sơ, số điện thoại, vị trí, ảnh, lịch sử
+Tính năng nào chạm vào dữ liệu nhạy cảm (hồ sơ, số điện thoại, vị trí, ảnh, lịch sử
 tham gia sự kiện) phải đối chiếu
-`docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md` — Nghị định 13/2023/NĐ-CP yêu
-cầu có cơ sở pháp lý cho từng mục đích xử lý, không thu thập thừa.
+`docs/analysis/05-trust-safety-va-kiem-duyet.md`: chỉ lưu trường thật sự dùng tới,
+mặc định ẩn, có đường xoá, không đẩy ra response công khai và không ghi vào log.
 
 ---
 
@@ -360,6 +360,5 @@ Schema đầy đủ (cột, index, ràng buộc) → `docs/analysis/03-domain-va
 | **Domain model & schema** | `docs/analysis/03-domain-va-du-lieu.md` |
 | **Tech stack & kiến trúc (đầy đủ)** | `docs/analysis/04-tech-stack-va-kien-truc.md` |
 | **Trust & safety, kiểm duyệt** | `docs/analysis/05-trust-safety-va-kiem-duyet.md` |
-| **Pháp lý & tuân thủ Việt Nam** | `docs/analysis/06-phap-ly-va-tuan-thu-viet-nam.md` |
 | **Go-to-market Đà Nẵng** | `docs/analysis/07-go-to-market-da-nang.md` |
 | **Roadmap & kế hoạch triển khai** | `docs/analysis/08-roadmap-va-ke-hoach-trien-khai.md` |

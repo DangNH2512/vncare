@@ -116,7 +116,7 @@ viewport mobile trước**, desktop/tablet là variant:
 - Nếu screenshot không khớp expectation → **report rõ "evidence invalid", không bury**.
 - File name = label, KHÔNG phải fact. Visual content = fact.
 - **Che dữ liệu cá nhân** trước khi đưa screenshot vào doc/report: địa chỉ liên hệ,
-  toạ độ nhà, số điện thoại của người tham gia sự kiện (Nghị định 13/2023/NĐ-CP).
+  toạ độ nhà, số điện thoại của người tham gia sự kiện.
 
 ---
 

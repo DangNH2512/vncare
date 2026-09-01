@@ -183,7 +183,7 @@ Bảng TC-ID với cột API / Web Desktop / Web Mobile / Mobile App.
 
 Cột status: ✅ pass · ❌ fail · ⚠️ flaky · ➖ N/A · ⏳ chưa chạy.
 Evidence (screenshot) → `docs/test-case/evidence/<session>/<TC-ID>.png`, **đã che dữ
-liệu cá nhân** (Nghị định 13/2023/NĐ-CP).
+liệu cá nhân**.
 
 ---
 

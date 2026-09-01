@@ -26,7 +26,6 @@ Create a competitive analysis brief for one or more competitors or a feature are
   - Kiểm duyệt nội dung người dùng tạo và an toàn cộng đồng như một tính năng bán được, không phải chi phí.
   - Chống no-show: hàng chờ, nhắc lịch qua Expo Push, hệ quả rõ ràng cho người bỏ hẹn — điểm đau lớn nhất của sự kiện RSVP miễn phí.
   - Mô hình đa nền tảng (API + web + mobile) do cùng một đội vận hành, cho phép trải nghiệm gắn kết hơn sản phẩm chỉ có web.
-  - Tuân thủ Nghị định 13/2023/NĐ-CP về dữ liệu cá nhân — lợi thế pháp lý tại Việt Nam mà nền tảng nước ngoài thường bỏ ngỏ.
 - **Lộ trình so sánh theo giai đoạn:** Giai đoạn 1 so với nền tảng sự kiện/cộng đồng ở trên. Giai đoạn 2 (nhà ở) sẽ so với nhóm khác — chợ thuê nhà và group cho thuê. Giai đoạn 3 (y tế / dịch vụ chuyên môn) lại là bộ đối thủ thứ ba. Đừng trộn ba bộ này vào cùng một ma trận.
 - **Ghép nối skill:** so sánh ở mức tính năng chảy vào [feature-discovery](../feature-discovery/SKILL.md) (JTBD/feature map); hàm ý chiến lược chảy vào [roadmap-update](../roadmap-update/SKILL.md).
 - **Đầu ra:** lưu bản brief trong `docs/product/` (áp dụng [doc-formatting](../doc-formatting/SKILL.md) nếu cần xuất file); biến thể battle-card nhắm vào hội thoại thuyết phục host và đối tác địa phương (quán cà phê, phòng gym, trung tâm ngôn ngữ) nhận tổ chức sự kiện trên nền tảng.
@@ -223,8 +222,8 @@ sánh được với nhau qua thời gian):
 |   Hiểu bối cảnh Đà Nẵng  |                 |        |                 |      |              |           |          |
 | Mobile experience        |                 |        |                 |      |              |           |          |
 |   App native + push      |                 |        |                 |      |              |           |          |
-| Privacy & compliance     |                 |        |                 |      |              |           |          |
-|   Tuân thủ Nghị định 13/2023/NĐ-CP |       |        |                 |      |              |           |          |
+| Privacy                  |                 |        |                 |      |              |           |          |
+|   Kiểm soát hiển thị hồ sơ & vị trí |      |        |                 |      |              |           |          |
 ```
 
 ### Tips for Feature Comparison

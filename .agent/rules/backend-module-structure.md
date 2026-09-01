@@ -57,9 +57,9 @@ apps/api/src/modules/<name>/
    không `Object.assign`. Thêm trường vào response phải là hành động có chủ đích.
    Kế thừa qua mapped type (§2.1) không vi phạm luật này — tập trường vẫn tường
    minh vì suy ra được từ DTO gốc.
-4. **Dữ liệu cá nhân đi qua bộ lọc.** Theo Nghị định 13/2023/NĐ-CP, email và số điện
-   thoại chỉ xuất hiện trong response của chính chủ thể dữ liệu, không bao giờ trong
-   response danh sách công khai. Người khác chỉ thấy `displayName` và `avatarUrl`.
+4. **Dữ liệu cá nhân đi qua bộ lọc.** Email và số điện thoại chỉ xuất hiện trong
+   response của chính chủ thể dữ liệu, không bao giờ trong response danh sách công
+   khai. Người khác chỉ thấy `displayName` và `avatarUrl`.
 5. **Swagger sinh từ DTO.** Mọi trường có `@ApiProperty` kèm mô tả và ví dụ; đây là
    nguồn duy nhất để `apps/web` và `apps/mobile` sinh type client.
 6. **Type dùng chung nằm ở `packages/shared-types`.** Enum (`RsvpStatus`,

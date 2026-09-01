@@ -11,8 +11,8 @@ description: Checklist bảo mật tại thời điểm code review cho Da Nang 
 
 **Ngữ cảnh:** `apps/api` (NestJS + TypeORM + PostgreSQL/PostGIS + Redis/BullMQ),
 `apps/web` (Next.js), `apps/mobile` (Expo). Người dùng là expat tại Đà Nẵng, dữ liệu
-xử lý gồm hồ sơ cá nhân, vị trí và nội dung do người dùng tạo — chịu ràng buộc của
-**Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân**.
+xử lý gồm hồ sơ cá nhân, vị trí và nội dung do người dùng tạo — đều là **dữ liệu nhạy
+cảm**, áp nguyên tắc thu tối thiểu và lộ tối thiểu.
 
 ## Khi nào chạy
 
@@ -92,10 +92,10 @@ export class SearchEventsDto {
 - [ ] Chỉ dùng repository pattern (theo Top-6 rule: không query DB trong Service).
 - [ ] Không lộ cột nhạy cảm trong response API (password hash, token, `providerId`,
       device token, email của người tham gia khác).
-- [ ] Xoá tài khoản/nội dung thực sự xoá hoặc ẩn danh dữ liệu liên quan (quyền được xoá
-      dữ liệu theo Nghị định 13/2023/NĐ-CP), không để lại bản sao trong cache/index/S3.
+- [ ] Xoá tài khoản/nội dung thực sự xoá hoặc ẩn danh dữ liệu liên quan, không để lại
+      bản sao trong cache/index/S3.
 
-## 5. Dữ liệu cá nhân & vị trí (Nghị định 13/2023/NĐ-CP)
+## 5. Dữ liệu cá nhân & vị trí
 
 - [ ] Thu thập tối thiểu: mỗi field cá nhân phải có lý do rõ ràng cho tính năng đang làm.
 - [ ] Response đi qua **DTO allow-list**, không `return entity` nguyên cục.

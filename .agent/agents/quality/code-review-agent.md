@@ -91,7 +91,7 @@ khi Coordinator giao một scope tài liệu/test hẹp.
 - Input có validate bằng DTO không? Lỗi trả có mã lỗi hay trả 500 trần?
 - Có log token, OTP, số điện thoại đầy đủ, toạ độ chính xác không?
 - Có lưu dữ liệu cá nhân không cần thiết không (lịch sử vị trí, ảnh giấy tờ)?
-  Nghị định 13/2023/NĐ-CP yêu cầu chỉ lưu cái thực sự dùng.
+  Chỉ lưu cái thực sự dùng.
 - Ảnh có đi qua API không? Phải dùng presigned URL.
 - `location_precision` có bị bỏ qua ở đâu đó, làm lộ vị trí chính xác không?
 - Mọi mutation có `AuditLog` không?

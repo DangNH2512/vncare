@@ -36,8 +36,8 @@ Tự mở khi task vừa xong có bất kỳ điểm nào sau đây:
   `apps/mobile`, socket.io, Expo push notification, job BullMQ.
 - Truy vấn không gian PostGIS (SRID, đơn vị mét, thứ tự `lng/lat`) hoặc chuyện
   timezone (lưu UTC ↔ hiển thị `Asia/Ho_Chi_Minh`).
-- Auth/quyền, kiểm duyệt UGC, chặn người dùng, hoặc dữ liệu cá nhân (Nghị định
-  13/2023/NĐ-CP) — chỗ hiểu sai là chỗ rò rỉ.
+- Auth/quyền, kiểm duyệt UGC, chặn người dùng, hoặc dữ liệu cá nhân — chỗ hiểu sai
+  là chỗ rò rỉ.
 - Quy tắc nghiệp vụ có trạng thái tích luỹ: trust level, no-show, hạn huỷ RSVP.
 - i18n EN/VI: nguồn chuỗi, fallback khi thiếu key, locale nào áp cho push.
 - Root cause không hiển nhiên (nhìn triệu chứng đoán không ra).
