@@ -99,7 +99,8 @@ Agent tự tick từng ô khi hoàn thành.
 - [ ] Đã viết migration DB VÀ đã revert thử một lần ở local (nếu có đổi schema)
 - [ ] Đã phủ nhánh kiểm duyệt nếu story tạo ra nội dung do người dùng đăng
       (endpoint báo cáo, trạng thái ẩn, hàng đợi duyệt)
-- [ ] Đã rà quyền riêng tư nếu lưu thêm trường dữ liệu cá nhân mới (Nghị định 13/2023/ND-CP)
+- [ ] Đã rà quyền riêng tư nếu lưu thêm trường dữ liệu cá nhân mới
+      (không ghi log token, OTP, số điện thoại đầy đủ)
 - [ ] Có E2E spec cho luồng UI mới
 - [ ] `tsc --noEmit` chạy sạch ở mọi workspace bị đụng tới
 

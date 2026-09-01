@@ -77,7 +77,8 @@ BA Agent viết Requirement Brief gồm:
 - App bị ảnh hưởng (`apps/api`, `apps/web`, `apps/mobile`, `packages/*`).
 - Kỳ vọng về hợp đồng API/dữ liệu.
 - Ảnh hưởng Trust & Safety: hàng đợi kiểm duyệt, rate limit, tín hiệu no-show.
-- Ảnh hưởng quyền riêng tư theo Nghị định 13/2023/NĐ-CP.
+- Ảnh hưởng quyền riêng tư: trường dữ liệu cá nhân mới, phạm vi hiển thị dữ liệu đó,
+  và dữ liệu nào tuyệt đối không được ghi log.
 - Edge case và câu hỏi còn mở.
 
 Nếu BA không thể viết acceptance criteria mà không đoán hành vi nghiệp vụ, dừng lại

@@ -4,7 +4,7 @@
 > **Ngày**: 2026-08-31
 > **Phạm vi**: Đà Nẵng, cộng đồng expat. Ngôn ngữ mặc định của UI: English; ngôn ngữ thứ hai: Tiếng Việt.
 > **Đối tượng đọc**: Product, Backend (NestJS), Mobile (Expo), Community Ops, Founder.
-> **Tài liệu liên quan**: `01-*` (tác nhân & phân quyền), `02-*` (use case), `03-*` (domain & dữ liệu), `04-*` (tech stack & kiến trúc), `06-*` (pháp lý), `10-*` (UX & i18n).
+> **Tài liệu liên quan**: `01-*` (tác nhân & phân quyền), `02-*` (use case), `03-*` (domain & dữ liệu), `04-*` (tech stack & kiến trúc), `10-*` (UX & i18n).
 
 ---
 
