@@ -8,6 +8,7 @@
  *
  * Usage: pnpm --filter @dnc/api seed:areas
  */
+import '../../load-env.js';
 import { Pool } from 'pg';
 import { daNangAreas, GEO_DATA_VERSION } from '@dnc/geo';
 

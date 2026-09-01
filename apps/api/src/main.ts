@@ -1,3 +1,4 @@
+import './load-env.js';
 import 'reflect-metadata';
 import {
   StandardSchemaSerializerInterceptor,

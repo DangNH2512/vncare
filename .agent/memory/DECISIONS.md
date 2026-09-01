@@ -281,3 +281,25 @@ bị xoá khỏi trình duyệt.
 
 **Bài học:** một `<dialog>` đóng **không** unmount. Mọi state cục bộ trong dialog phải
 reset khi mở, hoặc component phải mount theo trạng thái mở.
+
+## [2026-09-01] Cấu hình API đọc từ apps/api/.env; khoá JWT dev được ghim
+
+**Bối cảnh:** Chủ dự án báo *"mỗi lần build lại đều không đăng nhập được"*. Hai nguyên
+nhân độc lập, và nguyên nhân chính là do agent gây ra.
+
+**Nguyên nhân 1 — agent xoá nhầm dữ liệu thật.** Mỗi vòng kiểm chứng, agent chạy
+`DELETE FROM users` không giới hạn phạm vi để dọn dữ liệu test, và xoá luôn tài khoản
+chủ dự án tự đăng ký. Triệu chứng nhìn y hệt lỗi auth.
+
+**Nguyên nhân 2 — không có file .env.** API chưa bao giờ nạp `.env`, nên
+`JWT_PRIVATE_KEY` không được đặt và mỗi lần khởi động sinh cặp khoá tạm mới, làm chết
+mọi phiên đang đăng nhập.
+
+**Lựa chọn:** `src/load-env.ts` gọi `process.loadEnvFile` (có sẵn trong Node, không thêm
+dependency), import đầu tiên ở `main.ts` và `seed-areas.ts`; biến đặt sẵn trong shell
+vẫn thắng. `apps/api/.env` ghim cặp RS256 cho dev, `.env.example` được commit.
+`ops/db/clean-test-data.sh` (`pnpm db:clean-test`) chỉ xoá tài khoản `@example.test`.
+
+**Hệ quả:** Phiên đăng nhập sống sót qua restart — đã đo: `/auth/me` trả 200 trước và
+sau khi restart bằng cùng access token. **Luật cho agent: không bao giờ xoá bảng dữ
+liệu người dùng không giới hạn phạm vi.**

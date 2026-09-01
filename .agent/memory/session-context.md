@@ -22,8 +22,8 @@ tích luỹ — lịch sử dài hạn thuộc về [DECISIONS.md](DECISIONS.md)
 - 101 test e2e chạy thật với database, gồm socket gateway và auth. Chạy 12 lần
   liên tiếp không flaky (pool test giới hạn 4 connection/spec — 9 spec × 10 sẽ
   chạm trần `max_connections=100`).
-- **Chạy:** `pnpm --filter @dnc/api dev` (vite-node). Máy này port 3001 đã bị Docker
-  chiếm nên dùng `PORT=3101`.
+- **Chạy:** `pnpm --filter @dnc/api dev`. Cấu hình đọc từ `apps/api/.env`
+  (không commit; mẫu ở `.env.example`) — không cần truyền biến trên dòng lệnh.
 
 ### apps/web-client-side
 
@@ -58,6 +58,9 @@ bằng `BlankScreen`) · `not-found.tsx`. **Không còn `/profile`.**
 - `areas` phải seed trước khi tạo post/event: `pnpm --filter @dnc/api seed:areas`.
 - **MinIO phải chạy** để đăng ảnh/video: `docker compose -f docker-compose.local.yml up -d minio`
   (cổng 9002; 9000 trên máy này đã bị project khác chiếm). Bucket `dnc-media` tự tạo.
+- **Dọn dữ liệu test:** `pnpm db:clean-test` — CHỈ xoá tài khoản `@example.test`.
+  Không bao giờ chạy `DELETE FROM users` không giới hạn: nó xoá luôn tài khoản
+  chủ dự án đăng ký tay và trông y hệt như đăng nhập bị hỏng.
 - CORS allow-list ở `main.ts`, mặc định `localhost:3000` và `localhost:3002`.
 - `apps/web-admin-side` và `apps/mobile`: vẫn rỗng.
 - Kế hoạch bản đồ đã viết xong, chưa code: `docs/analysis/13-...`.

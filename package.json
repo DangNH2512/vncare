@@ -14,7 +14,8 @@
     "gen:i18n-keys": "node packages/i18n/scripts/generate-keys.mjs",
     "db:up": "docker compose -f docker-compose.local.yml up -d",
     "db:down": "docker compose -f docker-compose.local.yml down",
-    "db:smoke": "bash ops/db/smoke/run-smoke.sh"
+    "db:smoke": "bash ops/db/smoke/run-smoke.sh",
+    "db:clean-test": "docker exec -i vncare-postgres-1 bash -s -- postgresql://dnc:dnc@127.0.0.1:5432/dnc < ops/db/clean-test-data.sh"
   },
   "devDependencies": {
     "dependency-cruiser": "18.2.0",
