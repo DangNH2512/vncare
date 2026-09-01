@@ -1,0 +1,35 @@
+{
+  "common": {
+    "appName": "Da Nang Connect",
+    "loading": "Loading...",
+    "retry": "Retry"
+  },
+  "event": {
+    "detail": {
+      "rsvpButton": "RSVP",
+      "joinWaitlistButton": "Join waitlist",
+      "seatsLeft": "{count} seats left",
+      "full": "Event is full"
+    }
+  },
+  "rsvp": {
+    "error": {
+      "suspended": "Your account is currently suspended.",
+      "occurrenceClosed": "Registration for this event has closed.",
+      "alreadyRsvped": "You already have an active RSVP for this event.",
+      "trustTooLow": "This event requires a higher trust level."
+    }
+  },
+  "trust": {
+    "requirement": {
+      "resolveReports": "Resolve open reports against your account",
+      "verifyContact": "Verify your email or phone number",
+      "attendFirstEvent": "Attend your first event",
+      "accountAge7d": "Account must be at least 7 days old",
+      "attend5Events": "Attend 5 events",
+      "attend10Events": "Attend 10 events",
+      "hostFirstEvent": "Host your first event",
+      "host5Events": "Host 5 events"
+    }
+  }
+}

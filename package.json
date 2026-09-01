@@ -1,0 +1,26 @@
+{
+  "name": "dnc",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "build": "turbo build",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "lint": "oxlint --type-aware .",
+    "dep-check": "depcruise packages apps --config .dependency-cruiser.cjs",
+    "gen:i18n-keys": "node packages/i18n/scripts/generate-keys.mjs",
+    "db:up": "docker compose -f docker-compose.local.yml up -d",
+    "db:down": "docker compose -f docker-compose.local.yml down",
+    "db:smoke": "bash ops/db/smoke/run-smoke.sh"
+  },
+  "devDependencies": {
+    "dependency-cruiser": "18.2.0",
+    "oxlint": "1.80.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "turbo": "2.10.12",
+    "typescript": "7.0.2"
+  }
+}

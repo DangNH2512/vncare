@@ -1,0 +1,7 @@
+{
+  "name": "@dnc/config",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shared tsconfig presets and tooling configuration for the monorepo",
+  "files": ["tsconfig"]
+}

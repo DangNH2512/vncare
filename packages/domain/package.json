@@ -1,0 +1,21 @@
+{
+  "name": "@dnc/domain",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Pure business rules shared by api, web and mobile. Framework-free by boundary rule B1; never owns transactions",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@dnc/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@dnc/config": "workspace:*",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
+  }
+}

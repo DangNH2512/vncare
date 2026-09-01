@@ -1,0 +1,103 @@
+{
+  "type": "FeatureCollection",
+  "version": "v0-draft",
+  "description": "DRAFT bounding polygons for the six launch areas. Coordinates are approximate rectangles for development only and must be replaced with surveyed boundaries before launch. GeoJSON coordinate order is [lng, lat].",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "slug": "hai-chau", "nameEn": "Hai Chau", "nameVi": "Hải Châu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [108.206, 16.03],
+            [108.227, 16.03],
+            [108.227, 16.085],
+            [108.206, 16.085],
+            [108.206, 16.03]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "slug": "my-khe", "nameEn": "My Khe", "nameVi": "Mỹ Khê" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [108.24, 16.048],
+            [108.256, 16.048],
+            [108.256, 16.078],
+            [108.24, 16.078],
+            [108.24, 16.048]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "slug": "an-thuong", "nameEn": "An Thuong", "nameVi": "An Thượng" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [108.238, 16.036],
+            [108.249, 16.036],
+            [108.249, 16.049],
+            [108.238, 16.049],
+            [108.238, 16.036]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "slug": "my-an", "nameEn": "My An", "nameVi": "Mỹ An" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [108.232, 16.026],
+            [108.252, 16.026],
+            [108.252, 16.043],
+            [108.232, 16.043],
+            [108.232, 16.026]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "slug": "son-tra", "nameEn": "Son Tra", "nameVi": "Sơn Trà" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [108.25, 16.08],
+            [108.33, 16.08],
+            [108.33, 16.14],
+            [108.25, 16.14],
+            [108.25, 16.08]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "slug": "ngu-hanh-son", "nameEn": "Ngu Hanh Son", "nameVi": "Ngũ Hành Sơn" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [108.235, 15.985],
+            [108.28, 15.985],
+            [108.28, 16.03],
+            [108.235, 16.03],
+            [108.235, 15.985]
+          ]
+        ]
+      }
+    }
+  ]
+}

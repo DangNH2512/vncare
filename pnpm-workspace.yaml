@@ -1,0 +1,13 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Required for React Native: Metro cannot resolve nested symlinked
+# dependencies, so packages must be hoisted to a flat node_modules.
+nodeLinker: hoisted
+
+allowBuilds:
+  # Native binary compilation required for the SWC transform used by vitest.
+  '@swc/core': true
+  # Analytics/telemetry postinstall; not needed to build.
+  '@scarf/scarf': false

@@ -1,0 +1,35 @@
+{
+  "common": {
+    "appName": "Da Nang Connect",
+    "loading": "Đang tải...",
+    "retry": "Thử lại"
+  },
+  "event": {
+    "detail": {
+      "rsvpButton": "Ghi danh",
+      "joinWaitlistButton": "Vào hàng chờ",
+      "seatsLeft": "Còn {count} chỗ",
+      "full": "Sự kiện đã đủ người"
+    }
+  },
+  "rsvp": {
+    "error": {
+      "suspended": "Tài khoản của bạn đang bị tạm khoá.",
+      "occurrenceClosed": "Sự kiện này đã đóng ghi danh.",
+      "alreadyRsvped": "Bạn đã ghi danh sự kiện này rồi.",
+      "trustTooLow": "Sự kiện này yêu cầu mức tin cậy cao hơn."
+    }
+  },
+  "trust": {
+    "requirement": {
+      "resolveReports": "Giải quyết các báo cáo đang mở về tài khoản của bạn",
+      "verifyContact": "Xác minh email hoặc số điện thoại",
+      "attendFirstEvent": "Tham dự sự kiện đầu tiên",
+      "accountAge7d": "Tài khoản cần đủ 7 ngày tuổi",
+      "attend5Events": "Tham dự 5 sự kiện",
+      "attend10Events": "Tham dự 10 sự kiện",
+      "hostFirstEvent": "Tổ chức sự kiện đầu tiên",
+      "host5Events": "Tổ chức 5 sự kiện"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@dnc/contracts",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Zod schemas for everything crossing a network boundary, plus the locked RSVP domain vocabulary",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@dnc/config": "workspace:*",
+    "@types/node": "26.4.0",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "@dnc/api",
+  "version": "0.0.1",
+  "private": true,
+  "description": "NestJS API — modular monolith. Request/response contracts come from @dnc/contracts (Zod via Standard Schema)",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@dnc/contracts": "workspace:*",
+    "@dnc/domain": "workspace:*",
+    "@nestjs/common": "12.0.1",
+    "@nestjs/core": "12.0.1",
+    "@nestjs/platform-express": "12.0.1",
+    "@nestjs/swagger": "12.0.1",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@dnc/config": "workspace:*",
+    "@nestjs/testing": "12.0.1",
+    "@swc/core": "1.16.1",
+    "@types/node": "26.4.0",
+    "@types/supertest": "7.2.1",
+    "supertest": "7.2.2",
+    "typescript": "7.0.2",
+    "unplugin-swc": "1.5.11",
+    "vitest": "4.1.11"
+  }
+}
