@@ -25,13 +25,30 @@ const VISIBILITIES = ['public', 'members_only', 'private'] as const;
  * tell "left blank" from "cleared on purpose" — which the API treats
  * differently.
  */
+/** Turns a save failure into the most specific message we can honestly give. */
+function useSaveFailureMessage() {
+  const t = useTranslate();
+  return (cause: unknown): string => {
+    if (cause instanceof ApiError) {
+      if (cause.isOffline) return t('auth.error.offline');
+      if (cause.status === 409) return t('errors.profile.phoneTaken');
+      if (cause.messageKey === 'errors.profile.phoneInvalid') {
+        return t('errors.profile.phoneInvalid');
+      }
+    }
+    return t('profile.error.save');
+  };
+}
+
 export function ProfileEditor({ profile, onCancel, onSaved }: ProfileEditorProps) {
   const t = useTranslate();
   const { locale } = useLocale();
+  const describeSaveFailure = useSaveFailureMessage();
   const bioId = useId();
 
   const [displayName, setDisplayName] = useState(profile.displayName);
   const [headline, setHeadline] = useState(profile.headline ?? '');
+  const [phone, setPhone] = useState(profile.phone ?? '');
   const [bio, setBio] = useState(profile.bio ?? '');
   const [homeAreaId, setHomeAreaId] = useState(profile.homeAreaId ?? '');
   const [visibility, setVisibility] = useState(profile.visibility);
@@ -50,6 +67,7 @@ export function ProfileEditor({ profile, onCancel, onSaved }: ProfileEditorProps
       patch.headline = headline.trim() || null;
     }
     if ((bio.trim() || null) !== profile.bio) patch.bio = bio.trim() || null;
+    if ((phone.trim() || null) !== profile.phone) patch.phone = phone.trim() || null;
     if ((homeAreaId || null) !== profile.homeAreaId) patch.homeAreaId = homeAreaId || null;
     if (visibility !== profile.visibility) patch.visibility = visibility;
     if (showArea !== profile.showAreaPublicly) patch.showAreaPublicly = showArea;
@@ -57,11 +75,7 @@ export function ProfileEditor({ profile, onCancel, onSaved }: ProfileEditorProps
     try {
       onSaved(await updateMyProfile(patch));
     } catch (cause) {
-      setError(
-        cause instanceof ApiError && cause.isOffline
-          ? t('auth.error.offline')
-          : t('profile.error.save'),
-      );
+      setError(describeSaveFailure(cause));
       setSaving(false);
     }
   };
@@ -109,6 +123,16 @@ export function ProfileEditor({ profile, onCancel, onSaved }: ProfileEditorProps
           />
           <p className="text-right text-xs text-fg-muted">{bio.length}/1000</p>
         </div>
+
+        <Input
+          label={t('profile.field.phone')}
+          type="tel"
+          value={phone}
+          maxLength={32}
+          autoComplete="tel"
+          hint={t('profile.hint.phone')}
+          onChange={(event) => setPhone(event.target.value)}
+        />
 
         <Select
           label={t('profile.field.homeArea')}

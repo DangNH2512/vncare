@@ -8,6 +8,7 @@ import {
   type OnModuleInit,
 } from '@nestjs/common';
 import { hash as argonHash, verify as argonVerify } from '@node-rs/argon2';
+import { normalizePhone } from '@dnc/domain';
 import { SignJWT, exportPKCS8, exportSPKI, generateKeyPair, importPKCS8, importSPKI, jwtVerify } from 'jose';
 import type { CryptoKey } from 'jose';
 import type {
@@ -141,14 +142,15 @@ export class AuthService implements OnModuleInit {
   }
 
   /**
-   * Verifies credentials.
+   * Verifies credentials against an email, a handle or a phone number.
    *
    * A missing account still pays for one Argon2 verification against a dummy
-   * hash. Returning early would make "no such user" measurably faster than
-   * "wrong password", which turns the login form into an account enumerator.
+   * hash: returning early would make "no such user" measurably faster than
+   * "wrong password", which turns the sign-in form into an account enumerator.
    */
   async login(input: LoginRequestT, context: SessionContext): Promise<RefreshResult> {
-    const row = await this.users.findByEmail(input.email);
+    const identifier = input.identifier.trim().toLowerCase();
+    const row = await this.users.findByIdentifier(identifier, normalizePhone(identifier));
     const hash = row?.password_hash ?? this.dummyHash;
     const ok = await argonVerify(hash, input.password).catch(() => false);
 

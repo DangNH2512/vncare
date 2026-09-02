@@ -7,7 +7,9 @@ import {
   ageRotations,
   createActor,
   createTestApp,
+  newPhone,
   seedArea,
+  trackActor,
   type Actor,
 } from '../../support/harness.js';
 
@@ -22,6 +24,16 @@ describe('auth module', () => {
   let app: INestApplication;
   let cleanup: () => Promise<void>;
   let existing: Actor;
+
+  /** Registers through the real endpoint and records the account for teardown. */
+  const register = async (payload: ReturnType<typeof account>) => {
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/auth/register')
+      .send(payload)
+      .expect(201);
+    trackActor(res.body.data.user.id as string);
+    return res;
+  };
 
   const account = () => ({
     email: `e2e_${randomUUID().replaceAll('-', '').slice(0, 12)}@example.test`,
@@ -42,10 +54,7 @@ describe('auth module', () => {
   });
 
   it('registers an account and returns a usable session', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send(account())
-      .expect(201);
+    const res = await register(account());
 
     const parsed = envelope(AuthSessionResponse).parse(res.body);
     expect(parsed.data.user.role).toBe('member');
@@ -63,10 +72,7 @@ describe('auth module', () => {
 
   /** The token that can mint sessions must be out of reach of any script on the page. */
   it('sets the refresh token as an httpOnly, path-scoped cookie', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send(account())
-      .expect(201);
+    const res = await register(account());
 
     const cookie = refreshCookie(res.headers as Record<string, unknown>);
     expect(cookie).toBeDefined();
@@ -79,10 +85,7 @@ describe('auth module', () => {
   });
 
   it('never returns the password hash', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send(account())
-      .expect(201);
+    const res = await register(account());
     const body = JSON.stringify(res.body);
     expect(body).not.toContain('argon2');
     expect(body).not.toContain('passwordHash');
@@ -103,7 +106,7 @@ describe('auth module', () => {
 
   it('refuses a duplicate email and a duplicate handle', async () => {
     const first = account();
-    await request(app.getHttpServer()).post('/api/v1/auth/register').send(first).expect(201);
+    await register(first);
 
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')
@@ -119,7 +122,7 @@ describe('auth module', () => {
   /** Emails are case-insensitive, so one person cannot hold two accounts by capitalisation. */
   it('treats an email as case-insensitive', async () => {
     const first = account();
-    await request(app.getHttpServer()).post('/api/v1/auth/register').send(first).expect(201);
+    await register(first);
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({ ...account(), email: first.email.toUpperCase() })
@@ -128,17 +131,121 @@ describe('auth module', () => {
 
   it('signs in with the right password and refuses the wrong one', async () => {
     const created = account();
-    await request(app.getHttpServer()).post('/api/v1/auth/register').send(created).expect(201);
+    await register(created);
 
     await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email: created.email, password: created.password })
+      .send({ identifier: created.email, password: created.password })
       .expect(200);
 
     await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email: created.email, password: 'not-the-password' })
+      .send({ identifier: created.email, password: 'not-the-password' })
       .expect(401);
+  });
+
+  /**
+   * One field, three identifiers.
+   *
+   * A member remembers whichever of the three they last used; making them pick
+   * the right kind first is a question they should not have to answer.
+   */
+  it('signs in by email, by handle and by phone number', async () => {
+    const created = account();
+    const registered = await register(created);
+    const token = registered.body.data.accessToken as string;
+
+    // Unique per run: the number is a credential guarded by a unique index, so
+    // a hardcoded one collides with the row a previous run left behind.
+    const e164 = newPhone();
+    const national = `0${e164.slice(3)}`;
+
+    await request(app.getHttpServer())
+      .patch('/api/v1/me/profile')
+      .set({ authorization: `Bearer ${token}` })
+      .send({ phone: national })
+      .expect(200);
+
+    for (const identifier of [
+      created.email,
+      created.email.toUpperCase(),
+      created.handle,
+      created.handle.toUpperCase(),
+      national,
+      e164,
+      `(${national.slice(0, 4)}) ${national.slice(4, 7)}-${national.slice(7)}`,
+    ]) {
+      const res = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({ identifier, password: created.password });
+      expect(res.status, `identifier ${identifier}`).toBe(200);
+      expect(res.body.data.user.id).toBe(registered.body.data.user.id);
+    }
+  });
+
+  /** Every typed form of one number must collapse onto a single stored value. */
+  it('stores a phone in E.164 whatever the member typed', async () => {
+    const created = account();
+    const registered = await register(created);
+    const auth = { authorization: `Bearer ${registered.body.data.accessToken as string}` };
+
+    const e164 = newPhone();
+    const national = `0${e164.slice(3)}`;
+    const saved = await request(app.getHttpServer())
+      .patch('/api/v1/me/profile')
+      .set(auth)
+      .send({ phone: ` ${national.slice(0, 4)}.${national.slice(4, 7)}.${national.slice(7)} ` })
+      .expect(200);
+    expect(saved.body.data.phone).toBe(e164);
+    expect(saved.body.data.phoneVerified).toBe(false);
+
+    const cleared = await request(app.getHttpServer())
+      .patch('/api/v1/me/profile')
+      .set(auth)
+      .send({ phone: null })
+      .expect(200);
+    expect(cleared.body.data.phone).toBeNull();
+  });
+
+  it('refuses something that is not a phone number', async () => {
+    const created = account();
+    const registered = await register(created);
+
+    await request(app.getHttpServer())
+      .patch('/api/v1/me/profile')
+      .set({ authorization: `Bearer ${registered.body.data.accessToken as string}` })
+      .send({ phone: 'not-a-number' })
+      .expect(400);
+  });
+
+  /** The number is a credential: two accounts must not be able to claim one. */
+  it('refuses a phone number already on another account', async () => {
+    const first = account();
+    const second = account();
+    const shared = newPhone();
+    const a = await register(first);
+    const b = await register(second);
+
+    await request(app.getHttpServer())
+      .patch('/api/v1/me/profile')
+      .set({ authorization: `Bearer ${a.body.data.accessToken as string}` })
+      .send({ phone: shared })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .patch('/api/v1/me/profile')
+      .set({ authorization: `Bearer ${b.body.data.accessToken as string}` })
+      .send({ phone: `0${shared.slice(3)}` })
+      .expect(409);
+  });
+
+  /** A phone nobody holds must answer exactly like a wrong password. */
+  it('does not reveal whether a phone number is registered', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ identifier: '+84900000001', password: 'not-the-password' })
+      .expect(401);
+    expect(res.body.message?.code ?? res.body.code).toBeDefined();
   });
 
   /**
@@ -147,16 +254,16 @@ describe('auth module', () => {
    */
   it('answers the same way for an unknown account as for a wrong password', async () => {
     const created = account();
-    await request(app.getHttpServer()).post('/api/v1/auth/register').send(created).expect(201);
+    await register(created);
 
     const wrongPassword = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email: created.email, password: 'not-the-password' })
+      .send({ identifier: created.email, password: 'not-the-password' })
       .expect(401);
 
     const noSuchUser = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email: `absent_${randomUUID()}@example.test`, password: 'not-the-password' })
+      .send({ identifier: `absent_${randomUUID()}@example.test`, password: 'not-the-password' })
       .expect(401);
 
     expect(noSuchUser.body).toEqual(wrongPassword.body);
@@ -177,10 +284,7 @@ describe('auth module', () => {
 
   it('rotates the refresh token and issues a new access token', async () => {
     const created = account();
-    const registered = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send(created)
-      .expect(201);
+    const registered = await register(created);
     const cookie = refreshCookie(registered.headers as Record<string, unknown>) as string;
 
     const refreshed = await request(app.getHttpServer())
@@ -198,10 +302,7 @@ describe('auth module', () => {
    */
   it('tolerates two refreshes racing on the same token', async () => {
     const created = account();
-    const registered = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send(created)
-      .expect(201);
+    const registered = await register(created);
     const cookie = refreshCookie(registered.headers as Record<string, unknown>) as string;
 
     const [a, b] = await Promise.all([
@@ -221,10 +322,7 @@ describe('auth module', () => {
    */
   it('revokes the whole family when a long-spent refresh token is replayed', async () => {
     const created = account();
-    const registered = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send(created)
-      .expect(201);
+    const registered = await register(created);
     const first = refreshCookie(registered.headers as Record<string, unknown>) as string;
 
     const rotated = await request(app.getHttpServer())
@@ -266,10 +364,7 @@ describe('auth module', () => {
 
   it('signs out, after which the refresh token no longer works', async () => {
     const created = account();
-    const registered = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send(created)
-      .expect(201);
+    const registered = await register(created);
     const cookie = refreshCookie(registered.headers as Record<string, unknown>) as string;
 
     await request(app.getHttpServer())

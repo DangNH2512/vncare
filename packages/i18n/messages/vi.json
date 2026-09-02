@@ -258,7 +258,7 @@
     "auth": {
       "unauthenticated": "Vui lòng đăng nhập để tiếp tục.",
       "trustLevelTooLow": "Tài khoản của bạn cần mức độ tin cậy cao hơn để làm việc này.",
-      "invalidCredentials": "Email và mật khẩu không khớp.",
+      "invalidCredentials": "Thông tin đăng nhập không khớp với tài khoản nào.",
       "invalidToken": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
       "invalidRefresh": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
       "emailTaken": "Email này đã có tài khoản.",
@@ -301,7 +301,9 @@
       "notFound": "Tệp đính kèm không còn tồn tại."
     },
     "profile": {
-      "notFound": "Hồ sơ này không còn tồn tại."
+      "notFound": "Hồ sơ này không còn tồn tại.",
+      "phoneInvalid": "Đây không giống một số điện thoại.",
+      "phoneTaken": "Số điện thoại này đã thuộc về tài khoản khác."
     }
   },
   "post": {
@@ -376,11 +378,13 @@
       "email": "Email",
       "password": "Mật khẩu",
       "displayName": "Tên của bạn",
-      "handle": "Tên người dùng"
+      "handle": "Tên người dùng",
+      "identifier": "Email, tên người dùng hoặc số điện thoại"
     },
     "hint": {
       "handle": "Đây sẽ là đường dẫn hồ sơ của bạn.",
-      "password": "Tối thiểu {count} ký tự."
+      "password": "Tối thiểu {count} ký tự.",
+      "identifier": "Cái nào bạn đã dùng để đăng ký cũng được."
     },
     "switch": {
       "haveAccount": "Đã có tài khoản?",
@@ -417,10 +421,12 @@
       "visibility": "Ai xem được hồ sơ này",
       "showArea": "Hiện khu vực của tôi trên hồ sơ công khai",
       "since": "Ở Đà Nẵng từ {date}",
-      "memberSince": "Thành viên từ {date}"
+      "memberSince": "Thành viên từ {date}",
+      "phone": "Số điện thoại"
     },
     "hint": {
-      "headline": "Một dòng, ví dụ \"Giáo viên yoga · An Thượng\"."
+      "headline": "Một dòng, ví dụ \"Giáo viên yoga · An Thượng\".",
+      "phone": "Dùng để đăng nhập. Không hiển thị cho ai khác."
     },
     "visibility": {
       "public": "Tất cả mọi người",

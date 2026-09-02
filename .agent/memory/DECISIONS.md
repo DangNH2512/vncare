@@ -303,3 +303,35 @@ vẫn thắng. `apps/api/.env` ghim cặp RS256 cho dev, `.env.example` được
 **Hệ quả:** Phiên đăng nhập sống sót qua restart — đã đo: `/auth/me` trả 200 trước và
 sau khi restart bằng cùng access token. **Luật cho agent: không bao giờ xoá bảng dữ
 liệu người dùng không giới hạn phạm vi.**
+
+## [2026-09-01] Đăng nhập bằng email, tên người dùng hoặc số điện thoại
+
+**Bối cảnh:** Chủ dự án muốn đăng nhập bằng cả ba.
+
+**Lựa chọn:** `LoginRequest` đổi từ `{ email }` sang `{ identifier }` — **một ô duy
+nhất**. Server thử cả ba cột trong **một câu lệnh** (`u.email = $1 OR p.handle = $1 OR
+u.phone = $2`) thay vì đoán xem người dùng gõ loại nào: một handle có thể toàn chữ số
+và trông y hệt số điện thoại, đoán sai là khoá luôn chính chủ ra ngoài. `email` và
+`handle` là `citext` nên không phân biệt hoa thường.
+
+`normalizePhone` ở `@dnc/domain` gộp mọi cách gõ về E.164 — `0905123456`,
+`+84905123456`, `84905…`, `(0905) 123-456` đều thành `+84905123456`. Không chuẩn hoá
+thì unique index vô dụng: cùng một người giữ được hai tài khoản.
+
+Số điện thoại ghi vào `users.phone` (đã có sẵn cột và partial unique index, không cần
+migration) qua `AuthRepository`, **không** qua `ProfileRepository` — nó là thông tin
+đăng nhập, không phải trường hồ sơ. Sửa hồ sơ có ô nhập số; đổi số thì
+`phone_verified_at` về null.
+
+**Hệ quả:** Chưa có OTP xác minh SĐT, nên số chưa xác minh vẫn dùng đăng nhập được —
+mật khẩu mới là thứ xác thực, số chỉ là định danh để tra. Thông báo lỗi đã đổi khỏi
+"email và mật khẩu không khớp" vì giờ nhận ba loại.
+
+## [2026-09-01] `@dnc/domain` bỏ `"type": "module"` — landmine T-06 đã nổ
+
+**Bối cảnh:** Đúng như đã ghi ở T-06, khoảnh khắc `apps/api` import `@dnc/domain`
+(để dùng `normalizePhone`), tsc lập tức đòi đuôi `.js` cho import nội bộ của package đó.
+
+**Lựa chọn:** Áp cùng cách đã dùng cho `@dnc/contracts`. `@dnc/geo`, `@dnc/i18n`,
+`@dnc/tokens` vẫn còn `"type": "module"` nhưng chưa nổ vì `apps/api` chưa import tới;
+`geo` cần thận trọng hơn vì dùng import attribute `with { type: 'json' }`.

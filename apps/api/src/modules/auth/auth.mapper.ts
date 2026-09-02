@@ -12,6 +12,8 @@ export function toSessionUser(row: UserRow, avatarUrl: string | null): SessionUs
     id: row.id,
     email: row.email,
     emailVerified: row.email_verified_at !== null,
+    phone: row.phone,
+    phoneVerified: row.phone_verified_at !== null,
     role: row.role,
     trustLevel: row.trust_level,
     status: row.status,

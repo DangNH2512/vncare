@@ -4,6 +4,7 @@ export {
   type RsvpDecision,
   type RsvpDecisionInput,
 } from './rsvp';
+export { normalizePhone } from './phone';
 export {
   computeTrustLevel,
   nextTrustRequirement,

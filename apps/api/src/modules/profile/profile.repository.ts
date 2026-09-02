@@ -32,6 +32,8 @@ export interface ProfileRow {
   trust_level: number;
   email: string | null;
   email_verified_at: Date | null;
+  phone: string | null;
+  phone_verified_at: Date | null;
   locale: 'en' | 'vi';
   member_since: Date;
 }
@@ -42,7 +44,8 @@ const SELECT_COLUMNS = `
   p.show_area_publicly, p.in_da_nang_since, p.birth_year, p.gender,
   p.visibility, p.events_hosted_count, p.events_attended_count,
   p.rating_avg, p.rating_count,
-  u.trust_level, u.email, u.email_verified_at, u.locale,
+  u.trust_level, u.email, u.email_verified_at,
+  u.phone, u.phone_verified_at, u.locale,
   u.created_at AS member_since
 `;
 
@@ -78,6 +81,8 @@ export class ProfileRepository {
    * apart from an absent key.
    */
   async update(userId: string, patch: ProfileUpdateRequestT): Promise<ProfileRow | null> {
+    // `phone` is deliberately absent from the statement below: it is a column
+    // on `users`, written through AuthRepository.
     const has = (key: keyof ProfileUpdateRequestT): boolean => Object.hasOwn(patch, key);
 
     const { rowCount } = await this.pool.query(

@@ -62,6 +62,9 @@ export type PublicProfileResponseT = z.infer<typeof PublicProfileResponse>;
 export const MyProfileResponse = PublicProfileResponse.extend({
   email: z.email().nullable(),
   emailVerified: z.boolean(),
+  /** E.164. Usable as a sign-in identifier; never shown to anyone else. */
+  phone: z.string().nullable(),
+  phoneVerified: z.boolean(),
   birthYear: z.number().int().nullable(),
   gender: Gender.nullable(),
   visibility: ProfileVisibility,
@@ -86,6 +89,10 @@ export const ProfileUpdateRequest = z
     gender: Gender.nullable(),
     visibility: ProfileVisibility,
     showAreaPublicly: z.boolean(),
+    /**
+     * Any format a person types; the server normalises to E.164. Null clears it.
+     */
+    phone: z.string().trim().max(32).nullable(),
   })
   .partial();
 export type ProfileUpdateRequestT = z.infer<typeof ProfileUpdateRequest>;

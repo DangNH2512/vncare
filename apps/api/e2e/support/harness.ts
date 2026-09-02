@@ -56,6 +56,23 @@ export interface Actor {
 const actors: string[] = [];
 
 /**
+ * Records an account a spec registered itself.
+ *
+ * Specs that call the registration endpoint directly, rather than going through
+ * `createActor`, must report the id here or their rows outlive the run — and a
+ * hardcoded phone number in one of them then collides with the next run.
+ */
+export function trackActor(userId: string): void {
+  actors.push(userId);
+}
+
+/** A phone number no other test run holds. */
+export function newPhone(): string {
+  const tail = String(Math.floor(Math.random() * 9_000_000) + 1_000_000);
+  return `+8490${tail}`;
+}
+
+/**
  * Registers a real account.
  *
  * Registration grants T1, which is what most routes require. `trustLevel`
@@ -108,7 +125,7 @@ async function refreshedActor(
 ): Promise<Actor> {
   const res = await request(app.getHttpServer())
     .post('/api/v1/auth/login')
-    .send({ email, password: 'e2e-password-long-enough' })
+    .send({ identifier: email, password: 'e2e-password-long-enough' })
     .expect(200);
   const accessToken = res.body.data.accessToken as string;
   return { id, handle, email, accessToken, headers: bearer(accessToken) };

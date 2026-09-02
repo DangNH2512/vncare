@@ -41,8 +41,15 @@ export const RegisterRequest = z.object({
 });
 export type RegisterRequestT = z.infer<typeof RegisterRequest>;
 
+/**
+ * Sign-in credential.
+ *
+ * One field for three things a member may remember: their email, their handle,
+ * or their phone number. Which one it is is decided server-side; asking the
+ * member to pick first is a question they should not have to answer.
+ */
 export const LoginRequest = z.object({
-  email: z.email().max(254),
+  identifier: z.string().trim().min(1).max(254),
   /** Not `Password`: an old account may predate the current minimum length. */
   password: z.string().min(1).max(200),
 });
@@ -58,6 +65,8 @@ export const SessionUserResponse = z.object({
   id: z.uuid(),
   email: z.email().nullable(),
   emailVerified: z.boolean(),
+  phone: z.string().nullable(),
+  phoneVerified: z.boolean(),
   role: UserRole,
   trustLevel: z.number().int().min(0).max(5),
   status: UserStatus,

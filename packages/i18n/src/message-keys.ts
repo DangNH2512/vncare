@@ -17,8 +17,10 @@ export type MessageKey =
   | 'auth.field.displayName'
   | 'auth.field.email'
   | 'auth.field.handle'
+  | 'auth.field.identifier'
   | 'auth.field.password'
   | 'auth.hint.handle'
+  | 'auth.hint.identifier'
   | 'auth.hint.password'
   | 'auth.page.signInBody'
   | 'auth.page.signInTitle'
@@ -117,6 +119,8 @@ export type MessageKey =
   | 'errors.post.notFound'
   | 'errors.post.notOwner'
   | 'errors.profile.notFound'
+  | 'errors.profile.phoneInvalid'
+  | 'errors.profile.phoneTaken'
   | 'event.card.almostFull'
   | 'event.card.attendees'
   | 'event.card.hostedBy'
@@ -261,10 +265,12 @@ export type MessageKey =
   | 'profile.field.homeArea'
   | 'profile.field.memberSince'
   | 'profile.field.noArea'
+  | 'profile.field.phone'
   | 'profile.field.showArea'
   | 'profile.field.since'
   | 'profile.field.visibility'
   | 'profile.hint.headline'
+  | 'profile.hint.phone'
   | 'profile.language.de'
   | 'profile.language.en'
   | 'profile.language.es'
@@ -348,8 +354,10 @@ export const MESSAGE_KEYS = [
   'auth.field.displayName',
   'auth.field.email',
   'auth.field.handle',
+  'auth.field.identifier',
   'auth.field.password',
   'auth.hint.handle',
+  'auth.hint.identifier',
   'auth.hint.password',
   'auth.page.signInBody',
   'auth.page.signInTitle',
@@ -448,6 +456,8 @@ export const MESSAGE_KEYS = [
   'errors.post.notFound',
   'errors.post.notOwner',
   'errors.profile.notFound',
+  'errors.profile.phoneInvalid',
+  'errors.profile.phoneTaken',
   'event.card.almostFull',
   'event.card.attendees',
   'event.card.hostedBy',
@@ -592,10 +602,12 @@ export const MESSAGE_KEYS = [
   'profile.field.homeArea',
   'profile.field.memberSince',
   'profile.field.noArea',
+  'profile.field.phone',
   'profile.field.showArea',
   'profile.field.since',
   'profile.field.visibility',
   'profile.hint.headline',
+  'profile.hint.phone',
   'profile.language.de',
   'profile.language.en',
   'profile.language.es',

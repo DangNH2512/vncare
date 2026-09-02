@@ -1,11 +1,18 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type {
   MediaResponseT,
   MyProfileResponseT,
   ProfileUpdateRequestT,
   PublicProfileResponseT,
 } from '@dnc/contracts';
+import { normalizePhone } from '@dnc/domain';
 import { translatePostgresError } from '../../common/db/pg-error.js';
+import { AuthRepository } from '../auth/index.js';
 import type { CurrentUserContext } from '../../common/decorators/current-user.decorator.js';
 import { MediaService } from '../media/index.js';
 import { ProfileRepository, type ProfileRow } from './profile.repository.js';
@@ -16,6 +23,7 @@ export class ProfileService {
   constructor(
     private readonly profiles: ProfileRepository,
     private readonly media: MediaService,
+    private readonly users: AuthRepository,
   ) {}
 
   /**
@@ -71,12 +79,37 @@ export class ProfileService {
     }
 
     try {
+      // The phone lives on `users`, not `profiles`: it is a sign-in identifier
+      // guarded by a unique index, not a profile field.
+      if (Object.hasOwn(patch, 'phone')) {
+        await this.users.updatePhone(viewer.id, this.phoneOrThrow(patch.phone ?? null));
+      }
+
       const row = await this.profiles.update(viewer.id, patch);
       if (!row) throw this.notFound();
       return toMyProfile(row, await this.avatar(row));
     } catch (error) {
       throw translatePostgresError(error);
     }
+  }
+
+  /**
+   * Normalises a typed number to E.164, or rejects it.
+   *
+   * Rejecting rather than storing what was typed: an unnormalised number
+   * defeats the unique index — the same person could hold `0905123456` and
+   * `+84905123456` as two accounts — and would never match at sign-in.
+   */
+  private phoneOrThrow(input: string | null): string | null {
+    if (input === null || input.trim() === '') return null;
+    const normalized = normalizePhone(input);
+    if (normalized === null) {
+      throw new BadRequestException({
+        code: 'PHONE_INVALID',
+        messageKey: 'errors.profile.phoneInvalid',
+      });
+    }
+    return normalized;
   }
 
   private async avatar(row: ProfileRow): Promise<MediaResponseT | null> {

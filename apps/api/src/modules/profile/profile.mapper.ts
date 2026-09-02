@@ -58,6 +58,8 @@ export function toMyProfile(
     homeAreaId: row.home_area_id,
     email: row.email,
     emailVerified: row.email_verified_at !== null,
+    phone: row.phone,
+    phoneVerified: row.phone_verified_at !== null,
     birthYear: row.birth_year,
     gender: row.gender,
     visibility: row.visibility,

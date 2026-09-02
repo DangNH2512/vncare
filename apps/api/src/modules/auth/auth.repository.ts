@@ -9,6 +9,8 @@ export interface UserRow {
   email: string | null;
   email_verified_at: Date | null;
   password_hash: string | null;
+  phone: string | null;
+  phone_verified_at: Date | null;
   role: UserRoleT;
   trust_level: number;
   status: UserStatusT;
@@ -55,7 +57,8 @@ export interface SessionInput {
  * schema is the second line of defence.
  */
 const USER_COLUMNS = `
-  u.id, u.email, u.email_verified_at, u.password_hash, u.role,
+  u.id, u.email, u.email_verified_at, u.password_hash,
+  u.phone, u.phone_verified_at, u.role,
   u.trust_level, u.status, u.locale,
   p.handle, p.display_name, p.avatar_media_id
 `;
@@ -89,8 +92,32 @@ export class AuthRepository {
     });
   }
 
-  findByEmail(email: string): Promise<UserRow | null> {
-    return this.selectUser(this.pool, 'u.email = $1', [email]);
+  /**
+   * Finds an account by whatever the member typed to sign in.
+   *
+   * All three columns are tried in one statement rather than guessing which
+   * kind of identifier it is: a handle may be all digits and look like a phone
+   * number, and a wrong guess would lock that member out of their own account.
+   * The unique indexes make more than one match effectively impossible; the
+   * ordering settles it deterministically if one ever occurs.
+   *
+   * @param identifier - Lowercased raw input. `email` and `handle` are citext,
+   *   so the comparison is case-insensitive on both.
+   * @param phone - The same input normalised to E.164, or null when it is not
+   *   phone-shaped.
+   */
+  async findByIdentifier(identifier: string, phone: string | null): Promise<UserRow | null> {
+    const { rows } = await this.pool.query<UserRow>(
+      `SELECT ${USER_COLUMNS}
+         FROM users u
+         JOIN profiles p ON p.user_id = u.id
+        WHERE u.deleted_at IS NULL
+          AND (u.email = $1 OR p.handle = $1 OR ($2::varchar IS NOT NULL AND u.phone = $2))
+        ORDER BY (u.email = $1) DESC, (p.handle = $1) DESC
+        LIMIT 1`,
+      [identifier, phone],
+    );
+    return rows[0] ?? null;
   }
 
   findById(id: string): Promise<UserRow | null> {
@@ -170,6 +197,29 @@ export class AuthRepository {
       `UPDATE auth_sessions SET revoked_at = now(), revoked_reason = $2
         WHERE family_id = $1 AND revoked_at IS NULL`,
       [familyId, reason],
+    );
+  }
+
+  /**
+   * Sets or clears the sign-in phone number.
+   *
+   * Lives here rather than in the profile repository because the column is on
+   * `users`: it is a credential, not a profile field, and the partial unique
+   * index on it is what keeps two accounts from claiming one number.
+   */
+  async updatePhone(userId: string, phone: string | null): Promise<void> {
+    await this.pool.query(
+      // Both casts are load-bearing: without them PostgreSQL infers $2 as
+      // varchar from the assignment and as text from the comparison, and
+      // refuses the statement with 42P08.
+      `UPDATE users SET
+         phone = $2::varchar,
+         -- A changed number is unverified again; verification is per number.
+         phone_verified_at = CASE WHEN $2::varchar IS DISTINCT FROM phone
+                                  THEN NULL ELSE phone_verified_at END,
+         updated_at = now()
+       WHERE id = $1`,
+      [userId, phone],
     );
   }
 

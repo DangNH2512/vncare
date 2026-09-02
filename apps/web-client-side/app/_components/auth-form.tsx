@@ -33,6 +33,7 @@ export function AuthForm({ mode, onDone, onSwitchMode, className }: AuthFormProp
   const formId = useId();
 
   const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [handle, setHandle] = useState('');
@@ -43,7 +44,7 @@ export function AuthForm({ mode, onDone, onSwitchMode, className }: AuthFormProp
   const handleValid = !isSignUp || HANDLE_PATTERN.test(handle);
   const passwordValid = !isSignUp || password.length >= MIN_PASSWORD_LENGTH;
   const canSubmit =
-    email.trim().length > 0 &&
+    (isSignUp ? email.trim().length > 0 : identifier.trim().length > 0) &&
     password.length > 0 &&
     (!isSignUp || displayName.trim().length > 0) &&
     handleValid &&
@@ -84,7 +85,7 @@ export function AuthForm({ mode, onDone, onSwitchMode, className }: AuthFormProp
           locale: 'en',
         });
       } else {
-        await signIn({ email: email.trim(), password });
+        await signIn({ identifier: identifier.trim(), password });
       }
       onDone?.();
     } catch (cause) {
@@ -130,14 +131,29 @@ export function AuthForm({ mode, onDone, onSwitchMode, className }: AuthFormProp
         </>
       )}
 
-      <Input
-        label={t('auth.field.email')}
-        type="email"
-        value={email}
-        maxLength={254}
-        autoComplete="email"
-        onChange={(event) => setEmail(event.target.value)}
-      />
+      {isSignUp ? (
+        <Input
+          label={t('auth.field.email')}
+          type="email"
+          value={email}
+          maxLength={254}
+          autoComplete="email"
+          onChange={(event) => setEmail(event.target.value)}
+        />
+      ) : (
+        /* One field for email, username or phone. Which it is is decided
+           server-side, so the member never has to pick first. `type="text"`
+           rather than `email`: the browser would otherwise reject a handle. */
+        <Input
+          label={t('auth.field.identifier')}
+          type="text"
+          value={identifier}
+          maxLength={254}
+          autoComplete="username"
+          hint={t('auth.hint.identifier')}
+          onChange={(event) => setIdentifier(event.target.value)}
+        />
+      )}
 
       <Input
         label={t('auth.field.password')}

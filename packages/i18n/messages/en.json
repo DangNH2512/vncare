@@ -258,7 +258,7 @@
     "auth": {
       "unauthenticated": "Please sign in to continue.",
       "trustLevelTooLow": "Your account needs a higher trust level for this.",
-      "invalidCredentials": "That email and password do not match.",
+      "invalidCredentials": "Those sign-in details do not match an account.",
       "invalidToken": "Your session has expired. Please sign in again.",
       "invalidRefresh": "Your session has expired. Please sign in again.",
       "emailTaken": "An account with that email already exists.",
@@ -301,7 +301,9 @@
       "notFound": "That attachment no longer exists."
     },
     "profile": {
-      "notFound": "That profile no longer exists."
+      "notFound": "That profile no longer exists.",
+      "phoneInvalid": "That does not look like a phone number.",
+      "phoneTaken": "That phone number is already on another account."
     }
   },
   "post": {
@@ -376,11 +378,13 @@
       "email": "Email",
       "password": "Password",
       "displayName": "Your name",
-      "handle": "Username"
+      "handle": "Username",
+      "identifier": "Email, username or phone"
     },
     "hint": {
       "handle": "This becomes your profile link.",
-      "password": "At least {count} characters."
+      "password": "At least {count} characters.",
+      "identifier": "Whichever you signed up with."
     },
     "switch": {
       "haveAccount": "Already have an account?",
@@ -417,10 +421,12 @@
       "visibility": "Who can see this profile",
       "showArea": "Show my area on my public profile",
       "since": "In Da Nang since {date}",
-      "memberSince": "Member since {date}"
+      "memberSince": "Member since {date}",
+      "phone": "Phone number"
     },
     "hint": {
-      "headline": "One line, e.g. \"Yoga teacher · An Thuong\"."
+      "headline": "One line, e.g. \"Yoga teacher · An Thuong\".",
+      "phone": "Lets you sign in with it. Never shown to anyone else."
     },
     "visibility": {
       "public": "Anyone",
