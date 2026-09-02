@@ -8,6 +8,7 @@ import { RsvpService } from './rsvp.service.js';
   imports: [MediaModule],
   controllers: [RsvpController],
   providers: [RsvpService, RsvpRepository],
-  exports: [RsvpRepository],
+  // Nothing exported: the repository stays inside this module so no other
+  // module can acquire a second path to a capacity-affecting write.
 })
 export class RsvpModule {}

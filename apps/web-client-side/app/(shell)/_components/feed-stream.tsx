@@ -1,33 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { PostResponseT } from '@dnc/contracts';
+import type { EventResponseT, PostResponseT } from '@dnc/contracts';
 
-import { Avatar, Button, Card, Chip, ChipRow, EmptyState } from '../../_components/ui';
+import { Avatar, Button, Card, Chip, ChipRow, EmptyState, SkeletonText } from '../../_components/ui';
 import { useAuth } from '../../_components/auth-provider';
 import { useLocale, useTranslate } from '../../_components/locale-provider';
 import { AREAS, areaName, type AreaSlug } from '../../_lib/areas';
-import { listPosts } from '../../_lib/api';
+import { listEvents, listPosts } from '../../_lib/api';
 import { dayOffsetFrom } from '../../_lib/datetime';
-import { MOCK_EVENTS, type MockEvent } from '../../_lib/mock-data';
 import { CommunityPost } from './community-post';
-import { EventPost } from './event-post';
+import { EventCard } from './event-card';
 import { PostComposer } from './post-composer';
 
-type QuickFilter = 'all' | 'today' | 'weekend' | 'free';
+type QuickFilter = 'all' | 'today' | 'weekend';
 type Filter = QuickFilter | AreaSlug;
-
-/**
- * Activity rows interleaved between event posts.
- *
- * They exist so the feed reads as a living community rather than a directory:
- * a member sees that other people are moving, not only that listings exist.
- * The real version is derived from RSVP events on the bus.
- */
-const ACTIVITY: readonly { afterSlug: string; name: string; count: number; eventSlug: string }[] = [
-  { afterSlug: 'my-khe-sunrise-run-5k', name: 'Linh', count: 3, eventSlug: 'board-game-night-my-an' },
-  { afterSlug: 'english-vietnamese-language-exchange', name: 'Sara', count: 5, eventSlug: 'son-tra-sunrise-hike' },
-];
 
 /** Saturday and Sunday in the viewer's Da Nang week. */
 function isWeekend(iso: string): boolean {
@@ -37,21 +24,6 @@ function isWeekend(iso: string): boolean {
   return day === 0 || day === 6;
 }
 
-function matches(event: MockEvent, filter: Filter): boolean {
-  switch (filter) {
-    case 'all':
-      return true;
-    case 'today':
-      return dayOffsetFrom(event.startsAt) === 0;
-    case 'weekend':
-      return isWeekend(event.startsAt);
-    case 'free':
-      return event.priceVnd === 0;
-    default:
-      return event.areaSlug === filter;
-  }
-}
-
 export function FeedStream() {
   const t = useTranslate();
   const { locale } = useLocale();
@@ -59,51 +31,63 @@ export function FeedStream() {
   const [filter, setFilter] = useState<Filter>('all');
   const [composerOpen, setComposerOpen] = useState(false);
   const [posts, setPosts] = useState<PostResponseT[]>([]);
+  const [events, setEvents] = useState<EventResponseT[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Community posts come from the API while events are still fixtures, so the
-  // feed is half live and half mock during this transition. A failed load is
-  // silent by design: the events below are unaffected and an error banner over
-  // a working feed would be noise.
+  // Both halves of the feed come from the API. Reloaded on sign-in as well:
+  // the same rows come back carrying the viewer's own RSVP and reactions,
+  // which anonymous responses do not have.
   useEffect(() => {
     let cancelled = false;
-    listPosts()
-      .then((page) => {
-        if (!cancelled) setPosts(page.items);
-      })
-      .catch(() => undefined);
+    setLoading(true);
+    void Promise.allSettled([listPosts(), listEvents(50)]).then(([p, e]) => {
+      if (cancelled) return;
+      if (p.status === 'fulfilled') setPosts(p.value.items);
+      if (e.status === 'fulfilled') setEvents(e.value.items);
+      setLoading(false);
+    });
     return () => {
       cancelled = true;
     };
-    // Reloaded on sign-in as well: the same posts come back carrying the
-    // viewer's own reactions, which anonymous responses do not have.
   }, [user?.id]);
 
-  // Prepended rather than refetched: the author must see their post land
-  // immediately, and a round trip would put a spinner between the tap and the
-  // result for no new information.
   const handleCreated = useCallback((post: PostResponseT) => {
     setPosts((current) => [post, ...current]);
   }, []);
 
+  /** An RSVP made on one card updates that card in place. */
+  const handleEventChanged = useCallback((changed: EventResponseT) => {
+    setEvents((current) => current.map((e) => (e.id === changed.id ? changed : e)));
+  }, []);
+
   const areaFilterId =
-    filter === 'all' || filter === 'today' || filter === 'weekend' || filter === 'free'
+    filter === 'all' || filter === 'today' || filter === 'weekend'
       ? undefined
       : AREAS.find((area) => area.slug === filter)?.id;
 
-  // Time-based filters do not apply to posts: a post has no start time, so
-  // "Today" and "Weekend" would silently drop every one of them.
-  const visiblePosts =
-    filter === 'today' || filter === 'weekend' || filter === 'free'
-      ? []
-      : posts.filter((post) => areaFilterId === undefined || post.areaId === areaFilterId);
-
-  const visible = useMemo(
-    () => MOCK_EVENTS.filter((event) => matches(event, filter)),
-    [filter],
+  const visibleEvents = useMemo(
+    () =>
+      events.filter((event) => {
+        switch (filter) {
+          case 'all':
+            return true;
+          case 'today':
+            return dayOffsetFrom(event.startsAt) === 0;
+          case 'weekend':
+            return isWeekend(event.startsAt);
+          default:
+            return event.areaId === areaFilterId;
+        }
+      }),
+    [events, filter, areaFilterId],
   );
 
-  const activityFor = (slug: string) =>
-    filter === 'all' ? ACTIVITY.find((item) => item.afterSlug === slug) : undefined;
+  // Time filters do not apply to posts: a post has no start time, so "Today"
+  // and "Weekend" would silently drop every one of them.
+  const visiblePosts =
+    filter === 'today' || filter === 'weekend'
+      ? []
+      : posts.filter((post) => areaFilterId === undefined || post.areaId === areaFilterId);
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
@@ -115,8 +99,6 @@ export function FeedStream() {
         />
         <button
           type="button"
-          // The gate lives here, not inside the composer: a visitor should meet
-          // the sign-in step before writing a post, not after.
           onClick={() => requireAuth(() => setComposerOpen(true))}
           aria-label={t('post.composer.open')}
           className="min-h-11 min-w-0 flex-1 truncate rounded-full border border-line bg-surface-sunken px-4 text-left text-sm text-fg-muted hover:border-line-strong"
@@ -141,15 +123,12 @@ export function FeedStream() {
         <Chip selected={filter === 'weekend'} onClick={() => setFilter('weekend')}>
           {t('feed.filterWeekend')}
         </Chip>
-        <Chip selected={filter === 'free'} onClick={() => setFilter('free')}>
-          {t('feed.filterFree')}
-        </Chip>
         {AREAS.map((area) => (
           <Chip
             key={area.slug}
             selected={filter === area.slug}
             onClick={() => setFilter(area.slug)}
-            count={MOCK_EVENTS.filter((event) => event.areaSlug === area.slug).length}
+            count={events.filter((event) => event.areaId === area.id).length}
           >
             {areaName(area, locale)}
           </Chip>
@@ -160,13 +139,21 @@ export function FeedStream() {
         <CommunityPost key={post.id} post={post} />
       ))}
 
-      {visible.length === 0 && visiblePosts.length === 0 ? (
+      {loading ? (
+        <Card padding="lg">
+          <SkeletonText lines={4} />
+        </Card>
+      ) : visibleEvents.length === 0 && visiblePosts.length === 0 ? (
         <Card padding="lg">
           <EmptyState
             icon={<span className="text-4xl">🌊</span>}
             title={t('feed.emptyTitle')}
             description={t('feed.emptyBody')}
-            action={<Button size="sm">{t('feed.createEvent')}</Button>}
+            action={
+              <Button size="sm" onClick={() => requireAuth(() => setComposerOpen(true))}>
+                {t('feed.createEvent')}
+              </Button>
+            }
             secondaryAction={
               <Button variant="ghost" size="sm" onClick={() => setFilter('all')}>
                 {t('feed.clearFilter')}
@@ -175,28 +162,9 @@ export function FeedStream() {
           />
         </Card>
       ) : (
-        visible.map((event, index) => {
-          const activity = activityFor(event.slug);
-          return (
-            <div key={event.id} className="contents">
-              <EventPost event={event} index={index} />
-              {activity && (
-                <Card padding="sm" className="flex items-center gap-3">
-                  <Avatar name={activity.name} size="sm" />
-                  <p className="min-w-0 text-sm text-fg-muted">
-                    <span className="font-semibold text-fg">{activity.name}</span>{' '}
-                    {t('feed.activityJoined', { name: '', count: activity.count }).replace(/^\s*/, '')}{' '}
-                    <span className="font-semibold text-fg">
-                      {locale === 'vi'
-                        ? (MOCK_EVENTS.find((item) => item.slug === activity.eventSlug)?.titleVi ?? '')
-                        : (MOCK_EVENTS.find((item) => item.slug === activity.eventSlug)?.title ?? '')}
-                    </span>
-                  </p>
-                </Card>
-              )}
-            </div>
-          );
-        })
+        visibleEvents.map((event) => (
+          <EventCard key={event.id} event={event} onChanged={handleEventChanged} />
+        ))
       )}
     </div>
   );

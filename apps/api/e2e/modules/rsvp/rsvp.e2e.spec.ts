@@ -244,7 +244,9 @@ describe('rsvp module', () => {
       join(occurrenceId, a),
       join(occurrenceId, b),
     ]);
-    const statuses = [ra.body.data.status, rb.body.data.status].sort();
+    const statuses = [ra.body.data.status as string, rb.body.data.status as string].toSorted(
+      (x, y) => x.localeCompare(y),
+    );
     expect(statuses).toEqual(['confirmed', 'waitlisted']);
 
     const event = await request(app.getHttpServer())

@@ -123,11 +123,33 @@ export type MessageKey =
   | 'errors.profile.phoneTaken'
   | 'event.card.almostFull'
   | 'event.card.attendees'
+  | 'event.card.details'
   | 'event.card.hostedBy'
   | 'event.card.price'
   | 'event.card.startingSoon'
+  | 'event.card.yours'
+  | 'event.create.error'
+  | 'event.create.field.area'
+  | 'event.create.field.capacity'
+  | 'event.create.field.description'
+  | 'event.create.field.location'
+  | 'event.create.field.startsAt'
+  | 'event.create.field.title'
+  | 'event.create.hint.capacity'
+  | 'event.create.hint.description'
+  | 'event.create.publish'
+  | 'event.create.saveDraft'
+  | 'event.create.title'
+  | 'event.create.working'
+  | 'event.detail.attendees'
+  | 'event.detail.attendeesEmpty'
+  | 'event.detail.attendeesSignedOut'
   | 'event.detail.full'
+  | 'event.detail.hostedBy'
   | 'event.detail.joinWaitlistButton'
+  | 'event.detail.missingBody'
+  | 'event.detail.missingTitle'
+  | 'event.detail.publish'
   | 'event.detail.rsvpButton'
   | 'event.detail.seatsLeft'
   | 'event.empty.cta'
@@ -138,9 +160,11 @@ export type MessageKey =
   | 'event.status.cancelled'
   | 'event.status.draft'
   | 'event.status.pendingReview'
+  | 'event.status.pending_review'
   | 'event.status.published'
   | 'event.status.suspended'
   | 'event.status.takenDown'
+  | 'event.status.taken_down'
   | 'feed.activity.joinedMany'
   | 'feed.activity.joinedOne'
   | 'feed.activityJoined'
@@ -298,7 +322,9 @@ export type MessageKey =
   | 'profile.visibilityHint.members_only'
   | 'profile.visibilityHint.private'
   | 'profile.visibilityHint.public'
+  | 'rsvp.action.working'
   | 'rsvp.error.alreadyRsvped'
+  | 'rsvp.error.generic'
   | 'rsvp.error.idempotencyKeyRequired'
   | 'rsvp.error.notRegistered'
   | 'rsvp.error.occurrenceClosed'
@@ -463,11 +489,33 @@ export const MESSAGE_KEYS = [
   'errors.profile.phoneTaken',
   'event.card.almostFull',
   'event.card.attendees',
+  'event.card.details',
   'event.card.hostedBy',
   'event.card.price',
   'event.card.startingSoon',
+  'event.card.yours',
+  'event.create.error',
+  'event.create.field.area',
+  'event.create.field.capacity',
+  'event.create.field.description',
+  'event.create.field.location',
+  'event.create.field.startsAt',
+  'event.create.field.title',
+  'event.create.hint.capacity',
+  'event.create.hint.description',
+  'event.create.publish',
+  'event.create.saveDraft',
+  'event.create.title',
+  'event.create.working',
+  'event.detail.attendees',
+  'event.detail.attendeesEmpty',
+  'event.detail.attendeesSignedOut',
   'event.detail.full',
+  'event.detail.hostedBy',
   'event.detail.joinWaitlistButton',
+  'event.detail.missingBody',
+  'event.detail.missingTitle',
+  'event.detail.publish',
   'event.detail.rsvpButton',
   'event.detail.seatsLeft',
   'event.empty.cta',
@@ -478,9 +526,11 @@ export const MESSAGE_KEYS = [
   'event.status.cancelled',
   'event.status.draft',
   'event.status.pendingReview',
+  'event.status.pending_review',
   'event.status.published',
   'event.status.suspended',
   'event.status.takenDown',
+  'event.status.taken_down',
   'feed.activity.joinedMany',
   'feed.activity.joinedOne',
   'feed.activityJoined',
@@ -638,7 +688,9 @@ export const MESSAGE_KEYS = [
   'profile.visibilityHint.members_only',
   'profile.visibilityHint.private',
   'profile.visibilityHint.public',
+  'rsvp.action.working',
   'rsvp.error.alreadyRsvped',
+  'rsvp.error.generic',
   'rsvp.error.idempotencyKeyRequired',
   'rsvp.error.notRegistered',
   'rsvp.error.occurrenceClosed',

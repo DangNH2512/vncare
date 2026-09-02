@@ -14,22 +14,33 @@
       "rsvpButton": "RSVP",
       "joinWaitlistButton": "Join waitlist",
       "seatsLeft": "{count} seats left",
-      "full": "Event is full"
+      "full": "Event is full",
+      "hostedBy": "Host",
+      "publish": "Publish this event",
+      "missingTitle": "No such event",
+      "missingBody": "It may have been removed, or the link is wrong.",
+      "attendees": "Who is going ({count})",
+      "attendeesSignedOut": "The attendee list is visible to members.",
+      "attendeesEmpty": "Nobody yet — be the first."
     },
     "card": {
       "hostedBy": "Hosted by {name}",
       "attendees": "{count} going",
       "price": "{amount}",
       "startingSoon": "Starting soon",
-      "almostFull": "Almost full"
+      "almostFull": "Almost full",
+      "yours": "Your event",
+      "details": "Details"
     },
     "status": {
-      "draft": "Draft",
+      "draft": "Draft — only you can see this",
       "pendingReview": "Pending review",
       "published": "Published",
       "suspended": "Suspended",
       "takenDown": "Taken down",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "pending_review": "Awaiting review",
+      "taken_down": "Taken down"
     },
     "empty": {
       "title": "No events in {area} this week",
@@ -37,7 +48,26 @@
       "cta": "Create an event",
       "resetFilter": "Show all areas"
     },
-    "requiredTrust": "Trust level {level} or above"
+    "requiredTrust": "Trust level {level} or above",
+    "create": {
+      "title": "Create an event",
+      "field": {
+        "title": "What is happening?",
+        "description": "Details",
+        "startsAt": "When",
+        "capacity": "Seats",
+        "area": "Area",
+        "location": "Meeting point"
+      },
+      "hint": {
+        "description": "What to bring, where exactly to meet, who it is for...",
+        "capacity": "How many people can join."
+      },
+      "saveDraft": "Save as draft",
+      "publish": "Publish",
+      "working": "Publishing...",
+      "error": "Could not create the event. Please try again."
+    }
   },
   "rsvp": {
     "error": {
@@ -47,7 +77,11 @@
       "trustTooLow": "This event requires a higher trust level.",
       "notRegistered": "You are not registered for this session.",
       "occurrenceNotFound": "This session no longer exists.",
-      "idempotencyKeyRequired": "The request is missing its Idempotency-Key."
+      "idempotencyKeyRequired": "The request is missing its Idempotency-Key.",
+      "generic": "Could not update your RSVP. Please try again."
+    },
+    "action": {
+      "working": "One moment..."
     }
   },
   "trust": {

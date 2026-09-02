@@ -6,6 +6,7 @@ import {
   MapMouseEvent,
   Marker,
   NavigationControl,
+  setWorkerUrl,
 } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -33,6 +34,16 @@ export interface LocationPickerProps {
  * at this size. Attribution is required by the ODbL and is rendered by the
  * attribution control below, not optional.
  */
+/**
+ * Points MapLibre at its worker bundle, served from our own origin.
+ *
+ * Left alone, MapLibre resolves the worker to the current document URL and the
+ * browser parses an HTML page as JavaScript. Bundling it instead drops the
+ * sibling chunk the worker imports. `scripts/copy-maplibre-worker.mjs` copies
+ * both files into `public/maplibre/`, where their relative import still works.
+ */
+setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
+
 /**
  * Marker fill.
  *

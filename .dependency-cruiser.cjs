@@ -68,10 +68,10 @@ module.exports = {
       name: 'B8-single-rsvp-write-gate',
       severity: 'error',
       comment:
-        'Only rsvp-write.service.ts may import the RSVP/waitlist repositories; every capacity-affecting write goes through that single gate',
+        'Nothing outside modules/rsvp may import the RSVP/waitlist repositories. Every capacity-affecting write goes through RsvpService, which holds the occurrence row lock; a second writer elsewhere would oversell seats no matter how careful it was.',
       from: {
         path: '^apps/api/src',
-        pathNot: 'rsvp-write\\.service\\.ts$|/rsvp/.*repository\\.ts$',
+        pathNot: '^apps/api/src/modules/rsvp/',
       },
       to: { path: '(rsvp|waitlist)[^/]*\\.repository\\.ts$' },
     },

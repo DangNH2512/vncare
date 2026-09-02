@@ -39,11 +39,18 @@ tích luỹ — lịch sử dài hạn thuộc về [DECISIONS.md](DECISIONS.md)
 - Sự kiện trong feed **vẫn là mock** (`MOCK_EVENTS`). Chỉ bài đăng là dữ liệu thật.
 - `.env.local` đặt `NEXT_PUBLIC_API_URL=http://localhost:3101` (không commit).
 
+### Vòng lặp sự kiện đã chạy end-to-end (2026-09-02)
+
+Tạo sự kiện `/events/new` → publish → hiện trong feed thật → Join/Waitlist ngay trên
+card hoặc ở `/events/[id]` → danh sách người tham gia. `MOCK_EVENTS` đã bị xoá; feed
+và right-rail đọc API thật. `modules/rsvp` giữ chỗ dưới row lock, huỷ chỗ thăng hạng
+người đầu hàng chờ trong cùng transaction.
+
 ### Route hiện có
 
-`/` · `/u/[handle]` (hồ sơ duy nhất, tự sửa được khi là của mình) · `/login` ·
-`/register` · `/discover`, `/my-events`, `/notifications`, `/events/new` (giữ chỗ
-bằng `BlankScreen`) · `not-found.tsx`. **Không còn `/profile`.**
+`/` · `/events/[id]` · `/events/new` · `/u/[handle]` · `/login` · `/register` ·
+`/discover`, `/my-events`, `/notifications` (giữ chỗ bằng `BlankScreen`) ·
+`not-found.tsx`. **Không còn `/profile`.**
 
 ### Cần biết trước khi làm tiếp
 

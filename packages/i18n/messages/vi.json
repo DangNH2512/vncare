@@ -14,22 +14,33 @@
       "rsvpButton": "Ghi danh",
       "joinWaitlistButton": "Vào hàng chờ",
       "seatsLeft": "Còn {count} chỗ",
-      "full": "Sự kiện đã đủ người"
+      "full": "Sự kiện đã đủ người",
+      "hostedBy": "Người tổ chức",
+      "publish": "Đăng sự kiện này",
+      "missingTitle": "Không có sự kiện này",
+      "missingBody": "Có thể nó đã bị gỡ, hoặc đường dẫn sai.",
+      "attendees": "Ai sẽ tham gia ({count})",
+      "attendeesSignedOut": "Danh sách người tham gia chỉ hiển thị cho thành viên.",
+      "attendeesEmpty": "Chưa có ai — hãy là người đầu tiên."
     },
     "card": {
       "hostedBy": "Tổ chức bởi {name}",
       "attendees": "{count} người tham gia",
       "price": "{amount}",
       "startingSoon": "Sắp bắt đầu",
-      "almostFull": "Sắp kín chỗ"
+      "almostFull": "Sắp kín chỗ",
+      "yours": "Sự kiện của bạn",
+      "details": "Chi tiết"
     },
     "status": {
-      "draft": "Bản nháp",
+      "draft": "Bản nháp — chỉ mình bạn thấy",
       "pendingReview": "Chờ kiểm duyệt",
       "published": "Đã đăng",
-      "suspended": "Tạm ẩn",
+      "suspended": "Đang bị đình chỉ",
       "takenDown": "Đã gỡ bỏ",
-      "cancelled": "Đã huỷ"
+      "cancelled": "Đã huỷ",
+      "pending_review": "Đang chờ duyệt",
+      "taken_down": "Đã bị gỡ"
     },
     "empty": {
       "title": "Chưa có sự kiện nào ở {area} trong tuần này",
@@ -37,7 +48,26 @@
       "cta": "Tạo sự kiện mới",
       "resetFilter": "Xem tất cả khu vực"
     },
-    "requiredTrust": "Yêu cầu mức tin cậy {level} trở lên"
+    "requiredTrust": "Yêu cầu mức tin cậy {level} trở lên",
+    "create": {
+      "title": "Tạo sự kiện",
+      "field": {
+        "title": "Có gì diễn ra?",
+        "description": "Chi tiết",
+        "startsAt": "Khi nào",
+        "capacity": "Số chỗ",
+        "area": "Khu vực",
+        "location": "Điểm hẹn"
+      },
+      "hint": {
+        "description": "Cần mang gì, hẹn chính xác ở đâu, dành cho ai...",
+        "capacity": "Tối đa bao nhiêu người tham gia."
+      },
+      "saveDraft": "Lưu nháp",
+      "publish": "Đăng sự kiện",
+      "working": "Đang đăng...",
+      "error": "Không tạo được sự kiện. Vui lòng thử lại."
+    }
   },
   "rsvp": {
     "error": {
@@ -47,7 +77,11 @@
       "trustTooLow": "Sự kiện này yêu cầu mức độ tin cậy cao hơn.",
       "notRegistered": "Bạn chưa đăng ký buổi này.",
       "occurrenceNotFound": "Buổi này không còn tồn tại.",
-      "idempotencyKeyRequired": "Yêu cầu thiếu Idempotency-Key."
+      "idempotencyKeyRequired": "Yêu cầu thiếu Idempotency-Key.",
+      "generic": "Không cập nhật được đăng ký. Vui lòng thử lại."
+    },
+    "action": {
+      "working": "Chờ một chút..."
     }
   },
   "trust": {

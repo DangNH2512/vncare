@@ -7,7 +7,10 @@
  * `@dnc/contracts`, so this file owns transport only, never data shapes.
  */
 import type {
+  AttendeeResponseT,
   AuthSessionResponseT,
+  EventCreateRequestT,
+  EventResponseT,
   LoginRequestT,
   MediaCompleteRequestT,
   MediaResponseT,
@@ -16,6 +19,7 @@ import type {
   MyProfileResponseT,
   PostCreateRequestT,
   PostResponseT,
+  RsvpResponseT,
   ProfileUpdateRequestT,
   PublicProfileResponseT,
   RegisterRequestT,
@@ -230,6 +234,59 @@ export function completeUpload(
     method: 'PUT',
     body: JSON.stringify(body),
   });
+}
+
+/* ------------------------------------------------------------------ events */
+
+export function listEvents(limit = 20): Promise<{
+  items: EventResponseT[];
+  nextCursor: string | null;
+}> {
+  return call(`/api/v1/events?limit=${limit}`);
+}
+
+export function getEvent(id: string): Promise<EventResponseT> {
+  return call<EventResponseT>(`/api/v1/events/${id}`);
+}
+
+export function createEvent(body: EventCreateRequestT): Promise<EventResponseT> {
+  return call<EventResponseT>('/api/v1/events', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export function publishEvent(id: string): Promise<EventResponseT> {
+  return call<EventResponseT>(`/api/v1/events/${id}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status: 'published' }),
+  });
+}
+
+/* -------------------------------------------------------------------- rsvp */
+
+/**
+ * Joins one occurrence. The Idempotency-Key is generated here, per call: a
+ * network retry of THIS call must reuse it, which `fetch` does not do on its
+ * own — so the server treats a duplicate submit as the same request only when
+ * the caller passes the same key back.
+ */
+export function joinOccurrence(
+  occurrenceId: string,
+  idempotencyKey: string = crypto.randomUUID(),
+): Promise<RsvpResponseT> {
+  return call<RsvpResponseT>(`/api/v1/occurrences/${occurrenceId}/rsvps`, {
+    method: 'POST',
+    headers: { 'idempotency-key': idempotencyKey },
+  });
+}
+
+export function cancelRsvp(occurrenceId: string): Promise<void> {
+  return call<void>(`/api/v1/occurrences/${occurrenceId}/rsvps`, { method: 'DELETE' });
+}
+
+export function listAttendees(occurrenceId: string): Promise<AttendeeResponseT[]> {
+  return call<AttendeeResponseT[]>(`/api/v1/occurrences/${occurrenceId}/rsvps`);
 }
 
 /* ------------------------------------------------------------------- posts */

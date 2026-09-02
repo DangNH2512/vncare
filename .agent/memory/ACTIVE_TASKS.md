@@ -15,7 +15,9 @@ Danh sách việc đang mở. Xong thì xoá khỏi đây, kết quả đáng nh
 | T-02 | `moderation_audit_log` cho hành động ẩn/gỡ của chủ thread | — | todo | Có `TODO(moderation)` trong `comment.service.ts` `remove()` |
 | T-03 | Bản đồ M0–M5 | — | todo | Kế hoạch: `docs/analysis/13-ban-do-va-truc-quan-hoa-su-kien.md` |
 | T-04 | Chuyển `src/database/sql/*.sql` sang migration TypeORM | — | todo | Skill `database-migrations` mô tả migration là class TS; code đang dùng file SQL nạp qua initdb |
-| T-05 | Nối comment + reaction + chat vào web client | — | todo | API đã sẵn sàng; mới chỉ post + media + auth + profile được nối. Dùng `requireAuth()` để gate |
+| T-05 | Nối comment + reaction + chat vào web client | — | todo | API đã sẵn sàng; event/RSVP/post/media/auth/profile đã nối. Chỗ tự nhiên cho comment + reaction là trang `/events/[id]` |
+| T-16 | Thông báo khi được thăng hạng từ hàng chờ | — | todo | `RsvpService.cancel` có `TODO(notification)`. Khi có notification thì đổi thăng hạng sang `held` + `hold_expires_at` thay vì `confirmed` thẳng |
+| T-17 | Sự kiện lặp lại (nhiều occurrence) | — | todo | Schema đã hỗ trợ; API mới tạo 1 occurrence/sự kiện và `EventResponse` phẳng hoá occurrence sớm nhất |
 | T-06 | Bỏ `"type": "module"` khỏi `geo`/`i18n`/`tokens` | — | todo | `domain` đã xong (nổ khi `apps/api` import `normalizePhone`). Cùng lỗi đã sửa ở `contracts`; hiện chưa nổ vì `apps/api` chưa import tới. `geo` dùng import attribute `with { type: 'json' }`, cần kiểm tra kỹ |
 | T-07 | Job dọn `media` treo ở trạng thái `pending` | — | todo | Index `idx_media_pending` đã sẵn; chưa có worker |
 | T-08 | Chống lạm dụng upload: rate limit theo trust level | — | todo | Gallery không còn trần số mục, nên rate limit theo lượt/giờ là tuyến phòng thủ chính. Hiện mới chặn kiểu file và dung lượng từng tệp |

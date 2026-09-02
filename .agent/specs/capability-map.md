@@ -6,8 +6,8 @@
 |---|---|---|---|---|---|---|
 | Đăng ký / đăng nhập | **API + web xong** (email/mật khẩu) | `modules/auth` | /login, /register, dialog gate | — | — | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
 | Hồ sơ & trust level | **API + web xong** | `modules/profile` | /profile, /u/[handle] | — | — | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
-| Tạo & quản lý sự kiện | **CRUD xong (Postgres)** | `modules/event` | — | — | — | `docs/analysis/02-use-case.md` |
-| RSVP & waitlist | chưa làm | `modules/rsvp` | — | — | — | `docs/analysis/02-use-case.md` |
+| Tạo & quản lý sự kiện | **API + web xong** | `modules/event` | feed thật, /events/[id], /events/new | — | — | `docs/analysis/02-use-case.md` |
+| RSVP & waitlist | **API + web xong** | `modules/rsvp` | nút Join/Waitlist + danh sách người tham gia | — | — | `docs/analysis/02-use-case.md` |
 | Khu vực & truy vấn địa lý | chưa làm | `modules/area` | — | — | — | `docs/analysis/03-domain-va-du-lieu.md` |
 | Tìm kiếm & lọc | chưa làm | `modules/search` | — | — | — | `docs/analysis/10-ux-luong-man-hinh-va-i18n.md` |
 | Báo cáo vi phạm & kiểm duyệt | chưa làm | `modules/report` | — | — | — | `docs/analysis/05-trust-safety-va-kiem-duyet.md` |

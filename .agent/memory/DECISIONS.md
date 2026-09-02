@@ -335,3 +335,48 @@ mật khẩu mới là thứ xác thực, số chỉ là định danh để tra.
 **Lựa chọn:** Áp cùng cách đã dùng cho `@dnc/contracts`. `@dnc/geo`, `@dnc/i18n`,
 `@dnc/tokens` vẫn còn `"type": "module"` nhưng chưa nổ vì `apps/api` chưa import tới;
 `geo` cần thận trọng hơn vì dùng import attribute `with { type: 'json' }`.
+
+## [2026-09-02] RSVP: quyết định thuần ở domain, ràng buộc ở row lock
+
+**Bối cảnh:** Module lõi nhất của sản phẩm — giữ chỗ, hàng chờ, thăng hạng.
+
+**Lựa chọn:** `decideRsvpOutcome` ở `@dnc/domain` (đã khoá từ Sprint 0) quyết định kết
+quả; API đánh giá nó trên **số đọc dưới `FOR UPDATE OF o`** trên hàng occurrence. Hai
+người giành ghế cuối xếp hàng ở lock đó, người sau thấy hàng của người trước khi đếm
+lại. Trigger `assert_capacity` giữ nguyên vai trò tuyến phòng thủ cuối. Sự kiện đầy trả
+về **chỗ trong hàng chờ**, không phải lỗi.
+
+Huỷ chỗ và thăng hạng người đầu hàng chờ nằm trong **cùng một transaction** — một ghế
+không bao giờ được thấy trống trong khi có người đang xếp hàng cho nó. Thăng thẳng lên
+`confirmed` thay vì `held` + cửa sổ xác nhận: hold chỉ có nghĩa khi báo được cho người
+được thăng, mà module notification chưa tồn tại.
+
+`Idempotency-Key` bắt buộc ở tầng HTTP: retry sau khi rớt mạng phải ra đúng RSVP lần
+đầu tạo, không phải lỗi "đã đăng ký" mà người dùng không hiểu.
+
+**Hệ quả:** Danh sách người tham gia chỉ cho thành viên (dữ liệu an toàn khi gặp mặt),
+và chỉ gồm danh tính hiển thị + badge tin cậy.
+
+## [2026-09-02] Rule B8 chuyển từ khớp tên file sang ranh giới module
+
+**Bối cảnh:** `B8-single-rsvp-write-gate` viết ở Sprint 0 cho phép đúng một file tên
+`rsvp-write.service.ts` import repository RSVP. Module thật đặt tên theo quy ước 4 class
+là `rsvp.service.ts`, nên rule báo 4 vi phạm cho chính file wiring của module.
+
+**Lựa chọn:** Giữ nguyên ý định, đổi cách diễn đạt: **không gì ngoài `modules/rsvp`**
+được import repository RSVP/waitlist. Siết thêm bằng code chứ không chỉ bằng lint —
+`RsvpModule` không export repository nữa, nên module khác không inject được.
+
+## [2026-09-02] MapLibre worker phục vụ từ public/
+
+**Bối cảnh:** Mọi màn hình có bản đồ ném `SyntaxError: Unexpected token '<'` — **cả
+trong production build**. MapLibre resolve worker về URL của chính trang, trình duyệt
+parse HTML như JavaScript.
+
+**Lựa chọn:** `scripts/copy-maplibre-worker.mjs` chép `maplibre-gl-worker.mjs` và
+`maplibre-gl-shared.mjs` vào `public/maplibre/` (chạy ở `predev`/`prebuild`,
+gitignored), rồi `setWorkerUrl('/maplibre/maplibre-gl-worker.mjs')`. Để bundler tự lo
+thì nó emit file entry mà bỏ chunk sibling, worker gãy khi import.
+
+**Bài học kiểm chứng:** lỗi này tồn tại từ lúc thêm `LocationPicker` nhưng lọt lưới vì
+các lần verify trước chỉ bấm chip khu vực, chưa bao giờ click thẳng lên bản đồ.

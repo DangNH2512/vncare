@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import type { EventResponseT } from '@dnc/contracts';
 
 import { AREAS, areaName } from '../../_lib/areas';
 import { cn } from '../../_lib/cn';
@@ -10,21 +12,15 @@ import {
   isPast,
   toDateTimeAttribute,
 } from '../../_lib/datetime';
-import {
-  eventsByStartTime,
-  eventTitle,
-  type TrustLevel,
-} from '../../_lib/mock-data';
+import { listEvents } from '../../_lib/api';
 import { useLocale, useTranslate } from '../locale-provider';
 import { Avatar, Button, TrustBadge } from '../ui';
 import { MapPinIcon } from './icons';
 
 /**
- * Placeholder follow suggestions. Real suggestions come from the follow
- * endpoint later; these rows only prove out the layout, so they live here
- * rather than in mock-data.ts, and disappear with the rail's first real data.
+ * Placeholder follow suggestions; the follow endpoint replaces them.
  */
-const SUGGESTED_PEOPLE: readonly { name: string; trustLevel: TrustLevel }[] = [
+const SUGGESTED_PEOPLE: readonly { name: string; trustLevel: 0 | 1 | 2 | 3 | 4 | 5 }[] = [
   { name: 'Lucas Meyer', trustLevel: 5 },
   { name: 'Phạm Bảo Ngọc', trustLevel: 3 },
   { name: 'Sarah O’Connell', trustLevel: 4 },
@@ -56,8 +52,23 @@ function RailSection({
 export function RightRail() {
   const t = useTranslate();
   const { locale } = useLocale();
+  const [events, setEvents] = useState<EventResponseT[]>([]);
 
-  const upcoming = eventsByStartTime()
+  // A failed load leaves the section empty rather than erroring: the rail is a
+  // shortcut into the feed, which still works without it.
+  useEffect(() => {
+    let cancelled = false;
+    listEvents(20)
+      .then((page) => {
+        if (!cancelled) setEvents(page.items);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const upcoming = events
     .filter((event) => !isPast(event.startsAt))
     .slice(0, UPCOMING_LIMIT);
 
@@ -69,11 +80,11 @@ export function RightRail() {
             {upcoming.map((event) => (
               <li key={event.id} className="min-w-0">
                 <Link
-                  href={`/events/${event.slug}`}
+                  href={`/events/${event.id}`}
                   className="flex min-h-11 flex-col justify-center gap-0.5 rounded-md px-2 py-2 transition-colors duration-150 hover:bg-surface-sunken"
                 >
                   <span className="line-clamp-2 min-w-0 text-sm font-semibold break-words text-fg">
-                    {eventTitle(event, locale)}
+                    {event.title}
                   </span>
                   <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 text-xs text-fg-muted">
                     <time dateTime={toDateTimeAttribute(event.startsAt)}>
