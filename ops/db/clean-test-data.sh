@@ -33,8 +33,13 @@ DELETE FROM messages WHERE conversation_id IN (
   SELECT conversation_id FROM conversation_participants WHERE user_id IN (SELECT id FROM doomed));
 DELETE FROM conversations WHERE id IN (
   SELECT conversation_id FROM conversation_participants WHERE user_id IN (SELECT id FROM doomed));
-DELETE FROM rsvps WHERE user_id IN (SELECT id FROM doomed);
-DELETE FROM waitlist_entries WHERE user_id IN (SELECT id FROM doomed);
+DELETE FROM rsvps WHERE user_id IN (SELECT id FROM doomed)
+   OR occurrence_id IN (SELECT o.id FROM event_occurrences o
+        JOIN events e ON e.id = o.event_id WHERE e.organizer_id IN (SELECT id FROM doomed));
+DELETE FROM waitlist_entries WHERE user_id IN (SELECT id FROM doomed)
+   OR occurrence_id IN (SELECT o.id FROM event_occurrences o
+        JOIN events e ON e.id = o.event_id WHERE e.organizer_id IN (SELECT id FROM doomed));
+DELETE FROM idempotency_keys WHERE user_id IN (SELECT id FROM doomed);
 DELETE FROM event_occurrences WHERE event_id IN (SELECT id FROM events WHERE organizer_id IN (SELECT id FROM doomed));
 DELETE FROM events WHERE organizer_id IN (SELECT id FROM doomed);
 UPDATE profiles SET avatar_media_id = NULL WHERE user_id IN (SELECT id FROM doomed);

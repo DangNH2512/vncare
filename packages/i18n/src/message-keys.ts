@@ -299,7 +299,10 @@ export type MessageKey =
   | 'profile.visibilityHint.private'
   | 'profile.visibilityHint.public'
   | 'rsvp.error.alreadyRsvped'
+  | 'rsvp.error.idempotencyKeyRequired'
+  | 'rsvp.error.notRegistered'
   | 'rsvp.error.occurrenceClosed'
+  | 'rsvp.error.occurrenceNotFound'
   | 'rsvp.error.suspended'
   | 'rsvp.error.trustTooLow'
   | 'shell.a11y.bottomNav'
@@ -636,7 +639,10 @@ export const MESSAGE_KEYS = [
   'profile.visibilityHint.private',
   'profile.visibilityHint.public',
   'rsvp.error.alreadyRsvped',
+  'rsvp.error.idempotencyKeyRequired',
+  'rsvp.error.notRegistered',
   'rsvp.error.occurrenceClosed',
+  'rsvp.error.occurrenceNotFound',
   'rsvp.error.suspended',
   'rsvp.error.trustTooLow',
   'shell.a11y.bottomNav',

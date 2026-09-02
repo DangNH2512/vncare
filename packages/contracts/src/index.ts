@@ -61,6 +61,8 @@ export {
 } from './event';
 export {
   ACTIVE_RSVP_STATUSES,
+  AttendeeResponse,
+  type AttendeeResponseT,
   OCCURRENCE_CAPACITY_COLUMN,
   OCCURRENCE_TABLE,
   RSVP_STATUS_COLUMN,

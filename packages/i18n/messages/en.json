@@ -41,10 +41,13 @@
   },
   "rsvp": {
     "error": {
-      "suspended": "Your account is currently suspended.",
-      "occurrenceClosed": "Registration for this event has closed.",
-      "alreadyRsvped": "You already have an active RSVP for this event.",
-      "trustTooLow": "This event requires a higher trust level."
+      "suspended": "Your account is suspended and cannot join events.",
+      "occurrenceClosed": "Registration for this session is closed.",
+      "alreadyRsvped": "You are already registered for this session.",
+      "trustTooLow": "This event requires a higher trust level.",
+      "notRegistered": "You are not registered for this session.",
+      "occurrenceNotFound": "This session no longer exists.",
+      "idempotencyKeyRequired": "The request is missing its Idempotency-Key."
     }
   },
   "trust": {

@@ -13,12 +13,17 @@ export interface EventRow {
   area_id: string;
   lat: number;
   lng: number;
+  occurrence_id: string;
   starts_at: Date;
   ends_at: Date | null;
   capacity: number;
   seats_taken: number;
   status: EventStatusT;
   required_trust_level: number;
+  organizer_handle: string;
+  organizer_display_name: string;
+  organizer_trust_level: number;
+  viewer_rsvp_status: 'confirmed' | 'held' | 'waitlisted' | null;
   created_at: Date;
 }
 
@@ -49,21 +54,42 @@ interface EventCursor extends Record<string, unknown> {
  */
 const OCCURRENCE_JOIN = `
   JOIN LATERAL (
-    SELECT o.starts_at, o.ends_at, o.capacity, o.confirmed_count
+    SELECT o.id, o.starts_at, o.ends_at, o.capacity, o.confirmed_count
       FROM event_occurrences o
      WHERE o.event_id = e.id AND o.deleted_at IS NULL
      ORDER BY o.starts_at ASC
      LIMIT 1
   ) occ ON true
+  JOIN users ou ON ou.id = e.organizer_id
+  JOIN profiles op ON op.user_id = e.organizer_id
+`;
+
+/**
+ * The viewer's own active RSVP, folded into every event read so a feed can
+ * paint the Join button without one request per card. \$VIEWER is replaced by
+ * the parameter index the caller bound the viewer id to.
+ */
+const VIEWER_RSVP_JOIN = `
+  LEFT JOIN rsvps vr
+    ON vr.occurrence_id = occ.id
+   AND vr.user_id = $VIEWER
+   AND vr.status IN ('confirmed', 'held', 'waitlisted')
+   AND vr.deleted_at IS NULL
 `;
 
 const SELECT_COLUMNS = `
   e.id, e.slug, e.title, e.description, e.area_id,
   ST_Y(e.location::geometry) AS lat,
   ST_X(e.location::geometry) AS lng,
+  occ.id AS occurrence_id,
   occ.starts_at, occ.ends_at, occ.capacity,
   occ.confirmed_count AS seats_taken,
-  e.status, e.required_trust_level, e.created_at
+  e.status, e.required_trust_level,
+  op.handle AS organizer_handle,
+  op.display_name AS organizer_display_name,
+  ou.trust_level AS organizer_trust_level,
+  vr.status AS viewer_rsvp_status,
+  e.created_at
 `;
 
 /** Discovery is ordered by start time, so that is the key. */
@@ -109,8 +135,10 @@ export class EventRepository {
       );
 
       const created = await tx.query<EventRow>(
-        `SELECT ${SELECT_COLUMNS} FROM events e ${OCCURRENCE_JOIN} WHERE e.id = $1`,
-        [eventId],
+        `SELECT ${SELECT_COLUMNS}
+           FROM events e ${OCCURRENCE_JOIN} ${VIEWER_RSVP_JOIN.replace('$VIEWER', '$2')}
+          WHERE e.id = $1`,
+        [eventId, input.organizerId],
       );
       return created.rows[0] as EventRow;
     });
@@ -120,7 +148,7 @@ export class EventRepository {
   async findById(id: string, viewerUserId: string | null): Promise<EventRow | null> {
     const { rows } = await this.pool.query<EventRow>(
       `SELECT ${SELECT_COLUMNS}
-         FROM events e ${OCCURRENCE_JOIN}
+         FROM events e ${OCCURRENCE_JOIN} ${VIEWER_RSVP_JOIN.replace('$VIEWER', '$2')}
         WHERE e.id = $1
           AND e.deleted_at IS NULL
           AND (e.status = 'published' OR e.organizer_id = $2)`,
@@ -152,7 +180,7 @@ export class EventRepository {
     const cursor = decodeCursor<EventCursor>(query.cursor);
     const { rows } = await this.pool.query<EventRow>(
       `SELECT ${SELECT_COLUMNS}
-         FROM events e ${OCCURRENCE_JOIN}
+         FROM events e ${OCCURRENCE_JOIN} ${VIEWER_RSVP_JOIN.replace('$VIEWER', '$1')}
         WHERE e.deleted_at IS NULL
           AND (e.status = 'published' OR e.organizer_id = $1)
           AND ($2::uuid IS NULL OR e.area_id = $2)
@@ -226,8 +254,10 @@ export class EventRepository {
       }
 
       const { rows } = await tx.query<EventRow>(
-        `SELECT ${SELECT_COLUMNS} FROM events e ${OCCURRENCE_JOIN} WHERE e.id = $1`,
-        [id],
+        `SELECT ${SELECT_COLUMNS}
+           FROM events e ${OCCURRENCE_JOIN} ${VIEWER_RSVP_JOIN.replace('$VIEWER', '$2')}
+          WHERE e.id = $1`,
+        [id, null],
       );
       return rows[0] ?? null;
     });
@@ -250,9 +280,9 @@ export class EventRepository {
           RETURNING id
        )
        SELECT ${SELECT_COLUMNS}
-         FROM events e ${OCCURRENCE_JOIN}
+         FROM events e ${OCCURRENCE_JOIN} ${VIEWER_RSVP_JOIN.replace('$VIEWER', '$3')}
         WHERE e.id IN (SELECT id FROM updated)`,
-      [id, status],
+      [id, status, null],
     );
     return rows[0] ?? null;
   }

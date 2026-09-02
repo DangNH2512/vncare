@@ -64,3 +64,19 @@ export const RsvpResponse = z.object({
   createdAt: z.iso.datetime(),
 });
 export type RsvpResponseT = z.infer<typeof RsvpResponse>;
+
+/**
+ * One person on the attendee list.
+ *
+ * An allow-list at a privacy boundary: display identity and the trust badge,
+ * nothing else. Email, phone and counts of anything never belong here.
+ */
+export const AttendeeResponse = z.object({
+  userId: z.uuid(),
+  handle: z.string(),
+  displayName: z.string(),
+  avatarUrl: z.url().nullable(),
+  trustLevel: z.number().int().min(0).max(5),
+  status: RsvpStatus,
+});
+export type AttendeeResponseT = z.infer<typeof AttendeeResponse>;

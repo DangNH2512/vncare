@@ -38,6 +38,8 @@ export const EventResponse = z.object({
   areaId: z.uuid(),
   lat: z.number(),
   lng: z.number(),
+  /** The occurrence the time/capacity fields below describe — and the RSVP target. */
+  occurrenceId: z.uuid(),
   startsAt: z.iso.datetime(),
   endsAt: z.iso.datetime().nullable(),
   capacity: z.number().int(),
@@ -45,6 +47,13 @@ export const EventResponse = z.object({
   seatsTaken: z.number().int(),
   status: EventStatus,
   requiredTrustLevel: z.number().int(),
+  organizer: z.object({
+    handle: z.string(),
+    displayName: z.string(),
+    trustLevel: z.number().int().min(0).max(5),
+  }),
+  /** The caller's own active RSVP on this occurrence; null when anonymous or not registered. */
+  viewerRsvpStatus: z.enum(['confirmed', 'held', 'waitlisted']).nullable(),
   createdAt: z.iso.datetime(),
 });
 export type EventResponseT = z.infer<typeof EventResponse>;

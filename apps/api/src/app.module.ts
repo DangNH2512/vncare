@@ -13,6 +13,7 @@ import { MediaModule } from './modules/media/index.js';
 import { PostModule } from './modules/post/index.js';
 import { ProfileModule } from './modules/profile/index.js';
 import { ReactionModule } from './modules/reaction/index.js';
+import { RsvpModule } from './modules/rsvp/index.js';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ReactionModule } from './modules/reaction/index.js';
     MediaModule,
     ProfileModule,
     EventModule,
+    RsvpModule,
     PostModule,
     CommentModule,
     ReactionModule,
