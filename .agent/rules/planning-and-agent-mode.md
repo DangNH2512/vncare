@@ -7,6 +7,11 @@ description: Cổng lập kế hoạch và quy tắc chọn chế độ single-a
 Bộ quy tắc này quyết định cần lập kế hoạch tới mức nào và khi nào tách công việc
 thành nhiều role thay vì chạy một agent duy nhất.
 
+> **Bước quét là bắt buộc.** [agent-first.md](agent-first.md) buộc mỗi phiên phải
+> quét bộ agent trong `.agent/agents/`, ánh xạ task vào agent sở hữu và tuyên bố
+> chế độ đã chọn **trước khi** bắt đầu task. File này chỉ quyết định *chế độ nào*;
+> bước quét thì không được bỏ qua kể cả khi kết luận là single-agent.
+
 ## Chế độ mặc định
 
 **Mặc định chạy vòng lặp lõi L1 cho mọi task.** Các vòng lặp nặng hơn chỉ thêm vào

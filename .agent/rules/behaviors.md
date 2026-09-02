@@ -23,6 +23,9 @@ dụ và mẫu được nhúng ngay tại chỗ khi đủ ngắn.
 - Quét kho skill là bắt buộc ở mọi task, không chỉ khi có từ khoá: `skill-first.md`
   §S1 — đọc `SKILL.md` của mọi skill khớp và tuyên bố danh sách áp dụng trước khi
   chạm file đầu tiên.
+- Quét bộ agent là bắt buộc ở đầu mỗi phiên, trước khi bắt đầu task đầu tiên:
+  `agent-first.md` §A1 — ánh xạ task vào agent sở hữu, chốt chế độ single/multi-agent
+  và tuyên bố cho người dùng trước khi chạm file.
 - Nạp context tối thiểu: file được nhắc đích danh trước, rồi phụ thuộc trực tiếp,
   rồi tài liệu riêng cho task. Không đọc ồ ạt tài liệu không liên quan.
 - Với ảnh chụp / lỗi / log, mở đúng file, route, lệnh hoặc log path trước khi đi

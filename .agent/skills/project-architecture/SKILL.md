@@ -31,7 +31,10 @@ description: Kiến trúc, tech stack, quy ước code và luật phát triển 
 
 **Chế độ agent:** mặc định một agent để tiết kiệm token. Chỉ dùng nhiều agent khi
 người dùng yêu cầu, khi việc lớn/cắt ngang nhiều ranh giới, hoặc khi cần một lượt
-rà soát độc lập đáng công điều phối.
+rà soát độc lập đáng công điều phối. Trước task đầu tiên của mỗi phiên, **bắt buộc
+quét bộ agent** trong `.agent/agents/`, ánh xạ task vào agent sở hữu và tuyên bố
+chế độ đã chọn theo
+[`.agent/rules/agent-first.md`](../../rules/agent-first.md).
 
 ### Bước 0.2 — Cổng STOP khi đổi schema
 
@@ -349,6 +352,7 @@ Schema đầy đủ (cột, index, ràng buộc) → `docs/analysis/03-domain-va
 |---|---|
 | **Luật hành vi luôn bật** | [`.agent/rules/behaviors.md`](../../rules/behaviors.md) |
 | **Cổng lập kế hoạch + chế độ agent** | [`.agent/rules/planning-and-agent-mode.md`](../../rules/planning-and-agent-mode.md) |
+| **Quét bộ agent đầu phiên** | [`.agent/rules/agent-first.md`](../../rules/agent-first.md) |
 | **Cần nạp gì, khi nào** | [`.agent/rules/skill-triggers.md`](../../rules/skill-triggers.md) |
 | **Checklist i18n, tooltip, xoá mềm** | [`.agent/rules/checklists.md`](../../rules/checklists.md) |
 | **Cấu trúc module backend bốn class** | [`.agent/rules/backend-module-structure.md`](../../rules/backend-module-structure.md) |
