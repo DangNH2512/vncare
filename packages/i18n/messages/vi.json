@@ -1,0 +1,538 @@
+{
+  "common": {
+    "appName": "Da Nang Connect",
+    "loading": "Đang tải...",
+    "retry": "Thử lại",
+    "free": "Miễn phí",
+    "seeAll": "Xem tất cả",
+    "skipToContent": "Bỏ qua, tới nội dung chính",
+    "comingSoon": "Sắp ra mắt",
+    "language": "Ngôn ngữ"
+  },
+  "event": {
+    "detail": {
+      "rsvpButton": "Ghi danh",
+      "joinWaitlistButton": "Vào hàng chờ",
+      "seatsLeft": "Còn {count} chỗ",
+      "full": "Sự kiện đã đủ người",
+      "hostedBy": "Người tổ chức",
+      "publish": "Đăng sự kiện này",
+      "missingTitle": "Không có sự kiện này",
+      "missingBody": "Có thể nó đã bị gỡ, hoặc đường dẫn sai.",
+      "attendees": "Ai sẽ tham gia ({count})",
+      "attendeesSignedOut": "Danh sách người tham gia chỉ hiển thị cho thành viên.",
+      "attendeesEmpty": "Chưa có ai — hãy là người đầu tiên."
+    },
+    "card": {
+      "hostedBy": "Tổ chức bởi {name}",
+      "attendees": "{count} người tham gia",
+      "price": "{amount}",
+      "startingSoon": "Sắp bắt đầu",
+      "almostFull": "Sắp kín chỗ",
+      "yours": "Sự kiện của bạn",
+      "details": "Chi tiết"
+    },
+    "status": {
+      "draft": "Bản nháp — chỉ mình bạn thấy",
+      "pendingReview": "Chờ kiểm duyệt",
+      "published": "Đã đăng",
+      "suspended": "Đang bị đình chỉ",
+      "takenDown": "Đã gỡ bỏ",
+      "cancelled": "Đã huỷ",
+      "pending_review": "Đang chờ duyệt",
+      "taken_down": "Đã bị gỡ"
+    },
+    "empty": {
+      "title": "Chưa có sự kiện nào ở {area} trong tuần này",
+      "description": "Chưa ai đăng sự kiện ở đây. Một buổi chạy sáng, một buổi cà phê, một buổi trao đổi ngôn ngữ — đăng chỉ mất hai phút.",
+      "cta": "Tạo sự kiện mới",
+      "resetFilter": "Xem tất cả khu vực"
+    },
+    "requiredTrust": "Yêu cầu mức tin cậy {level} trở lên",
+    "create": {
+      "title": "Tạo sự kiện",
+      "field": {
+        "title": "Có gì diễn ra?",
+        "description": "Chi tiết",
+        "startsAt": "Khi nào",
+        "capacity": "Số chỗ",
+        "area": "Khu vực",
+        "location": "Điểm hẹn"
+      },
+      "hint": {
+        "description": "Cần mang gì, hẹn chính xác ở đâu, dành cho ai...",
+        "capacity": "Tối đa bao nhiêu người tham gia."
+      },
+      "saveDraft": "Lưu nháp",
+      "publish": "Đăng sự kiện",
+      "working": "Đang đăng...",
+      "error": "Không tạo được sự kiện. Vui lòng thử lại."
+    }
+  },
+  "rsvp": {
+    "error": {
+      "suspended": "Tài khoản của bạn đang bị đình chỉ nên không tham gia được sự kiện.",
+      "occurrenceClosed": "Buổi này đã đóng đăng ký.",
+      "alreadyRsvped": "Bạn đã đăng ký buổi này rồi.",
+      "trustTooLow": "Sự kiện này yêu cầu mức độ tin cậy cao hơn.",
+      "notRegistered": "Bạn chưa đăng ký buổi này.",
+      "occurrenceNotFound": "Buổi này không còn tồn tại.",
+      "idempotencyKeyRequired": "Yêu cầu thiếu Idempotency-Key.",
+      "generic": "Không cập nhật được đăng ký. Vui lòng thử lại."
+    },
+    "action": {
+      "working": "Chờ một chút..."
+    }
+  },
+  "trust": {
+    "requirement": {
+      "resolveReports": "Giải quyết các báo cáo đang mở về tài khoản của bạn",
+      "verifyContact": "Xác minh địa chỉ email",
+      "attendFirstEvent": "Tham gia sự kiện đầu tiên",
+      "accountAge7d": "Là thành viên đủ 7 ngày",
+      "attend5Events": "Tham gia 5 sự kiện",
+      "attend10Events": "Tham gia 10 sự kiện",
+      "hostFirstEvent": "Tự tổ chức sự kiện đầu tiên",
+      "host5Events": "Tổ chức 5 sự kiện"
+    },
+    "level": {
+      "t0": "Bị hạn chế",
+      "t1": "Thành viên mới",
+      "t2": "Đã xác minh",
+      "t3": "Thành viên thường xuyên",
+      "t4": "Được tin cậy",
+      "t5": "Người tổ chức nòng cốt"
+    },
+    "badge": {
+      "short": "T{level}",
+      "aria": "Mức tin cậy {level}, {label}"
+    }
+  },
+  "a11y": {
+    "toggleTheme": "Chuyển giữa giao diện sáng và tối",
+    "switchLanguage": "Chuyển đổi ngôn ngữ",
+    "openMenu": "Mở menu",
+    "closeMenu": "Đóng menu",
+    "clearFilter": "Xoá bộ lọc hiện tại"
+  },
+  "theme": {
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Theo hệ thống"
+  },
+  "nav": {
+    "events": "Sự kiện",
+    "map": "Bản đồ",
+    "profile": "Trang cá nhân",
+    "createEvent": "Tạo sự kiện mới"
+  },
+  "datetime": {
+    "today": "Hôm nay",
+    "tomorrow": "Ngày mai",
+    "timeZoneNote": "Giờ hiển thị theo giờ Đà Nẵng (GMT+7)"
+  },
+  "area": {
+    "label": "Khu vực",
+    "all": "Tất cả khu vực",
+    "eventCount": "{count} sự kiện"
+  },
+  "home": {
+    "eyebrow": "Sprint 0 · Nền tảng",
+    "title": "Cộng đồng người nước ngoài tại Đà Nẵng, gom về một nơi",
+    "subtitle": "Giao lưu thể thao, trao đổi ngôn ngữ và các buổi gặp gỡ khu phố tại sáu khu vực đầu tiên.",
+    "routesHeading": "Các màn hình sắp có",
+    "routesNote": "Phần nền tảng đã xong. Mỗi màn hình bên dưới được dựng trên nền đó.",
+    "componentsHeading": "Bộ thành phần dùng chung",
+    "componentsNote": "Chuyển sang tiếng Việt và thu hẹp cửa sổ: không thành phần nào được tràn hay bị cắt chữ.",
+    "route": {
+      "feed": "Dòng sự kiện",
+      "feedDescription": "Mọi hoạt động trong tuần, sắp diễn ra xếp trước.",
+      "detail": "Chi tiết sự kiện",
+      "detailDescription": "Mô tả đầy đủ, điểm hẹn, và nút ghi danh hoặc vào hàng chờ.",
+      "areas": "Bộ lọc khu vực và bản đồ",
+      "areasDescription": "Lọc theo khu phố, kèm sáu khu vực đầu tiên vẽ trên bản đồ.",
+      "profile": "Hồ sơ thành viên",
+      "profileDescription": "Họ là ai, tổ chức những gì, và đang ở mức tin cậy nào."
+    },
+    "status": {
+      "ready": "Sẵn sàng",
+      "planned": "Đã lên kế hoạch"
+    }
+  },
+  "shell": {
+    "nav": {
+      "home": "Trang chủ",
+      "discover": "Khám phá",
+      "myEvents": "Sự kiện của tôi",
+      "notifications": "Thông báo",
+      "profile": "Hồ sơ",
+      "create": "Tạo",
+      "createEvent": "Tạo sự kiện"
+    },
+    "a11y": {
+      "primaryNav": "Điều hướng chính",
+      "bottomNav": "Thanh điều hướng dưới",
+      "create": "Tạo sự kiện mới"
+    },
+    "rail": {
+      "upcoming": "Sắp diễn ra",
+      "areas": "Khu vực",
+      "suggestions": "Gợi ý theo dõi",
+      "follow": "Theo dõi"
+    }
+  },
+  "feed": {
+    "title": "Bảng tin cộng đồng",
+    "composer": {
+      "placeholder": "Bạn đang lên kế hoạch gì?",
+      "create": "Tạo sự kiện"
+    },
+    "filter": {
+      "label": "Lọc bảng tin",
+      "all": "Tất cả",
+      "today": "Hôm nay",
+      "weekend": "Cuối tuần",
+      "free": "Miễn phí"
+    },
+    "card": {
+      "createdEvent": "đã tạo sự kiện",
+      "menu": "Tùy chọn khác cho bài đăng này",
+      "seatsLeft": "Còn {count} chỗ",
+      "full": "Hết chỗ",
+      "join": "Tham gia",
+      "joined": "Sẽ tham gia",
+      "comments": "{count} bình luận",
+      "share": "Chia sẻ",
+      "going": "{count} người tham gia",
+      "openEvent": "Mở sự kiện: {title}"
+    },
+    "activity": {
+      "joinedOne": "vừa tham gia",
+      "joinedMany": "và {count} người khác vừa tham gia"
+    },
+    "empty": {
+      "title": "Không có sự kiện nào khớp bộ lọc",
+      "description": "Tuần này chưa có gì ở đây. Hãy xóa bộ lọc, hoặc chính bạn là người mở màn.",
+      "reset": "Xóa bộ lọc"
+    },
+    "loading": "Đang tải bảng tin",
+    "composerPlaceholder": "Bạn đang lên kế hoạch gì tuần này?",
+    "createEvent": "Tạo sự kiện",
+    "filterAll": "Tất cả",
+    "filterToday": "Hôm nay",
+    "filterWeekend": "Cuối tuần",
+    "filterFree": "Miễn phí",
+    "createdEvent": "đã tạo sự kiện",
+    "curatedEvent": "chia sẻ từ nguồn công khai",
+    "rsvp": "Tham gia",
+    "going": "Sẽ tham gia",
+    "joinWaitlist": "Tham gia danh sách chờ",
+    "onWaitlist": "Trong hàng chờ",
+    "comments": "{count} bình luận",
+    "share": "Chia sẻ",
+    "moreActions": "Thao tác khác",
+    "seatsOf": "{taken}/{capacity}",
+    "plusOthers": "+{count}",
+    "activityJoined": "{name} và {count} người khác vừa tham gia",
+    "emptyTitle": "Chưa có sự kiện nào khớp bộ lọc",
+    "emptyBody": "Hãy là người đầu tiên đăng — cộng đồng sẽ cảm ơn bạn.",
+    "clearFilter": "Xoá bộ lọc"
+  },
+  "discover": {
+    "title": "Khám phá",
+    "search": {
+      "label": "Tìm sự kiện",
+      "placeholder": "Tìm theo tên sự kiện..."
+    },
+    "areas": {
+      "heading": "Xem theo khu vực",
+      "aria": "Lọc theo khu vực"
+    },
+    "view": {
+      "label": "Hiển thị kết quả dạng",
+      "list": "Danh sách",
+      "map": "Bản đồ"
+    },
+    "filters": {
+      "button": "Bộ lọc",
+      "title": "Lọc sự kiện",
+      "category": "Thể loại",
+      "freeOnly": "Chỉ sự kiện miễn phí",
+      "clear": "Xoá bộ lọc",
+      "done": "Xem {count} kết quả",
+      "close": "Đóng bộ lọc",
+      "activeCount": "{count} bộ lọc đang bật"
+    },
+    "category": {
+      "sports": "Thể thao",
+      "language": "Ngôn ngữ",
+      "social": "Giao lưu",
+      "outdoors": "Ngoài trời",
+      "wellness": "Sức khoẻ"
+    },
+    "results": {
+      "count": "Tìm thấy {count} sự kiện"
+    },
+    "map": {
+      "title": "Bản đồ khu vực",
+      "aria": "Bản đồ sáu khu vực đầu tiên",
+      "markerAria": "{area}: {count} sự kiện",
+      "placeholderNote": "Bản đồ tương tác sắp ra mắt"
+    },
+    "empty": {
+      "title": "Không có sự kiện nào khớp bộ lọc",
+      "description": "Thử khu vực khác hoặc xoá bộ lọc — hoặc chính bạn tạo một sự kiện mới.",
+      "clear": "Xoá tất cả bộ lọc"
+    }
+  },
+  "errors": {
+    "common": {
+      "duplicate": "Nội dung này đã tồn tại.",
+      "referenceNotFound": "Đối tượng được tham chiếu không còn tồn tại.",
+      "constraintViolated": "Yêu cầu này vi phạm một ràng buộc dữ liệu.",
+      "retryLater": "Hệ thống đang bận. Vui lòng thử lại sau giây lát."
+    },
+    "auth": {
+      "unauthenticated": "Vui lòng đăng nhập để tiếp tục.",
+      "trustLevelTooLow": "Tài khoản của bạn cần mức độ tin cậy cao hơn để làm việc này.",
+      "invalidCredentials": "Thông tin đăng nhập không khớp với tài khoản nào.",
+      "invalidToken": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+      "invalidRefresh": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+      "emailTaken": "Email này đã có tài khoản.",
+      "handleTaken": "Tên người dùng này đã có người lấy.",
+      "handleFormat": "Dùng 3-24 ký tự thường, số hoặc dấu gạch dưới.",
+      "accountSuspended": "Tài khoản này đang bị đình chỉ.",
+      "accountUnavailable": "Tài khoản này không khả dụng."
+    },
+    "event": {
+      "notFound": "Sự kiện này không còn tồn tại.",
+      "notOrganizer": "Chỉ người tổ chức mới sửa được sự kiện này.",
+      "underModeration": "Sự kiện đang bị tạm giữ để kiểm duyệt.",
+      "radiusRequiresCoordinates": "Tìm theo bán kính cần có cả vĩ độ và kinh độ."
+    },
+    "post": {
+      "notFound": "Bài đăng này không còn tồn tại.",
+      "notOwner": "Chỉ tác giả mới sửa được bài đăng này."
+    },
+    "comment": {
+      "notFound": "Bình luận này không còn tồn tại.",
+      "notAuthor": "Chỉ tác giả mới sửa được bình luận này.",
+      "parentNotFound": "Bình luận được trả lời không còn tồn tại.",
+      "notThreadOwner": "Chỉ người tổ chức hoặc tác giả mới ghim được bình luận ở đây.",
+      "cannotPinReply": "Chỉ bình luận gốc mới ghim được."
+    },
+    "chat": {
+      "cannotMessageSelf": "Bạn không thể tự nhắn tin cho chính mình.",
+      "conversationNotFound": "Cuộc trò chuyện này không còn tồn tại.",
+      "conversationClosed": "Cuộc trò chuyện này đã đóng.",
+      "requestRefused": "Người này không nhận tin nhắn từ bạn.",
+      "requestQuotaExhausted": "Hãy chờ phản hồi trước khi gửi thêm tin nhắn.",
+      "notRequestRecipient": "Chỉ người nhận mới trả lời được lời mời này.",
+      "messageNotFound": "Tin nhắn này không còn tồn tại.",
+      "messagePayloadMismatch": "Nội dung tin nhắn không khớp với loại tin nhắn."
+    },
+    "media": {
+      "typeNotAllowed": "Định dạng tệp này không được hỗ trợ.",
+      "tooLarge": "Tệp quá lớn.",
+      "notUploaded": "Tải lên chưa hoàn tất. Vui lòng thử lại.",
+      "notFound": "Tệp đính kèm không còn tồn tại."
+    },
+    "profile": {
+      "notFound": "Hồ sơ này không còn tồn tại.",
+      "phoneInvalid": "Đây không giống một số điện thoại.",
+      "phoneTaken": "Số điện thoại này đã thuộc về tài khoản khác."
+    }
+  },
+  "post": {
+    "composer": {
+      "open": "Viết bài",
+      "title": "Bài viết mới",
+      "bodyLabel": "Nội dung",
+      "bodyPlaceholder": "Hỏi cộng đồng, chia sẻ một gợi ý, hoặc nói bạn đang tìm gì.",
+      "kindLabel": "Loại bài",
+      "areaLabel": "Khu vực",
+      "areaCityWide": "Toàn Đà Nẵng",
+      "submit": "Đăng",
+      "submitting": "Đang đăng...",
+      "cancel": "Huỷ",
+      "remaining": "Còn {count} ký tự",
+      "errorGeneric": "Không đăng được bài. Vui lòng thử lại.",
+      "errorOffline": "Không kết nối được API. Chạy pnpm --filter @dnc/api dev.",
+      "back": "Quay lại",
+      "skipMedia": "Bỏ qua",
+      "you": "Bạn",
+      "waitingUploads": "Đang tải lên..."
+    },
+    "kind": {
+      "question": "Câu hỏi",
+      "recommendation": "Gợi ý",
+      "notice": "Thông báo",
+      "lookingFor": "Đang tìm"
+    },
+    "card": {
+      "posted": "đã đăng",
+      "cityWide": "Đà Nẵng",
+      "edited": "đã sửa",
+      "comments": "{count} bình luận",
+      "react": "Bày tỏ cảm xúc với bài này",
+      "gallery": "Bộ ảnh gồm {count} mục",
+      "showMore": "+{count} nữa"
+    },
+    "feed": {
+      "loading": "Đang tải bài cộng đồng",
+      "empty": "Chưa có bài viết nào. Hãy là người đầu tiên."
+    },
+    "media": {
+      "dropTitle": "Kéo ảnh và video vào đây",
+      "dropHint": "Ảnh và video. JPG, PNG, WebP, HEIC, MP4 hoặc MOV.",
+      "choose": "Chọn từ thiết bị",
+      "addMore": "Thêm ảnh hoặc video",
+      "remove": "Bỏ mục này",
+      "counter": "Đã chọn {count} mục",
+      "previewLabel": "Xem trước nội dung sắp đăng",
+      "previous": "Mục trước",
+      "next": "Mục sau",
+      "rejectedType": "Một số tệp bị bỏ qua: định dạng không được hỗ trợ.",
+      "rejectedSize": "Một số tệp bị bỏ qua: dung lượng quá lớn."
+    },
+    "location": {
+      "add": "Thêm địa điểm",
+      "pinned": "Đã ghim địa điểm",
+      "tapToPin": "Chạm lên bản đồ để ghim vị trí",
+      "labelField": "Tên địa điểm",
+      "remove": "Bỏ",
+      "mapUnavailable": "Không tải được bản đồ. Bạn vẫn đăng bài được mà không cần địa điểm."
+    }
+  },
+  "auth": {
+    "action": {
+      "signIn": "Đăng nhập",
+      "signUp": "Tạo tài khoản",
+      "signOut": "Đăng xuất",
+      "working": "Vui lòng chờ..."
+    },
+    "field": {
+      "email": "Email",
+      "password": "Mật khẩu",
+      "displayName": "Tên của bạn",
+      "handle": "Tên người dùng",
+      "identifier": "Email, tên người dùng hoặc số điện thoại"
+    },
+    "hint": {
+      "handle": "Đây sẽ là đường dẫn hồ sơ của bạn.",
+      "password": "Tối thiểu {count} ký tự.",
+      "identifier": "Cái nào bạn đã dùng để đăng ký cũng được."
+    },
+    "switch": {
+      "haveAccount": "Đã có tài khoản?",
+      "noAccount": "Bạn mới đến?"
+    },
+    "page": {
+      "signInTitle": "Chào mừng trở lại",
+      "signInBody": "Đăng nhập để đăng bài, bình luận và tham gia sự kiện.",
+      "signUpTitle": "Tham gia cộng đồng",
+      "signUpBody": "Miễn phí, chỉ mất khoảng một phút."
+    },
+    "prompt": {
+      "title": "Đăng nhập để tiếp tục",
+      "body": "Bạn đọc được mọi thứ mà không cần tài khoản. Đăng bài, thả cảm xúc và bình luận thì cần."
+    },
+    "error": {
+      "generic": "Có lỗi xảy ra. Vui lòng thử lại.",
+      "offline": "Không kết nối được máy chủ. Vui lòng kiểm tra đường truyền."
+    }
+  },
+  "profile": {
+    "action": {
+      "edit": "Sửa hồ sơ",
+      "save": "Lưu",
+      "saving": "Đang lưu...",
+      "cancel": "Huỷ"
+    },
+    "field": {
+      "displayName": "Tên hiển thị",
+      "headline": "Dòng giới thiệu",
+      "bio": "Về bạn",
+      "homeArea": "Khu vực đang ở",
+      "noArea": "Không tiết lộ",
+      "visibility": "Ai xem được hồ sơ này",
+      "showArea": "Hiện khu vực của tôi trên hồ sơ công khai",
+      "since": "Ở Đà Nẵng từ {date}",
+      "memberSince": "Thành viên từ {date}",
+      "phone": "Số điện thoại"
+    },
+    "hint": {
+      "headline": "Một dòng, ví dụ \"Giáo viên yoga · An Thượng\".",
+      "phone": "Dùng để đăng nhập. Không hiển thị cho ai khác."
+    },
+    "visibility": {
+      "public": "Tất cả mọi người",
+      "members_only": "Chỉ thành viên",
+      "private": "Chỉ mình tôi"
+    },
+    "visibilityHint": {
+      "public": "Ai có đường dẫn cũng xem được, kể cả người chưa có tài khoản.",
+      "members_only": "Chỉ thành viên đã đăng nhập mới mở được hồ sơ của bạn.",
+      "private": "Không ai ngoài bạn mở được hồ sơ này."
+    },
+    "section": {
+      "about": "Giới thiệu"
+    },
+    "stat": {
+      "hosted": "Đã tổ chức",
+      "attended": "Đã tham gia",
+      "rating": "Đánh giá"
+    },
+    "trust": {
+      "next": "Để đạt mức tin cậy {level}"
+    },
+    "language": {
+      "en": "Tiếng Anh",
+      "vi": "Tiếng Việt",
+      "ko": "Tiếng Hàn",
+      "ja": "Tiếng Nhật",
+      "zh": "Tiếng Trung",
+      "ru": "Tiếng Nga",
+      "fr": "Tiếng Pháp",
+      "de": "Tiếng Đức",
+      "es": "Tiếng Tây Ban Nha",
+      "other": "Khác"
+    },
+    "level": {
+      "basic": "cơ bản",
+      "conversational": "giao tiếp",
+      "fluent": "thành thạo",
+      "native": "bản ngữ"
+    },
+    "missing": {
+      "title": "Không có thành viên này",
+      "body": "Hồ sơ có thể đã bị gỡ, hoặc đường dẫn sai."
+    },
+    "error": {
+      "save": "Không lưu được hồ sơ. Vui lòng thử lại."
+    }
+  },
+  "blank": {
+    "backHome": "Về trang chủ",
+    "notFound": {
+      "title": "Không có gì ở địa chỉ này",
+      "body": "Có thể đường dẫn đã cũ, hoặc trang đã chuyển đi. Bảng tin vẫn ở chỗ cũ."
+    },
+    "discover": {
+      "title": "Trang Khám phá đang được dựng",
+      "body": "Duyệt theo khu vực và theo bản đồ là phần tiếp theo. Hiện tại bảng tin đã có đủ sự kiện, và các chip khu vực lọc được chúng."
+    },
+    "myEvents": {
+      "title": "Sự kiện của bạn sẽ nằm ở đây",
+      "body": "Những buổi bạn tổ chức và những buổi bạn đã tham gia, gom về một chỗ. Chưa dựng xong."
+    },
+    "notifications": {
+      "title": "Chưa có thông báo nào",
+      "body": "Trả lời, RSVP và thay đổi sự kiện sẽ về đây khi thông báo được bật."
+    },
+    "createEvent": {
+      "title": "Tạo sự kiện chưa sẵn sàng",
+      "body": "Biểu mẫu đang được dựng. Trong lúc chờ, bạn có thể đăng lên bảng tin cộng đồng và hẹn nhau ở đó."
+    }
+  }
+}

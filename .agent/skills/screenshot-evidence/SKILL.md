@@ -75,11 +75,14 @@ Chỉ bỏ qua với việc thuần backend không có surface hiển thị.
     locator API vẫn báo "resolved"; hover/click lên tham chiếu cũ thỉnh thoảng lỗi
     "element is not visible". Cách sửa: dùng hàm trả về locator gọi lại ở **mỗi bước**,
     không cache vào biến.
-- **Web (`apps/web`)** — lái browser thật (hoặc headless Chrome) tới màn cần chụp rồi
-  chụp. Chụp ở **viewport mobile trước** (390×844) rồi desktop, vì phần lớn người dùng
-  mở bằng điện thoại.
-  - Bản đồ `react-leaflet` load tile bất đồng bộ → chờ marker xuất hiện rồi mới chụp,
+- **Web người dùng cuối (`apps/web-client-side`)** — lái browser thật (hoặc headless
+  Chrome) tới màn cần chụp rồi chụp. Chụp ở **viewport mobile trước** (390×844) rồi
+  desktop, vì phần lớn người dùng mở bằng điện thoại.
+  - Bản đồ MapLibre load tile bất đồng bộ → chờ marker xuất hiện rồi mới chụp,
     nếu không bạn có bằng chứng của một ô vuông trắng.
+- **Web vận hành (`apps/web-admin-side`)** — chụp ở **desktop trước** (1280×800) vì
+  người vận hành dùng máy tính; bảng biểu và thao tác hàng loạt phải thấy trọn cột.
+  Che dữ liệu cá nhân của người dùng thật trước khi lưu ảnh.
 
 ### 2. Lưu BÊN TRONG workspace (link phải bấm được)
 

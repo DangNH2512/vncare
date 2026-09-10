@@ -32,8 +32,8 @@ Tự mở khi task vừa xong có bất kỳ điểm nào sau đây:
 - Vài quyết định thiết kế không hiển nhiên, hoặc có đánh đổi.
 - Edge case tinh vi, race condition, hay logic phụ thuộc thứ tự — điển hình ở đây là
   **RSVP tranh chỗ cuối cùng và cơ chế promote waitlist**.
-- Ảnh hưởng xuyên nhiều surface hoặc realtime: `apps/api` ↔ `apps/web` ↔
-  `apps/mobile`, socket.io, Expo push notification, job BullMQ.
+- Ảnh hưởng xuyên nhiều surface hoặc realtime: `apps/api` ↔ `apps/web-client-side` ↔
+  `apps/web-admin-side` ↔ `apps/mobile`, socket.io, Expo push notification, job BullMQ.
 - Truy vấn không gian PostGIS (SRID, đơn vị mét, thứ tự `lng/lat`) hoặc chuyện
   timezone (lưu UTC ↔ hiển thị `Asia/Ho_Chi_Minh`).
 - Auth/quyền, kiểm duyệt UGC, chặn người dùng, hoặc dữ liệu cá nhân — chỗ hiểu sai
@@ -71,7 +71,7 @@ vào cái thật sự đã làm:
 |---|---|
 | 1. Vấn đề là gì, vì sao nó tồn tại, và các hướng đã cân nhắc | Requirement Brief của business-analyst (BR/UC) + phần "Root Cause" trong report + các phương án đã cân đo |
 | 2. Giải pháp, vì sao chọn cách đó, các quyết định thiết kế & edge case | FR + phần review thiết kế + chính cái diff |
-| 3. Bối cảnh rộng — vì sao quan trọng và thay đổi này ảnh hưởng tới đâu | Các module bị ảnh hưởng (`apps/api` / `apps/web` / `apps/mobile` / `packages/shared-types`) + NFR + ghi chú realtime/regression |
+| 3. Bối cảnh rộng — vì sao quan trọng và thay đổi này ảnh hưởng tới đâu | Các module bị ảnh hưởng (`apps/api` / `apps/web-client-side` / `apps/web-admin-side` / `apps/mobile` / `packages/shared-types`) + NFR + ghi chú realtime/regression |
 
 Giữ một **checklist markdown đang chạy** liệt kê mọi mục người học phải hiểu (trong
 chat, hoặc lưu dưới `.agent/memory/` nếu người dùng yêu cầu). Tick từng mục khi đã

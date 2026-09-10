@@ -1,0 +1,4 @@
+{
+  "//": "Workspace root. Each package owns its tsconfig and typechecks via `tsc --noEmit` (turbo task); the editor picks the nearest tsconfig per file. Project references require composite projects with declaration emit — revisit when build orchestration needs them.",
+  "files": []
+}

@@ -13,14 +13,18 @@ Quan sát bằng đôi mắt đó, không phải mắt dev ngồi máy bàn vớ
 
 ---
 
-## A. Web (`apps/web`) — drive bằng `preview_*` tools (canonical)
+## A. Web (`apps/web-client-side` và `apps/web-admin-side`) — drive bằng `preview_*` tools (canonical)
+
+> Mặc định trong mục này là `apps/web-client-side` (:3000) — app của người dùng cuối.
+> Khi quan sát console vận hành (`apps/web-admin-side`), đổi sang dev server của app đó
+> và quan sát bằng mắt **người vận hành ngồi máy tính**, không phải expat cầm điện thoại.
 
 Harness ưu tiên `preview_*` cho dev server + verify. **KHÔNG dùng Bash hay
 trình duyệt ngoài** cho việc này.
 
 | Mục đích | Tool |
 |---|---|
-| Khởi/đảm bảo dev server (Next.js `apps/web`, mặc định :3000) | `preview_start` · `preview_list` |
+| Khởi/đảm bảo dev server (Next.js `apps/web-client-side`, mặc định :3000; `apps/web-admin-side` chạy ở cổng riêng) | `preview_start` · `preview_list` |
 | Reload (nếu không HMR) | `preview_eval` → `window.location.reload()` |
 | Đọc **nội dung + cấu trúc thật** (text, có/không phần tử) | `preview_snapshot` |
 | **Bằng chứng visual** (gửi user) | `preview_screenshot` |
@@ -33,6 +37,8 @@ trình duyệt ngoài** cho việc này.
 1. `preview_start` (nếu chưa chạy). API `apps/api` phải chạy trước (mặc định :3001)
    cùng Postgres+Redis từ `ops/docker-compose.yml`, nếu không web sẽ chỉ hiện skeleton.
 2. **`preview_resize { preset: "mobile" }` NGAY** — phần lớn user mở bằng điện thoại.
+   (Ngoại lệ: với `apps/web-admin-side` bắt đầu ở desktop 1280 vì người vận hành dùng
+   máy tính; vẫn kiểm responsive sau, nhưng desktop là oracle chính.)
    Đo tap-target / layout ở desktop là **sai oracle**. Mobile 390×844 trước; tablet
    (768) + desktop (1280) test sau, không thay thế.
 3. **Xác nhận locale = EN** (mặc định của sản phẩm). Chạy hết flow ở EN, rồi đổi sang
@@ -48,7 +54,7 @@ navigate, element có thể chưa visible (width/height = 0). Scroll into view +
 chờ 500-800ms trước khi đo. Element ngoài viewport → measurement = 0×0, dễ
 nhầm với "bug đã fix".
 
-⚠️ **Bản đồ (react-leaflet)** load tile bất đồng bộ. `preview_snapshot` có thể chụp
+⚠️ **Bản đồ (MapLibre, chỉ có ở `apps/web-client-side`)** load tile bất đồng bộ. `preview_snapshot` có thể chụp
 lúc bản đồ còn trắng. Chờ marker xuất hiện (hoặc assert qua danh sách kết quả bên
 cạnh bản đồ) rồi mới kết luận "không có sự kiện nào ở khu này".
 

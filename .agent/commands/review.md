@@ -59,10 +59,10 @@ grep -rn "dataSource\.\|DataSource" apps/api/src/modules --include="*.service.ts
 # Kỳ vọng: 0 kết quả
 
 # Không có tiếng Việt trong source (trừ file locale)
-grep -rn "[àáảãạăắằẳẵặâấầẩẫậ]" apps/api/src apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx"
+grep -rn "[àáảãạăắằẳẵặâấầẩẫậ]" apps/api/src apps/web-client-side/src apps/web-admin-side/src apps/mobile/src --include="*.ts" --include="*.tsx"
 # Kỳ vọng: 0 kết quả
 
 # Không hardcode chuỗi hiển thị trong JSX
-grep -rn ">[A-Z][a-z]" apps/web/src/app --include="*.tsx" | grep -v "//\|t(\|import\|className\|href"
+grep -rn ">[A-Z][a-z]" apps/web-client-side/src/app apps/web-admin-side/src/app --include="*.tsx" | grep -v "//\|t(\|import\|className\|href"
 # Soát từng kết quả khớp
 ```

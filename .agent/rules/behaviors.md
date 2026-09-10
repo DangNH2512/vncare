@@ -20,6 +20,12 @@ dụ và mẫu được nhúng ngay tại chỗ khi đủ ngắn.
 - Nếu người dùng chỉ hỏi, trả lời thẳng. Nếu sẽ sửa file, cập nhật
   `.agent/memory/ACTIVE_TASKS.md`, đọc `planning-and-agent-mode.md`, rồi áp
   `skill-triggers.md`.
+- Quét kho skill là bắt buộc ở mọi task, không chỉ khi có từ khoá: `skill-first.md`
+  §S1 — đọc `SKILL.md` của mọi skill khớp và tuyên bố danh sách áp dụng trước khi
+  chạm file đầu tiên.
+- Quét bộ agent là bắt buộc ở đầu mỗi phiên, trước khi bắt đầu task đầu tiên:
+  `agent-first.md` §A1 — ánh xạ task vào agent sở hữu, chốt chế độ single/multi-agent
+  và tuyên bố cho người dùng trước khi chạm file.
 - Nạp context tối thiểu: file được nhắc đích danh trước, rồi phụ thuộc trực tiếp,
   rồi tài liệu riêng cho task. Không đọc ồ ạt tài liệu không liên quan.
 - Với ảnh chụp / lỗi / log, mở đúng file, route, lệnh hoặc log path trước khi đi
@@ -34,7 +40,7 @@ Mẫu hợp đồng yêu cầu (rút ra trong đầu, không cần viết ra):
 
 ```text
 Goal:
-Target surface: apps/api | apps/web | apps/mobile | packages/* | ops | docs | .agent
+Target surface: apps/api | apps/web-client-side | apps/web-admin-side | apps/mobile | packages/* | ops | docs | .agent
 Mentioned files/routes/errors/screens:
 Environment: local | Docker | staging | production | unknown
 Constraints:
@@ -174,8 +180,10 @@ Không thêm nhiễu kiểu changelog. Thay thẳng nội dung đã cũ.
 Chạy bộ kiểm tra nhỏ nhất mà có ý nghĩa cho bề mặt vừa chạm, và **đọc output**.
 
 - `apps/api`: `pnpm --filter @dnc/api typecheck`, thêm test/build khi rủi ro đáng.
-- `apps/web`: `pnpm --filter @dnc/web typecheck` + lint/build, Playwright cho luồng
-  browser vừa chạm khi khả thi.
+- `apps/web-client-side`: `pnpm --filter @dnc/web-client typecheck` + lint/build,
+  Playwright cho luồng browser vừa chạm khi khả thi.
+- `apps/web-admin-side`: `pnpm --filter @dnc/web-admin typecheck` + lint/build,
+  Playwright cho luồng vận hành vừa chạm khi khả thi.
 - `apps/mobile`: chỉ chạy script Expo/EAS/typecheck nếu thực sự có trong
   `package.json`; kiểm tra trên simulator khi đổi hành vi.
 - `packages/*`: build package và ít nhất một app tiêu thụ.

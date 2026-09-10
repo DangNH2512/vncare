@@ -21,7 +21,8 @@ observe-reality.md + webapp-testing + screenshot-evidence).
 
 Tự bật trên task đã phân loại **large** khi kèm thêm một trong các dấu hiệu:
 
-- **Xuyên app**: một luồng đi qua 2+ trong số `apps/mobile`, `apps/web`, `apps/api`
+- **Xuyên app**: một luồng đi qua 2+ trong số `apps/mobile`,
+  `apps/web-client-side`, `apps/web-admin-side`, `apps/api`
   và một bề mặt phải phản ánh việc vừa xảy ra ở bề mặt kia (realtime RSVP, hàng chờ
   thăng hạng, chat theo sự kiện, thông báo, đồng bộ console kiểm duyệt ↔ app).
 - **Code mobile chạm phần native**: push notification, deep link, permission (vị trí,
@@ -49,7 +50,8 @@ lần thấy chạy".
 
 | App | Cơ chế E2E | Lệnh |
 |---|---|---|
-| `apps/web` | Spec Playwright dưới `apps/web/e2e/**` (theo luồng, so sánh chặt, dọn dữ liệu bắt buộc) | `pnpm --filter @dnc/web exec playwright test e2e/<spec>.spec.ts` |
+| `apps/web-client-side` | Spec Playwright dưới `apps/web-client-side/e2e/**` (theo luồng, so sánh chặt, dọn dữ liệu bắt buộc) | `pnpm --filter @dnc/web-client exec playwright test e2e/<spec>.spec.ts` |
+| `apps/web-admin-side` | Spec Playwright dưới `apps/web-admin-side/e2e/**` (theo luồng vận hành, so sánh chặt, dọn dữ liệu bắt buộc) | `pnpm --filter @dnc/web-admin exec playwright test e2e/<spec>.spec.ts` |
 | `apps/api` | Spec Jest dưới `apps/api/e2e/**` theo [test-file-placement.md](test-file-placement.md) | `pnpm --filter @dnc/api exec jest e2e/modules/<module>/<name>.spec.ts` |
 | `apps/mobile` | **Chưa có harness Detox/Maestro** — E2E là luồng thủ công có kịch bản, ghi trong `apps/mobile/testcase/<module>/testcases.md` (Test ID `<MODULE>-<GROUP>-<NN>`; luồng smoke xuyên app là `SM-*` trong `testcase/cross-feature/testcases.md`). Chạy/mở rộng đúng Test ID và lưu bằng chứng theo quy ước đặt tên (`testcase/<module>/evidence/<TestID>-pass.png`). | Thủ công, chạy qua simulator — nối tiếp vào Pha 2 |
 
@@ -104,7 +106,9 @@ regression realtime/xuyên app hay ẩn nấp.
 
 1. Mở **2+ bề mặt thật cùng lúc** cho CÙNG một thực thể/luồng — ví dụ simulator
    mobile + tab browser web, iOS simulator + Android emulator cạnh nhau, hoặc
-   `apps/mobile` + màn chi tiết sự kiện trên `apps/web` cho cùng một occurrence.
+   `apps/mobile` + màn chi tiết sự kiện trên `apps/web-client-side` cho cùng một
+   occurrence, hoặc `apps/web-admin-side` (hành động kiểm duyệt) +
+   `apps/web-client-side` (nội dung bị ẩn) cho cùng một bản ghi.
 2. Thực hiện hành động kích hoạt trên MỘT bề mặt, rồi quan sát bề mặt CÒN LẠI mà
    không dùng mẹo refetch thủ công — socket.io phải phản ánh nó, hoặc phải có hợp
    đồng pull-to-refresh/mở lại đã ghi rõ (nêu hợp đồng nào áp dụng trước khi phán

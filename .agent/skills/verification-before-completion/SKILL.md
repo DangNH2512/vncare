@@ -172,14 +172,16 @@ grep -rn "eas build\|xcodebuild\|fastlane" ops/ 2>/dev/null | head
 ### 1. Typecheck + lint
 ```bash
 pnpm --filter @dnc/api typecheck
-pnpm --filter @dnc/web typecheck
+pnpm --filter @dnc/web-client typecheck
+pnpm --filter @dnc/web-admin typecheck  # nếu có đụng apps/web-admin-side
 pnpm --filter @dnc/mobile typecheck   # nếu có đụng apps/mobile
 ```
 **Đọc output.** Có lỗi → sửa trước khi đi tiếp. Zero errors = ✅
 
-### 2. Browser Verification (BẮT BUỘC với apps/web)
-Mở browser (`http://localhost:3000`), đi tới page bị ảnh hưởng, mô phỏng đúng
-flow người dùng:
+### 2. Browser Verification (BẮT BUỘC với `apps/web-client-side` và `apps/web-admin-side`)
+Mở browser (`apps/web-client-side` ở `http://localhost:3000`, `apps/web-admin-side` ở
+cổng dev riêng của nó), đi tới page bị ảnh hưởng, mô phỏng đúng flow người dùng —
+người dùng cuối với client, người vận hành với admin:
 
 | Loại task | Verify gì trong browser |
 |-----------|-------------------------|
@@ -215,7 +217,7 @@ Kiểm hai biên: điểm cách ~1999 m phải có, ~2001 m phải không có.
 Nếu sửa component/hook dùng chung:
 ```bash
 # Tìm mọi file import file vừa đổi:
-grep -rn "from.*<ChangedFileName>" apps/web/src --include="*.tsx" -l
+grep -rn "from.*<ChangedFileName>" apps/web-client-side/src apps/web-admin-side/src --include="*.tsx" -l
 ```
 Mở TỪNG màn hình consumer và confirm không regression.
 
@@ -228,7 +230,7 @@ Màn hình luôn phải spot-check:
 ### 5. i18n Check
 ```bash
 # Chuỗi hiển thị hardcode (phải trả về 0)
-grep -rn "\"[A-Z][a-z]" apps/web/src/app --include="*.tsx" | grep -v "//\|t(\|import\|className"
+grep -rn "\"[A-Z][a-z]" apps/web-client-side/src/app apps/web-admin-side/src/app --include="*.tsx" | grep -v "//\|t(\|import\|className"
 
 # Key lệch giữa 2 locale (phải trả về rỗng)
 diff <(jq -r 'paths(scalars) | join(".")' packages/i18n/src/en.json | sort) \
@@ -239,7 +241,8 @@ rồi đổi lại tiếng Anh → confirm không vỡ layout (chuỗi VI thư�
 
 ### 6. E2E (nếu áp dụng)
 ```bash
-pnpm --filter @dnc/web test:e2e -- <relevant-spec>   # Playwright, apps/web/e2e/**
+pnpm --filter @dnc/web-client test:e2e -- <relevant-spec>  # Playwright, apps/web-client-side/e2e/**
+pnpm --filter @dnc/web-admin test:e2e -- <relevant-spec>   # Playwright, apps/web-admin-side/e2e/**
 pnpm --filter @dnc/api test:e2e -- <relevant-spec>   # apps/api/e2e/**
 ```
 **Đọc output.** Đếm pass/fail. Phải pass hết trước khi mark done.

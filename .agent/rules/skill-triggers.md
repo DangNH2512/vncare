@@ -6,6 +6,10 @@ description: Quy tắc trigger — với mỗi loại task thì nạp tài liệ
 
 Chỉ nạp đúng tài liệu mà task hiện tại thật sự cần. Mặc định nạp lười.
 
+> **Bước quét là bắt buộc.** [skill-first.md](skill-first.md) buộc mọi task phải
+> đối chiếu bảng dưới đây và tuyên bố skill áp dụng trước khi sửa file. Nạp lười
+> nói về *nạp ít*, không phải *bỏ qua*.
+
 ---
 
 ## Bảng trigger

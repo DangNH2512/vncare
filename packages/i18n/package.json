@@ -1,0 +1,19 @@
+{
+  "name": "@dnc/i18n",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Message catalogs (en/vi) and the generated MessageKey union type. English is the default locale",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "gen": "node scripts/generate-keys.mjs"
+  },
+  "devDependencies": {
+    "@dnc/config": "workspace:*",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
+  }
+}

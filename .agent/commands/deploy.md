@@ -10,7 +10,8 @@ description: /deploy — Checklist tiền triển khai trước khi đẩy lên 
 ## Chất lượng code
 ```
 □ pnpm --filter @dnc/api typecheck    → 0 errors
-□ pnpm --filter @dnc/web typecheck    → 0 errors
+□ pnpm --filter @dnc/web-client typecheck → 0 errors
+□ pnpm --filter @dnc/web-admin typecheck  → 0 errors
 □ pnpm --filter @dnc/mobile typecheck → 0 errors
 □ Không còn console.log / debugger trong code
 □ Không hardcode URL localhost trong code production
@@ -40,7 +41,8 @@ description: /deploy — Checklist tiền triển khai trước khi đẩy lên 
 
 ## E2E (nếu còn thời gian)
 ```bash
-pnpm --filter @dnc/web exec playwright test
+pnpm --filter @dnc/web-client exec playwright test
+pnpm --filter @dnc/web-admin exec playwright test
 pnpm --filter @dnc/api test
 ```
 

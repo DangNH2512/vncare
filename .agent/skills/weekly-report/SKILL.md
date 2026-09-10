@@ -45,7 +45,7 @@ Trước khi gán trạng thái cho bất kỳ mục nào, phải xác minh bằ
 ```bash
 git log --since="<start>" --until="<end>" --date=format:"%d/%m %H:%M" \
         --pretty=format:"%ad | %h | %s"      # việc thật sự đã làm
-git diff --name-only <base>..HEAD | cut -d/ -f2 | sort | uniq -c   # phân bổ theo app (apps/api, apps/web, apps/mobile)
+git diff --name-only <base>..HEAD | cut -d/ -f2 | sort | uniq -c   # phân bổ theo app (apps/api, apps/web-client-side, apps/web-admin-side, apps/mobile)
 npm run typecheck --workspaces && npm test --workspaces   # trạng thái build/test thật
 curl -s <prod>/api/v1/health                  # API có sống không
 ssh <server> 'psql ... "select * from migrations order by timestamp desc limit 5"'  # DB migrate tới đâu
@@ -144,9 +144,11 @@ dạng bảng `.fixcols` 2 cột, không cần ảnh).
    người dùng làm sau khi nhận file `.html` nguồn, hoặc do agent làm nếu được
    giao rõ ràng và có môi trường sẵn sàng.
 3. Dưới mỗi khung ảnh phải có dòng `.shotcap` **"Chụp màn hình tại: …"** ghi cụ
-   thể: bề mặt nào (`apps/web` hoặc `apps/mobile`), route/URL/tên màn hình, và
-   bước điều hướng ngắn gọn (vd: "apps/web → /events?area=an-thuong → thẻ sự kiện
-   → nút RSVP", hoặc "apps/mobile → tab Explore → bản đồ My Khe"). Không ghi
+   thể: bề mặt nào (`apps/web-client-side`, `apps/web-admin-side` hoặc
+   `apps/mobile`), route/URL/tên màn hình, và bước điều hướng ngắn gọn (vd:
+   "apps/web-client-side → /events?area=an-thuong → thẻ sự kiện → nút RSVP",
+   "apps/web-admin-side → /moderation/queue → duyệt hàng loạt", hoặc
+   "apps/mobile → tab Explore → bản đồ My Khe"). Không ghi
    chung chung kiểu "chụp màn hình tính năng".
 4. Tính năng cần so sánh 2 trạng thái (trước/sau) hoặc 2 bước liền nhau thì
    nhân bản `.shotbox` thứ 2 trong cùng `.shotwrap` (side-by-side), vẫn 1 dòng
@@ -154,8 +156,8 @@ dạng bảng `.fixcols` 2 cột, không cần ảnh).
 4b. **Chọn bố cục theo hướng của ảnh:**
    - **Mặc định cho slide CHỈ CÓ 1 ảnh: dùng `.splitwrap` — chữ trái, ảnh
      phải.** Ảnh dọc (điện thoại, `apps/mobile`) → `.splitshot`; ảnh ngang
-     (`apps/web`) → `.splitwrap land` + `.splitshot land` (cột ảnh rộng 142mm
-     để ảnh web vẫn đọc được).
+     (`apps/web-client-side` hoặc `apps/web-admin-side`) → `.splitwrap land` +
+     `.splitshot land` (cột ảnh rộng 142mm để ảnh web vẫn đọc được).
    - Chỉ dùng `.shotwrap` + `.shotbox` full-width khi slide có **2 ảnh cạnh
      nhau** (before/after, hoặc 2 bề mặt khác nhau). Ảnh ngang cần thấy trọn
      thì thêm class `wide` để `object-fit:contain` thay vì bị crop.

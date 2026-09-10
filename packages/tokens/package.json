@@ -1,0 +1,16 @@
+{
+  "name": "@dnc/tokens",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Design tokens as plain TypeScript objects. Exports no JSX by boundary rule B4; shared components are intentionally out of scope",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@dnc/config": "workspace:*",
+    "typescript": "7.0.2"
+  }
+}

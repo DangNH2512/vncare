@@ -9,7 +9,8 @@ Khi nhận lệnh `/deploy`, thực hiện tuần tự:
 1. **TypeScript check:**
 ```bash
 pnpm --filter @dnc/api typecheck
-pnpm --filter @dnc/web typecheck
+pnpm --filter @dnc/web-client typecheck
+pnpm --filter @dnc/web-admin typecheck
 pnpm --filter @dnc/mobile typecheck
 ```
 Dừng nếu có lỗi. Fix trước khi tiếp tục.
@@ -17,10 +18,10 @@ Dừng nếu có lỗi. Fix trước khi tiếp tục.
 2. **Grep chất lượng code:**
 ```bash
 # Không còn dấu vết debug
-grep -rn "console\.log\|debugger" apps/api/src apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx"
+grep -rn "console\.log\|debugger" apps/api/src apps/web-client-side/src apps/web-admin-side/src apps/mobile/src --include="*.ts" --include="*.tsx"
 
 # Không hardcode localhost trong code production
-grep -rn "localhost:300" apps/api/src apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx"
+grep -rn "localhost:300" apps/api/src apps/web-client-side/src apps/web-admin-side/src apps/mobile/src --include="*.ts" --include="*.tsx"
 
 # Không lộ secret
 grep -rniE "(secret|password|private_key)\s*[:=]\s*['\"][^'\"]{8,}" apps/ packages/ ops/

@@ -18,8 +18,34 @@ Khi thiết kế module backend MỚI dưới `apps/api/src/modules/<name>/`, mo
 
 ## 2. Layer DTO — bắt buộc ở mọi module
 
-Đây là **ranh giới hợp đồng** giữa API và client (`apps/web`, `apps/mobile`). Không
+Đây là **ranh giới hợp đồng** giữa API và client (`apps/web-client-side`,
+`apps/web-admin-side`, `apps/mobile`). Không
 module nào được bỏ qua layer này.
+
+> ### ⚠️ Phần còn lại của §2 đã lỗi thời — đọc mục này trước
+>
+> Mô tả bên dưới (thư mục `dto/`, class `class-validator`, `@ApiProperty`,
+> mapped type của `@nestjs/swagger`) **không còn khớp code**. Kể từ NestJS 12,
+> hợp đồng được khai báo bằng **Zod schema trong `packages/contracts/src/`**:
+>
+> | Vai trò trong §2 | Hiện thực thật |
+> |---|---|
+> | `dto/request/*.request.ts` | `packages/contracts/src/<name>.ts` — vd `PostCreateRequest` |
+> | `dto/response/*.response.ts` | cùng file — vd `PostResponse`, bọc bằng `envelope()` |
+> | `ValidationPipe` + `class-validator` | `StandardSchemaValidationPipe` + `@Body({ schema })` |
+> | `@ApiProperty` sinh Swagger | OpenAPI sinh thẳng từ schema Zod |
+> | `OmitType` / `PickType` / `PartialType` | `.pick()` / `.omit()` / `.partial()` / `.extend()` của Zod |
+> | Lọc trường nội bộ khi trả về | `@SerializeOptions({ schema })` cắt theo schema |
+>
+> **Vẫn còn nguyên hiệu lực:** ranh giới hợp đồng là bắt buộc; `<name>.mapper.ts`
+> là hàm thuần liệt kê **từng trường một** (không spread); ranh giới riêng tư
+> dùng danh sách trắng chứ không danh sách đen (vd `PublicProfileResponse` khai
+> báo đủ trường thay vì `.omit()` từ bản của chủ sở hữu); thời gian là ISO-8601 UTC;
+> toạ độ PostGIS đổi thành `{lat,lng}` tại mapper; phân trang dùng `cursorPage()`.
+>
+> Lý do đổi: một class `class-validator` không import được vào React component,
+> nên web/mobile sẽ phải gõ tay interface lần hai và trôi dạt. Xem
+> [DECISIONS.md](../memory/DECISIONS.md) mục 2026-09-01.
 
 ```text
 apps/api/src/modules/<name>/
@@ -61,7 +87,8 @@ apps/api/src/modules/<name>/
    response của chính chủ thể dữ liệu, không bao giờ trong response danh sách công
    khai. Người khác chỉ thấy `displayName` và `avatarUrl`.
 5. **Swagger sinh từ DTO.** Mọi trường có `@ApiProperty` kèm mô tả và ví dụ; đây là
-   nguồn duy nhất để `apps/web` và `apps/mobile` sinh type client.
+   nguồn duy nhất để `apps/web-client-side`, `apps/web-admin-side` và
+   `apps/mobile` sinh type client.
 6. **Type dùng chung nằm ở `packages/shared-types`.** Enum (`RsvpStatus`,
    `EventStatus`, `UserRole`) khai báo một lần ở đó, DTO import vào — không nhân bản.
 7. **Thời gian luôn là ISO-8601 UTC** trong DTO (`startAt`, `endAt`). Việc đổi sang
@@ -118,7 +145,8 @@ một thay đổi ở DTO gốc sẽ lan sang chỗ không mong muốn:
   DTO. Chúng chỉ tồn tại lúc biên dịch; runtime mất sạch decorator nên
   `ValidationPipe` không validate gì và Swagger ra rỗng.
 - DTO dùng chung từ 3 module trở lên thì chuyển lên `src/common/dto/`; nếu
-  `apps/web` hoặc `apps/mobile` cũng cần hình dạng đó thì khai báo type ở
+  `apps/web-client-side`, `apps/web-admin-side` hoặc `apps/mobile` cũng cần hình
+  dạng đó thì khai báo type ở
   `packages/shared-types` và để DTO implement nó.
 - Kế thừa xuyên module chỉ theo chiều miền → nền tảng, giống luật phụ thuộc ở dưới.
 

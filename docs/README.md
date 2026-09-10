@@ -17,6 +17,7 @@ Bắt đầu từ [bản tổng hợp](analysis/00-TONG-HOP-DU-AN.md).
 | 08 | [Roadmap & triển khai](analysis/08-roadmap-va-ke-hoach-trien-khai.md) | Epic, sprint, milestone, đội ngũ, ngân sách |
 | 09 | [Cạnh tranh & rủi ro](analysis/09-canh-tranh-va-rui-ro.md) | Phân tích đối thủ, risk register, phân tích độ nhạy |
 | 10 | [UX & i18n](analysis/10-ux-luong-man-hinh-va-i18n.md) | Sitemap, user flow, wireframe, empty state, design system, i18n |
+| 13 | [Bản đồ & mật độ sự kiện](analysis/13-ban-do-va-truc-quan-hoa-su-kien.md) | Đánh giá ý tưởng "zone đỏ", thiết kế phân tầng theo zoom, truy vấn PostGIS, kế hoạch M0–M6 |
 
 ## Thư mục khác
 

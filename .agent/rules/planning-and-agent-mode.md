@@ -7,6 +7,11 @@ description: Cổng lập kế hoạch và quy tắc chọn chế độ single-a
 Bộ quy tắc này quyết định cần lập kế hoạch tới mức nào và khi nào tách công việc
 thành nhiều role thay vì chạy một agent duy nhất.
 
+> **Bước quét là bắt buộc.** [agent-first.md](agent-first.md) buộc mỗi phiên phải
+> quét bộ agent trong `.agent/agents/`, ánh xạ task vào agent sở hữu và tuyên bố
+> chế độ đã chọn **trước khi** bắt đầu task. File này chỉ quyết định *chế độ nào*;
+> bước quét thì không được bỏ qua kể cả khi kết luận là single-agent.
+
 ## Chế độ mặc định
 
 **Mặc định chạy vòng lặp lõi L1 cho mọi task.** Các vòng lặp nặng hơn chỉ thêm vào
@@ -93,10 +98,11 @@ Coordinator phải giao việc như một công ty nhỏ:
 - BA sở hữu khung nghiệp vụ và acceptance criteria.
 - Tech Lead sở hữu kiến trúc, task card, phụ thuộc và DoD.
 - Coordinator sở hữu việc chia nhỏ, xếp thứ tự và tích hợp.
-- Web sở hữu `apps/web/**` (bao gồm route group `(admin)` của console kiểm duyệt).
+- Web Client sở hữu `apps/web-client-side/**` (bề mặt người dùng cuối).
+- Web Admin sở hữu `apps/web-admin-side/**` (console curate và kiểm duyệt).
 - Mobile sở hữu `apps/mobile/**`.
 - Backend sở hữu `apps/api/**`, và chỉ vào cuộc khi hợp đồng API/dữ liệu thay đổi.
-- Đổi `packages/**` phải có Tech Lead chốt vì chạm cả ba app.
+- Đổi `packages/**` phải có Tech Lead chốt vì chạm cả bốn app.
 - Tester sở hữu việc xác minh nghiệm thu/regression và báo cáo phát hiện.
 - Với việc medium/large/rủi ro, Tester trở thành Test Lead và chia kiểm thử thành
   Unit Test, Integration Test, Screen Test và Regression Test trước khi đưa ra kết

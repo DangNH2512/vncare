@@ -27,8 +27,9 @@ Cập nhật, tạo mới hoặc sắp xếp lại thứ tự ưu tiên cho road
   thường (feature-discovery / write-spec → luồng BA-first).
 - **Đổi thứ tự ưu tiên:** ghi quyết định + lý do vào `.agent/memory/DECISIONS.md`
   và phản ánh trạng thái ở `DAILY_TASKS.md` §Planning.
-- **Lăng kính đánh đổi của sản phẩm này:** ba bề mặt cùng tranh một nguồn lực
-  (`apps/api` NestJS · `apps/web` Next.js · `apps/mobile` Expo). Đánh dấu là
+- **Lăng kính đánh đổi của sản phẩm này:** bốn bề mặt cùng tranh một nguồn lực
+  (`apps/api` NestJS · `apps/web-client-side` Next.js · `apps/web-admin-side` Next.js
+  · `apps/mobile` Expo). Đánh dấu là
   **chi phí cao** mọi sáng kiến chạm vào:
   - schema DB (cổng STOP cho migration) hoặc mở rộng PostGIS,
   - API công khai (cổng breaking-change) và `packages/shared-types`,

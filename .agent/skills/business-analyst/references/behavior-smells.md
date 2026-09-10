@@ -15,13 +15,14 @@ Nền nghiệp vụ: [`domain.md`](domain.md) · canon: [`docs/analysis/`](../..
 
 ## 1. Parity drift — hành vi lệch giữa API, web và mobile
 
-**Dấu hiệu:** tính năng/behavior có ở `apps/web` nhưng thiếu/khác ở `apps/mobile`
+**Dấu hiệu:** tính năng/behavior có ở `apps/web-client-side` nhưng thiếu/khác ở `apps/mobile`
 (hoặc ngược lại). Hoặc rule chỉ sống ở một client, không sống ở `apps/api` — nên
 client kia không có.
 
 **Câu hỏi BA soi:**
-- Hành vi này hiện diện ở cả `apps/web` lẫn `apps/mobile` chưa? Rule gốc nằm ở `apps/api` chứ?
-- Cùng input → cùng output ở cả hai? Nếu khác, khác đó *chính đáng* (SEO chỉ web, push chỉ mobile) hay *bug*?
+- Hành vi này hiện diện ở cả `apps/web-client-side` lẫn `apps/mobile` chưa? Rule gốc nằm ở `apps/api` chứ?
+- Nếu là hành vi vận hành (kiểm duyệt, quản lý người dùng, curate, analytics): đã có ở `apps/web-admin-side` chưa, hay đang lẫn vào app người dùng cuối?
+- Cùng input → cùng output ở cả hai? Nếu khác, khác đó *chính đáng* (SEO chỉ `apps/web-client-side`, push chỉ mobile) hay *bug*?
 - Empty-state, error-state, loading-state có parity không (hay 1 phía thiếu)?
 - Kiểu dữ liệu dùng chung đã nằm ở `packages/shared-types` chưa, hay mỗi client tự khai lại một enum?
 

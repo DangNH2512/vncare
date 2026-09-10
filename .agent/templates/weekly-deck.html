@@ -200,8 +200,9 @@
     background:#f2efe9;border:.3mm solid #e3ded2;border-radius:2.5mm;padding:3mm;
   }
   .splitshot img{max-height:100%;max-width:100%;object-fit:contain;border-radius:2mm;display:block;}
-  /* Landscape screenshot on the right: widen the image column so an apps/web
-     capture is still readable (68mm only suits a portrait phone shot). */
+  /* Landscape screenshot on the right: widen the image column so a web capture
+     from apps/web-client-side or apps/web-admin-side is still readable (68mm
+     only suits a portrait phone shot). */
   .splitshot.land{flex:0 0 142mm;}
   .splitwrap.land .splitcol .pt p{font-size:10.5pt;line-height:1.45;}
   .splitwrap.land .splitcol .points{gap:4mm;}
@@ -309,8 +310,8 @@
     <div class="shotbox"><div class="cam">&#128247;</div><div class="lbl">{{SCREEN_NAME_1}}</div></div>
     <!-- nhân bản thêm 1 .shotbox nếu tính năng cần 2 màn hình minh hoạ (before/after, 2 bước) -->
   </div>
-  <!-- Ghi rõ bề mặt + route, vd: "apps/web -> /events?area=an-thuong -> thẻ sự kiện -> nút RSVP" -->
-  <div class="shotcap"><strong>Chụp màn hình tại:</strong> {{WHERE_TO_CAPTURE — apps/web hoặc apps/mobile + route/màn hình cụ thể}}</div>
+  <!-- Ghi rõ bề mặt + route, vd: "apps/web-client-side -> /events?area=an-thuong -> thẻ sự kiện -> nút RSVP" -->
+  <div class="shotcap"><strong>Chụp màn hình tại:</strong> {{WHERE_TO_CAPTURE — apps/web-client-side, apps/web-admin-side hoặc apps/mobile + route/màn hình cụ thể}}</div>
   <div class="spacer"></div>
   <div class="foot"><span>Da Nang Connect &nbsp;|&nbsp; Nền tảng kết nối cộng đồng expat</span><span>0N / {{TOTAL}}</span></div>
 </section>

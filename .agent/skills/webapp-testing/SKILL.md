@@ -10,13 +10,16 @@ license: Điều khoản đầy đủ trong LICENSE.txt
 
 > **Ghi chú cho Da Nang Connect:** skill này dùng để **thăm dò và debug bằng
 > trình duyệt** (chụp màn hình, dò selector, đọc console). Test hồi quy chính
-> thức của `apps/web` là spec TypeScript trong `apps/web/e2e/` — xem
+> thức của hai app web là spec TypeScript trong `apps/web-client-side/e2e/` và
+> `apps/web-admin-side/e2e/` — xem
 > [qa-tester](../qa-tester/SKILL.md). Đừng dùng script Python ở đây để thay thế
 > bộ e2e đó.
 >
-> Cổng mặc định của dự án: **web `http://localhost:3000`** (Next.js App Router,
-> `apps/web`) và **API `http://localhost:3001`** (NestJS, `apps/api`). Locale mặc
-> định là `en`, nên URL thật có dạng `/en/events`.
+> Cổng mặc định của dự án: **web người dùng cuối `http://localhost:3000`** (Next.js
+> App Router, `apps/web-client-side`) và **API `http://localhost:3001`** (NestJS,
+> `apps/api`). Console vận hành `apps/web-admin-side` chạy ở cổng riêng — truyền cổng
+> đó vào script thay vì giả định 3000. Locale mặc định là `en`, nên URL thật có dạng
+> `/en/events`.
 
 **Script hỗ trợ có sẵn**:
 - `scripts/with_server.py` — quản lý vòng đời server (hỗ trợ nhiều server cùng lúc)
@@ -46,18 +49,21 @@ Task của user → Có phải HTML tĩnh không?
 
 Để khởi động server, chạy `--help` trước, rồi dùng helper:
 
-**Một server (chỉ web):**
+**Một server (chỉ web người dùng cuối):**
 ```bash
-python scripts/with_server.py --server "pnpm --filter @dnc/web dev" --port 3000 -- python your_automation.py
+python scripts/with_server.py --server "pnpm --filter @dnc/web-client dev" --port 3000 -- python your_automation.py
 ```
 
-**Nhiều server (API + web — trường hợp thường gặp của Da Nang Connect):**
+**Nhiều server (API + web client — trường hợp thường gặp của Da Nang Connect):**
 ```bash
 python scripts/with_server.py \
   --server "pnpm --filter @dnc/api dev" --port 3001 \
-  --server "pnpm --filter @dnc/web dev" --port 3000 \
+  --server "pnpm --filter @dnc/web-client dev" --port 3000 \
   -- python your_automation.py
 ```
+
+Cần thăm dò console vận hành thì đổi filter sang `@dnc/web-admin` và `--port` sang
+cổng dev của `apps/web-admin-side`.
 
 Khi viết script tự động hoá, chỉ đưa vào phần logic Playwright (server đã được quản lý tự động):
 ```python
@@ -152,7 +158,7 @@ page.screenshot(path='/tmp/rsvp-waitlist.png')
 - **Dùng script đóng gói như hộp đen** — trước khi làm gì, cân nhắc xem script nào trong `scripts/` đã giải quyết được việc đó. Các script này xử lý những luồng phức tạp, thường gặp một cách đáng tin cậy mà không làm rối context window. Dùng `--help` để xem cách dùng, rồi gọi trực tiếp.
 - Dùng `sync_playwright()` cho script đồng bộ
 - Luôn đóng browser khi xong
-- Dùng selector mô tả rõ: `text=`, `role=`, CSS selector, hoặc ID — với `apps/web` thì ưu tiên `data-testid` vì nó không đổi theo locale
+- Dùng selector mô tả rõ: `text=`, `role=`, CSS selector, hoặc ID — với `apps/web-client-side` và `apps/web-admin-side` thì ưu tiên `data-testid` vì nó không đổi theo locale
 - Thêm wait phù hợp: `page.wait_for_selector()` hoặc `page.wait_for_timeout()`
 - Chạy với viewport mobile (390×844) trước; desktop chỉ là biến thể
 - Dữ liệu test phải là seed rõ ràng (prefix `qa_`), không đụng vào dữ liệu người dùng thật

@@ -50,13 +50,13 @@ Thay đổi ở các vùng dưới đây gần như luôn lan sang chỗ khác:
 
 | Thay đổi chạm tới | Phải kiểm lại |
 |---|---|
-| `packages/shared-types` hoặc `packages/validation` | build của cả `apps/api`, `apps/web`, `apps/mobile` |
-| `packages/api-client` (sinh từ OpenAPI) | mọi màn hình web và mobile gọi endpoint liên quan |
-| `packages/i18n` | cả EN và VI trên web lẫn mobile; key mồ côi ở cả hai app |
-| `packages/ui` design token | giao diện web; mobile chỉ dùng token, không dùng component |
+| `packages/shared-types` hoặc `packages/validation` | build của cả `apps/api`, `apps/web-client-side`, `apps/web-admin-side`, `apps/mobile` |
+| `packages/api-client` (sinh từ OpenAPI) | mọi màn hình gọi endpoint liên quan ở `apps/web-client-side`, `apps/web-admin-side` và `apps/mobile` |
+| `packages/i18n` | cả EN và VI trên `apps/web-client-side`, `apps/web-admin-side` lẫn `apps/mobile`; key mồ côi ở cả ba app |
+| `packages/ui` design token | giao diện của cả `apps/web-client-side` lẫn `apps/web-admin-side`; mobile chỉ dùng token, không dùng component |
 | Logic RSVP / sức chứa | trang chi tiết sự kiện, danh sách sự kiện của tôi, hàng đợi chờ, thông báo thăng hạng, đánh dấu `no_show` |
 | Logic `EventOccurrence` | sự kiện lặp lại, nhắc lịch, lịch cá nhân, huỷ một lần diễn ra |
-| Truy vấn PostGIS / bảng `areas` | tìm kiếm, feed, bản đồ web, bản đồ mobile, trang khu vực có SEO |
+| Truy vấn PostGIS / bảng `areas` | tìm kiếm, feed, bản đồ web, bản đồ mobile, trang khu vực có SEO, màn quản lý khu vực của `apps/web-admin-side` |
 | `trust_level` / trust score | hạn mức tạo sự kiện, rate limit, quyền nhắn tin, badge hiển thị trên hồ sơ |
 | Kiểm duyệt / report / block | feed công khai, trang chi tiết, tìm kiếm, chat, console curate |
 | Auth / refresh token | web đăng nhập, mobile đăng nhập, phiên dài ngày, đăng xuất mọi thiết bị |

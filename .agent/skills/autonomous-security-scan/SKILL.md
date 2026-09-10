@@ -17,7 +17,8 @@ allowed-tools: Read, Bash, Edit
 > không bao giờ tự commit hay tự deploy; đề xuất diff và để user duyệt.
 
 **Ngữ cảnh:** Da Nang Connect — `apps/api` (NestJS + TypeORM + PostgreSQL/PostGIS +
-Redis/BullMQ + socket.io), `apps/web` (Next.js), `apps/mobile` (Expo). Dữ liệu nhạy cảm
+Redis/BullMQ + socket.io), `apps/web-client-side` (Next.js, web người dùng cuối),
+`apps/web-admin-side` (Next.js, console vận hành), `apps/mobile` (Expo). Dữ liệu nhạy cảm
 chính là **hồ sơ cá nhân, vị trí, và nội dung do người dùng tạo**.
 
 ## Chặng 1 — Threat Model (read-only)
@@ -53,7 +54,7 @@ grep -rn "process.env" apps/api/src --include="*.ts" | grep -i "secret\|key\|tok
 grep -rn "return .*Repository.find" apps/api/src --include="*.ts"
 
 # Render HTML thô từ nội dung người dùng
-grep -rn "dangerouslySetInnerHTML" apps/web/src apps/mobile/src
+grep -rn "dangerouslySetInnerHTML" apps/web-client-side/src apps/web-admin-side/src apps/mobile/src
 
 # Rate limit trên các hành vi bị lạm dụng
 grep -rn "Throttle\|RateLimit" apps/api/src --include="*.ts"

@@ -1,0 +1,11 @@
+-- Removes the gallery size limit.
+--
+-- Five was the wrong number and so was ten: both conflated "how many items an
+-- author may attach" with "how many a feed card should render". The second is
+-- now a rendering concern (MAX_GALLERY_PREVIEW) and the first has no ceiling.
+--
+-- What still bounds this, without a CHECK: the HTTP body parser caps a request
+-- at 100 kB, which is roughly 2,700 uuids — far past any real gallery — and the
+-- feed resolves only the preview slice, so a large gallery costs a large post
+-- nothing on every scroll past it.
+ALTER TABLE posts DROP CONSTRAINT ck_posts_media_ids;

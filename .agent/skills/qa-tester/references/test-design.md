@@ -39,11 +39,11 @@ nhưng nếu hành vi mơ hồ, **nhờ business-analyst chốt trước** (đ�
 | **Error / Transient** | Mạng/server hỏng tạm | mất Wi-Fi giữa lúc RSVP; API 5xx; timeout; app wake từ background; tile bản đồ không load |
 | **State transitions** | loading → empty → error → data; toggle | `going → cancelled → going`; `waitlist → promoted → going`; sự kiện `draft → pending → published → cancelled` |
 | **Idempotency** | Lặp action / đảo chiều | bấm RSVP 2 lần thật nhanh; huỷ 2 lần; báo cáo cùng một nội dung 2 lần |
-| **Parity** | web == mobile? | cùng input → cùng output ở `apps/web` và `apps/mobile` |
+| **Parity** | web == mobile? | cùng input → cùng output ở `apps/web-client-side` và `apps/mobile` |
 | **i18n EN/VI** | Đổi locale có vỡ gì không | thiếu key; chuỗi VI tràn nút; định dạng ngày/số theo locale; locale giữ sau reload |
 | **Geo / PostGIS** | Truy vấn không gian đúng chưa | lọc theo khu vực vs lọc theo bán kính; điểm nằm đúng biên; SRID 4326; đơn vị mét |
 | **Security/Privacy** | Quyền, scope, lộ data | người bị chặn gọi thẳng API vẫn xem được profile? danh sách người tham gia lộ liên hệ? |
-| **SEO** (web public only) | SSR, metadata, 404 | `/events/[slug]` với slug giả → `notFound()` (HTTP 404, không soft-200); OG image + metadata theo locale |
+| **SEO** (chỉ `apps/web-client-side`) | SSR, metadata, 404 | `/events/[slug]` với slug giả → `notFound()` (HTTP 404, không soft-200); OG image + metadata theo locale |
 
 Không cần mọi chiều cho mọi feature — chọn chiều **liên quan**. Nhưng **Happy +
 Negative + Error + Parity + i18n** gần như luôn cần.

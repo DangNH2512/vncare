@@ -1,0 +1,538 @@
+{
+  "common": {
+    "appName": "Da Nang Connect",
+    "loading": "Loading...",
+    "retry": "Retry",
+    "free": "Free",
+    "seeAll": "See all",
+    "skipToContent": "Skip to content",
+    "comingSoon": "Coming soon",
+    "language": "Language"
+  },
+  "event": {
+    "detail": {
+      "rsvpButton": "RSVP",
+      "joinWaitlistButton": "Join waitlist",
+      "seatsLeft": "{count} seats left",
+      "full": "Event is full",
+      "hostedBy": "Host",
+      "publish": "Publish this event",
+      "missingTitle": "No such event",
+      "missingBody": "It may have been removed, or the link is wrong.",
+      "attendees": "Who is going ({count})",
+      "attendeesSignedOut": "The attendee list is visible to members.",
+      "attendeesEmpty": "Nobody yet — be the first."
+    },
+    "card": {
+      "hostedBy": "Hosted by {name}",
+      "attendees": "{count} going",
+      "price": "{amount}",
+      "startingSoon": "Starting soon",
+      "almostFull": "Almost full",
+      "yours": "Your event",
+      "details": "Details"
+    },
+    "status": {
+      "draft": "Draft — only you can see this",
+      "pendingReview": "Pending review",
+      "published": "Published",
+      "suspended": "Suspended",
+      "takenDown": "Taken down",
+      "cancelled": "Cancelled",
+      "pending_review": "Awaiting review",
+      "taken_down": "Taken down"
+    },
+    "empty": {
+      "title": "No events in {area} this week",
+      "description": "Nobody has posted here yet. A morning run, a coffee, a language swap — anything counts, and it takes two minutes.",
+      "cta": "Create an event",
+      "resetFilter": "Show all areas"
+    },
+    "requiredTrust": "Trust level {level} or above",
+    "create": {
+      "title": "Create an event",
+      "field": {
+        "title": "What is happening?",
+        "description": "Details",
+        "startsAt": "When",
+        "capacity": "Seats",
+        "area": "Area",
+        "location": "Meeting point"
+      },
+      "hint": {
+        "description": "What to bring, where exactly to meet, who it is for...",
+        "capacity": "How many people can join."
+      },
+      "saveDraft": "Save as draft",
+      "publish": "Publish",
+      "working": "Publishing...",
+      "error": "Could not create the event. Please try again."
+    }
+  },
+  "rsvp": {
+    "error": {
+      "suspended": "Your account is suspended and cannot join events.",
+      "occurrenceClosed": "Registration for this session is closed.",
+      "alreadyRsvped": "You are already registered for this session.",
+      "trustTooLow": "This event requires a higher trust level.",
+      "notRegistered": "You are not registered for this session.",
+      "occurrenceNotFound": "This session no longer exists.",
+      "idempotencyKeyRequired": "The request is missing its Idempotency-Key.",
+      "generic": "Could not update your RSVP. Please try again."
+    },
+    "action": {
+      "working": "One moment..."
+    }
+  },
+  "trust": {
+    "requirement": {
+      "resolveReports": "Resolve the open reports on your account",
+      "verifyContact": "Verify your email address",
+      "attendFirstEvent": "Attend your first event",
+      "accountAge7d": "Be a member for 7 days",
+      "attend5Events": "Attend 5 events",
+      "attend10Events": "Attend 10 events",
+      "hostFirstEvent": "Host your first event",
+      "host5Events": "Host 5 events"
+    },
+    "level": {
+      "t0": "Restricted",
+      "t1": "New member",
+      "t2": "Verified",
+      "t3": "Regular",
+      "t4": "Trusted",
+      "t5": "Community host"
+    },
+    "badge": {
+      "short": "T{level}",
+      "aria": "Trust level {level}, {label}"
+    }
+  },
+  "a11y": {
+    "toggleTheme": "Switch between light and dark mode",
+    "switchLanguage": "Switch language",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "clearFilter": "Clear the current filter"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "nav": {
+    "events": "Events",
+    "map": "Map",
+    "profile": "Profile",
+    "createEvent": "Create event"
+  },
+  "datetime": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "timeZoneNote": "Times shown in Da Nang time (GMT+7)"
+  },
+  "area": {
+    "label": "Area",
+    "all": "All areas",
+    "eventCount": "{count} events"
+  },
+  "home": {
+    "eyebrow": "Sprint 0 · Foundation",
+    "title": "The expat community of Da Nang, in one place",
+    "subtitle": "Sports meetups, language exchange and neighbourhood get-togethers across the six areas we launch in.",
+    "routesHeading": "Screens on the way",
+    "routesNote": "The foundation below is done. Each screen is assembled on top of it.",
+    "componentsHeading": "Shared primitives",
+    "componentsNote": "Switch the language to Vietnamese and narrow the window: nothing here may overflow or clip.",
+    "route": {
+      "feed": "Event feed",
+      "feedDescription": "Everything happening this week, soonest first.",
+      "detail": "Event detail",
+      "detailDescription": "Full description, meeting point, and the RSVP or waitlist action.",
+      "areas": "Area filter and map",
+      "areasDescription": "Filter by neighbourhood, with the six launch areas drawn on a map.",
+      "profile": "Member profile",
+      "profileDescription": "Who someone is, what they host, and how far up the trust ladder they are."
+    },
+    "status": {
+      "ready": "Ready",
+      "planned": "Planned"
+    }
+  },
+  "shell": {
+    "nav": {
+      "home": "Home",
+      "discover": "Discover",
+      "myEvents": "My events",
+      "notifications": "Notifications",
+      "profile": "Profile",
+      "create": "Create",
+      "createEvent": "Create event"
+    },
+    "a11y": {
+      "primaryNav": "Primary navigation",
+      "bottomNav": "Bottom navigation",
+      "create": "Create a new event"
+    },
+    "rail": {
+      "upcoming": "Coming up",
+      "areas": "Areas",
+      "suggestions": "People to follow",
+      "follow": "Follow"
+    }
+  },
+  "feed": {
+    "title": "Community feed",
+    "composer": {
+      "placeholder": "What are you planning?",
+      "create": "Create event"
+    },
+    "filter": {
+      "label": "Filter the feed",
+      "all": "All",
+      "today": "Today",
+      "weekend": "Weekend",
+      "free": "Free"
+    },
+    "card": {
+      "createdEvent": "created an event",
+      "menu": "More options for this post",
+      "seatsLeft": "{count} spots left",
+      "full": "Full",
+      "join": "Join",
+      "joined": "Going",
+      "comments": "{count} comments",
+      "share": "Share",
+      "going": "{count} going",
+      "openEvent": "Open event: {title}"
+    },
+    "activity": {
+      "joinedOne": "just joined",
+      "joinedMany": "and {count} others just joined"
+    },
+    "empty": {
+      "title": "No events match these filters",
+      "description": "Nothing planned here yet this week. Clear the filters, or be the one who starts something.",
+      "reset": "Clear filters"
+    },
+    "loading": "Loading the feed",
+    "composerPlaceholder": "What are you planning this week?",
+    "createEvent": "Create event",
+    "filterAll": "All",
+    "filterToday": "Today",
+    "filterWeekend": "Weekend",
+    "filterFree": "Free",
+    "createdEvent": "created an event",
+    "curatedEvent": "shared from a public source",
+    "rsvp": "RSVP",
+    "going": "Going",
+    "joinWaitlist": "Join waitlist",
+    "onWaitlist": "On waitlist",
+    "comments": "{count} comments",
+    "share": "Share",
+    "moreActions": "More actions",
+    "seatsOf": "{taken}/{capacity}",
+    "plusOthers": "+{count}",
+    "activityJoined": "{name} and {count} others just joined",
+    "emptyTitle": "No events match this filter",
+    "emptyBody": "Be the first to post one — the community will thank you.",
+    "clearFilter": "Clear filter"
+  },
+  "discover": {
+    "title": "Discover",
+    "search": {
+      "label": "Search events",
+      "placeholder": "Search by event name..."
+    },
+    "areas": {
+      "heading": "Browse by area",
+      "aria": "Filter by area"
+    },
+    "view": {
+      "label": "Show results as",
+      "list": "List",
+      "map": "Map"
+    },
+    "filters": {
+      "button": "Filters",
+      "title": "Filter events",
+      "category": "Category",
+      "freeOnly": "Free events only",
+      "clear": "Clear filters",
+      "done": "Show {count} results",
+      "close": "Close filters",
+      "activeCount": "{count} filters active"
+    },
+    "category": {
+      "sports": "Sports",
+      "language": "Language",
+      "social": "Social",
+      "outdoors": "Outdoors",
+      "wellness": "Wellness"
+    },
+    "results": {
+      "count": "{count} events found"
+    },
+    "map": {
+      "title": "Area map",
+      "aria": "Map of the six launch areas",
+      "markerAria": "{area}: {count} events",
+      "placeholderNote": "Interactive map coming soon"
+    },
+    "empty": {
+      "title": "No events match your filters",
+      "description": "Try another area or clear the filters — or be the one who starts something new.",
+      "clear": "Clear all filters"
+    }
+  },
+  "errors": {
+    "common": {
+      "duplicate": "That already exists.",
+      "referenceNotFound": "Something this refers to no longer exists.",
+      "constraintViolated": "That request breaks a rule of this data.",
+      "retryLater": "The service is busy. Please try again in a moment."
+    },
+    "auth": {
+      "unauthenticated": "Please sign in to continue.",
+      "trustLevelTooLow": "Your account needs a higher trust level for this.",
+      "invalidCredentials": "Those sign-in details do not match an account.",
+      "invalidToken": "Your session has expired. Please sign in again.",
+      "invalidRefresh": "Your session has expired. Please sign in again.",
+      "emailTaken": "An account with that email already exists.",
+      "handleTaken": "That username is already taken.",
+      "handleFormat": "Use 3-24 lowercase letters, numbers or underscores.",
+      "accountSuspended": "This account is suspended.",
+      "accountUnavailable": "This account is not available."
+    },
+    "event": {
+      "notFound": "This event no longer exists.",
+      "notOrganizer": "Only the organizer can change this event.",
+      "underModeration": "This event is on hold pending moderation.",
+      "radiusRequiresCoordinates": "A radius search needs a latitude and a longitude."
+    },
+    "post": {
+      "notFound": "This post no longer exists.",
+      "notOwner": "Only the author can change this post."
+    },
+    "comment": {
+      "notFound": "This comment no longer exists.",
+      "notAuthor": "Only the author can change this comment.",
+      "parentNotFound": "The comment being replied to no longer exists.",
+      "notThreadOwner": "Only the organizer or author can pin a comment here.",
+      "cannotPinReply": "Only a top-level comment can be pinned."
+    },
+    "chat": {
+      "cannotMessageSelf": "You cannot start a conversation with yourself.",
+      "conversationNotFound": "This conversation no longer exists.",
+      "conversationClosed": "This conversation is closed.",
+      "requestRefused": "This person is not accepting messages from you.",
+      "requestQuotaExhausted": "Wait for a reply before sending another message.",
+      "notRequestRecipient": "Only the recipient can answer this request.",
+      "messageNotFound": "This message no longer exists.",
+      "messagePayloadMismatch": "The message content does not match its type."
+    },
+    "media": {
+      "typeNotAllowed": "That file type is not supported.",
+      "tooLarge": "That file is too large.",
+      "notUploaded": "The upload did not finish. Please try again.",
+      "notFound": "That attachment no longer exists."
+    },
+    "profile": {
+      "notFound": "That profile no longer exists.",
+      "phoneInvalid": "That does not look like a phone number.",
+      "phoneTaken": "That phone number is already on another account."
+    }
+  },
+  "post": {
+    "composer": {
+      "open": "Write a post",
+      "title": "New post",
+      "bodyLabel": "Your post",
+      "bodyPlaceholder": "Ask the community, share a recommendation, or say what you are looking for.",
+      "kindLabel": "Post type",
+      "areaLabel": "Area",
+      "areaCityWide": "Anywhere in Da Nang",
+      "submit": "Post",
+      "submitting": "Posting...",
+      "cancel": "Cancel",
+      "remaining": "{count} characters left",
+      "errorGeneric": "Could not publish that post. Please try again.",
+      "errorOffline": "Cannot reach the API. Start it with pnpm --filter @dnc/api dev.",
+      "back": "Back",
+      "skipMedia": "Skip",
+      "you": "You",
+      "waitingUploads": "Uploading..."
+    },
+    "kind": {
+      "question": "Question",
+      "recommendation": "Recommendation",
+      "notice": "Notice",
+      "lookingFor": "Looking for"
+    },
+    "card": {
+      "posted": "posted",
+      "cityWide": "Da Nang",
+      "edited": "edited",
+      "comments": "{count} comments",
+      "react": "React to this post",
+      "gallery": "Gallery with {count} items",
+      "showMore": "+{count} more"
+    },
+    "feed": {
+      "loading": "Loading community posts",
+      "empty": "No community posts yet. Be the first."
+    },
+    "media": {
+      "dropTitle": "Drag photos and videos here",
+      "dropHint": "Photos and videos. JPG, PNG, WebP, HEIC, MP4 or MOV.",
+      "choose": "Select from device",
+      "addMore": "Add more media",
+      "remove": "Remove this item",
+      "counter": "{count} selected",
+      "previewLabel": "Preview of the media you are about to post",
+      "previous": "Previous item",
+      "next": "Next item",
+      "rejectedType": "Some files were skipped: that format is not supported.",
+      "rejectedSize": "Some files were skipped: too large."
+    },
+    "location": {
+      "add": "Add a location",
+      "pinned": "Location pinned",
+      "tapToPin": "Tap the map to drop a pin",
+      "labelField": "Place name",
+      "remove": "Remove",
+      "mapUnavailable": "The map could not load. You can still post without a location."
+    }
+  },
+  "auth": {
+    "action": {
+      "signIn": "Sign in",
+      "signUp": "Create account",
+      "signOut": "Sign out",
+      "working": "Please wait..."
+    },
+    "field": {
+      "email": "Email",
+      "password": "Password",
+      "displayName": "Your name",
+      "handle": "Username",
+      "identifier": "Email, username or phone"
+    },
+    "hint": {
+      "handle": "This becomes your profile link.",
+      "password": "At least {count} characters.",
+      "identifier": "Whichever you signed up with."
+    },
+    "switch": {
+      "haveAccount": "Already have an account?",
+      "noAccount": "New here?"
+    },
+    "page": {
+      "signInTitle": "Welcome back",
+      "signInBody": "Sign in to post, comment and RSVP.",
+      "signUpTitle": "Join the community",
+      "signUpBody": "Free, and takes about a minute."
+    },
+    "prompt": {
+      "title": "Sign in to continue",
+      "body": "You can read everything without an account. Posting, reacting and commenting need one."
+    },
+    "error": {
+      "generic": "Something went wrong. Please try again.",
+      "offline": "Cannot reach the server. Please check your connection."
+    }
+  },
+  "profile": {
+    "action": {
+      "edit": "Edit profile",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "field": {
+      "displayName": "Display name",
+      "headline": "Headline",
+      "bio": "About you",
+      "homeArea": "Home area",
+      "noArea": "Not saying",
+      "visibility": "Who can see this profile",
+      "showArea": "Show my area on my public profile",
+      "since": "In Da Nang since {date}",
+      "memberSince": "Member since {date}",
+      "phone": "Phone number"
+    },
+    "hint": {
+      "headline": "One line, e.g. \"Yoga teacher · An Thuong\".",
+      "phone": "Lets you sign in with it. Never shown to anyone else."
+    },
+    "visibility": {
+      "public": "Anyone",
+      "members_only": "Members only",
+      "private": "Only me"
+    },
+    "visibilityHint": {
+      "public": "Visible to anyone with the link, including people without an account.",
+      "members_only": "Only signed-in members can open your profile.",
+      "private": "Nobody but you can open your profile."
+    },
+    "section": {
+      "about": "About"
+    },
+    "stat": {
+      "hosted": "Hosted",
+      "attended": "Attended",
+      "rating": "Rating"
+    },
+    "trust": {
+      "next": "To reach trust level {level}"
+    },
+    "language": {
+      "en": "English",
+      "vi": "Vietnamese",
+      "ko": "Korean",
+      "ja": "Japanese",
+      "zh": "Chinese",
+      "ru": "Russian",
+      "fr": "French",
+      "de": "German",
+      "es": "Spanish",
+      "other": "Other"
+    },
+    "level": {
+      "basic": "basic",
+      "conversational": "conversational",
+      "fluent": "fluent",
+      "native": "native"
+    },
+    "missing": {
+      "title": "No such member",
+      "body": "This profile may have been removed, or the link is wrong."
+    },
+    "error": {
+      "save": "Could not save your profile. Please try again."
+    }
+  },
+  "blank": {
+    "backHome": "Back to the feed",
+    "notFound": {
+      "title": "There is nothing at this address",
+      "body": "The link may be old, or the page may have moved. The feed is still where it was."
+    },
+    "discover": {
+      "title": "Discover is being built",
+      "body": "Browsing by area and by map is next. For now the feed carries every event, and the area chips filter it."
+    },
+    "myEvents": {
+      "title": "Your events will collect here",
+      "body": "Everything you host and everything you have joined, in one place. Not built yet."
+    },
+    "notifications": {
+      "title": "No notifications yet",
+      "body": "Replies, RSVPs and event changes will arrive here once notifications are switched on."
+    },
+    "createEvent": {
+      "title": "Creating an event is not ready yet",
+      "body": "The form is being built. In the meantime you can post to the community feed and arrange something there."
+    }
+  }
+}

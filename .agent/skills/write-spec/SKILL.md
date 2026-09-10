@@ -27,7 +27,9 @@ Viết đặc tả tính năng (feature spec) hoặc tài liệu yêu cầu sả
   admin / super admin, và hệ thống (`apps/api` NestJS). Chi tiết:
   [`docs/analysis/01-tac-nhan-va-phan-quyen.md`](../../../docs/analysis/01-tac-nhan-va-phan-quyen.md).
 - **Kiến trúc để bám:** `apps/api` (NestJS 11 + TypeORM + PostgreSQL 16/PostGIS + Redis/BullMQ)
-  · `apps/web` (Next.js 15 App Router + React 19 + Tailwind) · `apps/mobile` (Expo 54 + RN 0.81)
+  · `apps/web-client-side` (Next.js 16 App Router + React 19 + Tailwind, web người dùng cuối)
+  · `apps/web-admin-side` (cùng stack Next.js 16, console vận hành — không SEO, ưu tiên desktop)
+  · `apps/mobile` (Expo 54 + RN 0.81)
   · `packages/shared-types`. Client chỉ nói chuyện với API qua REST `/api/v1`.
 - **NFR checklist bắt buộc cho mọi spec ở đây:**
 
@@ -40,8 +42,8 @@ Viết đặc tả tính năng (feature spec) hoặc tài liệu yêu cầu sả
   | **Đồng thời** | Có đụng sức chứa/đếm không → lock, đếm nguyên tử, waitlist, `Idempotency-Key`. |
   | **Realtime & push** | socket.io event nào? Expo Push gửi cho ai, lúc nào, locale nào, khung giờ nào? Job BullMQ nào? |
   | **Kiểm duyệt UGC** | Nội dung có report được không? Ẩn được mà không xoá? Hành động vận hành ghi `audit_log` bất biến? |
-  | **Cross-platform parity** | Hành vi tồn tại ở cả `apps/web` và `apps/mobile`? Khác biệt chính đáng đã ghi lý do? |
-  | **SEO** | Trang public trên web có SSR + `generateMetadata()` + JSON-LD `Event` + `notFound()` cho 404? |
+  | **Cross-platform parity** | Hành vi người dùng cuối tồn tại ở cả `apps/web-client-side` và `apps/mobile`? Phần vận hành đã đặt đúng chỗ ở `apps/web-admin-side` chưa? Khác biệt chính đáng đã ghi lý do? |
+  | **SEO** | Trang public trên `apps/web-client-side` có SSR + `generateMetadata()` + JSON-LD `Event` + `notFound()` cho 404? (`apps/web-admin-side` KHÔNG index — `robots: noindex`.) |
   | **Dữ liệu cá nhân** | Thu thập gì, vì sao, lưu bao lâu, xoá thế nào — thu tối thiểu, trả về qua DTO allow-list. |
   | **Migration** | Có đổi schema không? Nếu có → DỪNG xin phê duyệt (skill [`database-migrations`](../database-migrations/SKILL.md)). |
 

@@ -64,7 +64,7 @@ Vì repo đang là **greenfield** (chưa có code trong `apps/`), hãy kiểm tr
 mức độ hoàn thiện của bộ khung trước khi khuyên viết tính năng:
 
 ```bash
-ls apps/api apps/web apps/mobile packages/shared-types ops 2>/dev/null
+ls apps/api apps/web-client-side apps/web-admin-side apps/mobile packages/shared-types ops 2>/dev/null
 ```
 
 Nếu các thư mục này chưa tồn tại thì bước kế tiếp gần như luôn là **dựng khung
@@ -134,15 +134,20 @@ và output kỳ vọng.
 
 ## Ngữ cảnh riêng của dự án
 
-Monorepo có **bốn bề mặt code** chính:
+Monorepo có **năm bề mặt code** chính:
 
 - **Backend** — `apps/api/` (NestJS 11 + TypeScript + TypeORM + PostgreSQL 16 với
   PostGIS + Redis cho cache/BullMQ)
-- **Web** — `apps/web/` (Next.js 15 App Router + React 19 + Tailwind CSS,
-  bản đồ bằng react-leaflet)
+- **Web client (người dùng cuối)** — `apps/web-client-side/` (Next.js 16 App Router +
+  React 19 + Tailwind CSS, bản đồ bằng MapLibre). Hiện đã có UI cơ bản: 4 màn hình
+  feed, chi tiết sự kiện, khám phá, hồ sơ.
+- **Web admin (đội ngũ vận hành)** — `apps/web-admin-side/` (cùng stack Next.js 16 App
+  Router + React 19 + Tailwind CSS để dùng chung `packages/*`; KHÔNG cần SEO, đặt
+  `robots: noindex`; ưu tiên bảng biểu đầy đủ chức năng + thao tác hàng loạt, responsive
+  nhưng ưu tiên desktop). Hiện **còn rỗng, chưa bắt đầu**.
 - **Mobile** — `apps/mobile/` (Expo 54 + React Native 0.81, bản đồ bằng
   react-native-maps, build/submit qua EAS)
-- **Shared types** — `packages/shared-types/` (DTO/enum dùng chung cho cả ba app)
+- **Shared types** — `packages/shared-types/` (DTO/enum dùng chung cho mọi app)
 - Hạ tầng vận hành ở `ops/` (Docker Compose, script deploy, GitHub Actions).
 
 Quy tắc cần nhắc khi liên quan:

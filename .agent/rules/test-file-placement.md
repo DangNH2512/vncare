@@ -28,7 +28,10 @@ description: File spec test nằm ở thư mục test riêng của từng app, k
    test, còn `tsc --noEmit` và bản build production không bao giờ biên dịch spec.
 
 5. **Các app khác** giữ thư mục test riêng:
-   `apps/web` → `apps/web/e2e/**` (Playwright);
+   `apps/web-client-side` → `apps/web-client-side/e2e/**` (Playwright, luồng
+   người dùng cuối: feed, chi tiết sự kiện, RSVP, khám phá, hồ sơ);
+   `apps/web-admin-side` → `apps/web-admin-side/e2e/**` (Playwright, luồng vận
+   hành: curate, kiểm duyệt, quản lý người dùng, analytics);
    `apps/mobile` → `apps/mobile/__tests__/**` (không đặt trong `app/`).
    Bất biến chung ở mọi nơi: file test không nằm cạnh file production.
    Kịch bản kiểm thử **thủ công** của mobile là tài liệu, không phải spec chạy được

@@ -40,7 +40,14 @@ hình chữ nhật đỏ khổng lồ, và nó vẫn được báo "done" mà kh
 
 ## Bộ mockup lõi của Giai đoạn 1
 
-Bốn màn hình dưới đây là xương sống sản phẩm. Mockup mới nên bám hoặc mở rộng chúng:
+Bốn màn hình dưới đây là xương sống sản phẩm — tất cả đều thuộc **app người dùng cuối**
+(`apps/web-client-side` cho bản web, `apps/mobile` cho bản mobile). Mockup mới nên bám
+hoặc mở rộng chúng.
+
+Mockup cho màn hình vận hành (curate nội dung, hàng đợi kiểm duyệt, quản lý người dùng,
+analytics) thuộc `apps/web-admin-side`: đặt tên `docs/mockups/<feature>-admin-mockup.html`,
+dựng ở khung desktop (không phải khung điện thoại), ưu tiên bảng biểu đầy đủ cột và
+thao tác hàng loạt.
 
 | Màn hình | File | Nội dung phải có |
 |----------|------|------------------|

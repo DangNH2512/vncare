@@ -5,8 +5,9 @@ kết nối cộng đồng người nước ngoài (expat) tại Đà Nẵng. D�
 đây khi một workflow cần gọi đúng vai trò.
 
 Kho mã là monorepo: `apps/api` (NestJS 11 + TypeORM + PostgreSQL 16/PostGIS +
-Redis/BullMQ), `apps/web` (Next.js 15 App Router + React 19 + Tailwind),
-`apps/mobile` (Expo 54 + React Native 0.81), `packages/*` dùng chung, và `ops/`
+Redis/BullMQ), `apps/web-client-side` (Next.js 16 App Router + React 19 +
+Tailwind, web cho người dùng cuối), `apps/web-admin-side` (Next.js 16, console
+vận hành), `apps/mobile` (Expo 54 + React Native 0.81), `packages/*` dùng chung, và `ops/`
 cho hạ tầng. Giai đoạn 1 làm kết nối cộng đồng (sự kiện, thể thao, trao đổi
 ngôn ngữ); giai đoạn 2 là nhà ở; giai đoạn 3 là y tế và dịch vụ chuyên môn.
 
@@ -30,8 +31,14 @@ nghĩa dùng được cho cả Claude Code và các công cụ khác.
 - `engineering/backend-agent.md` — sở hữu `apps/api`. NestJS, TypeORM, truy vấn
   PostGIS theo khu vực và bán kính, RSVP có sức chứa và hàng đợi chờ, trust
   level, kiểm duyệt, queue BullMQ, Swagger, audit log.
-- `engineering/web-agent.md` — sở hữu `apps/web`. Next.js App Router, trang sự
-  kiện công khai có SEO, console curate, bản đồ `react-leaflet`, i18n EN/VI.
+- `engineering/web-client-agent.md` — sở hữu `apps/web-client-side`. Next.js 16
+  App Router, trang sự kiện công khai có SEO, feed và chi tiết sự kiện, RSVP,
+  khám phá theo khu vực, hồ sơ, bản đồ `MapLibre`, i18n EN/VI, deep link
+  `.well-known`.
+- `engineering/web-admin-agent.md` — sở hữu `apps/web-admin-side`. Next.js 16
+  App Router, console curate, hàng đợi kiểm duyệt, xử lý báo cáo, quản lý người
+  dùng và role, quản lý khu vực và danh mục, analytics, audit log viewer.
+  Không SEO, ưu tiên desktop.
 - `engineering/mobile-agent.md` — sở hữu `apps/mobile`. Expo Router,
   `react-native-maps`, Expo Push Notifications, quyền hệ thống, EAS
   Build/Submit.
@@ -61,14 +68,16 @@ nghĩa dùng được cho cả Claude Code và các công cụ khác.
 
 | Agent | Sở hữu | Không được chạm |
 |---|---|---|
-| `backend-agent` | `apps/api/**`, `packages/shared-types/**`, `packages/validation/**` khi hợp đồng đổi | `apps/web/**`, `apps/mobile/**` |
-| `web-agent` | `apps/web/**`, `packages/ui/**`, `packages/i18n/**` khi được giao | `apps/api/**`, `apps/mobile/**` |
-| `mobile-agent` | `apps/mobile/**`, `packages/i18n/**` khi được giao | `apps/api/**`, `apps/web/**` |
+| `backend-agent` | `apps/api/**`, `packages/shared-types/**`, `packages/validation/**` khi hợp đồng đổi | `apps/web-client-side/**`, `apps/web-admin-side/**`, `apps/mobile/**` |
+| `web-client-agent` | `apps/web-client-side/**`, `packages/ui/**`, `packages/i18n/**` khi được giao | `apps/api/**`, `apps/web-admin-side/**`, `apps/mobile/**` |
+| `web-admin-agent` | `apps/web-admin-side/**`, `packages/ui/**`, `packages/i18n/**` khi được giao | `apps/api/**`, `apps/web-client-side/**`, `apps/mobile/**` |
+| `mobile-agent` | `apps/mobile/**`, `packages/i18n/**` khi được giao | `apps/api/**`, `apps/web-client-side/**`, `apps/web-admin-side/**` |
 | `ops-monitor-agent` | `ops/**` khi dựng giám sát | toàn bộ `apps/**` |
 | `tech-lead-agent`, `ba-agent`, `code-review-agent`, các agent kiểm thử | chỉ đọc | mọi file hiện thực |
 
-`packages/i18n/**` luôn phải sửa **nối tiếp**, không bao giờ song song — cả web
-và mobile đều đọc nó. Không bao giờ để hai agent ghi vào cùng một file cùng lúc.
+`packages/i18n/**` luôn phải sửa **nối tiếp**, không bao giờ song song — cả
+`apps/web-client-side`, `apps/web-admin-side` lẫn `apps/mobile` đều đọc nó.
+Không bao giờ để hai agent ghi vào cùng một file cùng lúc.
 
 ## Cấu trúc bắt buộc của mỗi file agent
 
@@ -83,7 +92,7 @@ có thật trong repo, bằng đường dẫn tương đối từ gốc repo.
 BA
   -> Tech Lead
   -> Coordinator
-  -> backend-agent / web-agent / mobile-agent
+  -> backend-agent / web-client-agent / web-admin-agent / mobile-agent
   -> Code Review
   -> Tester Lead
       -> Unit Test

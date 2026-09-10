@@ -1,0 +1,4 @@
+{
+  "extends": "@dnc/config/tsconfig/lib.json",
+  "include": ["src"]
+}

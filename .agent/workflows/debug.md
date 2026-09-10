@@ -18,7 +18,8 @@ Khi nhận lệnh `/debug`, thực hiện theo đúng thứ tự:
 
 3. **Phase 2 — LOCATE:** Truy vết chuỗi gọi trong code thật (đọc từng bước — không
    dùng trí nhớ)
-   - Đọc component/màn hình bị ảnh hưởng (`apps/web/src/...` hoặc `apps/mobile/...`)
+   - Đọc component/màn hình bị ảnh hưởng (`apps/web-client-side/src/...`,
+     `apps/web-admin-side/src/...` hoặc `apps/mobile/...`)
    - Đọc controller → service → repository trong `apps/api/src/modules/...`
    - Nếu là bug realtime: đọc luôn socket gateway và query key đang được invalidate
 

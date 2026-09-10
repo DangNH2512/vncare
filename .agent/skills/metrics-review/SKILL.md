@@ -29,8 +29,10 @@ scorecard mặc định là chỉ số của một nền tảng sự kiện, kh�
   tỷ lệ lấp đầy sức chứa và tỷ lệ waitlist được đôn lên; tỷ lệ huỷ RSVP sát giờ;
   tỷ lệ hồ sơ đạt từng mức **trust level**; số nội dung bị báo cáo và thời gian xử
   lý kiểm duyệt UGC; tỷ lệ gửi thành công của Expo Push (và tỷ lệ token
-  `DeviceNotRegistered` cần dọn); tỷ trọng web (`apps/web`) so với mobile
-  (`apps/mobile`); tỷ lệ người dùng chọn `en` so với `vi`.
+  `DeviceNotRegistered` cần dọn); tỷ trọng web người dùng cuối
+  (`apps/web-client-side`) so với mobile (`apps/mobile`); tỷ lệ người dùng chọn `en`
+  so với `vi`. Chỉ số vận hành (thời gian xử lý hàng đợi kiểm duyệt, số sự kiện được
+  curate thủ công) đo trên `apps/web-admin-side` và báo cáo tách khỏi chỉ số người dùng.
 - **Nguồn dữ liệu:** PostgreSQL qua `psql` **chỉ đọc** (điều tra read-only luôn
   được phép theo cổng của `database-migrations` — không bao giờ ghi), cộng bảng
   audit log cho các sự kiện hành vi. Truy vấn theo khu vực/bán kính dùng PostGIS

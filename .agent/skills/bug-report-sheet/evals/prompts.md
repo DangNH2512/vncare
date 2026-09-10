@@ -11,8 +11,8 @@ Trigger accuracy matters more than prose quality here: the skill must fire on
 | P2 | "tổng hợp feedback tester tuần này thành bug tracker giúp anh" | Sheet + phân biệt `Loại` Bug/Đề xuất |
 | P3 | "log lại mấy lỗi mấy bạn trong group expat báo vào file excel" | Sheet, giữ nguyên văn của người báo (kể cả tiếng Anh) |
 | P4 | "làm bảng bug từ 3 video quay màn hình app này" | ffmpeg contact sheet trước, mỗi lỗi 1 dòng, cột Proof ghi tên file thật |
-| P5 | "sau buổi test hôm nay, chia việc fix cho từng dev" | Sheet + bảng task card theo owner apps/api · apps/web · apps/mobile (Rule 7) |
-| P6 | "gom lỗi tester báo trên cả web lẫn app thành một sheet" | Một dòng/lỗi với `Platform = "Web, iOS"`, không nhân đôi dòng |
+| P5 | "sau buổi test hôm nay, chia việc fix cho từng dev" | Sheet + bảng task card theo owner apps/api · apps/web-client-side · apps/web-admin-side · apps/mobile (Rule 7) |
+| P6 | "gom lỗi tester báo trên cả web lẫn app thành một sheet" | Một dòng/lỗi với `Platform = "Web Client, iOS"`, không nhân đôi dòng |
 
 ## Should NOT trigger (near-miss)
 

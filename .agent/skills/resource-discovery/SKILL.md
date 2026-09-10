@@ -18,7 +18,7 @@ allowed-tools: Read, Bash, WebFetch
 - Trước khi cài đặt một khuôn mẫu: "Các dự án NestJS khác xử lý Y thế nào?"
 - Những điểm dự án này hay đụng phải: hàm hỗ trợ PostGIS/geography cho
   TypeORM, xử lý iCalendar/lặp lại cho sự kiện, mức độ tương đồng tính năng giữa
-  `react-leaflet` và `react-native-maps`, vòng đời Expo Push token, và các thư viện
+  MapLibre (`apps/web-client-side`) và `react-native-maps`, vòng đời Expo Push token, và các thư viện
   i18n giữ cho hai bộ `en`/`vi` đồng bộ.
 - Khi gặp một API không có tài liệu hoặc một trường hợp biên của thư viện.
 - Trước khi thêm một MCP server mới: kiểm tra xem đã có sẵn cái nào chưa.
@@ -85,7 +85,7 @@ Chấm điểm từng ứng viên theo:
 | Tiêu chí | Kiểm tra gì |
 |-----------|-------|
 | **Còn được bảo trì** | Commit gần nhất dưới 6 tháng, issue mở có người trả lời |
-| **Tương thích** | Chạy được với Node 20+, NestJS 11, TypeORM, Next.js 15 / React 19, Expo SDK 54 / React Native 0.81, TypeScript strict |
+| **Tương thích** | Chạy được với Node 20+, NestJS 11, TypeORM, Next.js 16 / React 19, Expo SDK 54 / React Native 0.81, TypeScript strict |
 | **License phù hợp** | MIT / Apache-2.0 / BSD (mở file `LICENSE` ra xem, đừng tin mỗi dòng ghi trong README) |
 | **Kích thước hợp lý** | Không lấy dependency 200KB cho một tiện ích 3 dòng; ưu tiên loại tree-shakable |
 | **Không dính CVE đã biết** | Chạy `npm audit` sau khi cài; hoặc tra tại `https://snyk.io/vuln/npm:<pkg>` |

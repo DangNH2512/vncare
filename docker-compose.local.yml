@@ -1,0 +1,66 @@
+# Local development stack. Not used in production.
+# Two Redis instances on purpose: BullMQ requires noeviction, the cache wants
+# allkeys-lru; sharing one instance silently evicts jobs under memory pressure.
+services:
+  postgres:
+    # Multi-arch (amd64/arm64) PostGIS build; the official postgis/postgis
+    # tag ships amd64 only, which fails on Apple Silicon dev machines.
+    image: imresamu/postgis:18-3.6
+    environment:
+      POSTGRES_USER: dnc
+      POSTGRES_PASSWORD: dnc
+      POSTGRES_DB: dnc
+    ports:
+      # Host port 5433: 5432 is commonly taken by other local projects.
+      - "5433:5432"
+    volumes:
+      # PostgreSQL 18+ images expect the mount at /var/lib/postgresql (not
+      # .../data); data lives in a major-version subdirectory for pg_upgrade.
+      - pgdata:/var/lib/postgresql
+      # Hand-written SQL runs once on a fresh volume, in filename order.
+      # Converted to TypeORM migrations when the ORM layer lands.
+      - ./apps/api/src/database/sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dnc -d dnc"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis-cache:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    ports:
+      - "6381:6379"
+
+  redis-queue:
+    image: redis:7.4-alpine
+    command: ["redis-server", "/etc/redis/redis-queue.conf"]
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./ops/redis/redis-queue.conf:/etc/redis/redis-queue.conf:ro
+      # Named volume: `docker compose down -v` is the only way to drop queued jobs.
+      - redisqueue-data:/data
+
+  minio:
+    image: minio/minio:latest
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: dnc
+      MINIO_ROOT_PASSWORD: dnc-local-only
+    ports:
+      - "9002:9000"
+      - "9003:9001"
+    volumes:
+      - miniodata:/data
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  pgdata:
+  redisqueue-data:
+  miniodata:

@@ -68,13 +68,13 @@ khi Coordinator giao một scope tài liệu/test hẹp.
 - Service có viết SQL thô không? Repository có phải nơi duy nhất truy cập dữ liệu?
 - Module có giữ đúng 4 class không? Có class rác nhét vào thư mục module không?
 - Guard/decorator/enum xuyên suốt có nằm ở `apps/api/src/common/**` không?
-- `apps/web` hoặc `apps/mobile` có gọi thẳng database hay bỏ qua
-  `@dnc/api-client` không?
+- `apps/web-client-side`, `apps/web-admin-side` hoặc `apps/mobile` có gọi thẳng
+  database hay bỏ qua `@dnc/api-client` không?
 - Có agent nào ghi ra ngoài scope file được giao không?
 - Có code scraping hay tích hợp API nền tảng nguồn không? Đây là điều **cấm** —
   curate phải là `manual_only`.
-- Web có nhét Google Maps JS API vào không? Bản đồ web phải là `react-leaflet`
-  + tile OSM.
+- Web có nhét Google Maps JS API vào không? Bản đồ trong `apps/web-client-side`
+  phải là `MapLibre` + tile OSM.
 
 ### 3. Khả năng bảo trì
 
@@ -112,7 +112,8 @@ khi Coordinator giao một scope tài liệu/test hẹp.
 ### 7. Test
 
 - Mức test có tương xứng rủi ro không? Nhánh mới có test trực tiếp không?
-- File test có nằm đúng chỗ không: `apps/api/e2e/**`, `apps/web/e2e/**`,
+- File test có nằm đúng chỗ không: `apps/api/e2e/**`,
+  `apps/web-client-side/e2e/**`, `apps/web-admin-side/e2e/**`,
   `apps/mobile/__tests__/**` — **không** nằm cạnh mã nguồn.
 - Test có assert hành vi thật hay chỉ assert mock của chính nó?
 
@@ -136,7 +137,7 @@ khi Coordinator giao một scope tài liệu/test hẹp.
 ```md
 ## Review Finding
 Severity: P0 | P1 | P2 | P3
-Owner: backend-agent | web-agent | mobile-agent | tester-agent | ba-agent
+Owner: backend-agent | web-client-agent | web-admin-agent | mobile-agent | tester-agent | ba-agent
 File/Area: <đường dẫn tương đối + dòng>
 Issue:
 Impact:

@@ -73,10 +73,15 @@ controller · service · repository · module + `dto/`. Kiểu dùng chung:
 
 ## UI Files
 
-### Web — [`apps/web`](../../apps/web/) (Next.js 15 App Router + Tailwind)
+### Web client (người dùng cuối) — [`apps/web-client-side`](../../apps/web-client-side/) (Next.js 16 App Router + Tailwind)
 | File | Vai trò |
 |---|---|
-| [`apps/web/src/components/.../X.tsx`](../../apps/web/src/components/.../X.tsx) | … |
+| [`apps/web-client-side/src/components/.../X.tsx`](../../apps/web-client-side/src/components/.../X.tsx) | … |
+
+### Web admin (đội ngũ vận hành) — [`apps/web-admin-side`](../../apps/web-admin-side/) (Next.js 16 App Router + Tailwind)
+| File | Vai trò |
+|---|---|
+| [`apps/web-admin-side/src/components/.../X.tsx`](../../apps/web-admin-side/src/components/.../X.tsx) | … |
 
 ### Mobile — [`apps/mobile`](../../apps/mobile/) (Expo 54 + React Native)
 | File | Vai trò |
@@ -85,10 +90,11 @@ controller · service · repository · module + `dto/`. Kiểu dùng chung:
 
 ## Cross-platform khác biệt
 
-| Hạng mục | Web | Mobile | Lý do |
-|---|---|---|---|
-| SEO metadata | ✅ | ❌ | Chỉ web có trang public |
-| Push nhắc lịch | ❌ | ✅ | Expo Push chỉ có trên app |
+| Hạng mục | Web client | Web admin | Mobile | Lý do |
+|---|---|---|---|---|
+| SEO metadata | ✅ | ❌ | ❌ | Chỉ `apps/web-client-side` có trang public; admin đặt `robots: noindex` |
+| Push nhắc lịch | ❌ | ❌ | ✅ | Expo Push chỉ có trên app |
+| Hàng đợi kiểm duyệt | ❌ | ✅ | ❌ | Thao tác vận hành, cần bảng biểu + thao tác hàng loạt trên desktop |
 
 ## Acceptance Criteria
 
@@ -97,7 +103,8 @@ controller · service · repository · module + `dto/`. Kiểu dùng chung:
 ## Tests
 
 - API: [`apps/api/e2e/modules/<module>/...spec.ts`](../../apps/api/e2e/modules/<module>/)
-- Web E2E: [`apps/web/e2e/<feature>.spec.ts`](../../apps/web/e2e/)
+- Web client E2E: [`apps/web-client-side/e2e/<feature>.spec.ts`](../../apps/web-client-side/e2e/)
+- Web admin E2E: [`apps/web-admin-side/e2e/<feature>.spec.ts`](../../apps/web-admin-side/e2e/)
 - Mobile: [`apps/mobile/__tests__/`](../../apps/mobile/__tests__/) + Maestro flow
 
 ## Known Gaps / Future
@@ -118,7 +125,7 @@ hành vi/UI 1 màn hình cho người build web/mobile.
 ```markdown
 # Screen: <Tên> — `<route>`
 
-> Last verified: YYYY-MM-DD · Source: [`apps/web/src/app/...`](../../../apps/web/src/app/) (web) · [`apps/mobile/src/app/...`](../../../apps/mobile/src/app/) (mobile)
+> Last verified: YYYY-MM-DD · Source: [`apps/web-client-side/src/app/...`](../../../apps/web-client-side/src/app/) (web client) · [`apps/web-admin-side/src/app/...`](../../../apps/web-admin-side/src/app/) (web admin) · [`apps/mobile/src/app/...`](../../../apps/mobile/src/app/) (mobile)
 
 ## Mục đích
 1 câu màn hình này để làm gì, ai dùng (member · organizer · curator · moderator · admin), ở trust level nào.
@@ -149,8 +156,8 @@ hành vi/UI 1 màn hình cho người build web/mobile.
 | Ngôn ngữ | English-friendly · Vietnamese · bilingual | |
 
 ## Cross-platform khác biệt
-| Hạng mục | Web | Mobile | Lý do |
-|---|---|---|---|
+| Hạng mục | Web client | Web admin | Mobile | Lý do |
+|---|---|---|---|---|
 
 ## i18n
 | Key | en | vi |
@@ -172,25 +179,25 @@ error/transient · concurrency · parity · privacy/trust · i18n · thời gian
 ```markdown
 ## Acceptance Criteria — RSVP sự kiện
 
-| AC-ID | Loại | Given (tiền điều kiện) | When (hành động) | Then (kết quả quan sát được) | Web | Mobile |
-|---|---|---|---|---|---|---|
-| AC-1 | Happy | Đã đăng nhập (T2+), occurrence còn ≥1 chỗ | Bấm "Join" | Nút đổi sang "Going"; `POST /api/v1/events/{id}/rsvp` → `201 {status:"going", spotsLeft:n-1}`; `rsvp_going_count` tăng đúng 1 | ✅ | ✅ |
-| AC-2 | Idempotent | Đã RSVP occurrence này | Gửi lại cùng request với cùng `Idempotency-Key` | `200 {status:"going"}`, KHÔNG tạo bản ghi thứ hai, đếm không đổi | ✅ | ✅ |
-| AC-3 | Concurrency | Occurrence còn đúng 1 chỗ | 2 user gửi RSVP đồng thời | Đúng 1 request `201 going`; request kia `409 EVENT_FULL` kèm gợi ý vào waitlist | ✅ | ✅ |
-| AC-4 | Waitlist | Occurrence đã đầy, user chọn vào hàng chờ | `POST .../rsvp?waitlist=true` | `201 {status:"waitlisted", position:k}`; UI hiển thị vị trí k | ✅ | ✅ |
-| AC-5 | Promote | User A huỷ RSVP, B đứng đầu waitlist | A gọi `DELETE .../rsvp` | B chuyển `going` trong ≤60s; B nhận push đúng locale; `rsvp_going_count` không đổi tổng | ✅ | ✅ |
-| AC-6 | Negative | Chưa đăng nhập | Bấm "Join" | Điều hướng tới màn đăng nhập (web `/login`, mobile modal auth); KHÔNG gọi endpoint RSVP | ✅ | ✅ |
-| AC-7 | Trust gate | User T1 (chỉ verify email), occurrence yêu cầu T2 | Bấm "Join" | `403 TRUST_LEVEL_REQUIRED`; UI giải thích "Verify your phone to join" + CTA verify | ✅ | ✅ |
-| AC-8 | Boundary | Occurrence bắt đầu sau 5 phút, hạn RSVP là 15 phút trước | Bấm "Join" | `409 RSVP_CLOSED`; nút hiển thị trạng thái disabled + lý do | ✅ | ✅ |
-| AC-9 | Error | Mất mạng giữa chừng | Bấm "Join" | Message có key `error.network.offline` (en: "You're offline — tap to retry"); có nút Try again; KHÔNG kẹt spinner vĩnh viễn; state không hiện "Going" giả | ✅ | ✅ |
-| AC-10 | Auth refresh | Access token hết hạn | Bấm "Join" | Client tự `POST /api/v1/auth/refresh` rồi retry; user không bị đá ra màn login | ✅ | ✅ |
-| AC-11 | Privacy | Viewer chưa RSVP, `location_precision = exact_after_rsvp` | `GET /api/v1/events/{id}` | Response trả toạ độ **đã làm mờ** + tên area; KHÔNG trả toạ độ chính xác (enforce ở API, không chỉ ẩn UI) | ✅ | ✅ |
-| AC-12 | Privacy | Viewer chưa RSVP | `GET /api/v1/events/{id}/rsvps` | `403` hoặc chỉ trả số đếm; không lộ danh sách tên/ảnh attendee | ✅ | ✅ |
-| AC-13 | Blocked | Organizer đã block viewer | Mở chi tiết sự kiện | Sự kiện không xuất hiện trong feed/search của viewer; truy cập trực tiếp → `404` | ✅ | ✅ |
-| AC-14 | i18n | Chuyển locale sang `vi` | Mở màn chi tiết | Mọi chuỗi chrome có bản dịch trong `vi.json`; KHÔNG hiện key thô; nội dung do organizer viết giữ nguyên `content_locale` | ✅ | ✅ |
-| AC-15 | Thời gian | Occurrence 20:00 giờ Đà Nẵng, thiết bị đặt múi giờ Berlin | Mở chi tiết | Hiển thị 20:00 kèm nhãn giờ Đà Nẵng (không đổi sang giờ thiết bị); bộ lọc "Tonight" vẫn chứa sự kiện này | ✅ | ✅ |
-| AC-16 | Notification | Đã RSVP, sự kiện bị organizer huỷ | Organizer huỷ occurrence | Attendee nhận thông báo huỷ; job nhắc lịch đã lên lịch **không** được gửi | ✅ | ✅ |
-| AC-17 | Parity | — | Cùng thao tác trên web và mobile | Cùng trạng thái cuối, cùng số đếm, cùng thông báo lỗi (khác biệt duy nhất chính đáng: push chỉ mobile) | ✅ | ✅ |
+| AC-ID | Loại | Given (tiền điều kiện) | When (hành động) | Then (kết quả quan sát được) | Web client | Web admin | Mobile |
+|---|---|---|---|---|---|---|---|
+| AC-1 | Happy | Đã đăng nhập (T2+), occurrence còn ≥1 chỗ | Bấm "Join" | Nút đổi sang "Going"; `POST /api/v1/events/{id}/rsvp` → `201 {status:"going", spotsLeft:n-1}`; `rsvp_going_count` tăng đúng 1 | ✅ | ➖ | ✅ |
+| AC-2 | Idempotent | Đã RSVP occurrence này | Gửi lại cùng request với cùng `Idempotency-Key` | `200 {status:"going"}`, KHÔNG tạo bản ghi thứ hai, đếm không đổi | ✅ | ➖ | ✅ |
+| AC-3 | Concurrency | Occurrence còn đúng 1 chỗ | 2 user gửi RSVP đồng thời | Đúng 1 request `201 going`; request kia `409 EVENT_FULL` kèm gợi ý vào waitlist | ✅ | ➖ | ✅ |
+| AC-4 | Waitlist | Occurrence đã đầy, user chọn vào hàng chờ | `POST .../rsvp?waitlist=true` | `201 {status:"waitlisted", position:k}`; UI hiển thị vị trí k | ✅ | ➖ | ✅ |
+| AC-5 | Promote | User A huỷ RSVP, B đứng đầu waitlist | A gọi `DELETE .../rsvp` | B chuyển `going` trong ≤60s; B nhận push đúng locale; `rsvp_going_count` không đổi tổng | ✅ | ➖ | ✅ |
+| AC-6 | Negative | Chưa đăng nhập | Bấm "Join" | Điều hướng tới màn đăng nhập (`apps/web-client-side` `/login`, mobile modal auth); KHÔNG gọi endpoint RSVP | ✅ | ➖ | ✅ |
+| AC-7 | Trust gate | User T1 (chỉ verify email), occurrence yêu cầu T2 | Bấm "Join" | `403 TRUST_LEVEL_REQUIRED`; UI giải thích "Verify your phone to join" + CTA verify | ✅ | ➖ | ✅ |
+| AC-8 | Boundary | Occurrence bắt đầu sau 5 phút, hạn RSVP là 15 phút trước | Bấm "Join" | `409 RSVP_CLOSED`; nút hiển thị trạng thái disabled + lý do | ✅ | ➖ | ✅ |
+| AC-9 | Error | Mất mạng giữa chừng | Bấm "Join" | Message có key `error.network.offline` (en: "You're offline — tap to retry"); có nút Try again; KHÔNG kẹt spinner vĩnh viễn; state không hiện "Going" giả | ✅ | ➖ | ✅ |
+| AC-10 | Auth refresh | Access token hết hạn | Bấm "Join" | Client tự `POST /api/v1/auth/refresh` rồi retry; user không bị đá ra màn login | ✅ | ➖ | ✅ |
+| AC-11 | Privacy | Viewer chưa RSVP, `location_precision = exact_after_rsvp` | `GET /api/v1/events/{id}` | Response trả toạ độ **đã làm mờ** + tên area; KHÔNG trả toạ độ chính xác (enforce ở API, không chỉ ẩn UI) | ✅ | ➖ | ✅ |
+| AC-12 | Privacy | Viewer chưa RSVP | `GET /api/v1/events/{id}/rsvps` | `403` hoặc chỉ trả số đếm; không lộ danh sách tên/ảnh attendee | ✅ | ➖ | ✅ |
+| AC-13 | Blocked | Organizer đã block viewer | Mở chi tiết sự kiện | Sự kiện không xuất hiện trong feed/search của viewer; truy cập trực tiếp → `404` | ✅ | ➖ | ✅ |
+| AC-14 | i18n | Chuyển locale sang `vi` | Mở màn chi tiết | Mọi chuỗi chrome có bản dịch trong `vi.json`; KHÔNG hiện key thô; nội dung do organizer viết giữ nguyên `content_locale` | ✅ | ➖ | ✅ |
+| AC-15 | Thời gian | Occurrence 20:00 giờ Đà Nẵng, thiết bị đặt múi giờ Berlin | Mở chi tiết | Hiển thị 20:00 kèm nhãn giờ Đà Nẵng (không đổi sang giờ thiết bị); bộ lọc "Tonight" vẫn chứa sự kiện này | ✅ | ➖ | ✅ |
+| AC-16 | Notification | Đã RSVP, sự kiện bị organizer huỷ | Organizer huỷ occurrence | Attendee nhận thông báo huỷ; job nhắc lịch đã lên lịch **không** được gửi | ✅ | ➖ | ✅ |
+| AC-17 | Parity | — | Cùng thao tác trên `apps/web-client-side` và mobile | Cùng trạng thái cuối, cùng số đếm, cùng thông báo lỗi (khác biệt duy nhất chính đáng: push chỉ mobile) | ✅ | ➖ | ✅ |
 ```
 
 ### Ví dụ đã điền — Tìm kiếm & lọc theo khu vực

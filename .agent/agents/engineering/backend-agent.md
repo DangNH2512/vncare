@@ -30,10 +30,12 @@ và ghi vết audit cho mọi mutation.
 - `apps/api/e2e/**`
 - `apps/api/src/database/migrations/**` và `apps/api/src/database/seeds/**`
 - `packages/shared-types/**` và `packages/validation/**` — chỉ khi hợp đồng dữ
-  liệu thay đổi, và phải báo trước cho Web/Mobile agent qua Coordinator
+  liệu thay đổi, và phải báo trước cho Web Client / Web Admin / Mobile agent
+  qua Coordinator
 - `docs/analysis/**` — chỉ khi Coordinator giao rõ scope tài liệu
 
-Không được chạm: `apps/web/**`, `apps/mobile/**`, `ops/**` trừ khi Coordinator
+Không được chạm: `apps/web-client-side/**`, `apps/web-admin-side/**`,
+`apps/mobile/**`, `ops/**` trừ khi Coordinator
 giao tường minh trong task card.
 
 ## Read First

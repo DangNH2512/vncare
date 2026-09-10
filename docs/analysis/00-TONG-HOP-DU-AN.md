@@ -287,8 +287,8 @@ MVP chỉ được coi là sẵn sàng khi **cả bảy** điều kiện đạt 
 flowchart TB
     subgraph clients["Lớp client"]
         MOB["Mobile · Expo 54 · RN 0.81<br/>iOS + Android"]
-        WEB["Web · Next.js 15 App Router · React 19<br/>SSR trang sự kiện công khai"]
-        ADM["Admin Curation Console<br/>route group trong Next.js"]
+        WEB["Web người dùng · apps/web-client-side<br/>Next.js 15 App Router · React 19<br/>SSR trang sự kiện công khai"]
+        ADM["Web vận hành · apps/web-admin-side<br/>Next.js App Router · console curate,<br/>kiểm duyệt, quản trị · noindex"]
     end
 
     subgraph edge["Lớp biên"]
@@ -382,7 +382,7 @@ flowchart TB
 | Theo dõi lỗi | Sentry | SDK 9.x | `beforeSend` scrub PII bắt buộc |
 | Monorepo | pnpm workspace + Turborepo | pnpm 10.x / turbo 2.x | **`node-linker=hoisted` bắt buộc** để Metro chạy được |
 
-**Monorepo:** `apps/api` (`@dnc/api`) · `apps/web` (`@dnc/web`) · `apps/mobile` (`@dnc/mobile`) · `packages/shared-types` · `packages/api-client` · `packages/i18n` · `packages/config` · `packages/ui` · `packages/validation` · `ops/` (runbook, hồ sơ pháp lý, migration script).
+**Monorepo:** `apps/api` (`@dnc/api`) · `apps/web-client-side` (`@dnc/web-client`) · `apps/web-admin-side` (`@dnc/web-admin`) · `apps/mobile` (`@dnc/mobile`) · `packages/config` · `packages/contracts` · `packages/domain` · `packages/geo` · `packages/i18n` · `packages/tokens` · `ops/` (runbook, hồ sơ pháp lý, migration script).
 
 ### 4.3 Ba quyết định kiến trúc lớn nhất
 

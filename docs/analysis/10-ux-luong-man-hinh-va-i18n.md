@@ -90,8 +90,8 @@ Bảng dưới là hợp đồng thiết kế: mỗi dòng phải kiểm chứng
 | Tiền tố | Nền tảng | Dải số | Ghi chú |
 |---|---|---|---|
 | `M-xx` | Mobile — Expo Router, `apps/mobile/app/**` | 01–79 | Màn hình gốc của trải nghiệm chính |
-| `W-xx` | Web — Next.js App Router, `apps/web/src/app/[locale]/**` | 01–79 | Ngang hàng chức năng với mobile, thêm các trang SEO |
-| `AD-xx` | Console vận hành — nhóm route `(admin)` trên web | 01–49 | Chỉ web, không có bản mobile |
+| `W-xx` | Web người dùng cuối — Next.js App Router, `apps/web-client-side/src/app/[locale]/**` | 01–79 | Ngang hàng chức năng với mobile, thêm các trang SEO |
+| `AD-xx` | Web vận hành — Next.js App Router, `apps/web-admin-side/src/app/**` | 01–49 | App riêng, không index, không có bản mobile |
 | `X-xx` | Màn hình hệ thống dùng chung | 01–19 | Lỗi, offline, bảo trì, deep link không hợp lệ |
 
 Nhóm chức năng theo dải số, áp dụng chung cho cả `M-` và `W-`:
@@ -166,9 +166,9 @@ graph TD
 
 ```mermaid
 graph TD
-    W00["Layout [locale]"] --> PUB["Nhóm route (public) — không cần đăng nhập"]
+    W00["apps/web-client-side — Layout [locale]"] --> PUB["Nhóm route (public) — không cần đăng nhập"]
     W00 --> APP["Nhóm route (app) — cần đăng nhập"]
-    W00 --> ADM["Nhóm route (admin) — theo role"]
+    A00["apps/web-admin-side — Layout (admin)"] --> ADM["Console vận hành — theo role"]
 
     PUB --> W10["W-10 /events — Discover"]
     PUB --> W13["W-13 /events/map"]
@@ -331,7 +331,7 @@ Cột **Tier** là bậc tin cậy tối thiểu để dùng đầy đủ màn h
 
 ## 5. Danh sách màn hình đầy đủ — web
 
-Web phục vụ hai mục tiêu tách bạch: **SEO công khai** (trang lịch tuần, trang khu vực, trang sự kiện) và **màn hình làm việc nặng** (tạo sự kiện, quản lý người tham dự, console).
+Toàn bộ màn hình `W-*` dưới đây nằm ở `apps/web-client-side`. App này phục vụ hai mục tiêu tách bạch: **SEO công khai** (trang lịch tuần, trang khu vực, trang sự kiện) và **màn hình làm việc nặng của người dùng cuối** (tạo sự kiện, quản lý người tham dự). Console vận hành đã tách sang `apps/web-admin-side` — xem mục 6.
 
 | Mã | Route | Tên | Nhóm route | Render | Tier | UC |
 |---|---|---|---|---|---|---|
@@ -374,12 +374,14 @@ Web phục vụ hai mục tiêu tách bạch: **SEO công khai** (trang lịch t
 | QR check-in | Có (`M-43`) | Không | Cần camera, thao tác đứng tại chỗ |
 | Landing SEO theo khu vực | Không | Có (`W-15`, `W-16`, `W-17`) | Kênh CH-14 trong `07-go-to-market-da-nang.md` |
 | Xuất CSV danh sách người tham dự | Không | Có (`W-42`) | Thao tác bàn phím, tệp tải về |
-| Console vận hành | Không | Có (`AD-*`) | Không tối ưu cho màn hình nhỏ |
+| Console vận hành | Không | Không — nằm ở app riêng `apps/web-admin-side` (`AD-*`) | Không tối ưu cho màn hình nhỏ |
 | Wizard tạo sự kiện | 4 bước dọc, tự lưu | 4 bước có preview cạnh bên | Web có chỗ hiển thị song song |
 
 ---
 
 ## 6. Danh sách màn hình đầy đủ — console vận hành
+
+Toàn bộ màn hình `AD-*` nằm ở `apps/web-admin-side` (`@dnc/web-admin`) — app web riêng cho đội vận hành, không index (`robots: noindex`), ưu tiên bố cục desktop và thao tác hàng loạt.
 
 | Mã | Route | Tên | Actor | UC |
 |---|---|---|---|---|
@@ -1561,7 +1563,7 @@ Màu được định nghĩa dạng token ngữ nghĩa. Giá trị hex chỉ t�
 | I-2 | **Ngôn ngữ nguồn của mọi khoá là tiếng Anh** | `en.json` là bản gốc; `vi.json` là bản dịch. Không bao giờ viết chuỗi gốc bằng tiếng Việt rồi dịch ngược. |
 | I-3 | **`packages/i18n` là nguồn duy nhất** | Web, mobile và template thông báo phía backend đều đọc cùng bộ file. Không có bản sao chuỗi ở nơi khác. |
 | I-4 | **Định dạng thông điệp là ICU MessageFormat** | Web dùng `next-intl` (ICU sẵn có); mobile dùng `i18next` + `i18next-icu` để cùng cú pháp. |
-| I-5 | **Không hardcode chuỗi** | ESLint rule `i18next/no-literal-string` bật ở `apps/web` và `apps/mobile`, mức `error`. |
+| I-5 | **Không hardcode chuỗi** | ESLint rule `i18next/no-literal-string` bật ở cả `apps/web-client-side` lẫn `apps/web-admin-side` và `apps/mobile`, mức `error`. |
 | I-6 | **Chỉ 2 locale ở giai đoạn 1** | `en`, `vi`. Cấu trúc chừa chỗ cho `ko`, `ja` ở giai đoạn sau nhưng không dịch trước. |
 | I-7 | **Ngôn ngữ giao diện tách rời ngôn ngữ nội dung** | UI tiếng Anh vẫn hiển thị mô tả sự kiện do organizer viết bằng tiếng Việt, kèm nhãn `Written in Vietnamese` và nút dịch ở giai đoạn sau. |
 

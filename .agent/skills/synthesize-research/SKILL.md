@@ -21,7 +21,8 @@ Synthesize user research from multiple sources into structured insights and reco
 - **Chia nhóm theo tác nhân:** host vs người tham dự vs moderator vs đối tác địa
   phương (quán cà phê, phòng gym, trung tâm ngôn ngữ). Cùng một lời than phiền
   mang ý nghĩa khác nhau theo từng nhóm, và chúng chảy về những phần khác nhau của
-  sản phẩm (`apps/web`, `apps/mobile`, bảng kiểm duyệt).
+  sản phẩm (`apps/web-client-side`, `apps/mobile`, và bảng kiểm duyệt ở
+  `apps/web-admin-side`).
 - **Chia nhóm theo thâm niên ở Đà Nẵng:** người mới tới dưới 3 tháng, người ở dài
   hạn, khách ngắn ngày. Nhu cầu kết nối của ba nhóm này lệch nhau rất xa.
 - **Chia nhóm theo khu vực:** An Thượng / Mỹ Khê hành xử khác Hải Châu. Nếu một

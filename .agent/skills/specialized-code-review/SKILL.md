@@ -19,7 +19,8 @@ allowed-tools: Read, Bash
 >   https://github.com/bmad-code-org/bmad-method (MIT License)
 
 **Ngữ cảnh:** Da Nang Connect — `apps/api` (NestJS + TypeORM + PostgreSQL/PostGIS +
-Redis/BullMQ + socket.io), `apps/web` (Next.js App Router), `apps/mobile` (Expo).
+Redis/BullMQ + socket.io), `apps/web-client-side` (Next.js App Router, web người dùng
+cuối), `apps/web-admin-side` (Next.js App Router, console vận hành), `apps/mobile` (Expo).
 Miền nghiệp vụ: sự kiện, RSVP & hàng đợi chờ, tìm kiếm theo khu vực/bán kính, hồ sơ
 có `trust_level`, kiểm duyệt UGC, push notification.
 
@@ -114,7 +115,7 @@ Làm cho trạng thái bất hợp lệ không biểu diễn được.
 
 ### Lens 3 — Test Coverage Analyzer
 
-- [ ] Endpoint mới → có spec e2e (`apps/api/e2e/**`; `apps/web/e2e/**` cho Playwright).
+- [ ] Endpoint mới → có spec e2e (`apps/api/e2e/**`; `apps/web-client-side/e2e/**` hoặc `apps/web-admin-side/e2e/**` cho Playwright).
 - [ ] Test khẳng định hành vi + đường không-vui, không chỉ "render được".
 - [ ] Edge case đã phủ: danh sách rỗng, biên múi giờ, biên bán kính PostGIS,
       RSVP đồng thời ở chỗ cuối, bị từ chối quyền, thao tác lên tài nguyên người khác.

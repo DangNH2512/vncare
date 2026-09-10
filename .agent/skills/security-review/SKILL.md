@@ -10,7 +10,8 @@ description: Checklist bảo mật tại thời điểm code review cho Da Nang 
 > rà chủ động thì chạy [`autonomous-security-scan`](../autonomous-security-scan/SKILL.md).
 
 **Ngữ cảnh:** `apps/api` (NestJS + TypeORM + PostgreSQL/PostGIS + Redis/BullMQ),
-`apps/web` (Next.js), `apps/mobile` (Expo). Người dùng là expat tại Đà Nẵng, dữ liệu
+`apps/web-client-side` (Next.js, web người dùng cuối), `apps/web-admin-side` (Next.js,
+console vận hành), `apps/mobile` (Expo). Người dùng là expat tại Đà Nẵng, dữ liệu
 xử lý gồm hồ sơ cá nhân, vị trí và nội dung do người dùng tạo — đều là **dữ liệu nhạy
 cảm**, áp nguyên tắc thu tối thiểu và lộ tối thiểu.
 
@@ -42,7 +43,11 @@ if (!apiKey) throw new Error('SOME_API_KEY is not configured');
 - [ ] Credentials ký app (iOS/Android) và secret build nằm trên EAS hoặc trong env
       của CI, không nằm trong repo.
 - [ ] Chỉ biến an toàn để công khai mới được đặt tiền tố `EXPO_PUBLIC_*` /
-      `NEXT_PUBLIC_*` — mọi thứ có tiền tố này đều nằm trong bundle client.
+      `NEXT_PUBLIC_*` — mọi thứ có tiền tố này đều nằm trong bundle client. Biến
+      `NEXT_PUBLIC_*` của `apps/web-client-side` lộ ra trình duyệt người dùng cuối;
+      `CSRF_SECRET` của phiên người dùng cuối cũng thuộc app này và **không** được
+      đặt tiền tố public. `apps/web-admin-side` có bộ env riêng, không dùng chung
+      secret với app client.
 
 ## 2. Validate input (NestJS)
 
@@ -155,7 +160,7 @@ grep -rn "ST_DWithin\|ST_MakePoint\|ST_Contains" apps/api/src --include="*.ts"
 grep -rn "return .*Repository.find\|return entity" apps/api/src --include="*.ts"
 
 # Render HTML thô từ nội dung người dùng (phải trả về 0)
-grep -rn "dangerouslySetInnerHTML" apps/web/src apps/mobile/src
+grep -rn "dangerouslySetInnerHTML" apps/web-client-side/src apps/web-admin-side/src apps/mobile/src
 
 # Token lưu sai chỗ trên mobile (phải trả về 0)
 grep -rn "AsyncStorage" apps/mobile/src | grep -i "token\|secret"

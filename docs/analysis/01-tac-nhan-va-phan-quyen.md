@@ -1954,7 +1954,7 @@ it('moi route co metadata phan quyen deu co dong trong PERMISSION_MATRIX', () =>
 #### 13.8.5 Test phân quyền ở tầng web & mobile
 
 Frontend **không** được tự suy luận quyền bằng cách so sánh chuỗi role rải rác trong component. Một hàm duy
-nhất ở `packages/shared-types` trả lời, và cả `apps/web` lẫn `apps/mobile` cùng dùng:
+nhất ở `packages/shared-types` trả lời, và cả `apps/web-client-side`, `apps/web-admin-side` lẫn `apps/mobile` cùng dùng:
 
 ```ts
 // packages/shared-types/src/authz/can.ts

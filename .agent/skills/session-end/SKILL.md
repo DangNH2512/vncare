@@ -22,8 +22,8 @@ description: Checklist kết phiên tự động — chạy vào cuối mỗi ph
 
 ### 2. Trạng thái mã nguồn
 ```
-□ npm run typecheck --workspaces → 0 lỗi trên apps/api, apps/web,
-  apps/mobile, packages/shared-types
+□ npm run typecheck --workspaces → 0 lỗi trên apps/api, apps/web-client-side,
+  apps/web-admin-side, apps/mobile, packages/shared-types
 □ Không còn code debug tạm (console.log, debugger, comment TODO)
 □ Không còn dữ liệu test hay ID giả trong code chạy thật
 □ Không lỡ tay commit secret nào (.env, *.p8, keystore, service-account JSON)
@@ -41,7 +41,7 @@ description: Checklist kết phiên tự động — chạy vào cuối mỗi ph
 □ Có REST endpoint mới → cập nhật docs/analysis/04-tech-stack-va-kien-truc.md
 □ Có module/entity/migration mới → cập nhật docs/analysis/04-tech-stack-va-kien-truc.md
 □ Có DTO/enum dùng chung mới → export ở packages/shared-types và ghi tài liệu
-□ Có hook/component mới (apps/web hoặc apps/mobile) → cập nhật docs/analysis/10-ux-luong-man-hinh-va-i18n.md
+□ Có hook/component mới (apps/web-client-side, apps/web-admin-side hoặc apps/mobile) → cập nhật docs/analysis/10-ux-luong-man-hinh-va-i18n.md
 □ Có lệnh/fixture E2E mới → cập nhật .agent/rules/test-file-placement.md
 ```
 
@@ -65,7 +65,7 @@ Cập nhật `.agent/memory/ACTIVE_TASKS.md`:
       "id": "task-1",
       "title": "Task description",
       "status": "in_progress",
-      "filesModified": ["apps/api/src/events/events.service.ts", "apps/web/src/app/events/page.tsx"],
+      "filesModified": ["apps/api/src/events/events.service.ts", "apps/web-client-side/src/app/events/page.tsx"],
       "nextStep": "What to do when resuming"
     }
   ]
