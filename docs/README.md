@@ -24,6 +24,7 @@ Bắt đầu từ [bản tổng hợp](analysis/00-TONG-HOP-DU-AN.md).
 - [`source/`](source/) — tài liệu gốc nhận từ chủ dự án.
 - [`guides/`](guides/) — hướng dẫn xuất PDF cho chủ dự án, sinh bằng skill `owner-guide-pdf`.
 - [`mockups/`](mockups/) — mockup và wireframe.
+- [`checklists/`](checklists/) — checklist triển khai theo milestone M0 → M6: bản Excel sửa được (mỗi phase một sheet, trang Tổng quan tự tính tiến độ), bản PDF tổng và PDF riêng từng phase trong `theo-phase/`.
 
 ## Quy ước làm việc
 
