@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Da Nang Connect — Auth &amp; Onboarding Mockup (Web)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Tokens mirror packages/tokens (colors) — code drives Tailwind utilities from the same values.
+   Doc 10 §12 defines teal #0E7C74 + Inter, but apps/web-client-side actually ships this sky-blue
+   palette + Be Vietnam Pro (see event-feed-web-mockup.html). This mockup follows the CODE tokens,
+   not the doc — a drift the BA/Tech Lead should reconcile in doc 10. */
+:root{
+  --brand:#0EA5E9; --brand-dark:#0369A1; --sun:#F59E0B;
+  --surface:#FFFFFF; --bg:#F8FAFC; --text:#0F172A; --text-sec:#475569; --text-mut:#64748B; --line:#E2E8F0; --line-strong:#CBD5E1; --sunken:#F1F5F9;
+  --success:#16A34A; --warning:#D97706; --danger:#DC2626; --danger-text:#9C1C14;
+  --accent-subtle:#E7F5FD; --success-subtle:#E8F6EE; --warning-subtle:#FBF1E0; --danger-subtle:#FCEAEA; --sun-subtle:#FDF3E1;
+  --r-sm:6px; --r-md:10px; --r-lg:16px;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px -16px rgba(15,23,42,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Be Vietnam Pro',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;overflow-x:clip}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+a{color:inherit}
+h1,h2,h3{line-height:1.25}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+input:focus-visible{outline-offset:1px}
+/* Guard against author display:flex/block rules beating the UA [hidden] rule
+   at equal specificity (both 0,1,0) — author origin wins ties over UA origin,
+   so any element styled with an explicit `display` needs this to actually hide. */
+[hidden]{display:none !important}
+
+/* ---------- Banner + toolbar (mockup chrome, not app UI) ---------- */
+.mk-banner{position:sticky;top:0;z-index:90;background:var(--text);color:#fff;font-size:12px;padding:6px 14px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
+.mk-banner strong{color:#FCD34D}
+
+/* File switcher between the 4 web mockups (shared markup — see web-shell-base.html) */
+.mk-files{display:flex;gap:4px;align-items:center;background:#1E293B;padding:6px 12px;overflow-x:auto}
+.mk-files a{flex:0 0 auto;color:#CBD5E1;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;white-space:nowrap}
+.mk-files a:hover{background:#334155;color:#fff}
+.mk-files a.on{background:#fff;color:var(--text)}
+.mk-files .lbl{color:#94A3B8;font-size:11px;font-weight:700;margin-right:6px;flex:0 0 auto}
+
+.mk-toolbar{position:sticky;top:29px;z-index:85;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:8px 12px}
+.mk-scrchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;flex:1;min-width:0;padding-bottom:2px}
+.mk-scrchip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-md);padding:5px 10px;font-size:11.5px;font-weight:600;color:var(--text-sec);min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;line-height:1.3}
+.mk-scrchip b{font-size:9.5px;font-weight:800;letter-spacing:.03em;color:var(--brand-dark);text-transform:uppercase}
+.mk-scrchip.on{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.mk-scrchip.on b{color:#BAE6FD}
+.mk-toolright{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.seg-lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:0 0 auto}
+.seg-lang button{padding:8px 12px;font-size:12px;font-weight:700;color:var(--text-sec);min-height:36px}
+.seg-lang button.on{background:var(--brand-dark);color:#fff}
+.mk-notesbtn{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--brand-dark);min-height:36px;white-space:nowrap}
+.mk-notesbtn:hover{background:var(--accent-subtle)}
+
+/* ---------- Stage / screens ---------- */
+.mk-stage{min-height:calc(100vh - 90px);padding:32px 16px 64px;display:flex;align-items:flex-start;justify-content:center}
+.scr{display:none;width:100%}
+.scr.show{display:flex;justify-content:center}
+
+/* ---------- Shared: buttons ---------- */
+.mk-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;border-radius:999px;padding:11px 20px;font-weight:700;font-size:14.5px;width:100%}
+.mk-btn-primary{background:var(--brand-dark);color:#fff}
+.mk-btn-primary:hover{background:#02537f}
+.mk-btn-primary:disabled{background:var(--line);color:var(--text-sec);cursor:not-allowed}
+.mk-btn-outline{border:1px solid var(--line);color:var(--text)}
+.mk-btn-outline:hover{background:var(--bg)}
+.mk-btn-ghost{color:var(--brand-dark);font-weight:700;min-height:44px;padding:8px 6px;width:auto}
+.mk-btn-ghost:hover{text-decoration:underline}
+.mk-btn-sm{width:auto;min-height:36px;padding:6px 14px;font-size:13px}
+.mk-btn-social{width:100%;border:1px solid var(--line);border-radius:999px;padding:11px 16px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;min-height:48px;font-size:14px;position:relative}
+.mk-btn-apple{background:#111318;color:#fff;border-color:#111318}
+.mk-btn-apple:hover{background:#000}
+.mk-btn-google{background:#fff;color:var(--text)}
+.mk-btn-google:hover{background:var(--bg)}
+.mk-btn-fb{opacity:.55;cursor:not-allowed}
+.mk-soontag{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:9.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;background:var(--line);color:var(--text-sec);padding:3px 8px;border-radius:999px}
+.mk-mockonly{display:inline-block;margin-top:14px;font-size:12px;color:var(--text-sec);border:1px dashed var(--line);border-radius:var(--r-md);padding:8px 12px;text-align:left}
+.mk-mockonly b{color:var(--brand-dark);font-weight:800}
+
+.mk-divider{display:flex;align-items:center;gap:10px;color:var(--text-sec);font-size:12px;margin:6px 0}
+.mk-divider:before,.mk-divider:after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* ---------- Shared: card container ---------- */
+.mk-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:30px 26px;width:100%;max-width:420px}
+.mk-card.wide{max-width:720px;padding:32px 40px}
+.mk-brand{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:17px;margin-bottom:18px}
+.mk-brand .dot{width:9px;height:9px;border-radius:50%;background:var(--brand)}
+.mk-h1{font-size:20px;font-weight:800;text-align:center}
+.mk-sub{font-size:13.5px;color:var(--text-sec);text-align:center;margin-top:4px;margin-bottom:20px}
+.mk-icon-hero{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px}
+.mk-icon-hero.ok{background:var(--success-subtle)}
+.mk-icon-hero.warn{background:var(--warning-subtle)}
+.mk-icon-hero.info{background:var(--accent-subtle)}
+.mk-icon-hero.danger{background:var(--danger-subtle)}
+
+/* ---------- Shared: form fields ---------- */
+.mk-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.mk-field label{font-size:12.5px;font-weight:700;color:var(--text-sec)}
+.mk-field input{border:1px solid var(--line);border-radius:var(--r-md);padding:11px 14px;font:inherit;min-height:46px;color:var(--text);width:100%}
+.mk-hint{font-size:11.5px;color:var(--text-sec)}
+.mk-err-text{font-size:11.5px;color:var(--danger);font-weight:600}
+.mk-field.has-err input{border-color:var(--danger)}
+
+.mk-check{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--text-sec);min-height:44px;padding:4px 0}
+.mk-check input{margin-top:2px;width:18px;height:18px;flex:0 0 auto}
+.mk-check a{color:var(--brand-dark);font-weight:700;text-decoration:underline}
+
+.mk-pwmeter{height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:8px}
+.mk-pwmeter i{display:block;height:100%;border-radius:999px;width:0%;background:var(--danger);transition:.2s}
+.mk-pwconds{display:flex;flex-direction:column;gap:4px;margin-top:8px;margin-bottom:6px;font-size:12px}
+.mk-pwconds li{display:flex;align-items:center;gap:7px;color:var(--text-sec)}
+.mk-pwconds li .mark{width:14px;flex:0 0 auto;font-weight:800;color:var(--danger)}
+.mk-pwconds li.ok{color:var(--success)}
+.mk-pwconds li.ok .mark{color:var(--success)}
+
+/* ---------- Shared: alerts ---------- */
+.mk-alert{border-radius:var(--r-md);padding:11px 14px;font-size:13px;display:flex;gap:9px;align-items:flex-start;margin-bottom:14px;font-weight:600}
+.mk-alert.danger{background:var(--danger-subtle);color:#9c1c14}
+.mk-alert.warn{background:var(--warning-subtle);color:#8a5a09}
+.mk-alert.info{background:var(--accent-subtle);color:var(--brand-dark)}
+.mk-alert .ico{flex:0 0 auto}
+
+/* ---------- OTP ---------- */
+.mk-otprow{display:flex;gap:8px;justify-content:center;margin:18px 0 8px}
+.mk-otprow input{width:44px;height:52px;text-align:center;font-size:20px;font-weight:800;border:1px solid var(--line);border-radius:var(--r-md);color:var(--text)}
+.mk-otprow input.err{border-color:var(--danger);background:var(--danger-subtle)}
+.mk-otprow input:disabled{background:var(--bg);color:var(--text-sec)}
+
+/* ---------- Stepper (onboarding) ---------- */
+.mk-stepper{display:flex;gap:8px;margin-bottom:18px}
+.mk-stepper i{flex:1;height:5px;border-radius:999px;background:var(--line)}
+.mk-stepper i.done,.mk-stepper i.active{background:var(--brand-dark)}
+.mk-steplabel{font-size:11.5px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+
+/* ---------- Chips (areas / interests) ---------- */
+.mk-chipgrid{display:flex;flex-wrap:wrap;gap:10px}
+.mk-chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 16px;font-size:13.5px;font-weight:600;color:var(--text-sec);min-height:44px;display:inline-flex;align-items:center;gap:6px}
+.mk-chip.on{background:var(--brand-dark);color:#fff;border-color:var(--brand-dark)}
+.mk-chip.secOn{background:var(--accent-subtle);color:var(--brand-dark);border-color:var(--brand-dark)}
+.mk-chip:disabled{opacity:.4;cursor:not-allowed}
+.mk-chip small{font-weight:500;opacity:.8}
+.mk-sectionlabel{font-size:12px;font-weight:700;color:var(--text-sec);margin:16px 0 8px}
+.mk-sectionlabel:first-child{margin-top:0}
+
+/* ---------- Languages step ---------- */
+.mk-langrow{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:var(--r-md);padding:10px 14px;margin-bottom:10px;flex-wrap:wrap}
+.mk-langname{font-weight:700;font-size:14px;min-width:0}
+.mk-proflevels{display:flex;gap:6px;flex-wrap:wrap}
+.mk-proflevels button{font-size:11.5px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);color:var(--text-sec);min-height:32px}
+.mk-proflevels button.on{background:var(--brand-dark);color:#fff;border-color:var(--brand-dark)}
+
+.mk-onbnav{display:flex;align-items:center;gap:12px;margin-top:22px}
+.mk-onbnav .mk-btn-primary{width:auto;flex:1}
+.mk-tzcheck{position: relative;}
+
+/* ---------- Gate: mini event card + dialog ---------- */
+.mk-gatewrap{width:100%;max-width:640px;position:relative}
+.mk-mini-ev{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
+.mk-mini-hero{aspect-ratio:16/7;background:linear-gradient(135deg,#BAE6FD,#0EA5E9 75%);display:flex;align-items:center;justify-content:center;font-size:54px}
+.mk-mini-body{padding:18px 20px}
+.mk-mini-title{font-size:19px;font-weight:800;margin-bottom:8px}
+.mk-fact-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.mk-fact{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600;color:var(--text-sec)}
+.mk-hostrow{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.mk-av{width:36px;height:36px;border-radius:50%;background:#0369A1;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:0 0 auto}
+/* Trust badge — doc 05 §5.3 canonical T0-T5 ladder, same class/colors as the shared shell */
+.tb{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700;white-space:nowrap;line-height:1.5}
+.tb:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8}
+.tb.t0{background:var(--sunken);color:var(--text-sec)}
+.tb.t1{background:var(--accent-subtle);color:var(--brand-dark)}
+.tb.t2{background:#D3EBFA;color:#075985}
+.tb.t3{background:var(--brand-dark);color:#fff}
+.tb.t4{background:#E0E7FF;color:#3730A3}
+.tb.t5{background:var(--sun-subtle);color:#92400E;box-shadow:inset 0 0 0 1px var(--sun)}
+.tb.limited{background:var(--danger-subtle);color:var(--danger-text)}
+.mk-reportbtn{margin-left:auto;color:var(--text-sec);font-size:12.5px;font-weight:700;min-height:44px;padding:0 8px}
+.mk-reportbtn:hover{color:var(--danger)}
+.mk-gate-actions{display:flex;gap:10px}
+
+.mk-scrim{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:60}
+.mk-scrim[hidden]{display:none}
+.mk-dialog{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow);max-width:380px;width:100%;padding:28px 24px;text-align:center}
+.mk-dialog p{color:var(--text-sec);font-size:13.5px;margin-bottom:18px}
+
+/* ---------- Aha result grid ---------- */
+.mk-ahawrap{width:100%;max-width:1040px}
+.mk-ahahead{margin-bottom:18px}
+.mk-ahahead h1{font-size:22px;font-weight:800}
+.mk-ahahead p{color:var(--text-sec);font-size:13.5px;margin-top:4px}
+.mk-evgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px}
+.mk-ev{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.mk-ev-hero{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative}
+.mk-ev-heart{position:absolute;top:8px;right:8px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-sec)}
+.mk-ev-heart.on{color:#e11d48}
+.mk-ev-going{position:absolute;left:8px;bottom:8px;background:var(--success);color:#fff;font-size:11px;font-weight:800;border-radius:999px;padding:3px 10px}
+.mk-ev-body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.mk-ev-title{font-size:15px;font-weight:800}
+.mk-ev-facts{display:flex;flex-wrap:wrap;gap:6px}
+.mk-ev-host{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+.mk-ev-host .mk-av{width:26px;height:26px;font-size:10.5px}
+.mk-ev-hostname{font-size:12.5px;font-weight:700;flex:1;min-width:0}
+.mk-ev-more{color:var(--text-sec);min-height:36px;min-width:36px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.mk-ev-more:hover{background:var(--bg)}
+.mk-ev-cta{display:flex;gap:8px;padding:0 16px 14px}
+.mk-ev-cta .mk-btn{min-height:38px;font-size:13px}
+
+.mk-remindband{background:var(--accent-subtle);border-radius:var(--r-lg);padding:18px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.mk-qr{width:64px;height:64px;flex:0 0 auto;border-radius:8px;background:
+  repeating-conic-gradient(#0F172A 0% 25%, #fff 0% 50%) 0 0/12px 12px;
+  border:6px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.mk-remindtext{flex:1;min-width:180px}
+.mk-remindtext h3{font-size:14.5px;font-weight:800;margin-bottom:2px}
+.mk-remindtext p{font-size:12.5px;color:var(--text-sec)}
+.mk-storepills{display:flex;gap:8px}
+.mk-storepill{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:11.5px;font-weight:700;background:var(--surface)}
+
+/* ---------- Notes drawer (right side) ---------- */
+.mk-notes{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:95;display:none}
+.mk-notes.show{display:block}
+.mk-notes-panel{position:absolute;top:0;right:0;height:100%;width:min(440px,92vw);background:var(--surface);box-shadow:var(--shadow);padding:22px;overflow:auto}
+.mk-notes-panel h2{font-size:16px;margin-bottom:4px}
+.mk-notes-panel .tag{display:inline-block;background:var(--accent-subtle);color:var(--brand-dark);font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;margin-bottom:14px}
+.mk-notes-panel h4{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-sec);margin:16px 0 6px}
+.mk-notes-panel p{font-size:13px;color:var(--text-sec);margin:6px 0}
+.mk-notes-panel ul{padding-left:18px;margin:6px 0;font-size:13px;color:var(--text-sec)}
+.mk-notes-panel li{margin-bottom:4px}
+.mk-notes-panel code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:11.5px}
+.mk-notes-panel .drift{background:var(--warning-subtle);border-radius:var(--r-md);padding:10px 12px;font-size:12.5px;color:#8a5a09;margin-top:8px}
+.mk-notes-close{position:absolute;top:16px;right:16px;min-height:36px;min-width:36px;border-radius:50%;color:var(--text-sec)}
+.mk-notes-close:hover{background:var(--bg)}
+
+/* ---------- Toast ---------- */
+.mk-toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:26px;background:var(--text);color:#fff;font-size:13px;font-weight:600;border-radius:999px;padding:10px 18px;opacity:0;transition:.25s;z-index:97;pointer-events:none;max-width:90vw;text-align:center}
+.mk-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:480px){
+  .mk-card{padding:24px 18px}
+  .mk-card.wide{padding:24px 18px}
+  .mk-otprow input{width:38px;height:46px;font-size:17px}
+  .mk-evgrid{grid-template-columns:1fr}
+}
+/* Doc 10 §12.3: never fully uppercase Vietnamese with diacritics — stacked marks collide on some devices. */
+html[lang="vi"] *{text-transform:none !important}
+</style>
+</head>
+<body>
+
+<div class="mk-banner">
+  <span><strong>MOCKUP TĨNH</strong> · chưa nối API · giờ hiển thị theo Asia/Ho_Chi_Minh (dữ liệu thật lưu UTC) · hôm nay giả lập: Thứ Sáu 18/09/2026</span>
+</div>
+<nav class="mk-files" aria-label="Mockup files" data-aria="aria.mockFiles">
+  <span class="lbl">Bộ mockup web:</span>
+  <a href="auth-onboarding-web-mockup.html" data-file="auth" class="on">① Auth &amp; onboarding</a>
+  <a href="web-discover-mockup.html" data-file="discover">② Feed &amp; Discover</a>
+  <a href="web-event-mockup.html" data-file="event">③ Event &amp; Create</a>
+  <a href="web-myspace-mockup.html" data-file="myspace">④ My space &amp; Profile</a>
+  <a href="web-swipe-mockup.html" data-file="swipe">⑤ Swipe (Tinder-style)</a>
+</nav>
+
+<div class="mk-toolbar">
+  <div class="mk-scrchips" id="scrchips"><!-- built by JS from SCREENS --></div>
+  <div class="mk-toolright">
+    <div class="seg-lang" role="group" aria-label="Language" data-aria="aria.language">
+      <button id="lang-en" class="on" onclick="setLang('en')">EN</button>
+      <button id="lang-vi" onclick="setLang('vi')">VI</button>
+    </div>
+    <button class="mk-notesbtn" onclick="openNotes()">📝 <span data-i="mk.notes">Notes</span></button>
+  </div>
+</div>
+
+<main class="mk-stage" id="stage">
+
+  <!-- ================= GATE (W-20 event detail + auth gate dialog) ================= -->
+  <section class="scr" id="scr-gate">
+    <div class="mk-gatewrap">
+      <article class="mk-mini-ev">
+        <div class="mk-mini-hero">🏐</div>
+        <div class="mk-mini-body">
+          <h1 class="mk-mini-title">Sunset Beach Volleyball</h1>
+          <div class="mk-fact-row">
+            <span class="mk-fact">📍 <span data-i="gate.area">My Khe Beach</span></span>
+            <span class="mk-fact">🕒 <span data-i="gate.when">Sat 19 Sep · 17:00</span></span>
+            <span class="mk-fact"><span data-i="gate.seats">7 of 20 spots left</span></span>
+            <span class="mk-fact" data-i="price.free">Free</span>
+          </div>
+          <div class="mk-hostrow">
+            <div class="mk-av">TR</div>
+            <div style="min-width:0">
+              <div style="font-weight:700;font-size:13.5px">Tom R.</div>
+              <span class="tb t3" data-i="trust.t3">Active member</span>
+            </div>
+            <button class="mk-reportbtn" onclick="toast(t('toast.report'))" aria-label="Report this event" data-aria="aria.reportEvent">⚑ <span data-i="btn.report">Report</span></button>
+          </div>
+          <p style="font-size:13.5px;color:var(--text-sec);margin-bottom:16px" data-i="gate.desc">Beach volleyball on the sand at Mỹ Khê. All levels welcome — bring water and sun cream.</p>
+          <div class="mk-gate-actions">
+            <button class="mk-btn mk-btn-primary" style="width:auto;flex:1" onclick="openGateDialog()" data-i="gate.join">Join</button>
+            <button class="mk-btn mk-btn-outline" style="width:auto" onclick="toggleSaveGate(this)" aria-pressed="false"><span class="heart">♡</span> <span data-i="btn.save">Save</span></button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="mk-scrim" id="gate-dialog" role="dialog" aria-modal="true" aria-labelledby="gate-dialog-title">
+      <div class="mk-dialog">
+        <div class="mk-icon-hero info">🔐</div>
+        <h2 id="gate-dialog-title" class="mk-h1" data-i="gate.title">Sign in to join this event</h2>
+        <p data-i="gate.body">You can browse everything without an account. Joining, saving and commenting need one — 7 spots left.</p>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="mk-btn-social mk-btn-apple" onclick="toast(t('toast.apple'))"><span></span> <span data-i="gate.apple"> Continue with Apple</span></button>
+          <button class="mk-btn-social mk-btn-google" onclick="go('social-link')"><span>G</span> <span data-i="gate.google"> Continue with Google</span></button>
+          <button class="mk-btn-social mk-btn-fb" aria-disabled="true" onclick="toast(t('toast.fbSoon'))"><span>f</span> <span data-i="gate.fb"> Continue with Facebook</span><span class="mk-soontag" data-i="tag.sprint2">Sprint 2</span></button>
+          <div class="mk-divider" data-i="gate.or">or</div>
+          <button class="mk-btn mk-btn-outline" onclick="go('signup')" data-i="gate.email">Continue with email</button>
+          <button class="mk-btn-ghost" style="width:100%;justify-content:center" onclick="closeGateDialog()" data-i="gate.notnow">Not now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SIGN UP / SIGN IN (W-01) ================= -->
+  <section class="scr" id="scr-signup">
+    <div class="mk-card">
+      <div class="mk-brand"><span class="dot"></span> <span data-i="mk.appName">Da Nang Connect</span></div>
+      <h1 class="mk-h1" data-i="signup.title">Join the community</h1>
+      <p class="mk-sub" data-i="signup.body">Free, and takes about a minute.</p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+        <button class="mk-btn-social mk-btn-apple" onclick="toast(t('toast.apple'))"><span></span> <span data-i="gate.apple"> Continue with Apple</span></button>
+        <button class="mk-btn-social mk-btn-google" onclick="go('social-link')"><span>G</span> <span data-i="gate.google"> Continue with Google</span></button>
+        <button class="mk-btn-social mk-btn-fb" aria-disabled="true" onclick="toast(t('toast.fbSoon'))"><span>f</span> <span data-i="gate.fb"> Continue with Facebook</span><span class="mk-soontag" data-i="tag.sprint2">Sprint 2</span></button>
+      </div>
+      <div class="mk-divider" data-i="gate.or">or</div>
+
+      <form onsubmit="event.preventDefault(); submitSignup();">
+        <div class="mk-field">
+          <label for="su-name" data-i="auth.field.displayName">Your name</label>
+          <input id="su-name" autocomplete="name" maxlength="40" oninput="validateSignup()">
+        </div>
+        <div class="mk-field">
+          <label for="su-email" data-i="auth.field.email">Email</label>
+          <input id="su-email" type="email" autocomplete="email" maxlength="254" oninput="validateSignup()">
+        </div>
+        <div class="mk-field">
+          <label for="su-pass" data-i="auth.field.password">Password</label>
+          <input id="su-pass" type="password" autocomplete="new-password" maxlength="200" oninput="validateSignup()">
+          <div class="mk-pwmeter"><i id="su-pwbar"></i></div>
+          <ul class="mk-pwconds" id="su-pwconds">
+            <li data-c="len"><span class="mark">✕</span><span data-i="pw.len">At least 10 characters</span></li>
+            <li data-c="letter"><span class="mark">✕</span><span data-i="pw.letter">Contains a letter</span></li>
+            <li data-c="number"><span class="mark">✕</span><span data-i="pw.number">Contains a number</span></li>
+            <li data-c="common"><span class="mark">✕</span><span data-i="pw.common">Not a common password</span></li>
+          </ul>
+        </div>
+
+        <label class="mk-check"><input type="checkbox" id="su-terms" onchange="validateSignup()"><span data-i="consent.terms">I agree to the Terms of Service and the Privacy Policy.</span></label>
+        <label class="mk-check"><input type="checkbox" id="su-pdpl" onchange="validateSignup()"><span data-i="consent.pdpl">I consent to the processing of my personal data under Decree 13/2023/ND-CP and Personal Data Protection Law No. 91/2025/QH15.</span></label>
+
+        <div class="mk-alert danger" id="su-ratelimit" role="alert" hidden style="margin-top:8px">
+          <span class="ico">⏳</span>
+          <span><span data-i="rl.tooMany">Too many attempts.</span> <span data-i="rl.tryAgainIn">Try again in</span> <b id="su-rl-clock" class="mk-count">4:59</b>.</span>
+        </div>
+
+        <button class="mk-btn mk-btn-primary" id="su-submit" type="submit" style="margin-top:6px" disabled>
+          <span data-i="auth.action.signUp">Create account</span>
+        </button>
+      </form>
+
+      <p style="text-align:center;font-size:13px;color:var(--text-sec);margin-top:16px">
+        <span data-i="auth.switch.haveAccount">Already have an account?</span>
+        <button class="mk-btn-ghost" style="display:inline;padding:0" onclick="go('signin')"><span data-i="auth.action.signIn">Sign in</span></button>
+      </p>
+    </div>
+  </section>
+
+  <section class="scr" id="scr-signin">
+    <div class="mk-card">
+      <div class="mk-brand"><span class="dot"></span> <span data-i="mk.appName">Da Nang Connect</span></div>
+      <h1 class="mk-h1" data-i="auth.page.signInTitle">Welcome back</h1>
+      <p class="mk-sub" data-i="auth.page.signInBody">Sign in to join, save and comment.</p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+        <button class="mk-btn-social mk-btn-apple" onclick="toast(t('toast.apple'))"><span></span> <span data-i="gate.apple"> Continue with Apple</span></button>
+        <button class="mk-btn-social mk-btn-google" onclick="toast(t('toast.google'))"><span>G</span> <span data-i="gate.google"> Continue with Google</span></button>
+      </div>
+      <div class="mk-divider" data-i="gate.or">or</div>
+
+      <div class="mk-alert danger" id="si-error" role="alert" hidden>
+        <span class="ico">⚠️</span><span data-i="errors.auth.invalidCredentials">Those sign-in details do not match an account.</span>
+      </div>
+      <div class="mk-alert warn" id="si-locked" role="alert" hidden>
+        <span class="ico">⏳</span>
+        <span><span data-i="rl.tooMany">Too many attempts.</span> <span data-i="rl.tryAgainIn">Try again in</span> <b id="si-lock-clock" class="mk-count">14:59</b>.</span>
+      </div>
+
+      <form onsubmit="event.preventDefault(); submitSignin();">
+        <div class="mk-field">
+          <label for="si-id" data-i="auth.field.identifier">Email, username or phone</label>
+          <input id="si-id" autocomplete="username">
+          <span class="mk-hint" data-i="auth.hint.identifier">Whichever you signed up with.</span>
+        </div>
+        <div class="mk-field">
+          <label for="si-pass" data-i="auth.field.password">Password</label>
+          <input id="si-pass" type="password" autocomplete="current-password">
+        </div>
+        <p style="text-align:right;margin-bottom:14px">
+          <button class="mk-btn-ghost" style="padding:0" type="button" onclick="go('forgot')" data-i="auth.forgot">Forgot password?</button>
+        </p>
+        <button class="mk-btn mk-btn-primary" id="si-submit" type="submit"><span data-i="auth.action.signIn">Sign in</span></button>
+      </form>
+
+      <p style="text-align:center;font-size:13px;color:var(--text-sec);margin-top:16px">
+        <span data-i="auth.switch.noAccount">New here?</span>
+        <button class="mk-btn-ghost" style="display:inline;padding:0" onclick="go('signup')"><span data-i="auth.action.signUp">Create account</span></button>
+      </p>
+      <p class="mk-mockonly"><b data-i="mk.mockOnly">[Mockup only]</b> <span data-i="signin.hint">Type a password containing “wrong” to see the error state; anything else signs in.</span></p>
+    </div>
+  </section>
+
+  <!-- ================= VERIFY EMAIL (W-03) ================= -->
+  <section class="scr" id="scr-verify">
+    <div class="mk-card">
+      <div class="mk-icon-hero info">✉️</div>
+      <h1 class="mk-h1" data-i="verify.title">Check your inbox</h1>
+      <p class="mk-sub"><span data-i="verify.sentTo">We sent a 6-digit code to</span> <b id="vf-email">alex@expatmail.com</b></p>
+
+      <div class="mk-alert danger" id="vf-inline-error" role="alert" hidden style="justify-content:center">
+        <span class="ico">⚠️</span><span id="vf-attempts">2 of 5 attempts used.</span>
+      </div>
+      <div class="mk-alert warn" id="vf-locked" role="alert" hidden>
+        <span class="ico">⏳</span>
+        <span>
+          <span data-i="verify.lockedMsg">Too many attempts. The code entry is locked for</span> <b id="vf-lock-clock" class="mk-count">14:59</b>.
+          <br><span data-i="verify.lockedStillLink">You can still use the verification link we emailed you.</span>
+        </span>
+      </div>
+
+      <div class="mk-otprow" id="vf-otp" role="group" aria-label="Verification code" data-aria="aria.verificationCode">
+        <input aria-label="Digit 1" data-aria="aria.digit" data-aria-n="1" inputmode="numeric" maxlength="1" oninput="otpInput(this,0)">
+        <input aria-label="Digit 2" data-aria="aria.digit" data-aria-n="2" inputmode="numeric" maxlength="1" oninput="otpInput(this,1)">
+        <input aria-label="Digit 3" data-aria="aria.digit" data-aria-n="3" inputmode="numeric" maxlength="1" oninput="otpInput(this,2)">
+        <input aria-label="Digit 4" data-aria="aria.digit" data-aria-n="4" inputmode="numeric" maxlength="1" oninput="otpInput(this,3)">
+        <input aria-label="Digit 5" data-aria="aria.digit" data-aria-n="5" inputmode="numeric" maxlength="1" oninput="otpInput(this,4)">
+        <input aria-label="Digit 6" data-aria="aria.digit" data-aria-n="6" inputmode="numeric" maxlength="1" oninput="otpInput(this,5)">
+      </div>
+
+      <p style="text-align:center;margin-bottom:6px">
+        <button class="mk-btn-ghost" id="vf-resend" onclick="resendCode()"><span id="vf-resend-label" data-i="verify.resend">Resend code</span></button>
+      </p>
+      <p style="text-align:center;font-size:12.5px;color:var(--text-sec);margin-bottom:4px" data-i="verify.spam">Didn't get it? Check your spam folder.</p>
+      <p style="text-align:center;font-size:12.5px">
+        <button class="mk-btn-ghost" onclick="toast(t('toast.changeEmail'))" data-i="verify.changeEmail">Change email</button>
+      </p>
+      <p class="mk-mockonly"><b data-i="mk.mockOnly">[Mockup only]</b> <span data-i="verify.hint">Enter 123456 to verify successfully; any other code counts as a wrong attempt.</span></p>
+    </div>
+  </section>
+
+  <!-- ================= LANDING FROM EMAIL LINK (W-03 variants) ================= -->
+  <section class="scr" id="scr-link">
+    <div class="mk-card" style="text-align:center">
+      <div id="link-success" hidden>
+        <div class="mk-icon-hero ok">✅</div>
+        <h1 class="mk-h1" data-i="link.successTitle">Email verified</h1>
+        <p class="mk-sub" data-i="link.successBody">Your account is ready. Let's finish setting up your feed.</p>
+        <button class="mk-btn mk-btn-primary" onclick="go('onb-1')" data-i="link.continue">Continue</button>
+      </div>
+      <div id="link-other" hidden>
+        <div class="mk-icon-hero ok">✅</div>
+        <h1 class="mk-h1" data-i="link.successTitle">Email verified</h1>
+        <p class="mk-sub" data-i="link.otherBody">Now sign in on your phone — for your security we don't start a session on a new device from this link.</p>
+        <button class="mk-btn mk-btn-primary" onclick="go('signin')" data-i="link.goSignin">Go to sign in</button>
+      </div>
+      <div id="link-expired" hidden>
+        <div class="mk-icon-hero warn">⏳</div>
+        <h1 class="mk-h1" data-i="link.expiredTitle">This link has expired</h1>
+        <p class="mk-sub" data-i="link.expiredBody">Verification links expire after 24 hours for your security.</p>
+        <button class="mk-btn mk-btn-primary" onclick="toast(t('toast.resent')); go('verify')" data-i="link.sendNew">Send me a new link</button>
+      </div>
+      <div id="link-used" hidden>
+        <div class="mk-icon-hero info">ℹ️</div>
+        <h1 class="mk-h1" data-i="link.usedTitle">This link has already been used</h1>
+        <p class="mk-sub" data-i="link.usedBody">Your email is already verified.</p>
+        <button class="mk-btn mk-btn-primary" onclick="go('signin')" data-i="auth.action.signIn">Sign in</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FORGOT PASSWORD (W-06) ================= -->
+  <section class="scr" id="scr-forgot">
+    <div class="mk-card">
+      <div id="forgot-default">
+        <div class="mk-icon-hero info">🔑</div>
+        <h1 class="mk-h1" data-i="forgot.title">Reset your password</h1>
+        <p class="mk-sub" data-i="forgot.body">Enter the email on your account and we'll send a reset link.</p>
+        <form onsubmit="event.preventDefault(); submitForgot();">
+          <div class="mk-field">
+            <label for="fg-email" data-i="auth.field.email">Email</label>
+            <input id="fg-email" type="email" autocomplete="email">
+          </div>
+          <button class="mk-btn mk-btn-primary" type="submit" data-i="forgot.send">Send reset link</button>
+        </form>
+        <p style="text-align:center;margin-top:14px"><button class="mk-btn-ghost" onclick="go('signin')" data-i="forgot.backToSignin">Back to sign in</button></p>
+      </div>
+      <div id="forgot-sent" hidden style="text-align:center">
+        <div class="mk-icon-hero ok">📧</div>
+        <h1 class="mk-h1" data-i="forgot.sentTitle">Check your inbox</h1>
+        <p class="mk-sub"><span data-i="forgot.sentBody1">If an account exists for</span> <b id="fg-sent-email">alex@expatmail.com</b><span data-i="forgot.sentBody2">, we've sent a reset link.</span></p>
+        <button class="mk-btn mk-btn-outline" onclick="go('signin')" data-i="forgot.backToSignin">Back to sign in</button>
+        <p class="mk-mockonly"><b data-i="mk.mockOnly">[Mockup only]</b> <button class="mk-btn-ghost" style="display:inline;padding:0" onclick="go('reset')" data-i="forgot.openLinkDemo">Open the reset link from that email →</button></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RESET PASSWORD (W-06) ================= -->
+  <section class="scr" id="scr-reset">
+    <div class="mk-card">
+      <div id="reset-default">
+        <h1 class="mk-h1" data-i="reset.title">Choose a new password</h1>
+        <p class="mk-sub" data-i="reset.body">Make it something you haven't used before.</p>
+        <form onsubmit="event.preventDefault(); submitReset();">
+          <div class="mk-field">
+            <label for="rs-pass" data-i="reset.newPassword">New password</label>
+            <input id="rs-pass" type="password" autocomplete="new-password" oninput="validateReset()">
+            <div class="mk-pwmeter"><i id="rs-pwbar"></i></div>
+            <ul class="mk-pwconds" id="rs-pwconds">
+              <li data-c="len"><span class="mark">✕</span><span data-i="pw.len">At least 10 characters</span></li>
+              <li data-c="letter"><span class="mark">✕</span><span data-i="pw.letter">Contains a letter</span></li>
+              <li data-c="number"><span class="mark">✕</span><span data-i="pw.number">Contains a number</span></li>
+              <li data-c="common"><span class="mark">✕</span><span data-i="pw.common">Not a common password</span></li>
+            </ul>
+          </div>
+          <button class="mk-btn mk-btn-primary" id="rs-submit" type="submit" disabled data-i="reset.update">Update password</button>
+        </form>
+        <p class="mk-mockonly"><b data-i="mk.mockOnly">[Mockup only]</b> <button class="mk-btn-ghost" style="display:inline;padding:0" onclick="go('reset-expired')" data-i="reset.previewExpired">Preview the expired-link state →</button></p>
+      </div>
+      <div id="reset-done" hidden style="text-align:center">
+        <div class="mk-icon-hero ok">✅</div>
+        <h1 class="mk-h1" data-i="reset.doneTitle">Password updated</h1>
+        <p class="mk-sub" data-i="reset.doneBody">You've been signed out on all other devices.</p>
+        <button class="mk-btn mk-btn-primary" onclick="go('signin')" data-i="auth.action.signIn">Sign in</button>
+      </div>
+      <div id="reset-expired" hidden style="text-align:center">
+        <div class="mk-icon-hero warn">⏳</div>
+        <h1 class="mk-h1" data-i="link.expiredTitle">This link has expired</h1>
+        <p class="mk-sub" data-i="reset.expiredBody">Password reset links expire after 24 hours for your security.</p>
+        <button class="mk-btn mk-btn-primary" onclick="go('forgot')" data-i="reset.requestNew">Request a new link</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SOCIAL LINK REQUIRED (UC-04 step 9) ================= -->
+  <section class="scr" id="scr-social">
+    <div class="mk-card" style="text-align:center">
+      <div class="mk-icon-hero warn">🔗</div>
+      <h1 class="mk-h1" data-i="social.title">This email already has an account</h1>
+      <p class="mk-sub"><b>alex@expatmail.com</b> <span data-i="social.body">is already registered. Sign in to link your Google account to it — we never merge accounts automatically.</span></p>
+      <button class="mk-btn mk-btn-primary" onclick="go('signin')" data-i="social.signinToLink">Sign in to link it</button>
+      <p style="margin-top:14px"><button class="mk-btn-ghost" onclick="go('gate')" data-i="gate.notnow">Not now</button></p>
+    </div>
+  </section>
+
+  <!-- ================= ONBOARDING (W-02, 3 steps) ================= -->
+  <section class="scr" id="scr-onb">
+    <div class="mk-card wide">
+      <div class="mk-steplabel" id="onb-step-label">Step 1 of 3</div>
+      <div class="mk-stepper" id="onb-stepper"><i></i><i></i><i></i></div>
+
+      <div class="onb-step" id="onb-step-1">
+        <h1 class="mk-h1" style="text-align:left" data-i="onb.s1.title">Where do you live in Da Nang?</h1>
+        <p class="mk-sub" style="text-align:left" data-i="onb.s1.body">Pick one main area — this shapes what you see first.</p>
+        <button class="mk-btn mk-btn-outline" style="width:auto;margin-bottom:16px" onclick="useMyLocation()">📍 <span data-i="onb.useLocation">Use my location</span></button>
+        <div class="mk-sectionlabel" data-i="onb.primaryLabel">Main area</div>
+        <div class="mk-chipgrid" id="onb-primary-grid"></div>
+        <div class="mk-sectionlabel" data-i="onb.secondaryLabel">Also hang out in (optional, up to 2)</div>
+        <div class="mk-chipgrid" id="onb-secondary-grid"></div>
+      </div>
+
+      <div class="onb-step" id="onb-step-2" hidden>
+        <h1 class="mk-h1" style="text-align:left" data-i="onb.s2.title">What do you want to do here?</h1>
+        <p class="mk-sub" style="text-align:left" data-i="onb.s2.body">Choose 1 to 8 — you can change this any time.</p>
+        <div class="mk-chipgrid" id="onb-interest-grid"></div>
+      </div>
+
+      <div class="onb-step" id="onb-step-3" hidden>
+        <h1 class="mk-h1" style="text-align:left" data-i="onb.s3.title">What languages do you speak?</h1>
+        <p class="mk-sub" style="text-align:left" data-i="onb.s3.body">We suggest English and Vietnamese to start.</p>
+        <div id="onb-lang-list"></div>
+        <button class="mk-btn mk-btn-outline" style="width:auto" onclick="toast(t('toast.addLang'))">+ <span data-i="onb.addLanguage">Add a language</span></button>
+      </div>
+
+      <div class="mk-onbnav">
+        <button class="mk-btn-ghost" id="onb-skip" onclick="onbSkip()" data-i="onb.skip">Skip</button>
+        <button class="mk-btn mk-btn-primary" id="onb-next" onclick="onbNext()" data-i="onb.next">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AHA MOMENT RESULTS ================= -->
+  <section class="scr" id="scr-aha">
+    <div class="mk-ahawrap">
+      <div class="mk-ahahead">
+        <h1 data-i="aha.title">6 events near An Thượng this week</h1>
+        <p data-i="aha.subtitle">Based on the area and interests you just picked. Save the ones you like, or join right away.</p>
+      </div>
+      <div class="mk-evgrid" id="aha-grid"><!-- built by JS --></div>
+      <div class="mk-remindband">
+        <div class="mk-qr" role="img" aria-label="QR code to download the app" data-aria="aria.qrDownload"></div>
+        <div class="mk-remindtext">
+          <h3 data-i="aha.remindTitle">Get reminders on your phone</h3>
+          <p data-i="aha.remindBody">Scan the code or search “Da Nang Connect” to install the app.</p>
+        </div>
+        <div class="mk-storepills"><span class="mk-storepill">App Store</span><span class="mk-storepill">Google Play</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="mk-notes" id="notes" onclick="if(event.target===this) closeNotes()">
+  <div class="mk-notes-panel">
+    <button class="mk-notes-close" onclick="closeNotes()" aria-label="Close notes" data-aria="aria.closeNotes">✕</button>
+    <span class="tag" id="notes-code">W-01</span>
+    <h2 id="notes-title">Ghi chú thiết kế</h2>
+    <div id="notes-body"><!-- filled per screen --></div>
+    <h4>Nguồn</h4>
+    <p>docs/analysis/02-use-case.md §8.1–8.4 · docs/analysis/10-ux-luong-man-hinh-va-i18n.md §4.1, §5, §7.1–7.2, §10, §12 ·
+    apps/web-client-side/app/_components/auth-form.tsx, auth-screen.tsx · packages/i18n/messages/{en,vi}.json (namespace <code>auth.*</code>, <code>errors.auth.*</code>).</p>
+  </div>
+</div>
+
+<div class="mk-toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   Da Nang Connect — Auth & Onboarding web mockup (static, offline)
+   Static HTML for form screens; JS renders only the repeating
+   grids (onboarding chips, aha event cards, screen switcher).
+   ============================================================ */
+
+const $  = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+/* ---------- Screen registry: id -> { code, section, variant/step } ---------- */
+const SCREENS = {
+  'gate':               { code: 'W-20', section: 'scr-gate' },
+  'signup':             { code: 'W-01', section: 'scr-signup', variant: 'default' },
+  'signup-invalid':     { code: 'W-01', section: 'scr-signup', variant: 'invalid' },
+  'signup-ratelimited': { code: 'W-01', section: 'scr-signup', variant: 'ratelimited' },
+  'signin':             { code: 'W-01', section: 'scr-signin', variant: 'default' },
+  'signin-error':       { code: 'W-01', section: 'scr-signin', variant: 'error' },
+  'signin-locked':      { code: 'W-01', section: 'scr-signin', variant: 'locked' },
+  'verify':             { code: 'W-03', section: 'scr-verify', variant: 'default' },
+  'verify-wrong':       { code: 'W-03', section: 'scr-verify', variant: 'wrong' },
+  'verify-locked':      { code: 'W-03', section: 'scr-verify', variant: 'locked' },
+  'link-success':       { code: 'W-03', section: 'scr-link', variant: 'success' },
+  'link-other-device':  { code: 'W-03', section: 'scr-link', variant: 'other' },
+  'link-expired':       { code: 'W-03', section: 'scr-link', variant: 'expired' },
+  'link-used':          { code: 'W-03', section: 'scr-link', variant: 'used' },
+  'forgot':             { code: 'W-06', section: 'scr-forgot', variant: 'default' },
+  'forgot-sent':        { code: 'W-06', section: 'scr-forgot', variant: 'sent' },
+  'reset':              { code: 'W-06', section: 'scr-reset', variant: 'default' },
+  'reset-done':         { code: 'W-06', section: 'scr-reset', variant: 'done' },
+  'reset-expired':      { code: 'W-06', section: 'scr-reset', variant: 'expired' },
+  'social-link':        { code: 'W-04', section: 'scr-social' },
+  'onb-1':              { code: 'W-02', section: 'scr-onb', step: 1 },
+  'onb-2':              { code: 'W-02', section: 'scr-onb', step: 2 },
+  'onb-3':              { code: 'W-02', section: 'scr-onb', step: 3 },
+  'aha':                { code: 'W-10', section: 'scr-aha' },
+};
+
+/* Doc 10 §13.6: EN shows names WITHOUT diacritics, VI shows full diacritics. */
+const AREAS = [
+  { id: 'anThuong',    en: 'An Thuong',     vi: 'An Thượng' },
+  { id: 'myKhe',       en: 'My Khe Beach',  vi: 'Biển Mỹ Khê' },
+  { id: 'myAn',        en: 'My An',         vi: 'Mỹ An' },
+  { id: 'haiChau',     en: 'Hai Chau',      vi: 'Hải Châu' },
+  { id: 'sonTra',      en: 'Son Tra',       vi: 'Sơn Trà' },
+  { id: 'nguHanhSon',  en: 'Ngu Hanh Son',  vi: 'Ngũ Hành Sơn' },
+];
+const INTERESTS = [
+  { id: 'sports',   emoji: '🏃' }, { id: 'language', emoji: '🗣️' }, { id: 'social',  emoji: '🎲' },
+  { id: 'food',     emoji: '🍜' }, { id: 'wellness', emoji: '🧘' }, { id: 'music',   emoji: '🎸' },
+  { id: 'outdoor',  emoji: '🥾' }, { id: 'family',   emoji: '👪' }, { id: 'professional', emoji: '💼' },
+];
+const COMMON_PW = ['password','password1','12345678','123456789','qwerty123','iloveyou','letmein12','abc123456','football1','princess1'];
+
+/* ---------- i18n dictionary (EN default, VI second) ---------- */
+const DICT = {
+en: {
+  'mk.appName':'Da Nang Connect','mk.notes':'Notes','mk.mockOnly':'[Mockup only]',
+  'tag.sprint2':'Sprint 2',
+  'price.free':'Free','btn.save':'Save','btn.report':'Report',
+  'rl.tooMany':'Too many attempts.','rl.tryAgainIn':'Try again in',
+  'gate.area':'My Khe Beach','gate.when':'Sat 19 Sep · 17:00','gate.seats':'7 of 20 spots left',
+  'gate.desc':'Beach volleyball on the sand at My Khe Beach. All levels welcome — bring water and sun cream.',
+  'gate.join':'Join','gate.title':'Sign in to join this event',
+  'gate.body':'You can browse everything without an account. Joining, saving and commenting need one — 7 spots left.',
+  'gate.apple':' Continue with Apple','gate.google':' Continue with Google','gate.fb':' Continue with Facebook',
+  'gate.or':'or','gate.email':'Continue with email','gate.notnow':'Not now',
+  'trust.t0':'New','trust.t1':'Email verified','trust.t2':'Phone verified','trust.t3':'Active member','trust.t4':'Trusted','trust.t5':'Community leader',
+  'signup.title':'Join the community','signup.body':'Free, and takes about a minute.',
+  'auth.field.displayName':'Your name','auth.field.email':'Email','auth.field.password':'Password',
+  'auth.field.identifier':'Email, username or phone','auth.hint.identifier':'Whichever you signed up with.',
+  'auth.action.signUp':'Create account','auth.action.signIn':'Sign in',
+  'auth.switch.haveAccount':'Already have an account?','auth.switch.noAccount':'New here?',
+  'auth.page.signInTitle':'Welcome back','auth.page.signInBody':'Sign in to join, save and comment.',
+  'auth.forgot':'Forgot password?','errors.auth.invalidCredentials':'Those sign-in details do not match an account.',
+  'pw.len':'At least 10 characters','pw.letter':'Contains a letter','pw.number':'Contains a number','pw.common':'Not a common password',
+  'consent.terms':'I agree to the Terms of Service and the Privacy Policy.',
+  'consent.pdpl':'I consent to the processing of my personal data under Decree 13/2023/ND-CP and Personal Data Protection Law No. 91/2025/QH15.',
+  'signin.hint':'Type a password containing “wrong” to see the error state; anything else signs in.',
+  'verify.title':'Check your inbox','verify.sentTo':'We sent a 6-digit code to',
+  'verify.resend':'Resend code','verify.resendIn':'Resend in {t}',
+  'verify.spam':"Didn't get it? Check your spam folder.",'verify.changeEmail':'Change email',
+  'verify.lockedMsg':'Too many attempts. The code entry is locked for','verify.lockedStillLink':'You can still use the verification link we emailed you.',
+  'verify.hint':'Enter 123456 to verify successfully; any other code counts as a wrong attempt.',
+  'verify.attempts':'{n} of 5 attempts used.',
+  'link.successTitle':'Email verified','link.successBody':"Your account is ready. Let's finish setting up your feed.",
+  'link.continue':'Continue','link.otherBody':"Now sign in on your phone — for your security we don't start a session on a new device from this link.",
+  'link.goSignin':'Go to sign in','link.expiredTitle':'This link has expired',
+  'link.expiredBody':'Verification links expire after 24 hours for your security.','link.sendNew':'Send me a new link',
+  'link.usedTitle':'This link has already been used','link.usedBody':'Your email is already verified.',
+  'forgot.title':'Reset your password',"forgot.body":"Enter the email on your account and we'll send a reset link.",
+  'forgot.send':'Send reset link','forgot.backToSignin':'Back to sign in',
+  'forgot.sentTitle':'Check your inbox','forgot.sentBody1':'If an account exists for','forgot.sentBody2':", we've sent a reset link.",
+  'forgot.openLinkDemo':'Open the reset link from that email →',
+  'reset.title':'Choose a new password','reset.body':"Make it something you haven't used before.",
+  'reset.newPassword':'New password','reset.update':'Update password',
+  'reset.previewExpired':'Preview the expired-link state →',
+  'reset.doneTitle':'Password updated','reset.doneBody':"You've been signed out on all other devices.",
+  'reset.expiredBody':'Password reset links expire after 24 hours for your security.','reset.requestNew':'Request a new link',
+  'social.title':'This email already has an account',
+  'social.body':'is already registered. Sign in to link your Google account to it — we never merge accounts automatically.',
+  'social.signinToLink':'Sign in to link it',
+  'onb.s1.title':'Where do you live in Da Nang?','onb.s1.body':'Pick one main area — this shapes what you see first.',
+  'onb.useLocation':'Use my location','onb.primaryLabel':'Main area','onb.secondaryLabel':'Also hang out in (optional, up to 2)',
+  'onb.s2.title':'What do you want to do here?','onb.s2.body':'Choose 1 to 8 — you can change this any time.',
+  'onb.s3.title':'What languages do you speak?','onb.s3.body':'We suggest English and Vietnamese to start.',
+  'onb.addLanguage':'Add a language','onb.skip':'Skip','onb.next':'Next','onb.finish':'Finish',
+  'onb.stepOf':'Step {n} of 3','onb.maxInterests':'You can pick up to 8.','onb.maxSecondary':'You can pick up to 2 extra areas.',
+  'onb.level.native':'Native','onb.level.fluent':'Fluent','onb.level.learning':'Learning',
+  'area.anThuong':'An Thuong','area.myKhe':'My Khe Beach','area.myAn':'My An','area.haiChau':'Hai Chau','area.sonTra':'Son Tra','area.nguHanhSon':'Ngu Hanh Son',
+  'interest.sports':'Sports','interest.language':'Language exchange','interest.social':'Social meetup','interest.food':'Food & drink',
+  'interest.wellness':'Wellness','interest.music':'Music & arts','interest.outdoor':'Outdoor','interest.family':'Family','interest.professional':'Professional',
+  'lang.en':'English','lang.vi':'Tiếng Việt',
+  'aha.title':'6 events near An Thuong this week','aha.subtitle':'Based on the area and interests you just picked. Save the ones you like, or join right away.',
+  'aha.remindTitle':'Get reminders on your phone','aha.remindBody':'Scan the code or search “Da Nang Connect” to install the app.',
+  'ev.free':'Free','ev.going':'Going','ev.join':'Join','ev.waitlist':'Join waitlist','ev.host':'Host',
+  'ev.spotsLeft':'{n} of {c} spots left','ev.full':'Full','ev.fullWaiting':'Full · {w} waiting',
+  'aria.mockFiles':'Mockup files','aria.language':'Language','aria.reportEvent':'Report this event',
+  'aria.verificationCode':'Verification code','aria.digit':'Digit {n}','aria.qrDownload':'QR code to download the app',
+  'aria.closeNotes':'Close notes','aria.save':'Save','aria.report':'Report',
+  'toast.apple':'Mockup: opens Apple Sign-In','toast.google':'Mockup: opens Google OAuth','toast.fbSoon':'Mockup: Facebook login ships in Sprint 2 (E2-S5)',
+  'toast.report':'Mockup: opens the report flow','toast.changeEmail':'Mockup: opens change-email form (once per 24h)',
+  'toast.resent':'Mockup: sent a new email','toast.addLang':'Mockup: opens language picker',
+  'toast.emailVerified':'Email verified — you earned T1 · Email verified','toast.signinOk':'Mockup: signed in',
+  'toast.save':'Saved','toast.unsave':'Removed from saved','toast.pendingIntent':"You're going to Sunset Beach Volleyball · New: T1 Email verified",
+},
+vi: {
+  'mk.appName':'Da Nang Connect','mk.notes':'Ghi chú','mk.mockOnly':'[Chỉ có ở mockup]',
+  'tag.sprint2':'Sprint 2',
+  'price.free':'Miễn phí','btn.save':'Lưu','btn.report':'Báo cáo',
+  'rl.tooMany':'Bạn đã thử quá nhiều lần.','rl.tryAgainIn':'Thử lại sau',
+  'gate.area':'Biển Mỹ Khê','gate.when':'T7, 19/09 · 17:00','gate.seats':'Còn 7/20 chỗ',
+  'gate.desc':'Bóng chuyền bãi biển tại Mỹ Khê. Mọi trình độ đều tham gia được — nhớ mang nước và kem chống nắng.',
+  'gate.join':'Tham gia','gate.title':'Đăng nhập để tham gia sự kiện này',
+  'gate.body':'Bạn xem được mọi thứ mà không cần tài khoản. Tham gia, lưu và bình luận thì cần đăng nhập — còn 7 chỗ.',
+  'gate.apple':' Tiếp tục với Apple','gate.google':' Tiếp tục với Google','gate.fb':' Tiếp tục với Facebook',
+  'gate.or':'hoặc','gate.email':'Tiếp tục bằng email','gate.notnow':'Để sau',
+  'trust.t0':'Thành viên mới','trust.t1':'Đã xác thực email','trust.t2':'Đã xác thực số điện thoại','trust.t3':'Thành viên tích cực','trust.t4':'Đáng tin cậy','trust.t5':'Người dẫn dắt cộng đồng',
+  'signup.title':'Tham gia cộng đồng','signup.body':'Miễn phí, chỉ mất khoảng một phút.',
+  'auth.field.displayName':'Tên hiển thị','auth.field.email':'Email','auth.field.password':'Mật khẩu',
+  'auth.field.identifier':'Email, tên đăng nhập hoặc số điện thoại','auth.hint.identifier':'Dùng đúng cái bạn đã đăng ký.',
+  'auth.action.signUp':'Tạo tài khoản','auth.action.signIn':'Đăng nhập',
+  'auth.switch.haveAccount':'Đã có tài khoản?','auth.switch.noAccount':'Mới đến đây?',
+  'auth.page.signInTitle':'Chào mừng trở lại','auth.page.signInBody':'Đăng nhập để tham gia, lưu và bình luận.',
+  'auth.forgot':'Quên mật khẩu?','errors.auth.invalidCredentials':'Thông tin đăng nhập không khớp với tài khoản nào.',
+  'pw.len':'Ít nhất 10 ký tự','pw.letter':'Có chữ cái','pw.number':'Có chữ số','pw.common':'Không phải mật khẩu phổ biến',
+  'consent.terms':'Tôi đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư.',
+  'consent.pdpl':'Tôi đồng ý cho xử lý dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP và Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15.',
+  'signin.hint':'Gõ mật khẩu có chứa chữ “wrong” để xem trạng thái lỗi; gõ gì khác sẽ đăng nhập thành công.',
+  'verify.title':'Kiểm tra hộp thư của bạn','verify.sentTo':'Chúng tôi đã gửi mã 6 số tới',
+  'verify.resend':'Gửi lại mã','verify.resendIn':'Gửi lại sau {t}',
+  'verify.spam':'Chưa thấy email? Kiểm tra thư mục spam.','verify.changeEmail':'Đổi email',
+  'verify.lockedMsg':'Bạn đã nhập sai quá nhiều lần. Ô nhập mã bị khoá trong','verify.lockedStillLink':'Bạn vẫn có thể dùng liên kết xác minh đã được gửi qua email.',
+  'verify.hint':'Nhập 123456 để xác minh thành công; mã khác sẽ tính là một lần nhập sai.',
+  'verify.attempts':'Đã dùng {n}/5 lần thử.',
+  'link.successTitle':'Email đã được xác minh','link.successBody':'Tài khoản của bạn đã sẵn sàng. Hãy hoàn tất thiết lập nguồn tin của bạn.',
+  'link.continue':'Tiếp tục','link.otherBody':'Hãy đăng nhập trên điện thoại của bạn — vì lý do bảo mật, chúng tôi không mở phiên trên thiết bị lạ từ liên kết này.',
+  'link.goSignin':'Đến trang đăng nhập','link.expiredTitle':'Liên kết này đã hết hạn',
+  'link.expiredBody':'Liên kết xác minh hết hạn sau 24 giờ vì lý do bảo mật.','link.sendNew':'Gửi cho tôi liên kết mới',
+  'link.usedTitle':'Liên kết này đã được sử dụng','link.usedBody':'Email của bạn đã được xác minh từ trước.',
+  'forgot.title':'Đặt lại mật khẩu','forgot.body':'Nhập email của tài khoản, chúng tôi sẽ gửi liên kết đặt lại.',
+  'forgot.send':'Gửi liên kết đặt lại','forgot.backToSignin':'Quay lại đăng nhập',
+  'forgot.sentTitle':'Kiểm tra hộp thư của bạn','forgot.sentBody1':'Nếu có tài khoản dùng email','forgot.sentBody2':', chúng tôi đã gửi liên kết đặt lại.',
+  'forgot.openLinkDemo':'Mở liên kết đặt lại từ email đó →',
+  'reset.title':'Chọn mật khẩu mới','reset.body':'Hãy chọn mật khẩu bạn chưa từng dùng trước đây.',
+  'reset.newPassword':'Mật khẩu mới','reset.update':'Cập nhật mật khẩu',
+  'reset.previewExpired':'Xem trước trạng thái liên kết hết hạn →',
+  'reset.doneTitle':'Đã cập nhật mật khẩu','reset.doneBody':'Bạn đã được đăng xuất khỏi mọi thiết bị khác.',
+  'reset.expiredBody':'Liên kết đặt lại mật khẩu hết hạn sau 24 giờ vì lý do bảo mật.','reset.requestNew':'Yêu cầu liên kết mới',
+  'social.title':'Email này đã có tài khoản',
+  'social.body':'đã được đăng ký từ trước. Đăng nhập để liên kết tài khoản Google của bạn với nó — chúng tôi không bao giờ tự động hợp nhất tài khoản.',
+  'social.signinToLink':'Đăng nhập để liên kết',
+  'onb.s1.title':'Bạn đang sống ở khu vực nào của Đà Nẵng?','onb.s1.body':'Chọn một khu vực chính — điều này quyết định những gì bạn thấy đầu tiên.',
+  'onb.useLocation':'Dùng vị trí của tôi','onb.primaryLabel':'Khu vực chính','onb.secondaryLabel':'Cũng hay lui tới (tuỳ chọn, tối đa 2)',
+  'onb.s2.title':'Bạn muốn làm gì ở đây?','onb.s2.body':'Chọn từ 1 đến 8 — bạn có thể đổi bất cứ lúc nào.',
+  'onb.s3.title':'Bạn nói được ngôn ngữ nào?','onb.s3.body':'Chúng tôi gợi ý sẵn tiếng Anh và tiếng Việt để bắt đầu.',
+  'onb.addLanguage':'Thêm ngôn ngữ','onb.skip':'Bỏ qua','onb.next':'Tiếp theo','onb.finish':'Hoàn tất',
+  'onb.stepOf':'Bước {n}/3','onb.maxInterests':'Bạn chỉ được chọn tối đa 8.','onb.maxSecondary':'Bạn chỉ được chọn thêm tối đa 2 khu vực.',
+  'onb.level.native':'Tiếng mẹ đẻ','onb.level.fluent':'Thành thạo','onb.level.learning':'Đang học',
+  'area.anThuong':'An Thượng','area.myKhe':'Biển Mỹ Khê','area.myAn':'Mỹ An','area.haiChau':'Hải Châu','area.sonTra':'Sơn Trà','area.nguHanhSon':'Ngũ Hành Sơn',
+  'interest.sports':'Thể thao','interest.language':'Trao đổi ngôn ngữ','interest.social':'Giao lưu','interest.food':'Ăn uống',
+  'interest.wellness':'Sức khoẻ','interest.music':'Âm nhạc & nghệ thuật','interest.outdoor':'Ngoài trời','interest.family':'Gia đình','interest.professional':'Nghề nghiệp',
+  'lang.en':'Tiếng Anh','lang.vi':'Tiếng Việt',
+  'aha.title':'6 sự kiện gần An Thượng tuần này','aha.subtitle':'Dựa trên khu vực và sở thích bạn vừa chọn. Lưu sự kiện bạn thích, hoặc tham gia ngay.',
+  'aha.remindTitle':'Nhận nhắc lịch trên điện thoại','aha.remindBody':'Quét mã hoặc tìm “Da Nang Connect” để cài ứng dụng.',
+  'ev.free':'Miễn phí','ev.going':'Đang tham gia','ev.join':'Tham gia','ev.waitlist':'Vào hàng chờ','ev.host':'Người tổ chức',
+  'ev.spotsLeft':'Còn {n}/{c} chỗ','ev.full':'Đã đầy','ev.fullWaiting':'Đã đầy · {w} người chờ',
+  'aria.mockFiles':'Danh sách file mockup','aria.language':'Ngôn ngữ','aria.reportEvent':'Báo cáo sự kiện này',
+  'aria.verificationCode':'Mã xác minh','aria.digit':'Số thứ {n}','aria.qrDownload':'Mã QR để tải ứng dụng',
+  'aria.closeNotes':'Đóng ghi chú','aria.save':'Lưu','aria.report':'Báo cáo',
+  'toast.apple':'Mockup: mở đăng nhập Apple','toast.google':'Mockup: mở đăng nhập Google','toast.fbSoon':'Mockup: đăng nhập Facebook ra mắt ở Sprint 2 (E2-S5)',
+  'toast.report':'Mockup: mở luồng báo cáo','toast.changeEmail':'Mockup: mở form đổi email (1 lần/24h)',
+  'toast.resent':'Mockup: đã gửi email mới','toast.addLang':'Mockup: mở bộ chọn ngôn ngữ',
+  'toast.emailVerified':'Đã xác minh email — bạn vừa đạt T1 · Đã xác minh email','toast.signinOk':'Mockup: đăng nhập thành công',
+  'toast.save':'Đã lưu','toast.unsave':'Đã bỏ lưu','toast.pendingIntent':'Bạn sẽ tham gia Bóng chuyền bãi biển lúc hoàng hôn · Mới đạt: T1 Đã xác minh email',
+},
+};
+
+/* ---------- Vietnamese design notes per screen (sidebar, always VI) ---------- */
+const NOTES = {
+  'gate': `<p><b>UC-09 §7.1 F-01.</b> Không có tường đăng nhập — dialog auth chỉ mở khi khách chạm hành động cần danh tính (ở đây là "Join"). Web dùng <code>&lt;dialog&gt;</code>/modal thay bottom sheet của mobile.</p>
+  <p>"Not now" luôn hiện, không bị làm mờ (nguyên tắc N-7). <code>pendingIntent</code> = <code>{action:'rsvp', occurrenceId, source}</code> được lưu vào <code>sessionStorage</code> trước khi mở dialog.</p>
+  <p>Vị trí chính xác không hiển thị cho khách nếu sự kiện bật <code>hide_exact_location</code> (không áp dụng ở sự kiện mẫu này).</p>
+  <div class="drift"><b>Trust badge đã sửa theo doc 05 §5.3</b> (thang chuẩn duy nhất T0–T5, dùng đúng class <code>.tb .t0…t5</code> và màu như khung dùng chung — T3 giờ có nền xanh đậm riêng, không còn trùng màu T2). <b>Drift còn tồn tại, BA/Tech Lead cần chốt:</b> code i18n hiện có namespace <code>trust.level.t0..t5</code> = "Restricted / New member / Verified / Regular / Trusted / Community host" — khác nhãn chuẩn của doc 05 ("New / Email verified / Phone verified / Active member / Trusted / Community leader"). Doc 10 §12.6 cũng còn liệt kê thang cũ 5 bậc (new/verified/established/trusted/ambassador) mà doc 05 đã thay thế — cần dọn lại doc 10.</div>`,
+  'signup': `<p><b>UC-01.</b> Theo đúng luồng use case: email + password + displayName, KHÔNG có trường <code>handle</code>, mật khẩu tối thiểu 10 ký tự.</p>
+  <div class="drift"><b>Drift với code thật:</b> <code>apps/web-client-side/app/_components/auth-form.tsx</code> hiện có thêm trường <code>handle</code> (username, regex <code>^[a-z0-9_]{3,24}$</code>) và yêu cầu mật khẩu tối thiểu <b>12</b> ký tự, không phải 10. Mockup cố tình theo UC-01 — cần BA/Tech Lead chốt lại field nào đúng trước khi code sprint 1 khoá lại form thật.</div>
+  <p>Hai ô đồng ý tách riêng, không tích sẵn (<code>BR-30</code>). Gửi kèm header <code>Idempotency-Key</code>, <code>Accept-Language</code>, <code>X-Device-Id</code> tới <code>POST /api/v1/auth/register</code>.</p>`,
+  'signup-invalid': `<p>Mật khẩu "abc123" chưa đạt điều kiện độ dài (&lt;10 ký tự) — 4 điều kiện hiện dấu ✕/✓ rõ ràng, không chỉ đổi màu (đáp ứng nguyên tắc không dùng màu làm kênh duy nhất). Nút "Create account" khoá tới khi cả 4 điều kiện + 2 ô đồng ý đều đạt.</p>
+  <p>Email trùng đã tồn tại (<code>E-1</code>) KHÔNG báo lỗi "email taken" — vẫn đi tiếp màn "Check your inbox" trung tính để chống dò danh sách email.</p>
+  <div class="drift"><b>Drift:</b> i18n thật có key <code>errors.auth.emailTaken</code> = "An account with that email already exists." — lộ ra tài khoản đã tồn tại, ngược với UC-01 E-1. Mockup không dùng key này ở luồng đăng ký; cần BA quyết định bỏ key hay đổi hành vi.</div>`,
+  'signup-ratelimited': `<p><code>E-3</code>: quá 5 lần đăng ký từ cùng IP trong 15 phút → <code>429 RATE_LIMITED</code> kèm <code>Retry-After</code>. Client khoá nút và đếm ngược đúng bằng giá trị header, không tự đặt số cố định.</p>`,
+  'signin': `<p><b>UC-03.</b> Một trường duy nhất nhận email/username/số điện thoại — server tự phân biệt, người dùng không phải chọn loại trước. Câu chữ lấy nguyên từ <code>packages/i18n/messages/en.json</code> (<code>auth.field.identifier</code>, <code>auth.hint.identifier</code>).</p>`,
+  'signin-error': `<p>Lỗi dùng nguyên câu <code>errors.auth.invalidCredentials</code> từ i18n thật: "Those sign-in details do not match an account." — không tiết lộ email hay password sai cái nào. Vùng lỗi có <code>role="alert"</code> để trình đọc màn hình thông báo ngay.</p>`,
+  'signin-locked': `<p>10 lần sai/IP/15 phút → <code>429</code> kèm <code>Retry-After</code>; nút Sign in khoá và đếm ngược đúng 15:00.</p>`,
+  'verify': `<p><b>UC-02.</b> Sau đăng ký KHÔNG có phiên đăng nhập (<code>status='pending'</code>). Nút Resend khoá 60 giây, tối đa 5 lần/24h. Nhập đúng mã hoặc bấm link trong email đều xác minh được.</p>
+  <p>Xác minh thành công → backend cấp access token 15 phút + refresh token 30 ngày, ghi <code>trust_signals(email_verified,+8)</code>, nâng <code>trust_level</code> lên T1, rồi chuyển sang onboarding.</p>`,
+  'verify-wrong': `<p><code>M</code> trong sơ đồ F-01: "Sai, còn lượt" → hiện "X trong 5 lần thử", giữ nguyên màn hình, không xoá tiến trình đếm ngược resend.</p>`,
+  'verify-locked': `<p><code>E-3</code>: sai mã 6 số quá 5 lần trong 15 phút → <code>429</code>, khoá Ô NHẬP 15 phút — nhưng liên kết trong email vẫn xác minh được bình thường (không khoá theo token, chỉ khoá theo lần đoán mã ngắn).</p>`,
+  'link-success': `<p><code>A-1/A-2</code> UC-02: bấm link trên đúng máy vừa đăng ký (hoặc app cài sẵn mở qua universal link) → xác minh + cấp phiên ngay trên máy này.</p>`,
+  'link-other-device': `<p><code>A-1</code> UC-02: bấm link trên máy khác với máy đã đăng ký → xác minh thành công nhưng KHÔNG cấp token cho thiết bị lạ. Máy gốc đang mở màn "verify" nhận tín hiệu qua polling 5 giây (<code>GET /api/v1/auth/registration/status</code>) và tự chuyển bước — không mô phỏng polling ở mockup tĩnh này.</p>`,
+  'link-expired': `<p><code>E-1</code> UC-02: token hết hạn sau 24 giờ → <code>410 VERIFICATION_TOKEN_EXPIRED</code>. Luôn có nút gửi lại, không bao giờ chỉ hiện trang trắng.</p>`,
+  'link-used': `<p><code>E-2</code> UC-02: token đã dùng → <code>409 VERIFICATION_ALREADY_USED</code>. Nếu tài khoản đã active, thông điệp trung tính rồi đưa sang đăng nhập.</p>`,
+  'forgot': `<p><b>UC-06.</b> Không có chi tiết luồng đầy đủ trong <code>02-use-case.md</code> (chỉ có ở bảng tổng hợp §5.1 và sơ đồ Mermaid F-01) — nội dung màn hình suy ra từ mô tả ngắn "Gửi link đặt lại có hạn dùng, đăng xuất mọi phiên" và từ hành vi trung tính chuẩn chống dò email đã áp dụng ở UC-01.</p>`,
+  'forgot-sent': `<p>Thông điệp trung tính bắt buộc: không bao giờ nói "email này không tồn tại" hay "đã gửi email" một cách khẳng định — luôn dùng "If an account exists for…" để không lộ danh sách email đã đăng ký.</p>`,
+  'reset': `<p>Thanh đo độ mạnh mật khẩu dùng lại đúng component <code>mk-pwmeter</code>/<code>mk-pwconds</code> như màn đăng ký — không tạo luật mật khẩu riêng cho reset.</p>`,
+  'reset-done': `<p>Đặt lại mật khẩu thành công thu hồi TOÀN BỘ phiên đang mở trên mọi thiết bị khác (đăng xuất mọi refresh token cũ) — đây là yêu cầu bảo mật bắt buộc của UC-06.</p>`,
+  'reset-expired': `<p>Cùng nguyên tắc với <code>link-expired</code> của xác minh email: liên kết đặt lại mật khẩu hết hạn sau 24 giờ, luôn có lối thoát rõ ràng (không bao giờ trang trắng).</p>`,
+  'social-link': `<p><b>UC-04 bước 9, E-4/E-9 vùng lân cận.</b> Email từ Google trùng với một tài khoản email/password đã có sẵn → <code>409 SOCIAL_ACCOUNT_LINK_REQUIRED</code> kèm <code>linkChallengeToken</code>. Không bao giờ tự động hợp nhất hai tài khoản.</p>`,
+  'onb-1': `<p><b>UC-05 bước 1.</b> 6 khu vực MVP theo <code>BR-14</code>: An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn. Bắt buộc chọn đúng 1 khu vực chính, tối đa 2 khu vực phụ "cũng hay lui tới". "Use my location" gọi <code>POST /api/v1/geo/resolve-area</code> trong code thật.</p>
+  <div class="drift"><b>Drift với doc 10 §7.2 F-02:</b> đặc tả đó liệt kê 12 khu vực (thêm Thanh Khê, Hoà Xuân, Nam Ô, Liên Chiểu, Cẩm Lệ, City-wide). UC-05 (mới hơn, khớp Quyết định 63 về ranh giới hành chính) chỉ có 6 khu vực MVP. Mockup theo UC-05 — BA cần cập nhật lại doc 10 hoặc xác nhận 12 khu vực sẽ triển khai dần theo giai đoạn.</div>`,
+  'onb-2': `<p><b>UC-05 bước 2.</b> Lấy từ <code>GET /api/v1/interests</code>, chọn tối thiểu 1 tối đa 8. Nút Next chỉ bật khi có ≥ 1 lựa chọn — không disable hoàn toàn interest thứ 9 trở đi, chỉ chặn thêm khi đã đạt 8.</p>`,
+  'onb-3': `<p><b>UC-05 bước 3.</b> Ngôn ngữ nói, gợi ý sẵn <code>en</code> và <code>vi</code>, gắn mức độ native/fluent/learning. Bấm "Finish" gửi đúng MỘT request <code>POST /api/v1/me/onboarding</code> gộp cả 3 bước.</p>
+  <div class="drift"><b>Drift với doc 10 §7.2 F-02:</b> đặc tả đó đặt bước 3 là "How long are you here?" (<code>expat_type</code>: Just visiting / A few months / Living here / I am Vietnamese) thay vì ngôn ngữ. UC-05 (mới hơn) đổi bước 3 thành ngôn ngữ nói. Mockup theo UC-05 — BA cần xác nhận <code>expat_type</code> có còn được thu thập ở đâu khác không (ảnh hưởng phân khúc marketing ở <code>07-go-to-market-da-nang.md</code>).</div>`,
+  'aha': `<p><b>Aha moment (doc 10 §10.1).</b> Ít nhất 3 sự kiện thật, có giờ cụ thể, trong khu vực, trong 7 ngày tới. Nếu tính theo khu vực chọn ra dưới 3 kết quả thì nới sang toàn thành phố kèm nhãn rõ ràng (<code>isFallback=true</code>), không bao giờ để trống.</p>
+  <p>Toast pending-intent minh hoạ việc quay lại ĐÚNG sự kiện gốc sau khi đăng nhập/onboarding xong, kèm huy hiệu tin cậy T1 vừa đạt được từ bước xác minh email — không đẩy người dùng về feed rỗng.</p>
+  <p>Hành động đầu tiên gợi ý là <b>Save (♡)</b>, không phải RSVP — cam kết thấp hơn, tăng tỉ lệ tương tác phiên đầu. Mỗi thẻ có lối vào Report (nút ⋯) vì đây là nội dung do người dùng/host tạo ra.</p>`,
+};
+
+let lang = new URLSearchParams(location.search).get('lang') === 'vi' ? 'vi' : 'en';
+let currentScreen = 'gate';
+const timers = {};
+const state = {
+  onb: { primary: null, secondary: new Set(), interests: new Set(), langLevels: { en: 'native', vi: 'learning' } },
+  aha: { saved: new Set() },
+  verifyAttempts: 0,
+};
+
+const t = (k, vars) => {
+  let s = (DICT[lang] && DICT[lang][k]) || k;
+  if (vars) for (const [key, val] of Object.entries(vars)) s = s.replaceAll('{' + key + '}', val);
+  return s;
+};
+const fmt = (k, n) => t(k).replace('{n}', n).replace('{t}', n);
+
+/* ---------- generic helpers ---------- */
+function fmtClock(s){ const m = Math.floor(s/60); const r = s%60; return m + ':' + String(r).padStart(2,'0'); }
+function startCountdown(key, seconds, onTick, onDone){
+  clearInterval(timers[key]);
+  let s = seconds;
+  onTick(s);
+  timers[key] = setInterval(() => {
+    s -= 1;
+    if (s <= 0) { clearInterval(timers[key]); onTick(0); if (onDone) onDone(); return; }
+    onTick(s);
+  }, 1000);
+}
+let toastTimer;
+function toast(msg){
+  const el = $('#toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ---------- notes drawer ---------- */
+function openNotes(){
+  const meta = SCREENS[currentScreen] || {};
+  $('#notes-code').textContent = meta.code || '';
+  $('#notes-title').textContent = 'Ghi chú — ' + currentScreen;
+  $('#notes-body').innerHTML = NOTES[currentScreen] || '<p>Chưa có ghi chú riêng cho màn này.</p>';
+  $('#notes').classList.add('show');
+}
+function closeNotes(){ $('#notes').classList.remove('show'); }
+
+/* ---------- screen switcher ---------- */
+function buildScrChips(){
+  const box = $('#scrchips');
+  box.innerHTML = Object.keys(SCREENS).map((id) => {
+    const meta = SCREENS[id];
+    return `<button class="mk-scrchip" data-scr="${id}" title="${meta.code} · ${id}" onclick="go('${id}')"><b>${meta.code}</b>${id}</button>`;
+  }).join('');
+}
+function updateScrChips(){
+  $$('.mk-scrchip').forEach((b) => b.classList.toggle('on', b.dataset.scr === currentScreen));
+}
+
+/* ---------- navigation ---------- */
+function go(id, opts = {}){
+  if (!SCREENS[id]) id = 'gate';
+  currentScreen = id;
+  const meta = SCREENS[id];
+  $$('.scr').forEach((s) => s.classList.remove('show'));
+  document.getElementById(meta.section).classList.add('show');
+
+  if (meta.section === 'scr-gate') initGate();
+  if (meta.section === 'scr-signup') initSignup(meta.variant);
+  if (meta.section === 'scr-signin') initSignin(meta.variant);
+  if (meta.section === 'scr-verify') initVerify(meta.variant, !!opts.internal);
+  if (meta.section === 'scr-link') initLink(meta.variant);
+  if (meta.section === 'scr-forgot') initForgot(meta.variant);
+  if (meta.section === 'scr-reset') initReset(meta.variant);
+  if (meta.section === 'scr-onb') initOnb(meta.step);
+  if (meta.section === 'scr-aha') initAha();
+
+  updateScrChips();
+  const url = new URL(location.href);
+  url.searchParams.set('screen', id);
+  url.searchParams.set('lang', lang);
+  history.replaceState(null, '', url);
+  window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+}
+
+/* ---------- static i18n refresh (labels/placeholders that don't need JS rendering) ---------- */
+function updateStaticI18n(){
+  document.documentElement.lang = lang;
+  $$('[data-i]').forEach((el) => { el.textContent = t(el.getAttribute('data-i')); });
+  $$('[data-ph]').forEach((el) => { el.placeholder = t(el.getAttribute('data-ph')); });
+  $$('[data-aria]').forEach((el) => {
+    const key = el.getAttribute('data-aria');
+    const n = el.getAttribute('data-aria-n');
+    el.setAttribute('aria-label', n ? t(key, { n }) : t(key));
+  });
+  $('#lang-en').classList.toggle('on', lang === 'en');
+  $('#lang-vi').classList.toggle('on', lang === 'vi');
+}
+function setLang(l){
+  lang = l;
+  updateStaticI18n();
+  // Re-run the current screen's init so JS-rendered grids (chips, event cards)
+  // rebuild their text in the new language without resetting form inputs.
+  go(currentScreen, { internal: true });
+}
+
+/* ================= GATE ================= */
+function initGate(){
+  $('#gate-dialog').hidden = false; // default: dialog open right after tapping Join
+}
+function openGateDialog(){ $('#gate-dialog').hidden = false; }
+function closeGateDialog(){ $('#gate-dialog').hidden = true; }
+function toggleSaveGate(btn){
+  const on = btn.getAttribute('aria-pressed') === 'true';
+  btn.setAttribute('aria-pressed', String(!on));
+  btn.querySelector('.heart').textContent = !on ? '♥' : '♡';
+  toast(!on ? t('toast.save') : t('toast.unsave'));
+}
+
+/* ================= SIGN UP ================= */
+function pwConditions(pw){
+  return {
+    len: pw.length >= 10,
+    letter: /[A-Za-z]/.test(pw),
+    number: /[0-9]/.test(pw),
+    common: pw.length > 0 && !COMMON_PW.includes(pw.toLowerCase()),
+  };
+}
+function renderPwUI(prefix, pw){
+  const c = pwConditions(pw);
+  const score = [c.len, c.letter, c.number, c.common].filter(Boolean).length;
+  const bar = $('#' + prefix + '-pwbar');
+  bar.style.width = (score / 4 * 100) + '%';
+  bar.style.background = score <= 1 ? 'var(--danger)' : score <= 2 ? 'var(--warning)' : score <= 3 ? 'var(--sun)' : 'var(--success)';
+  $$('#' + prefix + '-pwconds li').forEach((li) => {
+    const key = li.dataset.c;
+    const ok = c[key];
+    li.classList.toggle('ok', ok);
+    li.querySelector('.mark').textContent = ok ? '✓' : '✕';
+  });
+  return c;
+}
+function validateSignup(){
+  const email = $('#su-email').value.trim();
+  const name = $('#su-name').value.trim();
+  const pw = $('#su-pass').value;
+  const c = renderPwUI('su', pw);
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const nameOk = name.length >= 2 && name.length <= 40;
+  const pwOk = c.len && c.letter && c.number && c.common;
+  const consentOk = $('#su-terms').checked && $('#su-pdpl').checked;
+  const rateLimited = !$('#su-ratelimit').hidden;
+  const ok = emailOk && nameOk && pwOk && consentOk && !rateLimited;
+  $('#su-submit').disabled = !ok;
+  return ok;
+}
+function initSignup(variant){
+  clearInterval(timers.suRL);
+  $('#su-ratelimit').hidden = true;
+  $('#su-email').value = variant === 'ratelimited' ? 'alex@expatmail.com' : '';
+  $('#su-name').value = variant === 'ratelimited' ? 'Alex' : '';
+  $('#su-pass').value = variant === 'invalid' ? 'abc123' : (variant === 'ratelimited' ? 'goodpass99' : '');
+  $('#su-terms').checked = false;
+  $('#su-pdpl').checked = false;
+  if (variant === 'ratelimited'){
+    $('#su-ratelimit').hidden = false;
+    startCountdown('suRL', 299, (s) => { $('#su-rl-clock').textContent = fmtClock(s); }, () => { $('#su-ratelimit').hidden = true; validateSignup(); });
+  }
+  validateSignup();
+}
+function submitSignup(){
+  if (!validateSignup()) return;
+  $('#vf-email').textContent = $('#su-email').value.trim() || 'alex@expatmail.com';
+  go('verify');
+}
+
+/* ================= SIGN IN ================= */
+function initSignin(variant){
+  clearInterval(timers.siLock);
+  $('#si-id').value = ''; $('#si-pass').value = '';
+  $('#si-error').hidden = true;
+  $('#si-locked').hidden = true;
+  $('#si-submit').disabled = false;
+  if (variant === 'error'){
+    $('#si-id').value = 'alex@expatmail.com';
+    $('#si-pass').value = 'wrongpass1';
+    $('#si-error').hidden = false;
+  }
+  if (variant === 'locked'){
+    $('#si-locked').hidden = false;
+    $('#si-submit').disabled = true;
+    startCountdown('siLock', 899, (s) => { $('#si-lock-clock').textContent = fmtClock(s); }, () => { $('#si-locked').hidden = true; $('#si-submit').disabled = false; });
+  }
+}
+function submitSignin(){
+  const id = $('#si-id').value.trim();
+  const pw = $('#si-pass').value;
+  if (!id || !pw) return;
+  if (pw.toLowerCase().includes('wrong')) { go('signin-error'); return; }
+  toast(t('toast.signinOk'));
+  go('aha');
+}
+
+/* ================= VERIFY EMAIL ================= */
+function initVerify(variant, internal){
+  clearInterval(timers.verifyResend);
+  clearInterval(timers.verifyLock);
+  $('#vf-inline-error').hidden = true;
+  $('#vf-locked').hidden = true;
+  const boxes = $$('#vf-otp input');
+  boxes.forEach((b) => { b.value = ''; b.classList.remove('err'); b.disabled = false; });
+  $('#vf-resend').disabled = true;
+
+  if (variant === 'default'){
+    if (!internal) state.verifyAttempts = 0;
+    startResendCountdown();
+    boxes[0].focus();
+  }
+  if (variant === 'wrong'){
+    if (!internal) state.verifyAttempts = 2;
+    boxes.forEach((b) => { b.value = '0'; b.classList.add('err'); });
+    $('#vf-inline-error').hidden = false;
+    $('#vf-attempts').textContent = fmt('verify.attempts', state.verifyAttempts);
+    startResendCountdown();
+  }
+  if (variant === 'locked'){
+    if (!internal) state.verifyAttempts = 5;
+    boxes.forEach((b) => { b.disabled = true; });
+    $('#vf-resend').disabled = true;
+    $('#vf-locked').hidden = false;
+    startCountdown('verifyLock', 899, (s) => { $('#vf-lock-clock').textContent = fmtClock(s); }, () => {
+      $('#vf-locked').hidden = true;
+      state.verifyAttempts = 0;
+      go('verify', { internal: true });
+    });
+  }
+}
+function startResendCountdown(){
+  $('#vf-resend').disabled = true;
+  startCountdown('verifyResend', 59, (s) => {
+    $('#vf-resend-label').textContent = s > 0 ? fmt('verify.resendIn', fmtClock(s)) : t('verify.resend');
+  }, () => { $('#vf-resend').disabled = false; });
+}
+function otpInput(el, idx){
+  el.value = el.value.replace(/[^0-9]/g, '').slice(0, 1);
+  el.classList.remove('err');
+  const boxes = $$('#vf-otp input');
+  if (el.value && idx < boxes.length - 1) boxes[idx + 1].focus();
+  if (boxes.every((b) => b.value.length === 1)) checkOtp(boxes.map((b) => b.value).join(''));
+}
+function checkOtp(code){
+  if (code === '123456'){
+    toast(t('toast.emailVerified'));
+    setTimeout(() => go('onb-1'), 500);
+    return;
+  }
+  state.verifyAttempts += 1;
+  if (state.verifyAttempts >= 5) { go('verify-locked', { internal: true }); return; }
+  go('verify-wrong', { internal: true });
+}
+function resendCode(){
+  if ($('#vf-resend').disabled) return;
+  toast(t('toast.resent'));
+  startResendCountdown();
+}
+
+/* ================= LANDING FROM EMAIL LINK ================= */
+function initLink(variant){
+  ['success', 'other', 'expired', 'used'].forEach((v) => { document.getElementById('link-' + v).hidden = v !== variant; });
+}
+
+/* ================= FORGOT PASSWORD ================= */
+function initForgot(variant){
+  $('#forgot-default').hidden = variant === 'sent';
+  $('#forgot-sent').hidden = variant !== 'sent';
+  if (variant === 'default') $('#fg-email').value = '';
+}
+function submitForgot(){
+  const email = $('#fg-email').value.trim();
+  if (!email) return;
+  $('#fg-sent-email').textContent = email;
+  go('forgot-sent');
+}
+
+/* ================= RESET PASSWORD ================= */
+function initReset(variant){
+  $('#reset-default').hidden = variant !== 'default';
+  $('#reset-done').hidden = variant !== 'done';
+  $('#reset-expired').hidden = variant !== 'expired';
+  if (variant === 'default'){ $('#rs-pass').value = ''; validateReset(); }
+}
+function validateReset(){
+  const pw = $('#rs-pass').value;
+  const c = renderPwUI('rs', pw);
+  $('#rs-submit').disabled = !(c.len && c.letter && c.number && c.common);
+}
+function submitReset(){
+  if ($('#rs-submit').disabled) return;
+  go('reset-done', { internal: true });
+}
+
+/* ================= ONBOARDING ================= */
+function initOnb(step){
+  renderOnbStepper(step);
+  $$('.onb-step').forEach((s) => { s.hidden = true; });
+  document.getElementById('onb-step-' + step).hidden = false;
+  renderOnbAreas();
+  renderOnbInterests();
+  renderOnbLangs();
+  updateOnbNav(step);
+}
+function renderOnbStepper(step){
+  $$('#onb-stepper i').forEach((el, i) => {
+    el.classList.toggle('done', i < step - 1);
+    el.classList.toggle('active', i === step - 1);
+  });
+  $('#onb-step-label').textContent = fmt('onb.stepOf', step);
+}
+function renderOnbAreas(){
+  const primaryBox = $('#onb-primary-grid');
+  const secBox = $('#onb-secondary-grid');
+  if (!primaryBox) return;
+  primaryBox.innerHTML = AREAS.map((a) => {
+    const on = state.onb.primary === a.id;
+    return `<button type="button" class="mk-chip ${on ? 'on' : ''}" onclick="selectPrimaryArea('${a.id}')">${t('area.' + a.id)}</button>`;
+  }).join('');
+  secBox.innerHTML = AREAS.map((a) => {
+    const isPrimary = state.onb.primary === a.id;
+    const on = state.onb.secondary.has(a.id);
+    return `<button type="button" class="mk-chip ${on ? 'secOn' : ''}" ${isPrimary ? 'disabled' : ''} onclick="toggleSecondaryArea('${a.id}')">${t('area.' + a.id)}</button>`;
+  }).join('');
+}
+function selectPrimaryArea(id){
+  state.onb.primary = id;
+  state.onb.secondary.delete(id);
+  renderOnbAreas();
+  updateOnbNav(1);
+}
+function toggleSecondaryArea(id){
+  if (state.onb.secondary.has(id)) { state.onb.secondary.delete(id); }
+  else if (state.onb.secondary.size < 2) { state.onb.secondary.add(id); }
+  else { toast(t('onb.maxSecondary')); return; }
+  renderOnbAreas();
+}
+function useMyLocation(){
+  selectPrimaryArea('myKhe');
+  toast(t('onb.useLocation') + ' → ' + t('area.myKhe'));
+}
+function renderOnbInterests(){
+  const box = $('#onb-interest-grid');
+  if (!box) return;
+  const atMax = state.onb.interests.size >= 8;
+  box.innerHTML = INTERESTS.map((i) => {
+    const on = state.onb.interests.has(i.id);
+    const disable = atMax && !on;
+    return `<button type="button" class="mk-chip ${on ? 'on' : ''}" ${disable ? 'disabled' : ''} onclick="toggleInterest('${i.id}')">${i.emoji} ${t('interest.' + i.id)}</button>`;
+  }).join('');
+}
+function toggleInterest(id){
+  if (state.onb.interests.has(id)) state.onb.interests.delete(id);
+  else if (state.onb.interests.size < 8) state.onb.interests.add(id);
+  else { toast(t('onb.maxInterests')); return; }
+  renderOnbInterests();
+  updateOnbNav(2);
+}
+function renderOnbLangs(){
+  const box = $('#onb-lang-list');
+  if (!box) return;
+  const levels = ['native', 'fluent', 'learning'];
+  box.innerHTML = ['en', 'vi'].map((code) => {
+    const current = state.onb.langLevels[code];
+    const btns = levels.map((lv) => `<button type="button" class="${current === lv ? 'on' : ''}" onclick="setLangLevel('${code}','${lv}')">${t('onb.level.' + lv)}</button>`).join('');
+    return `<div class="mk-langrow"><span class="mk-langname">${t('lang.' + code)}</span><div class="mk-proflevels">${btns}</div></div>`;
+  }).join('');
+}
+function setLangLevel(code, level){ state.onb.langLevels[code] = level; renderOnbLangs(); }
+function updateOnbNav(step){
+  const nextBtn = $('#onb-next');
+  const skipBtn = $('#onb-skip');
+  if (step === 1){ nextBtn.textContent = t('onb.next'); nextBtn.disabled = !state.onb.primary; skipBtn.hidden = false; }
+  if (step === 2){ nextBtn.textContent = t('onb.next'); nextBtn.disabled = state.onb.interests.size === 0; skipBtn.hidden = false; }
+  if (step === 3){ nextBtn.textContent = t('onb.finish'); nextBtn.disabled = false; skipBtn.hidden = false; skipBtn.textContent = t('onb.skip'); }
+}
+function onbNext(){
+  const step = SCREENS[currentScreen].step;
+  if (step === 1 && !state.onb.primary) return;
+  if (step === 2 && state.onb.interests.size === 0) return;
+  if (step === 3) { go('aha'); return; }
+  go('onb-' + (step + 1));
+}
+function onbSkip(){
+  const step = SCREENS[currentScreen].step;
+  if (step === 3) { go('aha'); return; }
+  go('onb-' + (step + 1));
+}
+
+/* ================= AHA RESULTS =================
+   Sample data mirrors the shared EVENTS list (web-shell-base.html) so ids,
+   dates, areas, hosts and trust levels stay consistent across the 4 web
+   mockups. Event titles are user content and are NOT translated (doc 10
+   §13.9) — a single `title` is shown regardless of `lang`. */
+const AHA_EVENTS = [
+  { id: 'volley', title: 'Sunset Beach Volleyball', area: 'myKhe',
+    when: { en: 'Sat 19 Sep · 17:00', vi: 'T7, 19/09 · 17:00' },
+    cap: 20, going: 14, waiting: 0, price: 0,
+    host: 'Tom R.', init: 'TR', color: '#0369A1', badge: 't3',
+    emoji: '🏐', grad: 'linear-gradient(135deg,#BAE6FD,#0EA5E9 75%)', isGoing: true },
+  { id: 'lx', title: 'Vietnamese ⇄ English Language Exchange', area: 'anThuong',
+    when: { en: 'Tonight · 19:00', vi: 'Tối nay · 19:00' },
+    cap: 30, going: 30, waiting: 4, price: 0,
+    host: 'Linh N.', init: 'LN', color: '#B45309', badge: 't5',
+    emoji: '🗣️', grad: 'linear-gradient(135deg,#FDE68A,#F59E0B 75%)' },
+  { id: 'hike', title: 'Sunday Hike: Bai But Loop', area: 'sonTra',
+    when: { en: 'Sun 20 Sep · 06:00', vi: 'CN, 20/09 · 06:00' },
+    cap: 15, going: 12, waiting: 0, price: 0,
+    host: 'James T.', init: 'JT', color: '#047857', badge: 't2',
+    emoji: '🥾', grad: 'linear-gradient(135deg,#A7F3D0,#059669 80%)' },
+  { id: 'foodwalk', title: 'Banh Mi & Coffee Food Walk', area: 'haiChau',
+    when: { en: 'Sat 19 Sep · 09:00', vi: 'T7, 19/09 · 09:00' },
+    cap: 12, going: 5, waiting: 0, price: 150000,
+    host: 'Da Nang Connect', init: 'DN', color: '#0F172A', badge: 't5',
+    emoji: '🥖', grad: 'linear-gradient(135deg,#FBCFE8,#DB2777 80%)' },
+  { id: 'cowork', title: 'Coworking Morning', area: 'anThuong',
+    when: { en: 'Mon 21 Sep · 08:30', vi: 'T2, 21/09 · 08:30' },
+    cap: 25, going: 9, waiting: 0, price: 0,
+    host: 'Mai P.', init: 'MP', color: '#6D28D9', badge: 't4',
+    emoji: '💻', grad: 'linear-gradient(135deg,#E2E8F0,#64748B 85%)' },
+  { id: 'yoga', title: 'Sunrise Yoga on the Beach', area: 'myAn',
+    when: { en: 'Tue 22 Sep · 05:30', vi: 'T3, 22/09 · 05:30' },
+    cap: 20, going: 18, waiting: 0, price: 50000,
+    host: 'Sofia K.', init: 'SK', color: '#BE185D', badge: 't3',
+    emoji: '🧘', grad: 'linear-gradient(135deg,#DDD6FE,#7C3AED 80%)' },
+];
+function ahaSeatsText(e){
+  const left = e.cap - e.going;
+  if (left > 0) return t('ev.spotsLeft', { n: left, c: e.cap });
+  return e.waiting ? t('ev.fullWaiting', { w: e.waiting }) : t('ev.full');
+}
+function ahaPriceText(e){
+  if (!e.price) return t('ev.free');
+  return (lang === 'vi' ? e.price.toLocaleString('vi-VN') : e.price.toLocaleString('en-US')) + ' ₫';
+}
+function goToEvent(id){
+  location.href = 'web-event-mockup.html?screen=event&ev=' + id + '&lang=' + lang;
+}
+function renderAhaCards(){
+  const box = $('#aha-grid');
+  if (!box) return;
+  box.innerHTML = AHA_EVENTS.map((e) => {
+    const saved = state.aha.saved.has(e.id);
+    const full = e.going >= e.cap;
+    const action = e.isGoing
+      ? `<button class="mk-btn mk-btn-outline" style="flex:1" disabled>✓ ${t('ev.going')}</button>`
+      : full
+        ? `<button class="mk-btn mk-btn-outline" style="flex:1" onclick="event.stopPropagation(); toast(t('ev.waitlist'))">${t('ev.waitlist')}</button>`
+        : `<button class="mk-btn mk-btn-primary" style="flex:1" onclick="event.stopPropagation(); toast(t('ev.join'))">${t('ev.join')}</button>`;
+    return `<article class="mk-ev" style="cursor:pointer" onclick="goToEvent('${e.id}')">
+      <div class="mk-ev-hero" style="background:${e.grad}">${e.emoji}
+        <button class="mk-ev-heart ${saved ? 'on' : ''}" aria-pressed="${saved}" aria-label="${t('aria.save')}" onclick="event.stopPropagation(); toggleSaveAha('${e.id}')">${saved ? '♥' : '♡'}</button>
+        ${e.isGoing ? `<span class="mk-ev-going">✓ ${t('ev.going')}</span>` : ''}
+      </div>
+      <div class="mk-ev-body">
+        <h3 class="mk-ev-title">${e.title}</h3>
+        <div class="mk-ev-facts">
+          <span class="mk-fact">📍 ${t('area.' + e.area)}</span>
+          <span class="mk-fact">🕒 ${e.when[lang]}</span>
+          <span class="mk-fact">${ahaSeatsText(e)}</span>
+          <span class="mk-fact">${ahaPriceText(e)}</span>
+        </div>
+        <div class="mk-ev-host">
+          <div class="mk-av" style="background:${e.color}">${e.init}</div>
+          <div class="mk-ev-hostname">${e.host} <span class="tb ${e.badge}">${t('trust.' + e.badge)}</span></div>
+          <button class="mk-ev-more" aria-label="${t('aria.report')}" onclick="event.stopPropagation(); toast(t('toast.report'))">⋯</button>
+        </div>
+      </div>
+      <div class="mk-ev-cta">${action}</div>
+    </article>`;
+  }).join('');
+}
+function toggleSaveAha(id){
+  if (state.aha.saved.has(id)) { state.aha.saved.delete(id); toast(t('toast.unsave')); }
+  else { state.aha.saved.add(id); toast(t('toast.save')); }
+  renderAhaCards();
+}
+function initAha(){
+  renderAhaCards();
+  setTimeout(() => toast(t('toast.pendingIntent')), 600);
+}
+
+/* ---------- boot ---------- */
+buildScrChips();
+updateStaticI18n();
+(function boot(){
+  const params = new URLSearchParams(location.search);
+  const requested = params.get('screen');
+  go(SCREENS[requested] ? requested : 'gate');
+})();
+</script>
+</body>
+</html>
