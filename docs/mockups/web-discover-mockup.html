@@ -1,0 +1,2350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Da Nang Connect — Web mockup · Feed &amp; Discover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   SHARED BASE for the web-client mockup set. Copy this <style> block
+   verbatim into every web mockup file, then append screen-specific CSS
+   in a second <style> block. Do not rename shared classes.
+   Tokens mirror packages/tokens (what apps/web-client-side ships).
+   Doc 10 §12 (teal #0E7C74 + Inter) is a documented drift.
+   ===================================================================== */
+:root{
+  --brand:#0EA5E9; --brand-dark:#0369A1; --sun:#F59E0B;
+  --surface:#FFFFFF; --bg:#F8FAFC; --sunken:#F1F5F9; --text:#0F172A; --text-sec:#475569; --text-mut:#64748B; --line:#E2E8F0; --line-strong:#CBD5E1;
+  --success:#16A34A; --success-text:#11703A; --warning:#D97706; --warning-text:#8A5A09; --danger:#DC2626; --danger-text:#9C1C14;
+  --accent-subtle:#E7F5FD; --success-subtle:#E8F6EE; --warning-subtle:#FBF1E0; --danger-subtle:#FCEAEA; --sun-subtle:#FDF3E1; --info-subtle:#EAF1FB; --info-text:#28558F;
+  --r-sm:6px; --r-md:10px; --r-lg:16px;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px -16px rgba(15,23,42,.18);
+  --shadow-2:0 4px 12px rgba(15,23,42,.10);
+  --shadow-3:0 12px 32px rgba(15,23,42,.18);
+  --side-w:240px; --rail-w:300px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Be Vietnam Pro',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;overflow-x:clip}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{line-height:1.25}
+ul{list-style:none}
+:focus-visible{outline:2px solid var(--brand-dark);outline-offset:2px}
+[hidden]{display:none !important}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- Mockup chrome (NOT app UI) ---------- */
+.mk-banner{position:sticky;top:0;z-index:95;background:var(--text);color:#fff;font-size:12px;padding:6px 14px;text-align:center}
+.mk-banner strong{color:#FCD34D}
+.mk-files{display:flex;gap:4px;align-items:center;background:#1E293B;padding:6px 12px;overflow-x:auto}
+.mk-files a{flex:0 0 auto;color:#CBD5E1;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;white-space:nowrap}
+.mk-files a:hover{background:#334155;color:#fff}
+.mk-files a.on{background:#fff;color:var(--text)}
+.mk-files .lbl{color:#94A3B8;font-size:11px;font-weight:700;margin-right:6px;flex:0 0 auto}
+.mk-toolbar{position:sticky;top:29px;z-index:90;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:8px 12px}
+.mk-scrchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;flex:1;min-width:0;padding-bottom:2px}
+.mk-scrchip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-md);padding:5px 10px;font-size:11.5px;font-weight:600;color:var(--text-sec);min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;line-height:1.3}
+.mk-scrchip b{font-size:9.5px;font-weight:800;letter-spacing:.03em;color:var(--brand-dark);text-transform:uppercase}
+.mk-scrchip.on{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.mk-scrchip.on b{color:#BAE6FD}
+.mk-toolright{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.seg-lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg-lang button{padding:8px 12px;font-size:12px;font-weight:700;color:var(--text-sec);min-height:36px}
+.seg-lang button.on{background:var(--brand-dark);color:#fff}
+.mk-notesbtn{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--brand-dark);min-height:36px;white-space:nowrap}
+.mk-notesbtn:hover,.mk-notesbtn.on{background:var(--accent-subtle)}
+.mk-notes{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow-3);z-index:120;transform:translateX(100%);transition:transform .24s cubic-bezier(.2,.9,.2,1);display:flex;flex-direction:column}
+.mk-notes.open{transform:none}
+.mk-notes header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.mk-notes header h3{font-size:15px}
+.mk-notes .body{padding:16px 18px 40px;overflow-y:auto;font-size:13.5px;color:var(--text-sec)}
+.mk-notes .body h4{font-size:13px;color:var(--text);margin:14px 0 6px}
+.mk-notes .body h4:first-child{margin-top:0}
+.mk-notes .body li{margin:0 0 6px 16px;list-style:disc}
+.mk-notes .body code{font-size:12px;background:var(--sunken);padding:1px 5px;border-radius:4px;color:var(--text)}
+.mk-notes .drift{background:var(--warning-subtle);color:var(--warning-text);border-radius:var(--r-md);padding:10px 12px;margin-top:10px;font-weight:600}
+.mk-mockonly{display:inline-block;font-size:11.5px;color:var(--text-sec);border:1px dashed var(--line-strong);border-radius:var(--r-md);padding:6px 10px}
+.mk-mockonly b{color:var(--brand-dark)}
+
+/* ---------- App shell (mirrors apps/web-client-side AppShell) ---------- */
+.app{display:flex;max-width:1280px;margin:0 auto;min-height:calc(100vh - 120px)}
+.app-side{position:sticky;top:90px;align-self:flex-start;height:calc(100vh - 90px);width:var(--side-w);flex:0 0 auto;border-right:1px solid var(--line);background:var(--surface);padding:18px 14px;display:flex;flex-direction:column;gap:4px}
+.app-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px;padding:6px 10px 18px}
+.app-logo i{width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.nav-item{display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 12px;border-radius:var(--r-md);color:var(--text-sec);font-weight:600;font-size:14.5px;width:100%;text-align:left;position:relative}
+.nav-item:hover{background:var(--sunken);color:var(--text)}
+.nav-item.on{background:var(--accent-subtle);color:var(--brand-dark);font-weight:700}
+.nav-item .ic{width:24px;text-align:center;font-size:18px}
+.nav-item .cnt{margin-left:auto;background:var(--danger);color:#fff;font-size:11px;font-weight:800;border-radius:999px;padding:1px 7px}
+.app-create{margin-top:12px}
+.app-sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+.app-me{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-md)}
+.app-me:hover{background:var(--sunken)}
+.app-me .meta{min-width:0;font-size:13px;line-height:1.3}
+.app-me .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-col{flex:1;min-width:0;display:flex;flex-direction:column}
+.app-top{position:sticky;top:90px;z-index:40;height:60px;display:flex;align-items:center;gap:12px;padding:0 24px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.app-search{flex:1;max-width:460px;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 14px;min-height:40px;color:var(--text-mut);font-size:14px}
+.app-search input{border:0;outline:0;background:none;flex:1;min-width:0;min-height:38px}
+.app-topright{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:18px;position:relative;color:var(--text-sec)}
+.icon-btn:hover{background:var(--sunken)}
+.icon-btn .dot{position:absolute;top:8px;right:8px;min-width:17px;height:17px;border-radius:999px;background:var(--danger);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg)}
+.app-body{display:flex;justify-content:center;gap:24px;padding:20px 24px 80px}
+.app-main{width:100%;max-width:600px;min-width:0}
+.app-rail{width:var(--rail-w);flex:0 0 auto;display:flex;flex-direction:column;gap:16px;position:sticky;top:170px;align-self:flex-start}
+.app.wide .app-main{max-width:980px}
+.app.wide .app-rail,.app.norail .app-rail{display:none}
+.app.bare .app-side,.app.bare .app-top{display:none}
+.app.bare .app-main{max-width:1100px}
+.app-tabs{display:none}
+.rail-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px}
+.rail-card h3{font-size:14px;margin-bottom:10px}
+.rail-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.rail-row:first-of-type{border-top:0}
+.rail-row .grow{flex:1;min-width:0}
+.rail-row .grow b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px}
+.rail-row .muted{color:var(--text-mut);font-size:12px}
+.rail-thumb{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto}
+@media (max-width:1279px){ .app-rail{display:none} }
+@media (max-width:1023px){
+  :root{--side-w:76px}
+  .app-side{padding:14px 8px;align-items:center}
+  .app-logo span,.nav-item .lbl,.app-me .meta,.app-create .lbl,.app-sidefoot .seg-lang{display:none}
+  .nav-item{justify-content:center;padding:8px}
+  .nav-item .cnt{position:absolute;top:4px;right:4px}
+  .app-create .btn{width:44px;padding:0}
+}
+@media (max-width:767px){
+  .app-side{display:none}
+  .app-top{padding:0 12px}
+  .app-body{padding:14px 12px 96px}
+  .app-tabs{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--surface);border-top:1px solid var(--line);justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .app-tabs button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;font-weight:600;color:var(--text-mut);min-width:56px;min-height:48px;justify-content:center;position:relative}
+  .app-tabs button.on{color:var(--brand-dark)}
+  .app-tabs .ic{font-size:19px}
+  .app-tabs .fab{width:48px;height:48px;border-radius:50%;background:var(--brand-dark);color:#fff;font-size:22px;margin-top:-18px;box-shadow:var(--shadow-2)}
+}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:999px;padding:10px 18px;font-weight:700;font-size:14px;white-space:nowrap;transition:background .12s}
+.btn-primary{background:var(--brand-dark);color:#fff}
+.btn-primary:hover{background:#02537f}
+.btn-outline{border:1px solid var(--line-strong);color:var(--text);background:var(--surface)}
+.btn-outline:hover{background:var(--sunken)}
+.btn-ghost{color:var(--brand-dark)}
+.btn-ghost:hover{background:var(--accent-subtle)}
+.btn-success{background:var(--success-subtle);color:var(--success-text);border:1px solid color-mix(in srgb,var(--success) 40%,transparent)}
+.btn-warn{background:var(--warning-subtle);color:var(--warning-text);border:1px solid color-mix(in srgb,var(--warning) 40%,transparent)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger-ghost{color:var(--danger-text)}
+.btn-danger-ghost:hover{background:var(--danger-subtle)}
+.btn:disabled,.btn.disabled{background:var(--sunken);color:var(--text-mut);border-color:var(--line);cursor:not-allowed}
+.btn-block{width:100%}
+.btn-sm{min-height:36px;padding:6px 14px;font-size:13px}
+
+/* ---------- Chips / segmented / tabs ---------- */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;color:var(--text-sec);min-height:40px;white-space:nowrap}
+.chip:hover{border-color:var(--line-strong);color:var(--text)}
+.chip.on{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.chip.soft{background:var(--accent-subtle);border-color:color-mix(in srgb,var(--brand) 40%,transparent);color:var(--brand-dark)}
+.chip .x{font-weight:800;opacity:.8}
+.chip .c{font-size:11.5px;opacity:.75;font-weight:700}
+.seg{display:inline-flex;background:var(--sunken);border-radius:999px;padding:3px;gap:2px}
+.seg button{padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;color:var(--text-sec);min-height:36px}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(15,23,42,.12)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{padding:12px 14px;font-weight:700;font-size:14px;color:var(--text-mut);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;min-height:44px}
+.tabs button.on{color:var(--brand-dark);border-bottom-color:var(--brand-dark)}
+.tabs .cnt{font-size:11.5px;background:var(--sunken);color:var(--text-sec);border-radius:999px;padding:1px 7px;margin-left:6px}
+
+/* ---------- Trust badge (doc 05 §5.3 — canonical T0–T5 ladder) ---------- */
+.tb{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700;white-space:nowrap;line-height:1.5}
+.tb:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8}
+.tb.t0{background:var(--sunken);color:var(--text-sec)}
+.tb.t1{background:var(--accent-subtle);color:var(--brand-dark)}
+.tb.t2{background:#D3EBFA;color:#075985}
+.tb.t3{background:var(--brand-dark);color:#fff}
+.tb.t4{background:#E0E7FF;color:#3730A3}
+.tb.t5{background:var(--sun-subtle);color:#92400E;box-shadow:inset 0 0 0 1px var(--sun)}
+.tb.limited{background:var(--danger-subtle);color:var(--danger-text)}
+
+/* ---------- Avatars ---------- */
+.av{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;color:#fff;flex:0 0 auto;background:var(--brand-dark)}
+.av.sm{width:28px;height:28px;font-size:11px}
+.av.lg{width:56px;height:56px;font-size:18px}
+.av.xl{width:96px;height:96px;font-size:30px}
+.avstack{display:inline-flex;align-items:center}
+.avstack .av{border:2px solid var(--surface);margin-left:-8px}
+.avstack .av:first-child{margin-left:0}
+.avstack .more{margin-left:6px;font-size:12.5px;font-weight:700;color:var(--text-sec)}
+
+/* ---------- Event card ---------- */
+.ev{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column}
+.ev:hover{border-color:var(--line-strong)}
+.ev-cover{position:relative;aspect-ratio:16/8;display:flex;align-items:center;justify-content:center;font-size:44px}
+.ev-cover .tag{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.ev-cover .save{position:absolute;right:10px;top:10px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--shadow-2)}
+.ev-cover .save.on{color:var(--danger)}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.94);color:var(--text)}
+.pill.src{background:var(--info-subtle);color:var(--info-text)}
+.pill.going{background:var(--success);color:#fff}
+.pill.wait{background:var(--warning);color:#fff}
+.pill.full{background:var(--text);color:#fff}
+.pill.cancel{background:var(--danger);color:#fff}
+.ev-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.ev-when{font-size:12.5px;font-weight:700;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.02em}
+.ev-title{font-size:17px;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev-meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;color:var(--text-sec)}
+.ev-host{display:flex;align-items:center;gap:8px;font-size:13px;min-width:0}
+.ev-host b{white-space:nowrap}
+.ev-foot{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;justify-content:space-between;margin-top:auto;padding-top:10px;border-top:1px solid var(--line)}
+.ev.row{flex-direction:row}
+.ev.row .ev-cover{width:180px;aspect-ratio:auto;flex:0 0 auto;font-size:36px}
+.cap{font-size:13px;font-weight:700;color:var(--text)}
+.cap.low{color:var(--warning-text)}
+.cap.full{color:var(--danger-text)}
+.cap-bar{height:6px;border-radius:999px;background:var(--sunken);overflow:hidden;margin-top:4px}
+.cap-bar i{display:block;height:100%;background:var(--success)}
+.cap-bar.low i{background:var(--warning)}
+.cap-bar.full i{background:var(--danger)}
+.dgh{position:sticky;top:150px;z-index:5;background:var(--bg);padding:10px 0 8px;font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--text-mut);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.dgh:after{content:'';flex:1;height:1px;background:var(--line)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.wrap{flex-wrap:wrap}
+.muted{color:var(--text-mut)}
+.sec{color:var(--text-sec)}
+.h1{font-size:26px;font-weight:800;letter-spacing:-.3px}
+.h2{font-size:20px;font-weight:700}
+.h3{font-size:16px;font-weight:700}
+.small{font-size:13px}
+.xs{font-size:12px}
+
+/* ---------- Surfaces ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.note{border-radius:var(--r-md);padding:10px 14px;font-size:13px;display:flex;gap:9px;align-items:flex-start;font-weight:600}
+.note.info{background:var(--info-subtle);color:var(--info-text)}
+.note.warn{background:var(--warning-subtle);color:var(--warning-text)}
+.note.danger{background:var(--danger-subtle);color:var(--danger-text)}
+.note.ok{background:var(--success-subtle);color:var(--success-text)}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.kv dt{color:var(--text-mut)}
+
+/* ---------- Forms ---------- */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .lbl{font-size:13px;font-weight:700;color:var(--text-sec)}
+.field input,.field select,.field textarea{border:1px solid var(--line-strong);border-radius:var(--r-md);padding:10px 12px;min-height:44px;background:var(--surface);width:100%}
+.field textarea{min-height:110px;resize:vertical}
+.field .hint{font-size:12px;color:var(--text-mut)}
+.field.err input{border-color:var(--danger)}
+.field .errt{font-size:12px;color:var(--danger-text);font-weight:600}
+.check{display:flex;gap:10px;align-items:center;font-size:14px;min-height:40px}
+.check input{width:18px;height:18px;accent-color:var(--brand-dark)}
+.switch{position:relative;width:44px;height:26px;border-radius:999px;background:var(--line-strong);flex:0 0 auto;transition:.15s}
+.switch:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:.15s}
+.switch.on{background:var(--brand-dark)}
+.switch.on:after{left:21px}
+
+/* ---------- Table ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-mut);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:hover td{background:var(--bg)}
+
+/* ---------- Empty state ---------- */
+.empty{text-align:center;padding:48px 24px;background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--r-lg)}
+.empty .ico{font-size:40px;margin-bottom:10px}
+.empty h3{font-size:18px;margin-bottom:6px}
+.empty p{color:var(--text-sec);max-width:440px;margin:0 auto 16px;font-size:14px}
+.empty .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ---------- Dialog / drawer / toast ---------- */
+.scrim{position:fixed;inset:0;background:rgba(15,23,42,.46);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow-3);width:100%;max-width:460px;max-height:calc(100vh - 32px);overflow-y:auto}
+.dlg.wide{max-width:640px}
+.dlg-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.dlg-h h3{font-size:17px}
+.dlg-b{padding:18px 20px}
+.dlg-f{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line)}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(360px,100vw);background:var(--surface);box-shadow:var(--shadow-3);z-index:101;overflow-y:auto}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--text);color:#fff;border-radius:var(--r-md);padding:12px 16px;font-size:14px;font-weight:600;z-index:130;box-shadow:var(--shadow-3);display:flex;gap:14px;align-items:center;max-width:calc(100vw - 32px)}
+.toast button{color:#7DD3FC;font-weight:800}
+@media (max-width:767px){.toast{bottom:84px}}
+
+/* ---------- Screens ---------- */
+.scr{display:none}
+.scr.show{display:block}
+</style>
+<style>
+/* =====================================================================
+   SCREEN-SPECIFIC CSS — file ② Feed & Discover only. New classes use the
+   `disc-`, `home-`, `news-`, `map-`, `cal-`, `pub-` prefixes so nothing
+   collides with the shared base above (mockup-builder "va tên class" trap).
+   Owner decision 2026-09-19: Home = staff news + curated events (no member
+   composer/posts); Discover = member-posted (UGC) events with reviews.
+   ===================================================================== */
+.disc-layout{display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start}
+.disc-sidebar{display:flex;flex-direction:column;gap:16px;position:sticky;top:170px}
+/* Source-order fix: this used to sit before the unconditional .disc-sidebar rule above, so an
+   equal-specificity later rule always won and the sidebar never actually hid below `lg` (see
+   mockup-builder skill "Rò specificity của display"). Keep this media query LAST. */
+@media (max-width:1023px){.disc-layout{grid-template-columns:1fr}.disc-sidebar{display:none}}
+.disc-fgroup{display:flex;flex-direction:column;gap:8px}
+.disc-fgroup h4{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--text-mut);text-transform:uppercase}
+.disc-frow{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px;font-size:13.5px}
+.disc-frow label{display:flex;align-items:center;gap:8px;flex:1;min-width:0;cursor:pointer}
+.disc-frow .c{color:var(--text-mut);font-size:12px;flex:0 0 auto}
+.disc-frow.zero{opacity:.45}
+.disc-radiusrow{display:flex;align-items:center;gap:10px}
+.disc-radiusrow input[type=range]{flex:1}
+.disc-footer-areas{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:8px}
+.disc-emptyinline{margin-top:8px}
+.disc-viewseg{display:flex;justify-content:flex-end}
+
+/* ---------- Home masthead / news / picked-by-team / weekend strip ---------- */
+.home-masthead{display:flex;flex-direction:column;gap:4px;padding-bottom:4px}
+.home-masthead .h1{letter-spacing:-.4px}
+.news-feat{display:grid;grid-template-columns:220px 1fr;gap:0;overflow:hidden;cursor:pointer}
+.news-feat:hover{border-color:var(--line-strong)}
+.news-feat-cover{display:flex;align-items:center;justify-content:center;font-size:56px;min-height:160px}
+.news-feat-body{padding:16px 20px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.news-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.news-badge{background:var(--text);color:#fff}
+.news-card{cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.news-card:hover{border-color:var(--line-strong)}
+.news-card-top{display:flex;align-items:center;gap:8px}
+.news-emoji{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:17px;flex:0 0 auto}
+.news-foot{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.news-cover{border-radius:var(--r-lg);aspect-ratio:16/6;display:flex;align-items:center;justify-content:center;font-size:56px}
+.news-body p{margin-bottom:12px;line-height:1.65}
+@media (max-width:640px){.news-feat{grid-template-columns:1fr}.news-feat-cover{aspect-ratio:16/9;min-height:0}}
+.home-weekend-row{display:flex;gap:10px;overflow-x:auto;padding-top:8px}
+.home-weekend-day{flex:0 0 auto;min-width:120px;border:1px solid var(--line);border-radius:var(--r-md);padding:10px 12px;text-align:center}
+.home-weekend-day b{display:block;font-size:13.5px}
+.home-discoverCta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.curated-source{margin-top:-2px}
+/* ---------- Rating line + reviews (doc 02 UC-16: reviews only from checked-in attendees) ---------- */
+.rateline{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--text-sec);margin-top:-2px}
+.rt{font-weight:700;color:var(--text)}
+.rt.new{color:var(--text-mut);font-weight:600}
+.cm{color:var(--text-sec)}
+.review-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:8px;cursor:pointer}
+.review-card:hover{border-color:var(--line-strong)}
+.review-card .stars-line{color:var(--sun);letter-spacing:2px;font-size:13px}
+.review-text{color:var(--text-sec);font-style:italic}
+
+.map-wrap{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+@media (max-width:1023px){.map-wrap{grid-template-columns:1fr}}
+.map-list{display:flex;flex-direction:column;gap:10px;max-height:70vh;overflow-y:auto}
+.map-listrow{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:var(--r-md);cursor:pointer}
+.map-listrow:hover,.map-listrow.hi{border-color:var(--brand-dark);background:var(--accent-subtle)}
+.map-canvas{position:relative;background:linear-gradient(180deg,#EAF6F8,#F3FAF6);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;aspect-ratio:4/5}
+.map-canvas svg{width:100%;height:100%;display:block}
+.map-pin{cursor:pointer}
+.map-pin circle.dot{transition:r .12s}
+.map-pin.hi circle.dot{r:11}
+.map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12.5px;color:var(--text-sec)}
+.map-legend span{display:inline-flex;align-items:center;gap:6px}
+.map-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;background:var(--brand-dark)}
+.map-searcharea{position:absolute;left:50%;top:14px;transform:translateX(-50%);box-shadow:var(--shadow-2);z-index:5}
+
+.nearby-sub{margin-top:16px}
+
+.cal-wrap{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+@media (max-width:900px){.cal-wrap{grid-template-columns:1fr}}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-dow{text-align:center;font-size:11px;font-weight:800;color:var(--text-mut);padding:4px 0}
+.cal-cell{aspect-ratio:1;border:1px solid var(--line);border-radius:var(--r-md);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-weight:700;font-size:14px;background:var(--surface)}
+.cal-cell:not(.empty):hover{border-color:var(--line-strong)}
+.cal-cell.empty{visibility:hidden}
+.cal-cell.today{border-color:var(--brand-dark);box-shadow:inset 0 0 0 2px var(--brand-dark)}
+.cal-cell.sel{background:var(--brand-dark);color:#fff}
+.cal-dot{width:5px;height:5px;border-radius:50%;background:var(--brand-dark)}
+.cal-cell.sel .cal-dot{background:#fff}
+
+.search-mark{background:var(--sun-subtle);color:var(--warning-text);border-radius:3px;padding:0 2px}
+
+.pub-header{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:20px}
+/* Own brand mark for public (bare) headers — do NOT reuse .app-logo: its
+   sidebar breakpoint rule (`@media max-width:1023px{.app-logo span{display:none}}`)
+   would silently drop the wordmark on tablet/mobile widths for this unrelated header. */
+.pub-brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px}
+.pub-brand i{width:10px;height:10px;border-radius:50%;background:var(--brand);flex:0 0 auto}
+.pub-crumb{font-size:13px;color:var(--text-mut);margin-bottom:10px}
+.pub-hero{border-radius:var(--r-lg);padding:40px 32px;color:#fff;margin-bottom:20px}
+.pub-faq summary{cursor:pointer;font-weight:700;padding:12px 0}
+.pub-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.pub-appbtn{display:inline-flex;align-items:center;gap:8px;background:var(--text);color:#fff;border-radius:var(--r-md);padding:9px 14px;font-weight:700;font-size:13px}
+
+/* Narrow-column fix: shared .ev-body has no min-width:0, so `row` cards can
+   overflow a tight flex/grid column (flexbox min-width:auto trap). Scope the
+   fix to columns narrower than the 600px feed so the shared class is untouched. */
+#calDayPanel .ev.row .ev-body,
+.map-list .ev.row .ev-body{min-width:0}
+#calDayPanel .ev-title,
+.map-list .ev-title{white-space:normal}
+/* The 320px calendar side panel is too narrow for the feed's 180px row-cover — with the rating
+   line added (owner decision 2026-09-19) the text column shrank further and titles were
+   unreadable. Shrink the cover here only; the 600px feed and map list are unaffected. */
+#calDayPanel .ev.row .ev-cover{width:88px;font-size:22px}
+#calDayPanel .ev-host,
+#calDayPanel .ev-meta{flex-wrap:wrap;row-gap:4px}
+/* Doc 10 §12.3: never fully uppercase Vietnamese with diacritics — stacked marks collide on some devices. */
+html[lang="vi"] *{text-transform:none !important}
+.deck-entry{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:var(--r-lg);padding:14px 16px;background:linear-gradient(120deg,var(--accent-subtle),#EEF2FF);border:1px solid color-mix(in srgb,var(--brand) 30%,transparent)}
+.deck-entry:hover{border-color:var(--brand)}
+.de-stack{position:relative;width:54px;height:62px;flex:0 0 auto}
+.de-stack i{position:absolute;inset:0;border-radius:10px;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-style:normal;box-shadow:var(--shadow-2)}
+.de-stack i:nth-child(1){transform:rotate(-10deg) translateX(-6px)}
+.de-stack i:nth-child(2){transform:rotate(6deg) translateX(6px)}
+.de-txt{flex:1;min-width:0}
+.de-txt b{display:block;font-size:15px}
+.de-txt span{font-size:13.5px;color:var(--brand-dark);font-weight:600}
+.de-go{font-size:22px;color:var(--brand-dark);font-weight:800}
+/* Cover tags must never run under the save button on narrow cards. */
+.ev-cover .tag{max-width:calc(100% - 64px)}
+.ev-cover .tag .pill{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block}
+
+/* ---------- Home date-range controls (Today/This week/This month + shared date popover) ---------- */
+.home-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.home-periodnav{padding:2px 0;flex-wrap:wrap;gap:10px}
+.home-periodnav .lbl{min-width:120px;text-align:center}
+.home-glance-empty{color:var(--text-mut);font-size:13.5px;padding:6px 0}
+.home-timeline-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line)}
+.home-timeline-row:first-child{border-top:0}
+.home-timeline-time{width:56px;flex:0 0 auto;font-weight:700;color:var(--brand-dark)}
+.home-timeline-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.home-timeline-body{min-width:0}
+.home-weekend-day{cursor:pointer;min-height:44px}
+.home-weekend-day.today{border-color:var(--brand-dark);box-shadow:inset 0 0 0 1px var(--brand-dark)}
+.home-weekend-row .cal-grid{width:100%}
+/* Shared date popover (Home range picker + Discover "Pick a date" chip). */
+.datepop{position:fixed;isolation:isolate;z-index:115;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-3);padding:14px;width:272px}
+.datepop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-weight:700;font-size:14px}
+.datepop-foot{margin-top:8px;text-align:center}
+/* .cal-cell (shared with the wide W-14 Calendar screen) relies on its 1fr grid track for sizing
+   and never needed `min-width:0` there because that column is hundreds of px wide. This 272px
+   popover is narrow enough that the cell's default `min-width:auto` refuses to shrink below its
+   min-content size, so the grid "blows out" past the popover's own box (7 columns end up ~100px
+   each instead of ~30px) — the gaps of that overflowing grid then show whatever event card is
+   behind the popover on the page. Scope the real CSS Grid fix to the popover only. */
+#datePopGrid .cal-cell{min-width:0}
+</style>
+</head>
+<body>
+
+<div class="mk-banner"><strong>MOCKUP TĨNH</strong> · chưa nối API · giờ hiển thị theo Asia/Ho_Chi_Minh (dữ liệu thật lưu UTC) · hôm nay giả lập: Thứ Sáu 18/09/2026</div>
+<nav class="mk-files" aria-label="Mockup files">
+  <span class="lbl">Bộ mockup web:</span>
+  <a href="auth-onboarding-web-mockup.html" data-file="auth">① Auth &amp; onboarding</a>
+  <a href="web-discover-mockup.html" data-file="discover">② Feed &amp; Discover</a>
+  <a href="web-event-mockup.html" data-file="event">③ Event &amp; Create</a>
+  <a href="web-myspace-mockup.html" data-file="myspace">④ My space &amp; Profile</a>
+  <a href="web-swipe-mockup.html" data-file="swipe">⑤ Swipe (Tinder-style)</a>
+</nav>
+<div class="mk-toolbar">
+  <div class="mk-scrchips" id="mkChips" role="tablist" aria-label="Screens"></div>
+  <div class="mk-toolright">
+    <div class="seg-lang" role="group" aria-label="Language">
+      <button data-lang="en" class="on">EN</button><button data-lang="vi">VI</button>
+    </div>
+    <button class="mk-notesbtn" id="mkNotesBtn">📝 Notes</button>
+  </div>
+</div>
+
+<aside class="mk-notes" id="mkNotes" aria-label="Ghi chú mockup">
+  <header><h3 id="mkNotesTitle">Ghi chú</h3><button class="icon-btn" id="mkNotesClose" aria-label="Đóng">✕</button></header>
+  <div class="body" id="mkNotesBody"></div>
+</aside>
+
+<!-- ================= APP SHELL (one instance, screens swap inside .app-main) ================= -->
+<div class="app" id="app">
+  <aside class="app-side" aria-label="Primary navigation">
+    <a class="app-logo" href="#"><i></i><span>Da Nang Connect</span></a>
+    <button class="nav-item" data-nav="home"><span class="ic">🏠</span><span class="lbl" data-i18n="nav.home"></span></button>
+    <button class="nav-item" data-nav="discover"><span class="ic">🧭</span><span class="lbl" data-i18n="nav.discover"></span></button>
+    <button class="nav-item" data-nav="myevents"><span class="ic">📅</span><span class="lbl" data-i18n="nav.myEvents"></span></button>
+    <button class="nav-item" data-nav="notifications"><span class="ic">🔔</span><span class="lbl" data-i18n="nav.notifications"></span><span class="cnt me-only">3</span></button>
+    <button class="nav-item" data-nav="profile"><span class="ic">👤</span><span class="lbl" data-i18n="nav.profile"></span></button>
+    <div class="app-create"><button class="btn btn-primary btn-block" data-go-create><span>＋</span><span class="lbl" data-i18n="nav.createEvent"></span></button></div>
+    <div class="app-sidefoot">
+      <div class="seg-lang" role="group" data-i18n-aria="aria.language"><button data-lang="en" class="on">EN</button><button data-lang="vi">VI</button></div>
+      <div class="app-me me-only"><span class="av sm" style="background:#7C3AED">AL</span><span class="meta"><b>Alex Morgan</b><span class="tb t1" data-tb="1"></span></span></div>
+      <button class="btn btn-outline btn-block guest-only"><span data-i18n="nav.signIn"></span></button>
+    </div>
+  </aside>
+
+  <div class="app-col">
+    <header class="app-top">
+      <label class="app-search"><span aria-hidden="true">🔍</span><input data-i18n-ph="top.search" data-i18n-aria="aria.search"></label>
+      <div class="app-topright">
+        <button class="icon-btn me-only" data-i18n-aria="aria.notifications">🔔<span class="dot">3</span></button>
+        <button class="btn btn-primary btn-sm guest-only"><span data-i18n="nav.signIn"></span></button>
+      </div>
+    </header>
+    <div class="app-body">
+      <main class="app-main" id="appMain">
+        <!-- =============== SCREENS GO HERE =============== -->
+
+        <!-- ============ HOME — W-00 `/` (staff news + curated local events, owner decision 2026-09-19) ============ -->
+        <section class="scr" data-screen="home" data-code="W-00" data-title="Home — news &amp; curated" data-nav="home" data-layout="feed">
+          <div class="stack">
+            <div class="home-masthead">
+              <h1 class="h1" id="homeMastTitle"></h1>
+              <p class="small muted" id="homeMastRange"></p>
+            </div>
+
+            <div class="home-controls">
+              <div class="seg" id="homeRangeSeg" role="group" data-i18n-aria="aria.homeRange">
+                <button data-range="day" data-i18n="home.range.today"></button>
+                <button data-range="week" class="on" data-i18n="home.range.week"></button>
+                <button data-range="month" data-i18n="home.range.month"></button>
+              </div>
+              <button class="chip" id="homePickDateBtn" data-open-datepicker="home">📅 <span data-i18n="common.pickDate"></span></button>
+            </div>
+            <div class="row between home-periodnav">
+              <div class="row" style="gap:6px">
+                <button class="icon-btn" id="homePrevPeriod" data-i18n-aria="aria.prevPeriod" data-i18n-title="aria.prevPeriod">◀</button>
+                <b class="num lbl" id="homePeriodLabel"></b>
+                <button class="icon-btn" id="homeNextPeriod" data-i18n-aria="aria.nextPeriod" data-i18n-title="aria.nextPeriod">▶</button>
+              </div>
+              <button class="btn btn-ghost btn-sm" id="homeBackToday" data-i18n="home.range.backToToday" hidden></button>
+            </div>
+
+            <div class="stack" style="gap:12px" id="homeNewsSection">
+              <h2 class="h2" data-i18n="home.news.heading"></h2>
+              <div id="newsFeatured"></div>
+              <div id="newsGrid" class="grid3"></div>
+            </div>
+            <div class="stack" style="gap:10px">
+              <h3 class="h3" data-i18n="home.news.guidesHeading"></h3>
+              <div class="row wrap" style="gap:14px" id="newsGuides"></div>
+            </div>
+
+            <div class="stack" style="gap:12px">
+              <div class="row between wrap">
+                <h2 class="h2" data-i18n="home.picked.heading"></h2>
+                <span class="small muted" data-i18n="home.picked.sub"></span>
+              </div>
+              <div id="pickedList" class="grid3"></div>
+            </div>
+
+            <div class="card stack" style="gap:10px">
+              <h3 class="h3" id="homeGlanceHeading"></h3>
+              <div class="home-weekend-row" id="homeGlanceBody"></div>
+            </div>
+
+            <div class="card home-discoverCta">
+              <div class="grow"><b data-i18n="home.discoverCta.title"></b><div class="small muted" data-i18n="home.discoverCta.desc"></div></div>
+              <button class="btn btn-primary" id="homeDiscoverCta" data-i18n="home.discoverCta.cta"></button>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>W-00 · Home — news &amp; curated (quyết định chủ dự án 19/09/2026)</h4>
+            <ul>
+              <li>Route thật: <code>/[locale]</code>. Từ 19/09/2026, Home KHÔNG còn composer hay bài đăng của thành viên — chỉ tin tức do STAFF viết + sự kiện do STAFF curate. Nội dung thành viên (UGC, kèm review/bình luận) chuyển hẳn sang <code>W-10 Discover</code>.</li>
+              <li>Bảng dữ liệu đề xuất: <code>news_articles</code> (mới — <code>id, tag, title_en, title_vi, dek_en, dek_vi, body_en, body_vi, related_event_id, updated_at, author='staff'</code>) và <code>events.source_type IN ('curated','member')</code>. Route đề xuất: <code>GET /api/v1/news</code>, <code>GET /api/v1/news/:id</code>, <code>GET /api/v1/events?source=curated</code>.</li>
+              <li>BR-18 (không scraping tự động): nội dung News do đội ngũ Da Nang Connect tự viết, không cào dữ liệu tự động — mock đánh dấu rõ "Sample content — not verified reporting" để không bị hiểu nhầm là báo chí thật.</li>
+              <li>Card "Picked by our team" luôn có SourceBadge "Listed by Da Nang Connect" + dòng nguồn (trang Facebook, lịch công cộng…); số hiển thị là "quan tâm" — sự kiện curated KHÔNG có RSVP giới hạn chỗ / hàng đợi chờ như sự kiện UGC bên Discover.</li>
+              <li>UC-29 (xem sự kiện), UC-09 (guest xem không cần đăng nhập) vẫn áp dụng. Bấm bài báo mở <code>news-article</code>; bấm sự kiện curated mở thẳng trang chi tiết sự kiện (file ③ Event &amp; Create) theo <code>?screen=event&amp;ev=&lt;id&gt;</code>.</li>
+              <li><b>Lọc theo ngày/tuần/tháng (thêm 19/09/2026, sau bản đầu):</b> segmented <code>Today · This week · This month</code> + nút "Pick a date" mở popover lịch tháng dùng chung với Discover. Trạng thái lưu ở URL <code>?range=day|week|month&amp;date=YYYY-MM-DD</code> (Asia/Ho_Chi_Minh, UTC khi lưu DB — doc 10 Q-03/Q-08). API đề xuất: <code>GET /api/v1/events?source=curated&amp;from=&amp;to=</code> và <code>GET /api/v1/news?from=&amp;to=</code>, cả hai nhận ISO date đã quy đổi từ local Đà Nẵng sang UTC ở tầng client trước khi gọi.</li>
+              <li>Tuần dùng quy ước THỐNG NHẤT bắt đầu Thứ Hai cho cả EN và VI (khác màn Calendar W-14 vốn đổi đầu tuần theo locale) — chọn cách này để đơn giản hoá logic điều hướng tuần một trục duy nhất; ghi nhận đây là khác biệt có chủ đích với W-14, không phải lỗi.</li>
+              <li>Sự kiện lặp lại (vd. <code>dragon</code> — diễn ra mỗi cuối tuần) chỉ có MỘT bản ghi <code>event</code> nhưng nhiều buổi diễn — mô hình dữ liệu thật nên tách bảng <code>event_occurrences(event_id, starts_at)</code> thay vì nhúng mảng ngày trực tiếp trên event như mock này (<code>EVENT_DATES</code> chỉ để demo UI). Card hiện nhãn "Every weekend" + số buổi rơi vào kỳ đang xem, không lặp lại nhiều card cho cùng một sự kiện.</li>
+              <li>Tin tức có 3 loại mốc thời gian: <code>published</code> (ngày đăng), <code>relevant</code> (khoảng ngày bài viết CÓ Ý NGHĨA, vd. bài Trung Thu chỉ relevant đúng 25/09), và <code>evergreen</code> (hướng dẫn thủ tục — luôn hiện ở hàng "Guides" cuối trang, không bị lọc theo kỳ).</li>
+              <li>"Picked by our team" rỗng theo kỳ hiện CTA "See community events…" trỏ sang Discover VÀ mang theo kỳ đang xem (ánh xạ: ngày cụ thể → <code>time=YYYY-MM-DD</code> đúng 1-1; tháng → <code>time=month</code> đúng 1-1 NẾU đang xem đúng tháng hiện tại, còn xem tháng khác thì Discover vẫn chỉ hiểu "tháng hiện tại" — giới hạn đã biết của mock, ghi rõ để không hiểu nhầm là bug; tuần → ánh xạ gần đúng sang chip có sẵn "Next 7 days" vì Discover chưa có khái niệm "tuần" độc lập).</li>
+            </ul>
+            <div class="drift">DRIFT — cần cập nhật tài liệu sau quyết định 19/09/2026:
+              <br>1) Doc 10 §3 ghi "không có news feed, chỉ có event discovery feed" — mâu thuẫn trực tiếp với quyết định tách Home (tin tức) khỏi Discover (event feed); cần sửa lại §3.
+              <br>2) Doc 14 §3.2 (J2) khuyến nghị feed trộn giữ SỰ KIỆN làm trục chính, không tách hẳn trang tin tức riêng — quyết định mới đi xa hơn khuyến nghị đó, cần đối chiếu lại phương án (PA) trong doc 14.
+              <br>3) Code thật hiện có module <code>post</code> + <code>community-post</code> phục vụ đúng "/" (bài đăng thành viên trên Home) — hướng mới cần một kế hoạch thu hồi/di chuyển tính năng, không chỉ đổi UI.
+              <br>4) (giữ ghi chú cũ) Doc 10 dùng top-nav ngang cho web; app thật &amp; mockup dùng side-nav kiểu mạng xã hội — đã theo app thật.
+            </div>
+          </template>
+        </section>
+
+        <!-- ============ NEWS ARTICLE — W-00b (opened from a Home news card) ============ -->
+        <section class="scr" data-screen="news-article" data-code="W-00b" data-title="News article (full read)" data-nav="home" data-layout="feed">
+          <div class="stack">
+            <button class="btn-ghost btn-sm" data-go="home" style="align-self:flex-start">← <span data-i18n="news.backToHome"></span></button>
+            <div class="row wrap" style="gap:8px" id="artMetaTop"></div>
+            <h1 class="h1" id="artTitle"></h1>
+            <p class="small muted" id="artByline"></p>
+            <div class="note warn" data-i18n="news.sampleNotice"></div>
+            <div class="news-cover" id="artCover"></div>
+            <div class="stack news-body" id="artBody"></div>
+            <div class="card" id="artRelated" hidden></div>
+            <p class="xs muted" id="artSource"></p>
+            <div class="row" style="gap:10px">
+              <button class="btn btn-outline btn-sm" onclick="toast(t('news.shareSent') + ' ' + t('common.mockOnly'))">🔗 <span data-i18n="news.share"></span></button>
+              <button class="btn btn-outline btn-sm" data-open="reportDialog" onclick="setReportTarget(t('news.reportContext'))">⚑ <span data-i18n="news.report"></span></button>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>W-00b · News article (full read)</h4>
+            <ul>
+              <li>Mở từ card News trên Home; route SEO đề xuất <code>/[locale]/news/[slug]</code> (chưa dựng route thật riêng trong mock tĩnh — dùng chung state trong file này qua <code>CURRENT_ARTICLE</code>).</li>
+              <li>Nội dung song ngữ đầy đủ (title/dek/body có bản <code>en</code> và <code>vi</code>) — khác nội dung UGC ở Discover vốn KHÔNG dịch máy.</li>
+              <li>Thân bài trong mock là văn mẫu minh hoạ, không phải tin đã kiểm chứng — luôn hiện cảnh báo "Sample content — not verified reporting" (BR-18).</li>
+              <li>Khối "Related event" (nếu bài có <code>related</code>) trỏ sang sự kiện curated liên quan, dùng đúng <code>eventCard()</code> để badge nguồn nhất quán với Home.</li>
+              <li>Report áp dụng cho cả nội dung staff để nhất quán UI "nội dung hiển thị ở đâu, report có ở đó" — dù rủi ro kiểm duyệt với nội dung staff thấp hơn UGC.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- ============ DISCOVER — W-10 `/discover` (wide) ============ -->
+        <section class="scr" data-screen="discover" data-code="W-10" data-title="Discover — list" data-nav="discover" data-layout="wide">
+          <div class="stack">
+            <div class="row between wrap">
+              <h1 class="h1" data-i18n="discover.title"></h1>
+              <label class="row small"><span class="muted" data-i18n="discover.sortLabel"></span>
+                <select id="discSort" style="border:1px solid var(--line-strong);border-radius:var(--r-md);padding:8px 10px;min-height:40px">
+                  <option value="soonest" data-i18n="sort.soonest"></option>
+                  <option value="popular" data-i18n="sort.popular"></option>
+                  <option value="top" data-i18n="sort.top"></option>
+                  <option value="nearest" data-i18n="sort.nearest"></option>
+                </select>
+              </label>
+            </div>
+            <div class="chips" id="discTimeChips" role="group" data-i18n-aria="aria.timeFilter"></div>
+            <button class="deck-entry" data-go="web-swipe-mockup.html?screen=deck">
+              <span class="de-stack" aria-hidden="true"><i style="background:linear-gradient(135deg,#BAE6FD,#0EA5E9)">🏐</i><i style="background:linear-gradient(135deg,#FDE68A,#F59E0B)">🗣️</i><i style="background:linear-gradient(135deg,#A7F3D0,#059669)">🥾</i></span>
+              <span class="de-txt"><b data-i18n="discover.deckTitle"></b><span id="discDeckBody"></span></span>
+              <span class="de-go" aria-hidden="true">→</span>
+            </button>
+            <div class="row wrap" style="gap:8px" id="discAppliedChips"></div>
+            <div class="disc-layout">
+              <aside class="disc-sidebar card" id="discSidebar" data-i18n-aria="discFilters.open"></aside>
+              <div class="disc-results">
+                <div class="row between wrap" style="margin-bottom:4px">
+                  <span class="small muted num" id="discCountNote"></span>
+                  <div class="seg disc-viewseg" role="group" data-i18n-aria="aria.viewMode">
+                    <button data-go="web-swipe-mockup.html?screen=deck">🃏 <span data-i18n="discover.swipe"></span></button>
+                    <button class="on" data-i18n="discover.list"></button>
+                    <button data-go="discover-map" data-i18n="discover.map"></button>
+                  </div>
+                </div>
+                <div id="discList" class="stack"></div>
+                <div class="empty disc-emptyinline" id="discEmptyInline" hidden>
+                  <div class="ico" aria-hidden="true">🔍</div>
+                  <h3 data-i18n="empty.noMatch.title"></h3>
+                  <p data-i18n="empty.noMatch.desc"></p>
+                  <div class="acts">
+                    <button class="btn btn-primary" onclick="resetAllFilters()" data-i18n="empty.noMatch.cta1"></button>
+                    <button class="btn btn-outline" data-open="filterDrawer" data-i18n="empty.noMatch.cta2"></button>
+                  </div>
+                </div>
+                <div style="text-align:center;padding:8px 0 0">
+                  <button class="btn btn-outline" onclick="toast(t('discover.loadMore'))" data-i18n="discover.loadMore"></button>
+                </div>
+              </div>
+            </div>
+            <div class="card stack" style="gap:12px">
+              <h2 class="h3" data-i18n="discover.reviews.heading"></h2>
+              <div class="grid3" id="discReviews"></div>
+            </div>
+            <div class="disc-footer-areas card">
+              <b data-i18n="discover.browseByArea"></b>
+              <div class="row wrap" style="gap:8px" id="discFooterAreas"></div>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>W-10 · <code>/[locale]/events</code> — sự kiện do THÀNH VIÊN đăng (UGC)</h4>
+            <ul>
+              <li>SSR + streaming (doc 10 §5). UC-29, UC-31. Render server trước, hydrate bộ lọc phía client.</li>
+              <li>Từ 19/09/2026: Discover chỉ hiển thị sự kiện <code>source_type='member'</code> (<code>DISCOVER_UGC_IDS</code> trong mock) — sự kiện curated của staff (lantern/dragon/foodwalk) đã chuyển sang Home, KHÔNG lặp lại ở đây.</li>
+              <li>Bộ lọc gọi <code>GET /api/v1/events?source=member&amp;from&amp;to&amp;areas[]&amp;categories[]&amp;languages[]&amp;priceMax&amp;hasSpots&amp;audience&amp;sort</code>; facet count gọi <code>GET /api/v1/events/facets?source=member</code> debounce 250ms (§9.2) — mock tính facet phía client trên tập UGC, không gọi API thật.</li>
+              <li>Quy tắc facet (§9.2): đếm theo nhóm ĐANG thao tác thì KHÔNG áp bộ lọc của chính nhóm đó, nhóm khác thì CÓ áp — đã hiện thực trong <code>countByArea()</code>/<code>countByCategory()</code>, cả hai đã scope theo tập UGC.</li>
+              <li>Mỗi card hiện <code>ratingLine()</code>: ★ điểm trung bình host (số review) + 💬 số bình luận. Review chỉ tính từ người đã CHECK-IN buổi trước đó của host (UC-16), trong cửa sổ 7 ngày sau buổi diễn ra — host chưa có review hiện "New host".</li>
+              <li>Thẻ "Not sure what you want? Swipe through {n} events" và segmented <code>🃏 Swipe · List · Map</code> là lối vào chế độ lướt Tinder-style — Swipe là MỘT CHẾ ĐỘ RIÊNG của Discover (PA B+, doc 14 §… — cần qua cổng G1 xác thực + G2 an toàn trước khi bật cho user), không phải màn con của danh sách.</li>
+              <li>Sort thêm "Top rated" (sắp theo <code>RATINGS[id].avg</code> giảm dần, host chưa có review xếp cuối).</li>
+              <li><b>Lọc theo ngày/tuần/tháng (thêm 19/09/2026):</b> hàng chip WHEN có thêm "This month" và "📅 Pick a date" (dùng chung popover lịch với Home), lọc theo <code>EVENT_DATES</code> thay vì <code>day</code> key tĩnh — hàm <code>eventMatchesTime()</code>. Chip cũ (Tonight/Tomorrow/This weekend/Next 7 days) giữ nguyên hành vi, không đổi. Chấm trên popover dùng chung logic với Home (sự kiện curated/tin liên quan) — không phản ánh đúng ngày có sự kiện UGC; chấp nhận là giới hạn của việc dùng chung 1 component cho mock này.</li>
+              <li>Trạng thái bộ lọc đồng bộ 2 chiều với URL (<code>?time=&amp;areas=&amp;cat=&amp;lang2=&amp;free=&amp;family=&amp;af=&amp;near=&amp;sort=</code>) — tải lại trang giữ nguyên bộ lọc.</li>
+              <li>"Reset all" chỉ xoá bộ lọc, giữ nguyên chip thời gian (quy tắc §8.2 bảng "quy tắc tương tác").</li>
+              <li>Bấm vào một card/trích đoạn review mở thẳng trang chi tiết sự kiện (file ③), không còn mở deck lướt như bản trước.</li>
+              <li>Footer link khu vực phục vụ SEO nội bộ, trỏ sang <code>W-15 /areas/[slug]</code> (trang khu vực vẫn gồm cả curated lẫn UGC, phân biệt bằng badge nguồn).</li>
+            </ul>
+            <div class="drift">DRIFT: route doc ghi <code>/[locale]/events</code>, app thật &amp; mockup dùng <code>/discover</code> làm nhãn nav chính (xem <code>app/(shell)/discover</code>) — giữ theo app thật, route field ở bảng trên vẫn ghi đúng để backend đối chiếu.</div>
+          </template>
+        </section>
+
+        <!-- ============ DISCOVER MAP — W-13 (wide, split) ============ -->
+        <section class="scr" data-screen="discover-map" data-code="W-13" data-title="Discover — map" data-nav="discover" data-layout="wide">
+          <div class="stack">
+            <div class="row between wrap">
+              <h1 class="h2" data-i18n="discover.title"></h1>
+              <div class="seg" role="group" data-i18n-aria="aria.viewMode">
+                <button data-go="web-swipe-mockup.html?screen=deck">🃏 <span data-i18n="discover.swipe"></span></button>
+                <button data-go="discover" data-i18n="discover.list"></button>
+                <button class="on" data-i18n="discover.map"></button>
+              </div>
+            </div>
+            <div class="map-wrap">
+              <div class="map-list" id="mapList" data-i18n-aria="aria.eventsInView"></div>
+              <div>
+                <div class="map-canvas" id="mapCanvas">
+                  <button class="btn btn-primary btn-sm map-searcharea" id="btnSearchArea" hidden data-i18n="discover.map.searchArea"></button>
+                  <svg viewBox="0 0 400 500" id="mapSvg" role="img" data-i18n-aria="aria.mapImg"></svg>
+                </div>
+                <div class="map-legend">
+                  <span><i style="background:var(--brand-dark)"></i><span data-i18n="discover.map.legendSingle"></span></span>
+                  <span><i style="background:#3730A3"></i><span data-i18n="discover.map.legendCluster"></span></span>
+                  <span><i style="background:var(--warning);opacity:.5"></i><span data-i18n="discover.map.legendApprox"></span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>W-13 · <code>/[locale]/events/map</code> — tập UGC (Discover)</h4>
+            <ul>
+              <li>Bố cục chia đôi ở breakpoint <code>lg</code> trở lên (§9.3 bảng so sánh mobile/web). Kéo bản đồ KHÔNG tự tìm lại — chỉ hiện nút nổi "Search this area" (nguyên tắc bất di bất dịch #1, §9.3).</li>
+              <li>Chỉ ghim sự kiện <code>DISCOVER_UGC_IDS</code> (thành viên đăng) — sự kiện curated của staff không xuất hiện trên bản đồ Discover, xem ở Home.</li>
+              <li>Hover card trong danh sách ↔ highlight ghim hai chiều; chạm ghim cuộn danh sách tới card tương ứng và highlight 1.5s.</li>
+              <li>Ghim cụm dùng khi nhiều sự kiện trùng khu vực; ghim <code>approximate</code> là vòng tròn mờ bán kính 300m khi <code>location_precision = approximate</code> hoặc <code>hide_exact_address = true</code> — áp dụng ở sự kiện chạy bộ Ngũ Hành Sơn trong mock này.</li>
+              <li>Bản đồ và danh sách dùng CHUNG một đối tượng bộ lọc — không có bộ lọc riêng cho bản đồ (nguyên tắc #2, §9.3).</li>
+              <li>Bấm dòng trong danh sách hoặc ghim mở thẳng trang chi tiết sự kiện (file ③) qua <code>?screen=event&amp;ev=&lt;id&gt;</code>.</li>
+            </ul>
+            <div class="drift">DRIFT: doc 10 §9.3 ghi thư viện web là <code>react-leaflet</code>; hợp đồng thật của web-client-agent (và brief bàn giao) chốt <strong>MapLibre GL + tile OSM, lazy-loaded khi chuyển sang chế độ Map</strong> — không dùng Google Maps JS API. Mock vẽ SVG tĩnh để demo hành vi UX, bản dựng thật thay bằng canvas MapLibre.</div>
+          </template>
+        </section>
+
+        <!-- ============ DISCOVER FILTERS DRAWER — W-12 ============ -->
+        <section class="scr" data-screen="discover-filters" data-code="W-12" data-title="Discover — filter drawer (lg breakpoint)" data-nav="discover" data-layout="wide">
+          <div class="stack">
+            <h1 class="h2" data-i18n="discover.title"></h1>
+            <p class="muted" data-i18n="discFilters.hint"></p>
+            <div><button class="btn btn-primary" data-open="filterDrawer" data-i18n="discFilters.open"></button></div>
+          </div>
+          <template class="notes">
+            <h4>W-12 · Filter drawer</h4>
+            <ul>
+              <li>Ở breakpoint <code>lg</code> (1024–1279px), sidebar 280px thu gọn thành nút "Filters" mở drawer trái (§8.6 ghi chú dưới wireframe W-10). Dưới <code>lg</code> dùng mô hình mobile bottom sheet — không dựng lại ở web mockup này (thuộc mobile agent).</li>
+              <li>Nút chính LUÔN ghi số kết quả thật: "Show N results" (§8.2 quy tắc #1) — nếu 0 phải đổi chữ, không chỉ disable.</li>
+              <li>Drawer này và sidebar ở W-10 dùng chung state <code>FILTER</code> và chung hàm sinh HTML <code>filterFieldsHTML()</code> — đổi ở đây phản ánh ngay khi quay lại W-10.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- ============ DISCOVER EMPTY STATES ============ -->
+        <section class="scr" data-screen="discover-empty" data-code="ES-01/02/03" data-title="Discover — empty states" data-nav="discover" data-layout="wide">
+          <div class="stack">
+            <h1 class="h2" data-i18n="discover.title"></h1>
+            <div class="seg" id="emptySeg" role="group" data-i18n-aria="aria.emptyVariant">
+              <button class="on" data-variant="noMatch" data-i18n="emptyTabs.noMatch"></button>
+              <button data-variant="noData" data-i18n="emptyTabs.noData"></button>
+              <button data-variant="nearby" data-i18n="emptyTabs.nearby"></button>
+            </div>
+            <div id="emptyNoMatch" class="empty">
+              <div class="ico" aria-hidden="true">🔍</div>
+              <h3 data-i18n="empty.noMatch.title"></h3>
+              <p data-i18n="empty.noMatch.desc"></p>
+              <div class="acts">
+                <button class="btn btn-primary" data-i18n="empty.noMatch.cta1"></button>
+                <button class="btn btn-outline" data-i18n="empty.noMatch.cta2"></button>
+              </div>
+            </div>
+            <div id="emptyNoData" class="empty" hidden>
+              <div class="ico" aria-hidden="true">🌤️</div>
+              <h3 data-i18n="empty.noData.title"></h3>
+              <p data-i18n="empty.noData.desc"></p>
+              <div class="acts">
+                <button class="btn btn-primary" data-i18n="empty.noData.cta1"></button>
+                <button class="btn btn-outline" data-go-create data-i18n="empty.noData.cta2"></button>
+              </div>
+            </div>
+            <div id="emptyNearby" hidden>
+              <div class="empty">
+                <div class="ico" aria-hidden="true">📍</div>
+                <h3 data-i18n="empty.nearby.title"></h3>
+                <p data-i18n="empty.nearby.desc"></p>
+                <div class="acts">
+                  <button class="btn btn-primary" onclick="toast(t('empty.nearby.cta1'))" data-i18n="empty.nearby.cta1"></button>
+                  <button class="btn btn-outline" onclick="toast(t('empty.nearby.cta2'))" data-i18n="empty.nearby.cta2"></button>
+                </div>
+              </div>
+              <div class="nearby-sub stack">
+                <div class="h3" id="nearbyPopularLabel"></div>
+                <div class="grid2" id="nearbyList"></div>
+              </div>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>ES-01 / ES-02 / ES-03 · Empty state (doc 10 §11)</h4>
+            <ul>
+              <li>Nguyên tắc E-3: phân biệt rõ rỗng-vì-bộ-lọc (ES-02) và rỗng-vì-chưa-có-dữ-liệu (ES-01) — copy hoàn toàn khác nhau, không dùng chung một "No events".</li>
+              <li>ES-03 minh hoạ nguyên tắc E-6: ưu tiên hiển thị NỘI DUNG THAY THẾ (sự kiện ở Mỹ An) hơn là một empty state trống — khối "Popular in My An" bên dưới CTA. Cả 3 biến thể chỉ tính trên tập UGC của Discover (<code>DISCOVER_UGC_IDS</code>), không tính sự kiện curated của Home.</li>
+              <li>Khoá i18n: <code>discover.feed.empty.noMatch</code>, <code>discover.feed.empty.noData</code>, <code>discover.feed.empty.nearbyOnly</code> (đặt tên rút gọn trong mock là <code>empty.noMatch.*</code> v.v. — bản dựng thật dùng đúng khoá namespaced trong bảng ES §11.2).</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- ============ CALENDAR — W-14 (wide) ============ -->
+        <section class="scr" data-screen="calendar" data-code="W-14" data-title="Calendar" data-nav="discover" data-layout="wide">
+          <div class="stack">
+            <div class="row between wrap">
+              <h1 class="h1" id="calMonthLabel"></h1>
+              <div class="row" style="gap:6px">
+                <button class="icon-btn" id="calPrev" data-i18n-aria="aria.prevMonth" data-i18n-title="aria.prevMonth">◀</button>
+                <button class="icon-btn" id="calNext" data-i18n-aria="aria.nextMonth" data-i18n-title="aria.nextMonth">▶</button>
+              </div>
+            </div>
+            <p class="muted" data-i18n="calendar.selectDate"></p>
+            <div class="cal-wrap">
+              <div>
+                <div class="cal-grid" id="calDow"></div>
+                <div class="cal-grid" id="calGrid" style="margin-top:6px"></div>
+              </div>
+              <div class="card" id="calDayPanel"></div>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>W-14 · <code>/[locale]/events/calendar</code></h4>
+            <ul>
+              <li>UC-37. Persona P2 dùng lịch tháng để lên kế hoạch trước 2 tuần.</li>
+              <li>T-8: đầu tuần theo locale — <code>en</code> bắt đầu Chủ nhật, <code>vi</code> bắt đầu Thứ hai. Đổi ngôn ngữ EN↔VI sẽ xoay lại lưới lịch, không chỉ dịch nhãn.</li>
+              <li>Hôm nay giả lập Thứ Sáu 18/09/2026 (viền nhấn); chấm dưới số ngày = có sự kiện, dữ liệu từ <code>EVENTS</code> mẫu.</li>
+              <li>Lịch hiện CẢ sự kiện curated (staff) lẫn UGC (thành viên) trong cùng một ngày — mỗi card tự phân biệt bằng badge "Listed by Da Nang Connect" (curated) qua <code>eventCard()</code>, không lọc theo nguồn như Discover list/map.</li>
+              <li>ES-08 (tháng rỗng) áp dụng khi chuyển sang tháng khác không có seed — nút Prev/Next trong mock chỉ đổi nhãn tháng, danh sách vẫn theo dữ liệu mẫu tháng 9 (giới hạn cố ý của mock tĩnh).</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- ============ SEARCH — W-11 ============ -->
+        <section class="scr" data-screen="search" data-code="W-11" data-title="Search results" data-nav="discover" data-layout="wide">
+          <div class="stack">
+            <h1 class="h1" data-i18n="search.title"></h1>
+            <label class="field"><input id="searchQ" type="search" value="volleyball" data-i18n-aria="search.title"></label>
+            <div class="row wrap" style="gap:8px">
+              <span class="small muted" data-i18n="search.tryAlias"></span>
+              <button class="chip" id="btnTryAlias">marble mountains</button>
+            </div>
+            <h2 class="h3" id="searchResultsFor"></h2>
+            <div class="tabs" id="searchTabs" role="tablist">
+              <button class="on" data-tab="events" data-i18n="search.tabEvents"></button>
+              <button data-tab="people" data-i18n="search.tabPeople"></button>
+              <button data-tab="areas" data-i18n="search.tabAreas"></button>
+            </div>
+            <div id="searchPane"></div>
+          </div>
+          <template class="notes">
+            <h4>W-11 · <code>/[locale]/search</code></h4>
+            <ul>
+              <li>UC-30. Tìm theo <code>title</code>, <code>description</code>, <code>venue</code>, <code>organizer</code> (§7.3), debounce 300ms.</li>
+              <li>Tab Events chỉ tìm trong tập UGC (<code>DISCOVER_UGC_IDS</code>) — tìm kiếm này gắn với ngữ cảnh Discover; tìm sự kiện curated/tin tức của Home không nằm trong màn này ở bản mock.</li>
+              <li>Tab Areas minh hoạ A-3/A-4 (§13.6): gõ bí danh tiếng Anh phổ biến ("marble mountains") vẫn khớp <code>Ngu Hanh Son / Ngũ Hành Sơn</code> nhờ cột <code>search_aliases</code> + extension <code>unaccent</code> của PostgreSQL.</li>
+              <li>ES-05/ES-06 (§11.2): khi rỗng có CTA "Create a … event"; trước khi gõ hiện gợi ý từ khoá phổ biến — chưa dựng trạng thái rỗng riêng trong file này vì đã có ở màn Discover.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- ============ THIS WEEK — W-17 (SEO, guest, bare) ============ -->
+        <section class="scr" data-screen="this-week" data-code="W-17" data-title="This week (SEO)" data-nav="discover" data-layout="bare" data-guest="1">
+          <div class="pub-header">
+            <a class="pub-brand" href="#" data-go="home"><i></i><span>Da Nang Connect</span></a>
+            <div class="row" style="gap:10px">
+              <div class="seg-lang" role="group" data-i18n-aria="aria.language"><button data-lang="en" class="on">EN</button><button data-lang="vi">VI</button></div>
+              <button class="btn btn-outline btn-sm" data-go="home"><span data-i18n="nav.signIn"></span></button>
+            </div>
+          </div>
+          <div class="stack">
+            <p class="pub-crumb"><span data-i18n="thisWeek.breadcrumbHome"></span> / <span data-i18n="thisWeek.breadcrumbSelf"></span></p>
+            <h1 class="h1" data-i18n="thisWeek.title"></h1>
+            <p class="sec" style="max-width:640px" data-i18n="thisWeek.intro"></p>
+            <div id="weekList" class="stack"></div>
+            <div class="card pub-banner">
+              <span style="font-size:28px" aria-hidden="true">📱</span>
+              <div class="grow"><b data-i18n="thisWeek.getApp"></b><div class="small muted" data-i18n="thisWeek.getAppDesc"></div></div>
+              <span class="pub-appbtn"> App Store</span>
+              <span class="pub-appbtn">▶ Google Play</span>
+            </div>
+            <div class="card">
+              <h2 class="h3" data-i18n="thisWeek.faqTitle" style="margin-bottom:8px"></h2>
+              <details class="pub-faq"><summary data-i18n="thisWeek.faq1q"></summary><p class="sec small" data-i18n="thisWeek.faq1a"></p></details>
+              <details class="pub-faq"><summary data-i18n="thisWeek.faq2q"></summary><p class="sec small" data-i18n="thisWeek.faq2a"></p></details>
+              <details class="pub-faq"><summary data-i18n="thisWeek.faq3q"></summary><p class="sec small" data-i18n="thisWeek.faq3a"></p></details>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>W-17 · <code>/[locale]/this-week</code> — SSG + ISR 30 phút</h4>
+            <ul>
+              <li>Public, guest-first (Q-01) — không có tường đăng nhập, header riêng tối giản thay app shell (<code>data-layout="bare"</code> ẩn side-nav/top-bar thật).</li>
+              <li>SEO: cần <code>generateMetadata</code> (title/description/OG image), JSON-LD <code>ItemList</code> gồm nhiều <code>Event</code> theo schema.org, có mặt trong <code>sitemap.ts</code>, <code>robots.txt</code> cho phép index.</li>
+              <li>Trang SEO công khai này liệt kê CẢ sự kiện curated (staff) lẫn UGC (thành viên) trong 7 ngày tới, phân biệt bằng badge nguồn qua <code>eventCard()</code> — khác Discover (chỉ UGC) vì mục tiêu ở đây là phủ hết nội dung cho index của công cụ tìm kiếm.</li>
+              <li>ES-32 (§11.2): tuần rỗng vẫn hiện 5 sự kiện tuần kế tiếp thay vì để trống — chưa mô phỏng trong mock vì dữ liệu mẫu tuần này không rỗng.</li>
+              <li>Smart app banner "Get the app" — nút App Store/Google Play là placeholder tĩnh, không phải link thật trong mock.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- ============ AREA LANDING — W-15 (SEO, guest, bare) ============ -->
+        <section class="scr" data-screen="area-landing" data-code="W-15" data-title="Area landing — An Thuong" data-nav="discover" data-layout="bare" data-guest="1">
+          <div class="pub-header">
+            <a class="pub-brand" href="#" data-go="home"><i></i><span>Da Nang Connect</span></a>
+            <div class="row" style="gap:10px">
+              <div class="seg-lang" role="group" data-i18n-aria="aria.language"><button data-lang="en" class="on">EN</button><button data-lang="vi">VI</button></div>
+              <button class="btn btn-outline btn-sm" data-go="home"><span data-i18n="nav.signIn"></span></button>
+            </div>
+          </div>
+          <div class="stack">
+            <p class="pub-crumb"><span data-i18n="thisWeek.breadcrumbHome"></span> / <span data-i18n="discover.browseByArea"></span> / <span data-area="an-thuong"></span></p>
+            <div class="pub-hero" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+              <div class="xs" style="opacity:.85;text-transform:uppercase;font-weight:800;letter-spacing:.06em" data-i18n="area.heroKicker"></div>
+              <h1 class="h1" style="color:#fff" data-area="an-thuong"></h1>
+              <p style="max-width:560px;opacity:.95" data-i18n="area.blurb.anThuong"></p>
+            </div>
+            <h2 class="h2" id="areaUpcomingLabel"></h2>
+            <div class="grid2" id="areaUpcomingList"></div>
+            <div class="card">
+              <h3 class="h3" id="areaPopularLabel" style="margin-bottom:10px"></h3>
+              <div class="kv"><dt>📅</dt><dd id="areaStat1"></dd><dt>👥</dt><dd id="areaStat2"></dd></div>
+            </div>
+            <h3 class="h3" data-i18n="area.nearby"></h3>
+            <div class="row wrap" style="gap:8px" id="areaNearbyChips"></div>
+            <div class="card stack">
+              <b id="areaNotifyTitle"></b>
+              <p class="small muted" data-i18n="area.notifyDesc"></p>
+              <div class="row wrap" style="gap:8px">
+                <input type="email" placeholder="you@example.com" style="border:1px solid var(--line-strong);border-radius:var(--r-md);padding:10px 12px;min-height:44px;flex:1;min-width:220px">
+                <button class="btn btn-primary" id="areaNotifyBtn" data-i18n="area.notifyCta"></button>
+              </div>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>W-15 · <code>/[locale]/areas/an-thuong</code> — SSG + ISR 15 phút</h4>
+            <ul>
+              <li>Kênh CH-14 trong <code>07-go-to-market-da-nang.md</code> — landing SEO theo khu vực chỉ có ở web, không có ở mobile.</li>
+              <li>Guest-first, CTA đăng ký nhận email KHÔNG chặn nội dung (Q-01) — chỉ là gợi ý nhẹ ở cuối trang.</li>
+              <li>Danh sách lọc theo <code>e.area==='an-thuong'</code> trên toàn bộ <code>EVENTS</code> (curated + UGC), phân biệt bằng badge nguồn qua <code>eventCard()</code> — An Thượng trong dữ liệu mẫu hiện chỉ có sự kiện UGC (lx, cowork, quiz), badge curated sẽ tự xuất hiện nếu staff thêm sự kiện curated ở khu vực này.</li>
+              <li>ES-31 (§11.2): nếu khu vực rỗng, đổi copy thành "Nothing scheduled in {area} this week" kèm CTA "Create an event in {area}" — mock này có sẵn 3 sự kiện ở An Thượng nên không kích hoạt biến thể rỗng.</li>
+              <li>Tên khu vực luôn qua <code>area()</code> — EN không dấu / VI có dấu (§13.6 A-1, A-2).</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =============== END SCREENS =============== -->
+      </main>
+      <aside class="app-rail" id="appRail">
+        <div class="rail-card" id="railWeatherCard" hidden>
+          <h3 data-i18n="rail.weather"></h3>
+          <div class="stack" style="gap:6px" id="railWeatherBody"></div>
+        </div>
+        <div class="rail-card">
+          <h3 data-i18n="rail.upcoming"></h3>
+          <div id="railUpcoming"></div>
+        </div>
+        <div class="rail-card">
+          <h3 data-i18n="rail.areas"></h3>
+          <div class="chips wrap" style="flex-wrap:wrap" id="railAreas"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <nav class="app-tabs" aria-label="Bottom navigation">
+    <button data-nav="home"><span class="ic">🏠</span><span data-i18n="nav.home"></span></button>
+    <button data-nav="discover"><span class="ic">🧭</span><span data-i18n="nav.discover"></span></button>
+    <button class="fab" data-go-create data-i18n-aria="aria.createEvent">＋</button>
+    <button data-nav="notifications"><span class="ic">🔔</span><span data-i18n="nav.notifications"></span></button>
+    <button data-nav="profile"><span class="ic">👤</span><span data-i18n="nav.profile"></span></button>
+  </nav>
+</div>
+
+<!-- ============ SHARED OVERLAYS (screen-specific, file ②) ============ -->
+<div class="scrim" data-overlay id="filterDrawer" hidden>
+  <aside class="drawer">
+    <div class="dlg-h"><h3 data-i18n="discover.title"></h3><button class="icon-btn" data-close data-i18n-aria="aria.close" data-i18n-title="aria.close">✕</button></div>
+    <div class="dlg-b" id="drawerFilterBody"></div>
+    <div class="dlg-f"><button class="btn btn-primary btn-block" data-close id="drawerShowResults"></button></div>
+  </aside>
+</div>
+
+<div class="scrim" data-overlay id="reportDialog" hidden>
+  <div class="dlg">
+    <div class="dlg-h"><h3 data-i18n="report.title"></h3><button class="icon-btn" data-close data-i18n-aria="aria.close" data-i18n-title="aria.close">✕</button></div>
+    <div class="dlg-b stack">
+      <p class="small muted" id="reportTarget"></p>
+      <div class="field">
+        <label data-i18n="report.reason"></label>
+        <label class="check"><input type="radio" name="rr" checked><span data-i18n="report.r1"></span></label>
+        <label class="check"><input type="radio" name="rr"><span data-i18n="report.r2"></span></label>
+        <label class="check"><input type="radio" name="rr"><span data-i18n="report.r3"></span></label>
+        <label class="check"><input type="radio" name="rr"><span data-i18n="report.r4"></span></label>
+      </div>
+      <div class="field"><label data-i18n="report.details"></label><textarea data-i18n-ph="report.detailsPh"></textarea></div>
+    </div>
+    <div class="dlg-f">
+      <button class="btn btn-outline" data-close data-i18n="common.cancel"></button>
+      <button class="btn btn-danger" data-close onclick="toast(t('report.sent'))" data-i18n="report.submit"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Shared date popover — opened from Home's "Pick a date" and Discover's "📅 Pick a date" chip
+     (same component, positioned near whichever trigger opened it; added 19/09/2026). -->
+<div class="datepop" id="datePopover" role="dialog" data-i18n-aria="aria.datePicker" hidden>
+  <div class="datepop-head">
+    <button class="icon-btn" id="datePopPrev" data-i18n-aria="aria.prevMonth" data-i18n-title="aria.prevMonth">◀</button>
+    <b id="datePopMonthLabel" class="num"></b>
+    <button class="icon-btn" id="datePopNext" data-i18n-aria="aria.nextMonth" data-i18n-title="aria.nextMonth">▶</button>
+  </div>
+  <div id="datePopGrid"></div>
+  <div class="datepop-foot"><button class="btn btn-ghost btn-sm" id="datePopToday" data-i18n="datepicker.jumpToday"></button></div>
+</div>
+
+<script>
+/* =====================================================================
+   SHARED BASE JS. Copy verbatim, then add screen-specific strings with
+   addI18n({en:{...},vi:{...}}) and screen logic in a second <script>.
+   ===================================================================== */
+const I18N = {
+  en: {
+    'nav.home':'Home','nav.discover':'Discover','nav.myEvents':'My events','nav.notifications':'Notifications','nav.profile':'Profile','nav.createEvent':'Create event','nav.signIn':'Sign in',
+    'top.search':'Search events, people, areas…',
+    'rail.upcoming':'Coming up for you','rail.areas':'Browse by area',
+    'home.title':"What's on in Da Nang",
+    'time.tonight':'Tonight','time.tomorrow':'Tomorrow','time.weekend':'This weekend','time.next7':'Next 7 days',
+    'date.today':'Today · Friday 18 September',
+    'ev.spotsLeft':'{n} of {c} spots left','ev.full':'Full','ev.fullWaiting':'Full · {w} waiting','ev.going':'{n} going','ev.free':'Free','ev.curated':'Listed by Da Nang Connect','ev.hostedBy':'Hosted by {name}',
+    'rsvp.join':'RSVP · {n} spots left','rsvp.waitlist':'Join waitlist · {w} waiting','rsvp.full':'Event is full','rsvp.going':'You are going','rsvp.waiting':'Waiting · #{p}','rsvp.confirm':'Confirm your spot · {h}h left','rsvp.cancelled':'Cancelled','rsvp.review':'Leave a review',
+    'trust.0':'New','trust.1':'Email verified','trust.2':'Phone verified','trust.3':'Active member','trust.4':'Trusted','trust.5':'Community leader','trust.limited':'Limited',
+    'cat.sports':'Sports','cat.language':'Language exchange','cat.social':'Social meetup','cat.food':'Food and drink','cat.wellness':'Wellness','cat.music':'Music and arts','cat.outdoor':'Outdoor','cat.family':'Family','cat.professional':'Professional'
+  },
+  vi: {
+    'nav.home':'Trang chủ','nav.discover':'Khám phá','nav.myEvents':'Sự kiện của tôi','nav.notifications':'Thông báo','nav.profile':'Hồ sơ','nav.createEvent':'Tạo sự kiện','nav.signIn':'Đăng nhập',
+    'top.search':'Tìm sự kiện, người, khu vực…',
+    'rail.upcoming':'Sắp tới của bạn','rail.areas':'Xem theo khu vực',
+    'home.title':'Đà Nẵng có gì',
+    'time.tonight':'Tối nay','time.tomorrow':'Ngày mai','time.weekend':'Cuối tuần này','time.next7':'7 ngày tới',
+    'date.today':'Hôm nay · Thứ Sáu 18 tháng 9',
+    'ev.spotsLeft':'Còn {n}/{c} chỗ','ev.full':'Đã đầy','ev.fullWaiting':'Đã đầy · {w} người chờ','ev.going':'{n} người tham gia','ev.free':'Miễn phí','ev.curated':'Do Da Nang Connect tổng hợp','ev.hostedBy':'Tổ chức bởi {name}',
+    'rsvp.join':'Đăng ký · còn {n} chỗ','rsvp.waitlist':'Vào danh sách chờ · {w} người đang chờ','rsvp.full':'Sự kiện đã đầy','rsvp.going':'Bạn sẽ tham gia','rsvp.waiting':'Đang chờ · #{p}','rsvp.confirm':'Xác nhận chỗ · còn {h} giờ','rsvp.cancelled':'Đã huỷ','rsvp.review':'Viết đánh giá',
+    'trust.0':'Thành viên mới','trust.1':'Đã xác thực email','trust.2':'Đã xác thực số điện thoại','trust.3':'Thành viên tích cực','trust.4':'Đáng tin cậy','trust.5':'Người dẫn dắt cộng đồng','trust.limited':'Đang bị hạn chế',
+    'cat.sports':'Thể thao','cat.language':'Trao đổi ngôn ngữ','cat.social':'Gặp gỡ giao lưu','cat.food':'Ẩm thực','cat.wellness':'Sức khoẻ và thư giãn','cat.music':'Âm nhạc và nghệ thuật','cat.outdoor':'Ngoài trời','cat.family':'Gia đình','cat.professional':'Nghề nghiệp'
+  }
+};
+function addI18n(extra){ for (const l of ['en','vi']) Object.assign(I18N[l], extra[l] || {}); }
+let LANG = 'en';
+function t(key, vars){ let s = (I18N[LANG] && I18N[LANG][key]) ?? I18N.en[key] ?? key; if (vars) for (const [k,v] of Object.entries(vars)) s = s.replaceAll('{'+k+'}', v); return s; }
+
+/* Doc 10 §13.6: EN shows names WITHOUT diacritics, VI shows full diacritics. */
+const AREAS = {
+  'an-thuong':{en:'An Thuong',vi:'An Thượng',count:12},
+  'my-khe':{en:'My Khe Beach',vi:'Biển Mỹ Khê',count:6},
+  'my-an':{en:'My An',vi:'Mỹ An',count:8},
+  'hai-chau':{en:'Hai Chau',vi:'Hải Châu',count:4},
+  'son-tra':{en:'Son Tra',vi:'Sơn Trà',count:3},
+  'ngu-hanh-son':{en:'Ngu Hanh Son',vi:'Ngũ Hành Sơn',count:2}
+};
+function area(slug){ const a = AREAS[slug]; return a ? a[LANG] : slug; }
+
+/* Shared sample data — use these ids everywhere so the set stays consistent.
+   Titles/descriptions are user content: NOT translated (doc 10 §13.9). */
+const EVENTS = [
+  {id:'volley', title:'Sunset Beach Volleyball', cat:'sports', emoji:'🏐', grad:'linear-gradient(135deg,#BAE6FD,#0EA5E9)', area:'my-khe', when:{en:'Sat 19 Sep · 17:00',vi:'T7, 19/09 · 17:00'}, day:'sat', cap:20, going:13, waiting:0, waitlist:true, price:0, host:{name:'Tom R.',ini:'TR',color:'#0369A1',trust:3,hosted:14}, langs:['EN'], curated:false},
+  {id:'lx', title:'Vietnamese ⇄ English Language Exchange', cat:'language', emoji:'🗣️', grad:'linear-gradient(135deg,#FDE68A,#F59E0B)', area:'an-thuong', when:{en:'Tonight · 19:00',vi:'Tối nay · 19:00'}, day:'today', cap:30, going:30, waiting:4, waitlist:true, price:0, host:{name:'Linh N.',ini:'LN',color:'#B45309',trust:5,hosted:41}, langs:['EN','VI'], curated:false},
+  {id:'hike', title:'Sunday Hike: Bai But Loop', cat:'outdoor', emoji:'🥾', grad:'linear-gradient(135deg,#A7F3D0,#059669)', area:'son-tra', when:{en:'Sun 20 Sep · 06:00',vi:'CN, 20/09 · 06:00'}, day:'sun', cap:15, going:12, waiting:0, waitlist:true, price:0, host:{name:'James T.',ini:'JT',color:'#047857',trust:2,hosted:3}, langs:['EN'], curated:false},
+  {id:'foodwalk', title:'Banh Mi & Coffee Food Walk', cat:'food', emoji:'🥖', grad:'linear-gradient(135deg,#FBCFE8,#DB2777)', area:'hai-chau', when:{en:'Sat 19 Sep · 09:00',vi:'T7, 19/09 · 09:00'}, day:'sat', cap:12, going:5, waiting:0, waitlist:false, price:150000, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN'], curated:true, source:'Da Nang Food Tours (Facebook page)'},
+  {id:'cowork', title:'Coworking Morning', cat:'professional', emoji:'💻', grad:'linear-gradient(135deg,#E2E8F0,#64748B)', area:'an-thuong', when:{en:'Mon 21 Sep · 08:30',vi:'T2, 21/09 · 08:30'}, day:'mon', cap:25, going:9, waiting:0, waitlist:true, price:0, host:{name:'Mai P.',ini:'MP',color:'#6D28D9',trust:4,hosted:22}, langs:['EN','VI'], curated:false},
+  {id:'yoga', title:'Sunrise Yoga on the Beach', cat:'wellness', emoji:'🧘', grad:'linear-gradient(135deg,#DDD6FE,#7C3AED)', area:'my-an', when:{en:'Tue 22 Sep · 05:30',vi:'T3, 22/09 · 05:30'}, day:'tue', cap:20, going:18, waiting:0, waitlist:true, price:50000, host:{name:'Sofia K.',ini:'SK',color:'#BE185D',trust:3,hosted:9}, langs:['EN'], curated:false},
+  {id:'run', title:'Marble Mountains Trail Run 10K', cat:'sports', emoji:'🏃', grad:'linear-gradient(135deg,#FED7AA,#EA580C)', area:'ngu-hanh-son', when:{en:'Wed 23 Sep · 05:45',vi:'T4, 23/09 · 05:45'}, day:'wed', cap:30, going:11, waiting:0, waitlist:true, price:0, host:{name:'Duc H.',ini:'DH',color:'#C2410C',trust:1,hosted:0}, langs:['EN','VI'], curated:false},
+  {id:'boardgame', title:'Board Game Night', cat:'social', emoji:'🎲', grad:'linear-gradient(135deg,#C7D2FE,#4F46E5)', area:'my-an', when:{en:'Thu 24 Sep · 19:30',vi:'T5, 24/09 · 19:30'}, day:'thu', cap:16, going:16, waiting:0, waitlist:false, price:30000, host:{name:'Anna B.',ini:'AB',color:'#4338CA',trust:3,hosted:6}, langs:['EN'], curated:false}
+];
+const ME = {name:'Alex Morgan', handle:'alexm', ini:'AL', color:'#7C3AED', trust:1, area:'an-thuong'};
+function ev(id){ return EVENTS.find(e => e.id === id); }
+function price(p){ if (!p) return t('ev.free'); return LANG === 'vi' ? p.toLocaleString('vi-VN') + ' ₫' : p.toLocaleString('en-US') + ' ₫'; }
+function tb(level){ return `<span class="tb t${level}" data-tb="${level}">${t('trust.'+level)}</span>`; }
+function avatar(p, size){ return `<span class="av ${size||''}" style="background:${p.color}">${p.ini}</span>`; }
+/* Curated (staff) events show a soft "N interested" headcount, never a hard spots-left/waitlist
+   count — they have no real RSVP capacity, unlike member (UGC) events (owner decision 2026-09-19). */
+function capText(e){
+  if (e.curated) {
+    const extra = e.price ? ` · ${price(e.price)}` : '';
+    return `<span class="cap num">${t('ev.interestedCount',{n:e.going})}${extra}</span>`;
+  }
+  const left = e.cap - e.going;
+  if (left > 0) { const cls = left / e.cap < 0.2 ? 'low' : ''; return `<span class="cap num ${cls}">${t('ev.spotsLeft',{n:left,c:e.cap})}</span>`; }
+  return `<span class="cap num full">${e.waitlist && e.waiting ? t('ev.fullWaiting',{w:e.waiting}) : t('ev.full')}</span>`;
+}
+/* Event card. variant: 'grid' (default) | 'row'. opts: {state:'going'|'waiting'|null, saved:bool}
+   Curated cards (e.curated) skip host/rating rows and add a source line + an "Interested" CTA
+   instead of a price footer — see capText() above for the headcount-vs-capacity distinction. */
+function eventCard(e, variant, opts){
+  opts = opts || {};
+  const tags = [];
+  if (e.curated) tags.push(`<span class="pill src">🏷 ${t('ev.curated')}</span>`);
+  if (opts.state === 'going') tags.push(`<span class="pill going">✓ ${t('rsvp.going')}</span>`);
+  if (opts.state === 'waiting') tags.push(`<span class="pill wait">${t('rsvp.waiting',{p:3})}</span>`);
+  if (e.going >= e.cap && !opts.state && !e.curated) tags.push(`<span class="pill full">${t('ev.full')}</span>`);
+  const sourceLine = (e.curated && e.source) ? `<div class="xs muted curated-source">${t('ev.sourceLine',{source:e.source})}</div>` : '';
+  const hostRow = e.curated ? '' : `<div class="ev-host">${avatar(e.host,'sm')}<b>${e.host.name}</b>${tb(e.host.trust)}</div>`;
+  const rateRow = (!e.curated && typeof ratingLine === 'function') ? `<div class="rateline">${ratingLine(e.id)}</div>` : '';
+  const footRight = e.curated
+    ? `<button class="btn btn-sm ${INTERESTED.has(e.id)?'btn-success':'btn-outline'}" data-interest="${e.id}">${INTERESTED.has(e.id)?'✓':'☆'} ${t('cta.interested')}</button>`
+    : `<span class="small" style="font-weight:700">${price(e.price)}</span>`;
+  return `<article class="ev ${variant==='row'?'row':''}" data-ev="${e.id}">
+    <div class="ev-cover" style="background:${e.grad}"><span aria-hidden="true">${e.emoji}</span>
+      <div class="tag">${tags.join('')}</div>
+      <button class="save ${opts.saved?'on':''}" aria-label="${opts.saved?t('aria.saved'):t('aria.save')}" title="${opts.saved?t('aria.saved'):t('aria.save')}">${opts.saved?'♥':'♡'}</button></div>
+    <div class="ev-body">
+      <div class="ev-when num">${e.when[LANG]}</div>
+      <h3 class="ev-title">${e.title}</h3>
+      <div class="ev-meta"><span>📍 ${area(e.area)}</span><span>${t('cat.'+e.cat)}</span><span>🗣 ${e.langs.join(' · ')}</span></div>
+      ${sourceLine}
+      ${hostRow}
+      ${rateRow}
+      <div class="ev-foot">${capText(e)}${footRight}</div>
+    </div></article>`;
+}
+
+/* ---------- screen switching ---------- */
+const params = new URLSearchParams(location.search);
+const screens = [...document.querySelectorAll('.scr')];
+const chips = document.getElementById('mkChips');
+screens.forEach(s => {
+  const b = document.createElement('button');
+  b.className = 'mk-scrchip'; b.dataset.target = s.dataset.screen; b.setAttribute('role','tab');
+  b.innerHTML = `<b>${s.dataset.code||''}</b>${s.dataset.screen}`;
+  b.title = s.dataset.title || '';
+  b.onclick = () => show(s.dataset.screen, true);
+  chips.appendChild(b);
+});
+const renderHooks = [];            // push(fn) — called after every show() and setLang()
+function onRender(fn){ renderHooks.push(fn); }
+let CURRENT = null;
+function show(id, push){
+  const s = screens.find(x => x.dataset.screen === id) || screens[0];
+  CURRENT = s.dataset.screen;
+  screens.forEach(x => x.classList.toggle('show', x === s));
+  chips.querySelectorAll('.mk-scrchip').forEach(c => { const on = c.dataset.target === CURRENT; c.classList.toggle('on', on); if (on) c.scrollIntoView({block:'nearest',inline:'nearest'}); });
+  const app = document.getElementById('app');
+  app.classList.remove('wide','norail','bare');
+  const layout = s.dataset.layout || 'feed';          // feed | wide | norail | bare
+  if (layout !== 'feed') app.classList.add(layout);
+  const guest = s.dataset.guest === '1';
+  document.querySelectorAll('.me-only').forEach(el => el.hidden = guest);
+  document.querySelectorAll('.guest-only').forEach(el => el.hidden = !guest);
+  document.querySelectorAll('[data-nav]').forEach(n => { if (n.classList.contains('nav-item') || n.closest('.app-tabs')) n.classList.toggle('on', n.dataset.nav === s.dataset.nav); });
+  closeAllOverlays();
+  renderNotes(s);
+  if (push) { const u = new URL(location); u.searchParams.set('screen', CURRENT); history.replaceState(null,'',u); }
+  window.scrollTo(0,0);
+  runHooks();
+}
+function runHooks(){ renderHooks.forEach(fn => fn(CURRENT)); applyI18n(); }
+
+/* ---------- i18n ---------- */
+function applyI18n(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-html]').forEach(el => el.innerHTML = t(el.dataset.i18nHtml));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => el.placeholder = t(el.dataset.i18nPh));
+  document.querySelectorAll('[data-area]').forEach(el => el.textContent = area(el.dataset.area));
+  document.querySelectorAll('[data-tb]').forEach(el => el.textContent = t('trust.' + el.dataset.tb));
+  document.querySelectorAll('.seg-lang button').forEach(b => b.classList.toggle('on', b.dataset.lang === LANG));
+}
+function setLang(l, push){
+  LANG = l;
+  if (push) { const u = new URL(location); u.searchParams.set('lang', l); history.replaceState(null,'',u); }
+  runHooks();
+}
+document.querySelectorAll('.seg-lang button').forEach(b => b.onclick = () => setLang(b.dataset.lang, true));
+
+/* ---------- notes drawer ---------- */
+const notes = document.getElementById('mkNotes');
+function renderNotes(s){
+  const tpl = s.querySelector('template.notes');
+  document.getElementById('mkNotesTitle').textContent = (s.dataset.code ? s.dataset.code + ' · ' : '') + (s.dataset.title || s.dataset.screen);
+  document.getElementById('mkNotesBody').innerHTML = tpl ? tpl.innerHTML : '<p>Chưa có ghi chú.</p>';
+}
+document.getElementById('mkNotesBtn').onclick = () => { notes.classList.toggle('open'); document.getElementById('mkNotesBtn').classList.toggle('on'); };
+document.getElementById('mkNotesClose').onclick = () => { notes.classList.remove('open'); document.getElementById('mkNotesBtn').classList.remove('on'); };
+
+/* ---------- cross-file navigation ----------
+   goTo('screen-id')                         -> screen in this file
+   goTo('web-event-mockup.html?screen=x')    -> other file, keeps current language */
+const NAV_TARGETS = {
+  home:'web-discover-mockup.html?screen=home',
+  discover:'web-discover-mockup.html?screen=discover',
+  myevents:'web-myspace-mockup.html?screen=my-going',
+  notifications:'web-myspace-mockup.html?screen=notifications',
+  profile:'web-myspace-mockup.html?screen=profile-me'
+};
+function goTo(target){
+  if (!target) return;
+  if (!target.includes('.html')) { show(target, true); return; }
+  const [file, q] = target.split('?');
+  const sid = new URLSearchParams(q || '').get('screen');
+  if (location.pathname.endsWith('/' + file) && sid && screens.some(s => s.dataset.screen === sid)) { show(sid, true); return; }
+  location.href = file + '?' + (q ? q + '&' : '') + 'lang=' + LANG;
+}
+
+/* ---------- overlays + toast ---------- */
+function openOverlay(id){ closeAllOverlays(); const el = document.getElementById(id); if (el) el.hidden = false; }
+function closeAllOverlays(){ document.querySelectorAll('[data-overlay]').forEach(o => o.hidden = true); }
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-overlay]')) closeAllOverlays();          // click on scrim
+  const c = e.target.closest('[data-close]'); if (c) closeAllOverlays();
+  const o = e.target.closest('[data-open]'); if (o) openOverlay(o.dataset.open);
+  const g = e.target.closest('[data-go]'); if (g) goTo(g.dataset.go);
+  const n = e.target.closest('[data-nav]'); if (n && (n.classList.contains('nav-item') || n.closest('.app-tabs'))) goTo(NAV_TARGETS[n.dataset.nav]);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllOverlays(); });
+let toastTimer;
+function toast(msg, action){
+  let el = document.getElementById('mkToast');
+  if (!el) { el = document.createElement('div'); el.id = 'mkToast'; el.className = 'toast'; el.setAttribute('role','status'); document.body.appendChild(el); }
+  el.innerHTML = `<span>${msg}</span>${action ? `<button>${action}</button>` : ''}`;
+  el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => el.hidden = true, 3200);
+}
+
+/* ---------- default rail ---------- */
+onRender(() => {
+  document.getElementById('railUpcoming').innerHTML = ['volley','lx','hike'].map(id => { const e = ev(id); return `<div class="rail-row"><span class="rail-thumb" style="background:${e.grad}">${e.emoji}</span><span class="grow"><b>${e.title}</b><span class="muted num">${e.when[LANG]} · ${area(e.area)}</span></span></div>`; }).join('');
+  document.getElementById('railAreas').innerHTML = Object.keys(AREAS).map(k => `<button class="chip"><span data-area="${k}"></span><span class="c num">${AREAS[k].count}</span></button>`).join('');
+});
+
+/* ---------- boot: call AFTER screen-specific scripts register their hooks ---------- */
+function boot(fileKey){
+  document.querySelectorAll('.mk-files a').forEach(a => a.classList.toggle('on', a.dataset.file === fileKey));
+  document.querySelectorAll('[data-go-create]').forEach(b => b.addEventListener('click', () => goTo('web-event-mockup.html?screen=create-1')));
+  LANG = params.get('lang') === 'vi' ? 'vi' : 'en';
+  show(params.get('screen') || screens[0].dataset.screen, false);
+}
+</script>
+<script>
+/* ===================================================================
+   SHARED DATA v2 — pasted verbatim from scratchpad/shared-data-v2.js
+   (before any screen-render code). Owner decision 2026-09-19:
+     • Home     = staff-published local news + staff-curated local events
+     • Discover = events posted by members (UGC), with reviews + comments,
+                  plus a Tinder-style swipe mode for people who don't know
+                  what they want (web-swipe-mockup.html?screen=deck)
+     • Tapping an event opens the event detail page (not the deck)
+   =================================================================== */
+
+/* Extra events. Guarded so a file that already defines some of them is not duplicated. */
+[
+  // Staff-curated (Home only). cap is a soft headcount for "interested", not a hard RSVP limit.
+  {id:'lantern', title:'Mid-Autumn Lantern Night on Bach Dang', cat:'family', emoji:'🏮', grad:'linear-gradient(135deg,#FDE68A,#DC2626)', area:'hai-chau', when:{en:'Fri 25 Sep · 18:30',vi:'T6, 25/09 · 18:30'}, day:'fri25', cap:500, going:120, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public event page (Facebook)'},
+  {id:'dragon', title:'Dragon Bridge Fire & Water Show', cat:'music', emoji:'🐉', grad:'linear-gradient(135deg,#FECACA,#B91C1C)', area:'hai-chau', when:{en:'Sat 19 Sep · 21:00',vi:'T7, 19/09 · 21:00'}, day:'sat', cap:1000, going:86, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public weekend schedule (city tourism page)'},
+  // Member-posted extras (also used by the swipe deck).
+  {id:'quiz', title:'Pub Quiz Night', cat:'social', emoji:'🧠', grad:'linear-gradient(135deg,#FECACA,#DC2626)', area:'an-thuong', when:{en:'Tonight · 20:00',vi:'Tối nay · 20:00'}, day:'today', cap:48, going:30, waiting:0, waitlist:true, price:0, host:{name:'Ben W.',ini:'BW',color:'#B91C1C',trust:3,hosted:11}, langs:['EN'], curated:false},
+  {id:'cleanup', title:'My An Beach Clean-up', cat:'outdoor', emoji:'🌊', grad:'linear-gradient(135deg,#BBF7D0,#15803D)', area:'my-an', when:{en:'Sat 19 Sep · 08:00',vi:'T7, 19/09 · 08:00'}, day:'sat', cap:50, going:17, waiting:0, waitlist:true, price:0, host:{name:'Linh N.',ini:'LN',color:'#B45309',trust:5,hosted:41}, langs:['EN','VI'], curated:false},
+  {id:'salsa', title:'Salsa Social Night', cat:'music', emoji:'💃', grad:'linear-gradient(135deg,#FDE68A,#DB2777)', area:'hai-chau', when:{en:'Sat 19 Sep · 20:00',vi:'T7, 19/09 · 20:00'}, day:'sat', cap:40, going:22, waiting:0, waitlist:true, price:100000, host:{name:'Carlos M.',ini:'CM',color:'#9D174D',trust:3,hosted:8}, langs:['EN','VI'], curated:false},
+  {id:'surf', title:'Beginner Surf Session', cat:'sports', emoji:'🏄', grad:'linear-gradient(135deg,#99F6E4,#0E7490)', area:'my-khe', when:{en:'Sun 20 Sep · 07:00',vi:'CN, 20/09 · 07:00'}, day:'sun', cap:8, going:6, waiting:0, waitlist:true, price:300000, host:{name:'Kai L.',ini:'KL',color:'#0E7490',trust:4,hosted:17}, langs:['EN'], curated:false}
+].forEach(e => { if (!EVENTS.some(x => x.id === e.id)) EVENTS.push(e); });
+
+/* Which events live where. foodwalk is staff-curated, so it moves to Home. */
+const HOME_CURATED_IDS = ['lantern', 'dragon', 'foodwalk'];
+const DISCOVER_UGC_IDS = ['lx', 'quiz', 'cleanup', 'volley', 'salsa', 'hike', 'surf', 'cowork', 'yoga', 'run', 'boardgame'];
+
+/* Host rating = average of reviews left by checked-in attendees of that host's past sessions
+   (doc 02 UC-16; only people who actually attended can review). null = new host, no reviews yet. */
+const RATINGS = {
+  volley:{avg:4.8,count:32}, lx:{avg:4.9,count:58}, hike:{avg:4.6,count:7}, cowork:{avg:4.7,count:19},
+  yoga:{avg:4.8,count:15}, run:null, boardgame:{avg:4.5,count:11}, quiz:{avg:4.6,count:23},
+  cleanup:{avg:4.9,count:58}, salsa:{avg:4.7,count:14}, surf:{avg:4.9,count:40}
+};
+const COMMENTS = {volley:12, lx:21, hike:4, cowork:6, yoga:9, run:2, boardgame:7, quiz:8, cleanup:5, salsa:10, surf:6, foodwalk:3, lantern:14, dragon:9};
+
+/* Sample reviews — user content, NOT translated (doc 10 §13.9). `attended` is the session the reviewer checked in to. */
+const REVIEWS = {
+  volley: [
+    {name:'Sarah K.', ini:'SK', color:'#BE185D', trust:2, stars:5, attended:{en:'Attended Sat 12 Sep',vi:'Đã tham gia T7, 12/09'}, text:'Great vibe. Tom explains the rules for beginners and mixes the teams so nobody is left out.', helpful:9},
+    {name:'Marco P.', ini:'MP', color:'#047857', trust:3, stars:5, attended:{en:'Attended Sat 5 Sep',vi:'Đã tham gia T7, 05/09'}, text:'Nets were up on time and the sunset was unreal. Bring sunscreen and water.', helpful:6},
+    {name:'Hana L.', ini:'HL', color:'#6D28D9', trust:1, stars:4, attended:{en:'Attended Sat 29 Aug',vi:'Đã tham gia T7, 29/08'}, text:'A bit crowded with 20 people, but still a lot of fun. Would come again.', helpful:3}
+  ],
+  lx: [
+    {name:'Minh T.', ini:'MT', color:'#0369A1', trust:3, stars:5, attended:{en:'Attended Fri 11 Sep',vi:'Đã tham gia T6, 11/09'}, text:'Linh keeps the switch between English and Vietnamese really smooth. Made two friends in one evening.', helpful:12},
+    {name:'Jonas B.', ini:'JB', color:'#B45309', trust:2, stars:5, attended:{en:'Attended Fri 4 Sep',vi:'Đã tham gia T6, 04/09'}, text:'Best way to practise Vietnamese without feeling embarrassed.', helpful:8}
+  ]
+};
+/* Star distribution for the review summary bars (5★ → 1★), percentages. */
+const REVIEW_DIST = {volley:[84,12,3,1,0], lx:[91,7,2,0,0]};
+
+/* Staff-published news for Home. Staff content is published in BOTH languages (unlike user content).
+   Sample copy for the mockup — not verified reporting. */
+const NEWS = [
+  {id:'midautumn', tag:'festival', emoji:'🏮', grad:'linear-gradient(135deg,#FDE68A,#F97316)', mins:4, updated:{en:'2 hours ago',vi:'2 giờ trước'},
+   title:{en:'Mid-Autumn Festival: where to see lanterns in Da Nang (Fri 25 Sep)',vi:'Tết Trung Thu: xem lồng đèn ở đâu tại Đà Nẵng (T6, 25/09)'},
+   dek:{en:'Lantern parades, mooncake stalls and the quieter spots for families with small kids.',vi:'Rước đèn, gian hàng bánh trung thu và những chỗ yên tĩnh hơn cho gia đình có con nhỏ.'}, related:'lantern'},
+  {id:'dragon-show', tag:'getting-around', emoji:'🐉', grad:'linear-gradient(135deg,#FECACA,#B91C1C)', mins:3, updated:{en:'Yesterday',vi:'Hôm qua'},
+   title:{en:'Dragon Bridge fire show: weekend schedule and the best viewing spots',vi:'Cầu Rồng phun lửa: lịch cuối tuần và những chỗ xem đẹp nhất'},
+   dek:{en:'Where to stand, where to park your motorbike, and which side stays dry when it sprays water.',vi:'Đứng đâu, gửi xe ở đâu, và bên nào không bị ướt khi rồng phun nước.'}, related:'dragon'},
+  {id:'rainy', tag:'weather', emoji:'🌧️', grad:'linear-gradient(135deg,#BFDBFE,#1E40AF)', mins:6, updated:{en:'2 days ago',vi:'2 ngày trước'},
+   title:{en:'Rainy season is coming: what to know before October',vi:'Mùa mưa sắp tới: cần biết gì trước tháng 10'},
+   dek:{en:'Flood-prone streets, how outdoor events get rescheduled, and what to keep at home.',vi:'Những tuyến đường hay ngập, sự kiện ngoài trời được dời lịch ra sao, và nên chuẩn bị gì ở nhà.'}},
+  {id:'residence', tag:'admin', emoji:'📄', grad:'linear-gradient(135deg,#E2E8F0,#475569)', mins:7, updated:{en:'5 days ago',vi:'5 ngày trước'},
+   title:{en:'Temporary residence registration for expats: a step-by-step guide',vi:'Đăng ký tạm trú cho người nước ngoài: hướng dẫn từng bước'},
+   dek:{en:'Who registers you, which documents to bring, and what to do if your landlord has not done it.',vi:'Ai đăng ký cho bạn, cần mang giấy tờ gì, và làm gì nếu chủ nhà chưa đăng ký.'}}
+];
+const NEWS_TAGS = {festival:{en:'Festival',vi:'Lễ hội'}, 'getting-around':{en:'Getting around',vi:'Đi lại'}, weather:{en:'Weather & safety',vi:'Thời tiết & an toàn'}, admin:{en:'Visas & admin',vi:'Giấy tờ & thủ tục'}};
+
+/* Helpers */
+function stars(avg){ const f = Math.round(avg); return '★★★★★'.slice(0, f) + '☆☆☆☆☆'.slice(0, 5 - f); }
+function ratingLine(id){
+  const r = RATINGS[id];
+  const n = COMMENTS[id] || 0;
+  const rate = r ? `<span class="rt">★ ${r.avg.toLocaleString(LANG === 'vi' ? 'vi-VN' : 'en-US', {minimumFractionDigits: 1})} <span class="muted">(${r.count})</span></span>` : `<span class="rt new">${LANG === 'vi' ? 'Người tổ chức mới' : 'New host'}</span>`;
+  return `${rate}<span class="cm">💬 ${n}</span>`;
+}
+
+/* ===================================================================
+   SHARED DATA v3 additions — pasted verbatim right after the v2 block.
+   Adds calendar dates so Home/Discover can filter by day / week / month,
+   and three more staff-curated events spread across the rest of the month.
+   =================================================================== */
+[
+  {id:'walktour', title:'Free Walking Tour: Han Market & Riverside', cat:'outdoor', emoji:'🚶', grad:'linear-gradient(135deg,#FEF3C7,#D97706)', area:'hai-chau', when:{en:'Sat 26 Sep · 08:00',vi:'T7, 26/09 · 08:00'}, day:'sat26', cap:30, going:12, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public listing (volunteer guide group page)'},
+  {id:'artmarket', title:'Weekend Art & Craft Market', cat:'music', emoji:'🎨', grad:'linear-gradient(135deg,#E9D5FF,#9333EA)', area:'son-tra', when:{en:'Sun 27 Sep · 16:00',vi:'CN, 27/09 · 16:00'}, day:'sun27', cap:300, going:45, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public event page (Facebook)'},
+  {id:'streetfood', title:'Autumn Street Food Night', cat:'food', emoji:'🍢', grad:'linear-gradient(135deg,#FED7AA,#C2410C)', area:'my-an', when:{en:'Sat 3 Oct · 18:00',vi:'T7, 03/10 · 18:00'}, day:'sat3oct', cap:400, going:60, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public event page (Facebook)'}
+].forEach(e => { if (!EVENTS.some(x => x.id === e.id)) EVENTS.push(e); });
+['walktour', 'artmarket', 'streetfood'].forEach(id => { if (!HOME_CURATED_IDS.includes(id)) HOME_CURATED_IDS.push(id); });
+Object.assign(COMMENTS, {walktour: 4, artmarket: 6, streetfood: 2});
+
+/* Local calendar dates (Asia/Ho_Chi_Minh) of each event's occurrences.
+   The Dragon Bridge show repeats every weekend, so it has several. */
+const EVENT_DATES = {
+  lx:['2026-09-18'], quiz:['2026-09-18'],
+  cleanup:['2026-09-19'], foodwalk:['2026-09-19'], volley:['2026-09-19'], salsa:['2026-09-19'],
+  dragon:['2026-09-19','2026-09-20','2026-09-26','2026-09-27','2026-10-03','2026-10-04'],
+  hike:['2026-09-20'], surf:['2026-09-20'], cowork:['2026-09-21'], yoga:['2026-09-22'], run:['2026-09-23'],
+  boardgame:['2026-09-24'], lantern:['2026-09-25'], walktour:['2026-09-26'], artmarket:['2026-09-27'],
+  streetfood:['2026-10-03']
+};
+
+/* News relevance: `published` date, optional `relevant` [from, to] the story is about,
+   `evergreen` guides stay visible whatever period is selected. */
+const NEWS_DATES = {
+  midautumn:{published:'2026-09-18', relevant:['2026-09-25','2026-09-25']},
+  'dragon-show':{published:'2026-09-17', relevant:['2026-09-19','2026-10-04']},
+  rainy:{published:'2026-09-16', relevant:['2026-10-01','2026-12-31']},
+  residence:{published:'2026-09-13', evergreen:true}
+};
+const TODAY_ISO = '2026-09-18';
+</script>
+<script>
+/* =====================================================================
+   Screen-specific script — file ② Feed & Discover.
+   ===================================================================== */
+addI18n({
+  en:{
+    'home.byline':'By the Da Nang Connect team',
+    'home.title.today':'Today in Da Nang','home.title.day':'{date} in Da Nang','home.title.week':'This week in Da Nang','home.title.month':'{month} in Da Nang',
+    'home.range.today':'Today','home.range.week':'This week','home.range.month':'This month','home.range.backToToday':'Back to today',
+    'home.recurring.badge':'Every weekend','home.recurring.count':'{n} sessions in this period',
+    'home.news.heading':'News','home.news.guidesHeading':'Guides','home.picked.heading':'Picked by our team','home.picked.sub':'Local events found and listed by the Da Nang Connect team',
+    'home.picked.emptyTitle.day':'Nothing from our team on {date} yet','home.picked.emptyTitle.week':'Nothing from our team this week yet','home.picked.emptyTitle.month':'Nothing from our team in {month} yet',
+    'home.picked.emptyCta1.day':'See community events that day','home.picked.emptyCta1.week':'See community events this week','home.picked.emptyCta1.month':'See community events this month','home.picked.emptyCta2':'Back to this week',
+    'home.glance.heading.day':'Today at a glance','home.glance.heading.week':'This week at a glance','home.glance.heading.month':'{month} at a glance',
+    'home.glance.dayEmpty':'Nothing scheduled for this day yet.','home.weekend.count':'{n} events',
+    'home.discoverCta.title':'Looking for meetups by the community?','home.discoverCta.desc':'Browse events posted by other members — sports, language exchange, food walks and more.','home.discoverCta.cta':'Go to Discover',
+    'common.pickDate':'Pick a date','datepicker.jumpToday':'Jump to today','time.month':'This month',
+    'news.backToHome':'Back to Home','news.sampleNotice':'Sample content for this mockup — not verified reporting.','news.share':'Share','news.shareSent':'Link copied','news.report':'Report','news.reportContext':'News article',
+    'news.staffBadge':'Staff','news.readTime':'{n} min read','news.updated':'Updated {t}','news.readMore':'Read more','news.relatedEvent':'Related event',
+    'news.sourceNote':'Written by the Da Nang Connect team for this mockup. Not sourced from a real publication.',
+    'ev.interestedCount':'{n} interested','ev.sourceLine':'Source: {source}','cta.interested':'Interested',
+    'rail.weather':'Weather this weekend','rail.weather.sat':'Saturday','rail.weather.sun':'Sunday','rail.weather.note':'Sample forecast — not live weather data.',
+    'discover.title':"What's on in Da Nang",'discover.loadMore':'Load more','discover.showingCount':'Showing {n} of {total} events','discover.browseByArea':'Browse by area',
+    'discover.sortLabel':'Sort:','sort.soonest':'Soonest','sort.popular':'Most popular','sort.top':'Top rated','sort.nearest':'Nearest',
+    'discover.addFilter':'+ Add filter','discover.saveFilter':'Save filter','discover.resetAll':'Reset all',
+    'discover.when':'When','discover.where':'Where','discover.what':'What','discover.language':'Language','discover.price':'Price','discover.audience':'Audience',
+    'discover.nearMe':'Near me','discover.radiusKm':'{n} km','discover.freeOnly':'Free only','discover.familyFriendly':'Family friendly','discover.alcoholFree':'Alcohol free',
+    'discover.list':'List','discover.map':'Map','discover.swipe':'Swipe','discover.deckTitle':'Not sure where to go? Swipe like Tinder','discover.deckBody':'{n} events this week · right to save, left to skip','discover.nearestNeedsLocation':'Turn on "Near me" to sort by distance.',
+    'discover.saved':'Saved to your list','discover.unsaved':'Removed from your list','discover.reviews.heading':'What people say',
+    'discover.map.searchArea':'Search this area','discover.map.movedHint':'Map moved — press "Search this area" to look here. We never search automatically.',
+    'discover.map.legendSingle':'Single event','discover.map.legendCluster':'Multiple events','discover.map.legendApprox':'Approximate location (privacy)',
+    'discFilters.hint':'On tablet widths (1024–1279px) the 280px sidebar collapses into this drawer.','discFilters.open':'Open filters','discFilters.showResults':'Show {n} results',
+    'empty.noMatch.title':'No events match these filters','empty.noMatch.desc':'Try removing "English only" — that is what is narrowing your results the most.','empty.noMatch.cta1':'Show me anything this week','empty.noMatch.cta2':'Edit filters',
+    'empty.noData.title':'Nothing scheduled yet — but that changes fast','empty.noData.desc':'We are adding events across Da Nang every day. Get a ping when something lands near you.','empty.noData.cta1':'Notify me about new events','empty.noData.cta2':'Organise the first one',
+    'empty.nearby.title':'Nothing in An Thuong right now','empty.nearby.desc':'But there are 3 events in My An — a 7-minute ride away.','empty.nearby.cta1':'Show events in My An','empty.nearby.cta2':'Keep An Thuong only',
+    'emptyTabs.noMatch':'No match (filters)','emptyTabs.noData':'No data yet','emptyTabs.nearby':'Nearby suggestion','area.popular':'Popular in {area}',
+    'report.title':'Report content','report.reason':'Why are you reporting this?','report.r1':'Spam or scam','report.r2':'Harassment or hate speech','report.r3':'Inappropriate content','report.r4':'Something else',
+    'report.details':'Additional details (optional)','report.detailsPh':'Add any context that helps our team review this…','report.submit':'Submit report','report.sent':'Report sent. Our team will review within 24 hours.',
+    'report.targetPrefix':'Reporting',
+    'common.cancel':'Cancel','common.mockOnly':'(static mock)',
+    'aria.timeFilter':'Time filter','aria.viewMode':'View mode','aria.eventsInView':'Events in view','aria.mapImg':'Da Nang schematic map','aria.emptyVariant':'Empty state variant','aria.prevMonth':'Previous month','aria.nextMonth':'Next month',
+    'aria.search':'Search','aria.notifications':'Notifications','aria.language':'Language','aria.createEvent':'Create event','aria.save':'Save this event','aria.saved':'Remove from saved','aria.close':'Close',
+    'aria.homeRange':'Time range','aria.prevPeriod':'Previous period','aria.nextPeriod':'Next period','aria.datePicker':'Date picker',
+    'area.notBuiltInMock':'Area landing for {area} is not built in this mock.',
+    'calendar.selectDate':"Select a date to see what's on",'calendar.noEvents':'No events on this day','calendar.noEventsDesc':'Try another date, or browse everything this week.','calendar.seeWeek':'See this week',
+    'search.title':'Search','search.resultsFor':'Results for "{q}"','search.tabEvents':'Events','search.tabPeople':'People','search.tabAreas':'Areas','search.noResults':'No results for "{q}"',
+    'search.tryAlias':'Try an area nickname:','search.aliasNote':'Showing results for {area} (also known as: {alias})','search.aliasHint':'"Marble Mountains" is the common expat name for {area}.',
+    'thisWeek.title':'What\'s on this week in Da Nang','thisWeek.breadcrumbHome':'Home','thisWeek.breadcrumbSelf':'This week',
+    'thisWeek.intro':'A curated look at everything happening across Da Nang over the next 7 days — beach sports, language exchanges, food walks and more.',
+    'thisWeek.faqTitle':'Frequently asked questions',
+    'thisWeek.faq1q':'Is Da Nang Connect free to use?','thisWeek.faq1a':'Yes. Browsing and RSVPing to events is free. Some events set their own price, shown clearly before you join.',
+    'thisWeek.faq2q':'Do I need to sign in to see events?','thisWeek.faq2a':'No. You can browse the full list and event details without an account. Signing in is only needed to RSVP, save or create events.',
+    'thisWeek.faq3q':'How do I find events near where I live?','thisWeek.faq3a':'Use the area filter on the Discover page, or open the map view to browse by neighbourhood.',
+    'thisWeek.getApp':'Get the app','thisWeek.getAppDesc':'Get realtime spot updates and reminders on your phone.',
+    'area.heroKicker':'Area guide','area.blurb.anThuong':"The heart of Da Nang's expat community — beachfront cafes, coworking spaces, and the highest concentration of weekly meetups.",
+    'area.upcoming':'Upcoming in {area}','area.popularStat1':'{n} events this month','area.popularStat2':'{n} regulars go here often','area.nearby':'Nearby areas',
+    'area.notifyTitle':'Get notified about new events in {area}','area.notifyDesc':"We'll only email you when something new is posted here — no spam.",'area.notifyCta':'Notify me','area.notifySent':"You're on the list for {area} updates."
+  },
+  vi:{
+    'home.byline':'Của đội ngũ Da Nang Connect',
+    'home.title.today':'Hôm nay ở Đà Nẵng','home.title.day':'{date} ở Đà Nẵng','home.title.week':'Tuần này ở Đà Nẵng','home.title.month':'{month} ở Đà Nẵng',
+    'home.range.today':'Hôm nay','home.range.week':'Tuần này','home.range.month':'Tháng này','home.range.backToToday':'Về hôm nay',
+    'home.recurring.badge':'Mỗi cuối tuần','home.recurring.count':'{n} buổi trong kỳ này',
+    'home.news.heading':'Tin tức','home.news.guidesHeading':'Hướng dẫn','home.picked.heading':'Đội ngũ chọn lọc','home.picked.sub':'Sự kiện địa phương do đội ngũ Da Nang Connect tìm và đăng tải',
+    'home.picked.emptyTitle.day':'Chưa có gì từ đội ngũ vào {date}','home.picked.emptyTitle.week':'Chưa có gì từ đội ngũ trong tuần này','home.picked.emptyTitle.month':'Chưa có gì từ đội ngũ trong {month}',
+    'home.picked.emptyCta1.day':'Xem sự kiện cộng đồng ngày đó','home.picked.emptyCta1.week':'Xem sự kiện cộng đồng tuần này','home.picked.emptyCta1.month':'Xem sự kiện cộng đồng tháng này','home.picked.emptyCta2':'Về tuần này',
+    'home.glance.heading.day':'Hôm nay có gì','home.glance.heading.week':'Tuần này có gì','home.glance.heading.month':'{month} có gì',
+    'home.glance.dayEmpty':'Chưa có gì được lên lịch cho ngày này.','home.weekend.count':'{n} hoạt động',
+    'home.discoverCta.title':'Đang tìm buổi gặp mặt do cộng đồng tổ chức?','home.discoverCta.desc':'Xem các sự kiện do thành viên khác đăng — thể thao, trao đổi ngôn ngữ, food walk và nhiều hơn nữa.','home.discoverCta.cta':'Đến trang Khám phá',
+    'common.pickDate':'Chọn ngày','datepicker.jumpToday':'Về tháng hiện tại','time.month':'Tháng này',
+    'news.backToHome':'Về Trang chủ','news.sampleNotice':'Nội dung mẫu cho mockup này — không phải tin đã kiểm chứng.','news.share':'Chia sẻ','news.shareSent':'Đã sao chép liên kết','news.report':'Báo cáo','news.reportContext':'Bài viết tin tức',
+    'news.staffBadge':'Đội ngũ biên tập','news.readTime':'{n} phút đọc','news.updated':'Cập nhật {t}','news.readMore':'Đọc tiếp','news.relatedEvent':'Sự kiện liên quan',
+    'news.sourceNote':'Do đội ngũ Da Nang Connect viết cho mockup này. Không lấy từ nguồn tin thật.',
+    'ev.interestedCount':'{n} người quan tâm','ev.sourceLine':'Nguồn: {source}','cta.interested':'Quan tâm',
+    'rail.weather':'Thời tiết cuối tuần này','rail.weather.sat':'Thứ Bảy','rail.weather.sun':'Chủ nhật','rail.weather.note':'Dự báo mẫu — không phải dữ liệu thời tiết thực.',
+    'discover.title':'Đà Nẵng có gì','discover.loadMore':'Xem thêm','discover.showingCount':'Hiện {n}/{total} hoạt động','discover.browseByArea':'Xem theo khu vực',
+    'discover.sortLabel':'Sắp xếp:','sort.soonest':'Sắp diễn ra nhất','sort.popular':'Phổ biến nhất','sort.top':'Đánh giá cao nhất','sort.nearest':'Gần nhất',
+    'discover.addFilter':'+ Thêm bộ lọc','discover.saveFilter':'Lưu bộ lọc','discover.resetAll':'Xoá hết bộ lọc',
+    'discover.when':'Thời gian','discover.where':'Khu vực','discover.what':'Loại hình','discover.language':'Ngôn ngữ','discover.price':'Giá','discover.audience':'Đối tượng',
+    'discover.nearMe':'Gần tôi','discover.radiusKm':'{n} km','discover.freeOnly':'Chỉ miễn phí','discover.familyFriendly':'Phù hợp gia đình','discover.alcoholFree':'Không rượu bia',
+    'discover.list':'Danh sách','discover.map':'Bản đồ','discover.swipe':'Lướt thẻ','discover.deckTitle':'Chưa biết đi đâu? Lướt thẻ kiểu Tinder','discover.deckBody':'{n} hoạt động tuần này · vuốt phải để lưu, trái để bỏ qua','discover.nearestNeedsLocation':'Bật "Gần tôi" để sắp xếp theo khoảng cách.',
+    'discover.saved':'Đã lưu vào danh sách của bạn','discover.unsaved':'Đã bỏ khỏi danh sách của bạn','discover.reviews.heading':'Mọi người nói gì',
+    'discover.map.searchArea':'Tìm ở khu vực này','discover.map.movedHint':'Bản đồ đã di chuyển — bấm "Tìm ở khu vực này" để xem. Hệ thống không tự tìm lại.',
+    'discover.map.legendSingle':'Một sự kiện','discover.map.legendCluster':'Nhiều sự kiện','discover.map.legendApprox':'Vị trí gần đúng (riêng tư)',
+    'discFilters.hint':'Ở màn hình rộng 1024–1279px, sidebar 280px thu gọn thành drawer này.','discFilters.open':'Mở bộ lọc','discFilters.showResults':'Xem {n} kết quả',
+    'empty.noMatch.title':'Không có hoạt động nào khớp bộ lọc','empty.noMatch.desc':'Hãy thử bỏ "Chỉ tiếng Anh" — đây là điều đang thu hẹp kết quả của bạn nhiều nhất.','empty.noMatch.cta1':'Xem mọi thứ tuần này','empty.noMatch.cta2':'Chỉnh bộ lọc',
+    'empty.noData.title':'Chưa có hoạt động nào — nhưng sẽ có sớm thôi','empty.noData.desc':'Chúng tôi thêm hoạt động mới ở Đà Nẵng mỗi ngày. Nhận thông báo khi có hoạt động gần bạn.','empty.noData.cta1':'Báo tôi khi có hoạt động mới','empty.noData.cta2':'Tổ chức hoạt động đầu tiên',
+    'empty.nearby.title':'Hiện chưa có gì ở An Thượng','empty.nearby.desc':'Nhưng có 3 hoạt động ở Mỹ An — cách khoảng 7 phút xe máy.','empty.nearby.cta1':'Xem hoạt động ở Mỹ An','empty.nearby.cta2':'Chỉ giữ An Thượng',
+    'emptyTabs.noMatch':'Không khớp (bộ lọc)','emptyTabs.noData':'Chưa có dữ liệu','emptyTabs.nearby':'Gợi ý lân cận','area.popular':'Nổi bật ở {area}',
+    'report.title':'Báo cáo nội dung','report.reason':'Vì sao bạn báo cáo nội dung này?','report.r1':'Spam hoặc lừa đảo','report.r2':'Quấy rối hoặc phát ngôn thù ghét','report.r3':'Nội dung không phù hợp','report.r4':'Lý do khác',
+    'report.details':'Chi tiết thêm (không bắt buộc)','report.detailsPh':'Thêm thông tin giúp đội ngũ kiểm duyệt xem xét…','report.submit':'Gửi báo cáo','report.sent':'Đã gửi báo cáo. Đội ngũ sẽ xem xét trong 24 giờ.',
+    'report.targetPrefix':'Đang báo cáo',
+    'common.cancel':'Huỷ','common.mockOnly':'(mockup tĩnh)',
+    'aria.timeFilter':'Bộ lọc thời gian','aria.viewMode':'Chế độ xem','aria.eventsInView':'Sự kiện trong khung nhìn','aria.mapImg':'Sơ đồ Đà Nẵng','aria.emptyVariant':'Biến thể trạng thái rỗng','aria.prevMonth':'Tháng trước','aria.nextMonth':'Tháng sau',
+    'aria.search':'Tìm kiếm','aria.notifications':'Thông báo','aria.language':'Ngôn ngữ','aria.createEvent':'Tạo sự kiện','aria.save':'Lưu sự kiện này','aria.saved':'Bỏ khỏi danh sách đã lưu','aria.close':'Đóng',
+    'aria.homeRange':'Khoảng thời gian','aria.prevPeriod':'Kỳ trước','aria.nextPeriod':'Kỳ sau','aria.datePicker':'Bộ chọn ngày',
+    'area.notBuiltInMock':'Trang khu vực {area} chưa được dựng trong mockup này.',
+    'calendar.selectDate':'Chọn một ngày để xem có gì diễn ra','calendar.noEvents':'Ngày này chưa có hoạt động nào','calendar.noEventsDesc':'Hãy thử ngày khác, hoặc xem toàn bộ tuần này.','calendar.seeWeek':'Xem tuần này',
+    'search.title':'Tìm kiếm','search.resultsFor':'Kết quả cho "{q}"','search.tabEvents':'Sự kiện','search.tabPeople':'Mọi người','search.tabAreas':'Khu vực','search.noResults':'Không có kết quả cho "{q}"',
+    'search.tryAlias':'Thử bí danh khu vực:','search.aliasNote':'Đang hiện kết quả cho {area} (còn gọi là: {alias})','search.aliasHint':'"Marble Mountains" là tên tiếng Anh mà expat hay gọi {area}.',
+    'thisWeek.title':'Tuần này Đà Nẵng có gì','thisWeek.breadcrumbHome':'Trang chủ','thisWeek.breadcrumbSelf':'Tuần này',
+    'thisWeek.intro':'Tổng hợp mọi hoạt động diễn ra ở Đà Nẵng trong 7 ngày tới — thể thao bãi biển, trao đổi ngôn ngữ, food walk và nhiều hơn nữa.',
+    'thisWeek.faqTitle':'Câu hỏi thường gặp',
+    'thisWeek.faq1q':'Da Nang Connect có miễn phí không?','thisWeek.faq1a':'Có. Xem và đăng ký tham gia sự kiện đều miễn phí. Một số sự kiện tự đặt giá riêng, hiển thị rõ trước khi bạn tham gia.',
+    'thisWeek.faq2q':'Tôi có cần đăng nhập để xem sự kiện không?','thisWeek.faq2a':'Không. Bạn có thể xem toàn bộ danh sách và chi tiết sự kiện mà không cần tài khoản. Chỉ cần đăng nhập khi muốn RSVP, lưu hoặc tạo sự kiện.',
+    'thisWeek.faq3q':'Làm sao để tìm sự kiện gần nơi tôi ở?','thisWeek.faq3a':'Dùng bộ lọc khu vực ở trang Khám phá, hoặc mở chế độ bản đồ để xem theo từng khu vực.',
+    'thisWeek.getApp':'Tải ứng dụng','thisWeek.getAppDesc':'Nhận cập nhật số chỗ còn lại và nhắc lịch theo thời gian thực trên điện thoại.',
+    'area.heroKicker':'Cẩm nang khu vực','area.blurb.anThuong':'Trái tim của cộng đồng expat Đà Nẵng — quán cà phê sát biển, không gian coworking, và mật độ buổi gặp mặt hằng tuần cao nhất.',
+    'area.upcoming':'Sắp diễn ra ở {area}','area.popularStat1':'{n} hoạt động trong tháng này','area.popularStat2':'{n} người thường xuyên ghé đây','area.nearby':'Khu vực lân cận',
+    'area.notifyTitle':'Nhận thông báo khi có hoạt động mới ở {area}','area.notifyDesc':'Chúng tôi chỉ gửi email khi có hoạt động mới ở đây — không spam.','area.notifyCta':'Báo cho tôi','area.notifySent':'Bạn đã đăng ký nhận tin về {area}.'
+  }
+});
+
+/* ---------- local data extensions (kept out of the shared EVENTS literal) ---------- */
+Object.assign(ev('foodwalk'), {audience:['family_friendly']});
+Object.assign(ev('hike'), {audience:['family_friendly','alcohol_free']});
+Object.assign(ev('yoga'), {audience:['alcohol_free']});
+Object.assign(ev('boardgame'), {audience:['family_friendly']});
+
+const DAY_ORDER = ['today','sat','sun','mon','tue','wed','thu'];
+const DAY_LABELS = {
+  today:{en:'Today · Friday 18 September',vi:'Hôm nay · Thứ Sáu 18 tháng 9'},
+  sat:{en:'Saturday 19 September',vi:'Thứ Bảy 19 tháng 9'},
+  sun:{en:'Sunday 20 September',vi:'Chủ Nhật 20 tháng 9'},
+  mon:{en:'Monday 21 September',vi:'Thứ Hai 21 tháng 9'},
+  tue:{en:'Tuesday 22 September',vi:'Thứ Ba 22 tháng 9'},
+  wed:{en:'Wednesday 23 September',vi:'Thứ Tư 23 tháng 9'},
+  thu:{en:'Thursday 24 September',vi:'Thứ Năm 24 tháng 9'}
+};
+const DAY_TO_DATE = {today:18,sat:19,sun:20,mon:21,tue:22,wed:23,thu:24}; // September 2026
+const TIME_DAYS = { tonight:['today'], tomorrow:['sat'], weekend:['sat','sun'], next7:DAY_ORDER };
+const CAT_ICONS = {sports:'🏐',language:'🗣️',social:'🤝',food:'🍜',wellness:'🧘',music:'🎵',outdoor:'🌄',family:'👨‍👩‍👧',professional:'💼'};
+const CATS = Object.keys(CAT_ICONS);
+const SAVED = new Set();
+/* "Interested" toggle for staff-curated Home cards — separate from SAVED (bookmark heart) and
+   from RSVP, because curated events have a soft headcount, not a hard capacity (owner decision 2026-09-19). */
+const INTERESTED = new Set();
+/* Short weekday+date labels for the compact "This weekend at a glance" strip on Home. */
+const WEEKEND_LABELS = { today:{en:'Fri 18',vi:'T6 18'}, sat:{en:'Sat 19',vi:'T7 19'}, sun:{en:'Sun 20',vi:'CN 20'} };
+/* Sample bilingual article bodies for the News detail screen (news-article). Staff content —
+   published in both languages, unlike UGC (doc 10 §13.9). Sample copy only, not real reporting. */
+const NEWS_BODY = {
+  midautumn: {
+    en: [
+      'Lantern stalls start popping up along Bach Dang street from Wednesday, with the busiest evening expected on Friday 25 September itself.',
+      'Families with small children tend to prefer the quieter stretch near the Museum of Cham Sculpture, away from the main parade route.',
+      'Most mooncake stalls take cash only; a few near the riverside night market accept bank transfer via QR code.',
+      'If you are bringing a stroller, the pedestrian bridge gets crowded after 19:30 — the Han river ferry pier area is a calmer alternative.'
+    ],
+    vi: [
+      'Các gian hàng lồng đèn bắt đầu xuất hiện dọc đường Bạch Đằng từ thứ Tư, đông nhất dự kiến vào tối thứ Sáu 25/09.',
+      'Gia đình có con nhỏ thường chọn đoạn yên tĩnh hơn gần Bảo tàng Điêu khắc Chăm, tránh xa tuyến rước đèn chính.',
+      'Hầu hết gian hàng bánh trung thu chỉ nhận tiền mặt; một số gần chợ đêm ven sông nhận chuyển khoản qua QR.',
+      'Nếu mang theo xe đẩy em bé, cầu đi bộ sẽ đông sau 19:30 — khu vực bến phà sông Hàn là lựa chọn yên tĩnh hơn.'
+    ]
+  },
+  'dragon-show': {
+    en: [
+      'The Dragon Bridge breathes fire and water on Saturday and Sunday nights at 21:00, weather permitting — organisers cancel the show without much notice if there is heavy rain.',
+      'The east bank near the Cham Museum gets the best straight-on view of the fire; the west bank near the concert hall is where the water spray reaches furthest, so bring a rain jacket if you stand there.',
+      'Motorbike parking fills up fast after 20:30 on the west bank — the paid lot behind the Novotel is usually the last one to fill.'
+    ],
+    vi: [
+      'Cầu Rồng phun lửa và phun nước vào tối thứ Bảy và Chủ nhật lúc 21:00, tuỳ thời tiết — ban tổ chức có thể huỷ show khá đột ngột nếu mưa lớn.',
+      'Bờ đông gần Bảo tàng Chăm là chỗ xem lửa đẹp nhất; bờ tây gần nhà hát là nơi nước phun xa nhất, nên mang áo mưa nếu đứng ở đó.',
+      'Chỗ gửi xe máy ở bờ tây thường hết chỗ sau 20:30 — bãi giữ xe có phí phía sau khách sạn Novotel thường là bãi cuối cùng còn trống.'
+    ]
+  },
+  rainy: {
+    en: [
+      "Da Nang's rainy season usually picks up from October through December, with October and November seeing the heaviest and most frequent downpours.",
+      'Low-lying streets near Cam Le and parts of Hai Chau district flood first — check local social media groups before riding through standing water more than ankle-deep.',
+      'Outdoor events (beach volleyball, hikes, food walks) are the first to move or cancel; hosts usually post an update on the event page at least 3 hours ahead, not always by push notification.',
+      'Keep a dry bag for your phone and documents, and a spare pair of shoes at your motorbike parking spot if you commute daily.'
+    ],
+    vi: [
+      'Mùa mưa ở Đà Nẵng thường bắt đầu rõ rệt từ tháng 10 đến tháng 12, trong đó tháng 10 và 11 có mưa lớn và dày nhất.',
+      'Những tuyến đường thấp gần Cẩm Lệ và một phần quận Hải Châu thường ngập trước tiên — nên xem các nhóm mạng xã hội địa phương trước khi đi qua đoạn nước ngập quá mắt cá chân.',
+      'Sự kiện ngoài trời (bóng chuyền bãi biển, leo núi, food walk) thường là những hoạt động bị dời lịch hoặc huỷ đầu tiên; ban tổ chức thường cập nhật trên trang sự kiện trước ít nhất 3 tiếng, không phải lúc nào cũng gửi thông báo đẩy.',
+      'Nên chuẩn bị túi chống nước cho điện thoại và giấy tờ, và để sẵn một đôi giày dự phòng ở chỗ gửi xe nếu bạn di chuyển hằng ngày.'
+    ]
+  },
+  residence: {
+    en: [
+      'Foreigners staying in Vietnam, including short-term renters, are required to have their temporary residence registered — usually by the landlord or the accommodation, not by the tenant directly.',
+      "Bring your passport, visa or temporary residence card, and your rental contract if the building asks for it; some wards also want a copy of the landlord's ID.",
+      'If your landlord has not registered you within the first 24-48 hours, ask them directly first — most delays are administrative, not something you did wrong.',
+      'Long-stay expats renewing a visa or applying for a temporary residence card usually need this registration on file, so it is worth confirming it early rather than right before a renewal deadline.'
+    ],
+    vi: [
+      'Người nước ngoài lưu trú tại Việt Nam, kể cả người thuê nhà ngắn hạn, đều cần được đăng ký tạm trú — thường do chủ nhà hoặc nơi lưu trú thực hiện, không phải người thuê tự làm.',
+      'Cần mang hộ chiếu, thị thực hoặc thẻ tạm trú, và hợp đồng thuê nhà nếu nơi đăng ký yêu cầu; một số phường còn cần thêm bản sao giấy tờ tuỳ thân của chủ nhà.',
+      'Nếu chủ nhà chưa đăng ký cho bạn trong 24–48 giờ đầu, nên hỏi trực tiếp trước — phần lớn là chậm trễ thủ tục, không phải lỗi của bạn.',
+      'Người ở dài hạn khi gia hạn visa hoặc làm thẻ tạm trú thường cần hồ sơ đăng ký tạm trú đầy đủ, nên xác nhận sớm thay vì để sát ngày hết hạn.'
+    ]
+  }
+};
+let CURRENT_ARTICLE = null;
+
+/* ---------------------------------------------------------------------
+   Date-range filtering (added 19/09/2026) — Home's Today/This week/This
+   month + shared date popover, and Discover's "This month" / "Pick a
+   date" chips. All arithmetic is done on Asia/Ho_Chi_Minh calendar dates
+   already expressed as plain ISO strings (EVENT_DATES/NEWS_DATES/TODAY_ISO
+   from shared-data v3) — no UTC conversion in this static mock; a real
+   implementation converts local Da Nang wall-clock to UTC only at the
+   API boundary (doc 10 Q-03/Q-08).
+   Week convention: UNIFIED Monday start for BOTH languages, on purpose —
+   simpler than mirroring the per-locale week start used by the W-14
+   Calendar screen (EN Sunday / VI Monday). Documented drift, not a bug.
+   --------------------------------------------------------------------- */
+function isIsoDate(v){ return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v); }
+function parseISO(iso){ const [y,m,d] = iso.split('-').map(Number); return new Date(y, m - 1, d); }
+function toISODate(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function addDaysISO(iso, n){ const d = parseISO(iso); d.setDate(d.getDate() + n); return toISODate(d); }
+function addMonthsISO(iso, n){ const d = parseISO(iso); d.setMonth(d.getMonth() + n); return toISODate(d); }
+function startOfWeekISO(iso){ const d = parseISO(iso); const diffToMonday = (d.getDay() + 6) % 7; d.setDate(d.getDate() - diffToMonday); return toISODate(d); }
+function endOfWeekISO(iso){ return addDaysISO(startOfWeekISO(iso), 6); }
+function startOfMonthISO(iso){ const d = parseISO(iso); return toISODate(new Date(d.getFullYear(), d.getMonth(), 1)); }
+function endOfMonthISO(iso){ const d = parseISO(iso); return toISODate(new Date(d.getFullYear(), d.getMonth() + 1, 0)); }
+function isoInRange(iso, fromIso, toIso){ return iso >= fromIso && iso <= toIso; }
+function rangesOverlap(aFrom, aTo, bFrom, bTo){ return aFrom <= bTo && bFrom <= aTo; }
+const DOW_SHORT_VI = ['CN','T2','T3','T4','T5','T6','T7'];
+const MONTH_SHORT_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+/* Hand-rolled names instead of Intl: ICU versions disagree on "Sep" vs "Sept", which already caused a real hydration bug in the app. */
+const DOW_SHORT_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DOW_LONG_EN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DOW_LONG_VI = ['Chủ nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+const MONTH_LONG_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function fmtShortDate(iso){
+  const d = parseISO(iso);
+  if (LANG === 'vi') return `${DOW_SHORT_VI[d.getDay()]}, ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+  return `${DOW_SHORT_EN[d.getDay()]} ${d.getDate()} ${MONTH_SHORT_EN[d.getMonth()]}`;
+}
+function fmtLongDate(iso){ const d = parseISO(iso); return LANG === 'vi' ? `${DOW_LONG_VI[d.getDay()]} ${d.getDate()} tháng ${d.getMonth() + 1}` : `${DOW_LONG_EN[d.getDay()]} ${d.getDate()} ${MONTH_LONG_EN[d.getMonth()]}`; }
+function fmtMonthName(iso){ const d = parseISO(iso); return LANG === 'vi' ? `Tháng ${d.getMonth() + 1}` : MONTH_LONG_EN[d.getMonth()]; }
+function fmtMonthYear(iso){ const d = parseISO(iso); return LANG === 'vi' ? `Tháng ${d.getMonth() + 1} năm ${d.getFullYear()}` : `${MONTH_LONG_EN[d.getMonth()]} ${d.getFullYear()}`; }
+function fmtWeekRange(fromIso, toIso){
+  const df = parseISO(fromIso), dt = parseISO(toIso);
+  const sameMonth = df.getMonth() === dt.getMonth() && df.getFullYear() === dt.getFullYear();
+  if (LANG === 'vi') return sameMonth
+    ? `${df.getDate()}–${dt.getDate()}/${String(df.getMonth()+1).padStart(2,'0')}`
+    : `${df.getDate()}/${String(df.getMonth()+1).padStart(2,'0')} – ${dt.getDate()}/${String(dt.getMonth()+1).padStart(2,'0')}`;
+  return sameMonth
+    ? `${df.getDate()}–${dt.getDate()} ${MONTH_SHORT_EN[df.getMonth()]}`
+    : `${df.getDate()} ${MONTH_SHORT_EN[df.getMonth()]} – ${dt.getDate()} ${MONTH_SHORT_EN[dt.getMonth()]}`;
+}
+/* Dot signal shown on the shared date popover + Home's month "at a glance" grid: a staff-curated
+   event that day, or a news story published/relevant that day. Discover opens the SAME popover
+   (component reuse per brief) so its dots reflect staff/news signal too, not UGC dates — a known,
+   documented simplification (see Discover W-10 notes). */
+function hasHomeSignal(iso){
+  const curated = HOME_CURATED_IDS.some(id => (EVENT_DATES[id]||[]).includes(iso));
+  const news = NEWS.some(n => { const nd = NEWS_DATES[n.id]; if (!nd || nd.evergreen) return false; return nd.published === iso || (nd.relevant && isoInRange(iso, nd.relevant[0], nd.relevant[1])); });
+  return curated || news;
+}
+/* Reusable month grid — used by Home's inline "at a glance" (month mode) AND the shared popover.
+   `attrName` lets each caller wire its own click behaviour without the two colliding. */
+function monthGridHTML(anchorIso, opts){
+  opts = opts || {};
+  const attr = opts.attrName || 'data-pick-day';
+  const d = parseISO(anchorIso);
+  const year = d.getFullYear(), month = d.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  let startCol = new Date(year, month, 1).getDay(); startCol = (startCol + 6) % 7; // Monday-start, matches this feature's week convention
+  const dow = (LANG === 'vi' ? ['T2','T3','T4','T5','T6','T7','CN'] : ['Mo','Tu','We','Th','Fr','Sa','Su']).map(x => `<div class="cal-dow">${x}</div>`).join('');
+  let cells = '';
+  for (let i = 0; i < startCol; i++) cells += `<div class="cal-cell empty"></div>`;
+  for (let dnum = 1; dnum <= daysInMonth; dnum++) {
+    const iso = toISODate(new Date(year, month, dnum));
+    const cls = [iso === TODAY_ISO ? 'today' : '', opts.selected === iso ? 'sel' : ''].filter(Boolean).join(' ');
+    cells += `<button class="cal-cell ${cls}" ${attr}="${iso}">${dnum}${hasHomeSignal(iso) ? '<span class="cal-dot"></span>' : ''}</button>`;
+  }
+  return `<div class="cal-grid">${dow}</div><div class="cal-grid" style="margin-top:6px">${cells}</div>`;
+}
+
+/* ---------- Home date-range state ---------- */
+const HOME_STATE = { range: 'week', date: TODAY_ISO }; // range: 'day' | 'week' | 'month'
+function parseHomeStateFromURL(){
+  HOME_STATE.range = ['day','week','month'].includes(params.get('range')) ? params.get('range') : 'week';
+  HOME_STATE.date = isIsoDate(params.get('date')) ? params.get('date') : TODAY_ISO;
+}
+function syncHomeURL(){
+  const u = new URL(location);
+  if (HOME_STATE.range === 'week' && HOME_STATE.date === TODAY_ISO) { u.searchParams.delete('range'); u.searchParams.delete('date'); }
+  else { u.searchParams.set('range', HOME_STATE.range); u.searchParams.set('date', HOME_STATE.date); }
+  history.replaceState(null,'',u);
+}
+function homeRangeBounds(){
+  if (HOME_STATE.range === 'day') return { from: HOME_STATE.date, to: HOME_STATE.date };
+  if (HOME_STATE.range === 'month') return { from: startOfMonthISO(HOME_STATE.date), to: endOfMonthISO(HOME_STATE.date) };
+  return { from: startOfWeekISO(HOME_STATE.date), to: endOfWeekISO(HOME_STATE.date) };
+}
+function homeIsOnToday(){ const {from,to} = homeRangeBounds(); return isoInRange(TODAY_ISO, from, to); }
+function homeSetRange(range){ HOME_STATE.range = range; HOME_STATE.date = TODAY_ISO; syncHomeURL(); renderAll(); }
+function homeShiftRange(delta){
+  if (HOME_STATE.range === 'day') HOME_STATE.date = addDaysISO(HOME_STATE.date, delta);
+  else if (HOME_STATE.range === 'month') HOME_STATE.date = addMonthsISO(HOME_STATE.date, delta);
+  else HOME_STATE.date = addDaysISO(HOME_STATE.date, delta * 7);
+  syncHomeURL(); renderAll();
+}
+function homeGoToDay(iso){ HOME_STATE.range = 'day'; HOME_STATE.date = iso; syncHomeURL(); renderAll(); }
+/* "This week" on Home ≈ Discover's rolling "Next 7 days"; a specific day maps 1:1; a browsed
+   month only maps 1:1 to Discover's "This month" chip when it IS the real current month — Discover
+   has no independent month-navigation state. Documented limitation, see W-00 notes. */
+function homeToDiscoverTime(){
+  if (HOME_STATE.range === 'day') return HOME_STATE.date;
+  if (HOME_STATE.range === 'month') return 'month';
+  return 'next7';
+}
+function goHomeToDiscover(){
+  FILTER.time = homeToDiscoverTime();
+  show('discover', true);
+  syncFilterToURL();
+}
+
+const FILTER = { time:'next7', areas:[], categories:[], languages:[], freeOnly:false, family:false, alcoholFree:false, nearMe:false, radius:5, sort:'soonest' };
+function parseFilterFromURL(){
+  FILTER.time = params.get('time') || 'next7';
+  FILTER.areas = (params.get('areas')||'').split(',').filter(Boolean);
+  FILTER.categories = (params.get('cat')||'').split(',').filter(Boolean);
+  FILTER.languages = (params.get('lang2')||'').split(',').filter(Boolean);
+  FILTER.freeOnly = params.get('free') === '1';
+  FILTER.family = params.get('family') === '1';
+  FILTER.alcoholFree = params.get('af') === '1';
+  FILTER.nearMe = params.get('near') === '1';
+  FILTER.sort = params.get('sort') || 'soonest';
+}
+function syncFilterToURL(){
+  const u = new URL(location);
+  const p = u.searchParams;
+  const set = (k,v,dflt) => { if (v===dflt || !v || (Array.isArray(v)&&!v.length)) p.delete(k); else p.set(k, Array.isArray(v)?v.join(','):v); };
+  set('time', FILTER.time, 'next7'); set('areas', FILTER.areas); set('cat', FILTER.categories); set('lang2', FILTER.languages);
+  set('free', FILTER.freeOnly ? '1':'', ''); set('family', FILTER.family ? '1':'', ''); set('af', FILTER.alcoholFree ? '1':'', '');
+  set('near', FILTER.nearMe ? '1':'', ''); set('sort', FILTER.sort, 'soonest');
+  history.replaceState(null,'',u);
+}
+/* Time matching for Discover. The 4 legacy buckets (tonight/tomorrow/weekend/next7) keep using the
+   static `day` key exactly as before — unchanged behaviour. 'month' and a raw ISO date (from the
+   19/09/2026 "This month" / "Pick a date" addition) are matched against EVENT_DATES instead. */
+function eventMatchesTime(e, timeVal){
+  if (timeVal === 'month') return (EVENT_DATES[e.id]||[]).some(d => d.slice(0,7) === TODAY_ISO.slice(0,7));
+  if (isIsoDate(timeVal)) return (EVENT_DATES[e.id]||[]).includes(timeVal);
+  return TIME_DAYS[timeVal] ? TIME_DAYS[timeVal].includes(e.day) : true;
+}
+function matchesFilter(e){
+  if (!eventMatchesTime(e, FILTER.time)) return false;
+  if (FILTER.areas.length && !FILTER.areas.includes(e.area)) return false;
+  if (FILTER.categories.length && !FILTER.categories.includes(e.cat)) return false;
+  if (FILTER.languages.length && !e.langs.some(l => FILTER.languages.includes(l))) return false;
+  if (FILTER.freeOnly && e.price > 0) return false;
+  if (FILTER.family && !(e.audience||[]).includes('family_friendly')) return false;
+  if (FILTER.alcoholFree && !(e.audience||[]).includes('alcohol_free')) return false;
+  return true;
+}
+function sortEvents(list){
+  if (FILTER.sort === 'popular') list.sort((a,b) => b.going - a.going);
+  else if (FILTER.sort === 'top') list.sort((a,b) => (RATINGS[b.id] ? RATINGS[b.id].avg : -1) - (RATINGS[a.id] ? RATINGS[a.id].avg : -1));
+  return list; /* 'nearest' needs geolocation, not simulated in this static mock — see discSort onchange */
+}
+/* Discover only shows member-posted (UGC) events — staff-curated events live on Home (owner decision 2026-09-19). */
+function discoverEvents(){ return DISCOVER_UGC_IDS.map(ev); }
+function countByArea(){
+  const c = {}; Object.keys(AREAS).forEach(a => c[a]=0);
+  discoverEvents().forEach(e => {
+    if (!eventMatchesTime(e, FILTER.time)) return;
+    if (FILTER.categories.length && !FILTER.categories.includes(e.cat)) return;
+    if (FILTER.languages.length && !e.langs.some(l => FILTER.languages.includes(l))) return;
+    if (FILTER.freeOnly && e.price > 0) return;
+    if (FILTER.family && !(e.audience||[]).includes('family_friendly')) return;
+    if (FILTER.alcoholFree && !(e.audience||[]).includes('alcohol_free')) return;
+    c[e.area] = (c[e.area]||0) + 1;
+  });
+  return c;
+}
+function countByCategory(){
+  const c = {};
+  discoverEvents().forEach(e => {
+    if (!eventMatchesTime(e, FILTER.time)) return;
+    if (FILTER.areas.length && !FILTER.areas.includes(e.area)) return;
+    if (FILTER.languages.length && !e.langs.some(l => FILTER.languages.includes(l))) return;
+    if (FILTER.freeOnly && e.price > 0) return;
+    if (FILTER.family && !(e.audience||[]).includes('family_friendly')) return;
+    if (FILTER.alcoholFree && !(e.audience||[]).includes('alcohol_free')) return;
+    c[e.cat] = (c[e.cat]||0) + 1;
+  });
+  return c;
+}
+function toggleArrayFilter(key, value, on){
+  const arr = FILTER[key];
+  const i = arr.indexOf(value);
+  if (on && i === -1) arr.push(value);
+  if (!on && i !== -1) arr.splice(i,1);
+}
+function resetAllFilters(){
+  FILTER.areas = []; FILTER.categories = []; FILTER.languages = []; FILTER.freeOnly = false; FILTER.family = false; FILTER.alcoholFree = false; FILTER.nearMe = false; FILTER.sort = 'soonest';
+  syncFilterToURL(); renderAll();
+}
+
+/* ---------- time chip bar (Discover list/sidebar/drawer) ---------- */
+function timeChipsHTML(){
+  const base = ['tonight','tomorrow','weekend','next7','month'].map(k =>
+    `<button class="chip ${FILTER.time===k?'on':''}" data-time-chip="${k}">${t('time.'+k)}</button>`).join('');
+  const picked = isIsoDate(FILTER.time);
+  const pickChip = `<button class="chip ${picked?'on':''}" data-open-datepicker="discover">📅 ${picked ? fmtShortDate(FILTER.time) : t('common.pickDate')}</button>`;
+  return base + pickChip;
+}
+function bindTimeChips(containerId){
+  const el = document.getElementById(containerId); if (!el) return;
+  el.innerHTML = timeChipsHTML();
+  el.querySelectorAll('[data-time-chip]').forEach(b => b.onclick = () => { FILTER.time = b.dataset.timeChip; syncFilterToURL(); renderAll(); });
+}
+
+/* ---------- discover filter sidebar / drawer (shared markup + delegated events) ---------- */
+function filterFieldsHTML(){
+  const areaCounts = countByArea(), catCounts = countByCategory();
+  const areaRows = Object.keys(AREAS).map(k => `<div class="disc-frow ${areaCounts[k]?'':'zero'}"><label><input type="checkbox" data-filter="area" value="${k}" ${FILTER.areas.includes(k)?'checked':''}><span data-area="${k}"></span></label><span class="c num">${areaCounts[k]||0}</span></div>`).join('');
+  const catRows = CATS.map(k => `<div class="disc-frow ${catCounts[k]?'':'zero'}"><label><input type="checkbox" data-filter="cat" value="${k}" ${FILTER.categories.includes(k)?'checked':''}><span>${CAT_ICONS[k]} ${t('cat.'+(k==='language'?'language':k))}</span></label><span class="c num">${catCounts[k]||0}</span></div>`).join('');
+  const langRow = ['EN','VI'].map(l => `<button class="chip ${FILTER.languages.includes(l)?'on':''}" data-filter="lang" data-value="${l}">${l}</button>`).join('');
+  return `
+    <div class="disc-fgroup"><h4 data-i18n="discover.when"></h4>${timeChipsHTML()}</div>
+    <div class="disc-fgroup"><h4 data-i18n="discover.where"></h4>${areaRows}
+      <div class="disc-radiusrow" style="margin-top:6px">
+        <button class="switch ${FILTER.nearMe?'on':''}" data-filter="nearMe" aria-label="${t('discover.nearMe')}"></button>
+        <span class="small">${t('discover.nearMe')}</span>
+        <input type="range" min="1" max="15" value="${FILTER.radius}" data-filter="radius" aria-label="${t('discover.radiusKm',{n:FILTER.radius})}">
+        <span class="small num" id="radiusVal">${t('discover.radiusKm',{n:FILTER.radius})}</span>
+      </div>
+    </div>
+    <div class="disc-fgroup"><h4 data-i18n="discover.what"></h4>${catRows}</div>
+    <div class="disc-fgroup"><h4 data-i18n="discover.language"></h4><div class="chips" style="flex-wrap:wrap">${langRow}</div></div>
+    <div class="disc-fgroup"><h4 data-i18n="discover.price"></h4>
+      <div class="disc-frow"><label><span>${t('discover.freeOnly')}</span></label><button class="switch ${FILTER.freeOnly?'on':''}" data-filter="freeOnly" aria-label="${t('discover.freeOnly')}"></button></div>
+    </div>
+    <div class="disc-fgroup"><h4 data-i18n="discover.audience"></h4>
+      <div class="disc-frow"><label><span>${t('discover.familyFriendly')}</span></label><button class="switch ${FILTER.family?'on':''}" data-filter="family" aria-label="${t('discover.familyFriendly')}"></button></div>
+      <div class="disc-frow"><label><span>${t('discover.alcoholFree')}</span></label><button class="switch ${FILTER.alcoholFree?'on':''}" data-filter="alcoholFree" aria-label="${t('discover.alcoholFree')}"></button></div>
+    </div>
+    <button class="btn btn-outline btn-block" onclick="resetAllFilters()" data-i18n="discover.resetAll"></button>`;
+}
+function renderFilterPanels(){
+  const sb = document.getElementById('discSidebar'); if (sb) sb.innerHTML = filterFieldsHTML();
+  const dw = document.getElementById('drawerFilterBody'); if (dw) dw.innerHTML = filterFieldsHTML();
+  document.querySelectorAll('[data-time-chip]').forEach(b => { if (!b.closest('#homeTimeChips') && !b.closest('#discTimeChips')) b.onclick = () => { FILTER.time = b.dataset.timeChip; syncFilterToURL(); renderAll(); }; });
+  const btn = document.getElementById('drawerShowResults'); if (btn) btn.textContent = t('discFilters.showResults', {n: discoverEvents().filter(matchesFilter).length});
+  applyI18n();
+}
+document.addEventListener('change', e => {
+  const t2 = e.target; const f = t2.dataset && t2.dataset.filter; if (!f) return;
+  if (f === 'area') toggleArrayFilter('areas', t2.value, t2.checked);
+  if (f === 'cat') toggleArrayFilter('categories', t2.value, t2.checked);
+  if (f === 'radius') { FILTER.radius = Number(t2.value); }
+  syncFilterToURL(); renderAll();
+});
+document.addEventListener('click', e => {
+  const sw = e.target.closest('[data-filter]');
+  if (sw && sw.tagName === 'BUTTON') {
+    const f = sw.dataset.filter;
+    if (f === 'nearMe') FILTER.nearMe = !FILTER.nearMe;
+    if (f === 'freeOnly') FILTER.freeOnly = !FILTER.freeOnly;
+    if (f === 'family') FILTER.family = !FILTER.family;
+    if (f === 'alcoholFree') FILTER.alcoholFree = !FILTER.alcoholFree;
+    if (f === 'lang') toggleArrayFilter('languages', sw.dataset.value, !sw.classList.contains('on'));
+    if (['nearMe','freeOnly','family','alcoholFree','lang'].includes(f)) { syncFilterToURL(); renderAll(); }
+  }
+});
+document.getElementById('discSort') && (document.getElementById('discSort').onchange = e => { FILTER.sort = e.target.value; if (FILTER.sort === 'nearest' && !FILTER.nearMe) toast(t('discover.nearestNeedsLocation')); renderAll(); });
+
+function appliedChipsHTML(){
+  const chips = [];
+  FILTER.areas.forEach(a => chips.push(`<button class="chip on" data-remove="area" data-value="${a}"><span data-area="${a}"></span><span class="x">✕</span></button>`));
+  FILTER.categories.forEach(c => chips.push(`<button class="chip on" data-remove="cat" data-value="${c}">${t('cat.'+c)}<span class="x">✕</span></button>`));
+  if (FILTER.freeOnly) chips.push(`<button class="chip on" data-remove="freeOnly">${t('discover.freeOnly')}<span class="x">✕</span></button>`);
+  if (FILTER.family) chips.push(`<button class="chip on" data-remove="family">${t('discover.familyFriendly')}<span class="x">✕</span></button>`);
+  if (FILTER.alcoholFree) chips.push(`<button class="chip on" data-remove="alcoholFree">${t('discover.alcoholFree')}<span class="x">✕</span></button>`);
+  if (FILTER.nearMe) chips.push(`<button class="chip on" data-remove="nearMe">${t('discover.nearMe')}<span class="x">✕</span></button>`);
+  chips.push(`<button class="chip" data-open="filterDrawer">${t('discover.addFilter')}</button>`);
+  chips.push(`<button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="toast(t('discover.saveFilter') + ' ' + t('common.mockOnly'))">${t('discover.saveFilter')}</button>`);
+  return chips.join('');
+}
+document.addEventListener('click', e => {
+  const rm = e.target.closest('[data-remove]'); if (!rm) return;
+  const k = rm.dataset.remove, v = rm.dataset.value;
+  if (k === 'area') toggleArrayFilter('areas', v, false);
+  else if (k === 'cat') toggleArrayFilter('categories', v, false);
+  else FILTER[k] = false;
+  syncFilterToURL(); renderAll();
+});
+
+/* ---------- card click / save-heart / interested delegation (shared by home + discover + map list + reviews) ---------- */
+document.addEventListener('click', e => {
+  const save = e.target.closest('.save');
+  if (save) { e.stopPropagation(); const id = save.closest('[data-ev]').dataset.ev; SAVED.has(id) ? SAVED.delete(id) : SAVED.add(id); toast(SAVED.has(id) ? t('discover.saved') : t('discover.unsaved')); renderAll(); return; }
+  const interest = e.target.closest('[data-interest]');
+  if (interest) { e.stopPropagation(); const id = interest.dataset.interest; INTERESTED.has(id) ? INTERESTED.delete(id) : INTERESTED.add(id); renderAll(); return; }
+  const newsCard = e.target.closest('[data-news]');
+  if (newsCard) { openNewsArticle(newsCard.dataset.news); return; }
+  // Tapping any event surface (grid/row card, map list row, review excerpt) opens the event detail
+  // page — not the swipe deck, which is now its own opt-in mode (owner decision 2026-09-19).
+  const card = e.target.closest('[data-ev]');
+  if (card && !card.classList.contains('map-pin')) goTo('web-event-mockup.html?screen=event&ev=' + card.dataset.ev);
+});
+
+/* ---------- Home date-range controls (added 19/09/2026) ---------- */
+document.getElementById('homeRangeSeg') && document.getElementById('homeRangeSeg').addEventListener('click', e => { const b = e.target.closest('[data-range]'); if (b) homeSetRange(b.dataset.range); });
+document.getElementById('homePrevPeriod') && (document.getElementById('homePrevPeriod').onclick = () => homeShiftRange(-1));
+document.getElementById('homeNextPeriod') && (document.getElementById('homeNextPeriod').onclick = () => homeShiftRange(1));
+document.getElementById('homeBackToday') && (document.getElementById('homeBackToday').onclick = () => homeSetRange(HOME_STATE.range));
+document.addEventListener('click', e => {
+  const pickDay = e.target.closest('[data-pick-day]');
+  if (pickDay) homeGoToDay(pickDay.dataset.pickDay);
+});
+
+/* ---------- Shared date popover — Home "Pick a date" + Discover "📅 Pick a date" chip ---------- */
+let DATEPOP_CTX = null;    // 'home' | 'discover'
+let DATEPOP_ANCHOR = TODAY_ISO; // which month the popover is currently browsing (independent of the caller's own state until a day is picked)
+function renderDatePicker(){
+  const pop = document.getElementById('datePopover'); if (!pop) return;
+  document.getElementById('datePopMonthLabel').textContent = fmtMonthYear(DATEPOP_ANCHOR);
+  const selected = DATEPOP_CTX === 'home' ? (HOME_STATE.range === 'day' ? HOME_STATE.date : null) : (isIsoDate(FILTER.time) ? FILTER.time : null);
+  document.getElementById('datePopGrid').innerHTML = monthGridHTML(DATEPOP_ANCHOR, {selected, attrName:'data-pop-pick'});
+  applyI18n(); applyAriaI18n();
+}
+function positionDatePopover(trigger){
+  const pop = document.getElementById('datePopover');
+  const r = trigger.getBoundingClientRect();
+  const left = Math.min(Math.max(8, r.left), window.innerWidth - 288);
+  pop.style.top = (r.bottom + 8) + 'px';
+  pop.style.left = left + 'px';
+}
+function openDatePicker(trigger, ctx){
+  DATEPOP_CTX = ctx;
+  DATEPOP_ANCHOR = ctx === 'home' ? HOME_STATE.date : (isIsoDate(FILTER.time) ? FILTER.time : TODAY_ISO);
+  renderDatePicker();
+  const pop = document.getElementById('datePopover');
+  pop.hidden = false;
+  positionDatePopover(trigger);
+  document.addEventListener('click', onDatePopOutsideClick, true);
+  document.addEventListener('keydown', onDatePopEscape, true);
+}
+function closeDatePicker(){
+  const pop = document.getElementById('datePopover'); if (pop) pop.hidden = true;
+  DATEPOP_CTX = null;
+  document.removeEventListener('click', onDatePopOutsideClick, true);
+  document.removeEventListener('keydown', onDatePopEscape, true);
+}
+function onDatePopOutsideClick(e){
+  const pop = document.getElementById('datePopover'); if (!pop || pop.hidden) return;
+  if (pop.contains(e.target) || e.target.closest('[data-open-datepicker]')) return;
+  closeDatePicker();
+}
+function onDatePopEscape(e){ if (e.key === 'Escape') closeDatePicker(); }
+document.getElementById('datePopPrev') && (document.getElementById('datePopPrev').onclick = () => { DATEPOP_ANCHOR = addMonthsISO(DATEPOP_ANCHOR, -1); renderDatePicker(); });
+document.getElementById('datePopNext') && (document.getElementById('datePopNext').onclick = () => { DATEPOP_ANCHOR = addMonthsISO(DATEPOP_ANCHOR, 1); renderDatePicker(); });
+document.getElementById('datePopToday') && (document.getElementById('datePopToday').onclick = () => { DATEPOP_ANCHOR = TODAY_ISO; renderDatePicker(); });
+document.addEventListener('click', e => {
+  const openBtn = e.target.closest('[data-open-datepicker]');
+  if (openBtn) {
+    e.stopPropagation();
+    const pop = document.getElementById('datePopover');
+    const ctx = openBtn.dataset.openDatepicker;
+    (!pop.hidden && DATEPOP_CTX === ctx) ? closeDatePicker() : openDatePicker(openBtn, ctx);
+    return;
+  }
+  const popPick = e.target.closest('[data-pop-pick]');
+  if (popPick) {
+    const iso = popPick.dataset.popPick;
+    if (DATEPOP_CTX === 'home') homeGoToDay(iso);
+    else { FILTER.time = iso; syncFilterToURL(); renderAll(); }
+    closeDatePicker();
+  }
+});
+onRender(() => closeDatePicker()); // never leave the popover open across a screen/language switch
+
+/* ---------- report dialog target label ---------- */
+function setReportTarget(label){ const el = document.getElementById('reportTarget'); if (el) el.textContent = t('report.targetPrefix') + ': ' + label; }
+
+/* ---------- aria-label / title i18n (additive — base applyI18n() only handles text/placeholder) ---------- */
+function applyAriaI18n(){
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+  document.querySelectorAll('[data-i18n-title]').forEach(el => el.setAttribute('title', t(el.dataset.i18nTitle)));
+}
+onRender(applyAriaI18n);
+
+/* ---------- news card markup (staff content, bilingual — doc 10 §13.9 UGC-only "no machine translation" does NOT apply here) ---------- */
+function newsFeaturedHTML(n){
+  const tag = NEWS_TAGS[n.tag] ? NEWS_TAGS[n.tag][LANG] : n.tag;
+  return `<article class="card news-feat" data-news="${n.id}">
+    <div class="news-feat-cover" style="background:${n.grad}"><span aria-hidden="true">${n.emoji}</span></div>
+    <div class="news-feat-body">
+      <div class="news-meta">
+        <span class="pill news-badge">🏢 ${t('news.staffBadge')}</span>
+        <span class="chip soft xs">${tag}</span>
+        <span class="xs muted">${t('news.readTime',{n:n.mins})} · ${t('news.updated',{t:n.updated[LANG]})}</span>
+      </div>
+      <h2 class="h2">${n.title[LANG]}</h2>
+      <p class="sec">${n.dek[LANG]}</p>
+      <span class="btn-ghost btn-sm" style="align-self:flex-start;padding-left:0" aria-hidden="true">${t('news.readMore')} →</span>
+    </div>
+  </article>`;
+}
+function newsCardHTML(n){
+  const tag = NEWS_TAGS[n.tag] ? NEWS_TAGS[n.tag][LANG] : n.tag;
+  return `<article class="card news-card" data-news="${n.id}">
+    <div class="news-card-top"><span class="news-emoji" style="background:${n.grad}">${n.emoji}</span><span class="chip soft xs">${tag}</span></div>
+    <h3 class="h3">${n.title[LANG]}</h3>
+    <p class="small sec">${n.dek[LANG]}</p>
+    <div class="xs muted news-foot"><span class="pill news-badge">🏢 ${t('news.staffBadge')}</span><span>${t('news.readTime',{n:n.mins})}</span><span>${t('news.updated',{t:n.updated[LANG]})}</span></div>
+  </article>`;
+}
+function openNewsArticle(id){
+  CURRENT_ARTICLE = id;
+  show('news-article', true);
+  const u = new URL(location); u.searchParams.set('news', id); history.replaceState(null,'',u);
+}
+
+/* ---------- HOME — date-range helpers (Today/This week/This month, added 19/09/2026) ---------- */
+function homeTitleText(){
+  if (HOME_STATE.range === 'day') return HOME_STATE.date === TODAY_ISO ? t('home.title.today') : t('home.title.day', {date: fmtLongDate(HOME_STATE.date)});
+  if (HOME_STATE.range === 'month') return t('home.title.month', {month: fmtMonthName(HOME_STATE.date)});
+  return t('home.title.week');
+}
+function homeRangeLineText(){
+  const {from,to} = homeRangeBounds();
+  if (HOME_STATE.range === 'day') return `${fmtLongDate(HOME_STATE.date)}${LANG === 'vi' ? ' năm ' : ' '}${parseISO(HOME_STATE.date).getFullYear()}`;
+  if (HOME_STATE.range === 'month') return fmtMonthYear(HOME_STATE.date);
+  return `${fmtWeekRange(from,to)}, ${parseISO(to).getFullYear()}`;
+}
+function homePeriodNavLabel(){
+  if (HOME_STATE.range === 'day') return fmtShortDate(HOME_STATE.date);
+  if (HOME_STATE.range === 'month') return fmtMonthYear(HOME_STATE.date);
+  const {from,to} = homeRangeBounds();
+  return fmtWeekRange(from,to);
+}
+/* Curated ids whose event has at least one occurrence inside the active period, earliest first. */
+function curatedIdsInRange(){
+  const {from,to} = homeRangeBounds();
+  return HOME_CURATED_IDS
+    .filter(id => (EVENT_DATES[id]||[]).some(d => isoInRange(d, from, to)))
+    .sort((a,b) => (EVENT_DATES[a]||[]).find(d=>isoInRange(d,from,to)).localeCompare((EVENT_DATES[b]||[]).find(d=>isoInRange(d,from,to))));
+}
+/* Recurring events (e.g. `dragon`, every weekend) render ONE card, not one per occurrence — when
+   more than one occurrence falls inside the viewed period we swap the "when" line for a frequency
+   badge + occurrence count instead of a single date/time (owner decision 2026-09-19). */
+function curatedCardHTML(id){
+  const {from,to} = homeRangeBounds();
+  const base = ev(id);
+  const allDates = EVENT_DATES[id] || [];
+  const datesInRange = allDates.filter(d => isoInRange(d, from, to));
+  let e = base;
+  if (datesInRange.length > 1) {
+    // Multiple occurrences in the viewed period (e.g. Dragon Bridge on both weekend days) —
+    // one card, a frequency badge, not one card per date.
+    const label = `${t('home.recurring.badge')} · ${t('home.recurring.count',{n:datesInRange.length})}`;
+    e = Object.assign({}, base, {when: {en: label, vi: label}});
+  } else if (datesInRange.length === 1 && datesInRange[0] !== allDates[0]) {
+    // A single occurrence in view, but not the event's own "primary" date (e.g. looking at the
+    // Dragon Bridge show on 26 Sep, not its hardcoded 19 Sep sample text) — rebuild the date label
+    // from the actual date being viewed, keeping the event's usual time of day.
+    const whenText = `${fmtShortDate(datesInRange[0])} · ${extractTimeLabel(base)}`;
+    e = Object.assign({}, base, {when: {en: whenText, vi: whenText}});
+  }
+  return eventCard(e, 'grid', {saved: SAVED.has(id)});
+}
+function homePickedEmptyHTML(){
+  const dateOrMonth = HOME_STATE.range === 'day' ? {date: fmtShortDate(HOME_STATE.date)} : HOME_STATE.range === 'month' ? {month: fmtMonthName(HOME_STATE.date)} : null;
+  return `<div class="empty">
+    <div class="ico" aria-hidden="true">🗓️</div>
+    <h3>${t('home.picked.emptyTitle.' + HOME_STATE.range, dateOrMonth || {})}</h3>
+    <div class="acts">
+      <button class="btn btn-primary" id="homePickedEmptyCta">${t('home.picked.emptyCta1.' + HOME_STATE.range)}</button>
+      <button class="btn btn-outline" onclick="homeSetRange('week')">${t('home.picked.emptyCta2')}</button>
+    </div>
+  </div>`;
+}
+/* News: shown if published in the period OR its `relevant` window overlaps the period; evergreen
+   guides are excluded here and always rendered in their own "Guides" row instead. */
+function newsInRangeSplit(){
+  const {from,to} = homeRangeBounds();
+  const relevant = [], guides = [];
+  NEWS.forEach(n => {
+    const nd = NEWS_DATES[n.id];
+    if (nd && nd.evergreen) { guides.push(n); return; }
+    if (!nd) { relevant.push(n); return; }
+    const pubIn = isoInRange(nd.published, from, to);
+    const relIn = nd.relevant ? rangesOverlap(nd.relevant[0], nd.relevant[1], from, to) : false;
+    if (pubIn || relIn) relevant.push(n);
+  });
+  return { relevant, guides };
+}
+function pickFeaturedNews(list){
+  const {from,to} = homeRangeBounds();
+  const overlapping = list.filter(n => { const nd = NEWS_DATES[n.id]; return nd && nd.relevant && rangesOverlap(nd.relevant[0], nd.relevant[1], from, to); });
+  return overlapping[0] || list[0];
+}
+function extractTimeOfDay(e){ const t2 = e.when.en.split('·').pop().trim(); const [h,m] = t2.split(':').map(Number); return (h||0) * 60 + (m||0); }
+function extractTimeLabel(e){ return e.when.en.split('·').pop().trim(); }
+/* "At a glance" — day: hour-by-hour timeline (every event that day, curated + UGC); week: 7-day
+   strip with per-day counts; month: full month grid with dots, click a day to jump into day mode. */
+function homeGlanceHTML(){
+  if (HOME_STATE.range === 'day') {
+    const iso = HOME_STATE.date;
+    const items = Object.keys(EVENT_DATES).filter(id => EVENT_DATES[id].includes(iso)).map(ev).filter(Boolean).sort((a,b) => extractTimeOfDay(a) - extractTimeOfDay(b));
+    if (!items.length) return `<p class="home-glance-empty" data-i18n="home.glance.dayEmpty"></p>`;
+    return items.map(e => `<div class="home-timeline-row">
+        <span class="home-timeline-time num">${extractTimeLabel(e)}</span>
+        <span class="home-timeline-dot" style="background:${e.grad}"></span>
+        <span class="home-timeline-body"><b class="small">${e.title}</b><span class="xs muted"> · ${area(e.area)}${e.curated ? ' · ' + t('ev.curated') : ''}</span></span>
+      </div>`).join('');
+  }
+  if (HOME_STATE.range === 'month') return monthGridHTML(HOME_STATE.date, {});
+  const {from} = homeRangeBounds();
+  return Array.from({length:7}, (_,i) => addDaysISO(from, i)).map(iso => {
+    const n = Object.keys(EVENT_DATES).filter(id => EVENT_DATES[id].includes(iso)).length;
+    return `<button class="home-weekend-day ${iso===TODAY_ISO?'today':''}" data-pick-day="${iso}"><b class="num">${fmtShortDate(iso)}</b><span class="small muted num">${t('home.weekend.count',{n})}</span></button>`;
+  }).join('');
+}
+
+/* ---------- HOME — staff news + staff-curated local events (no member composer/posts, owner decision 2026-09-19) ---------- */
+function renderHome(){
+  const meta = document.getElementById('homeMastRange'); if (!meta) return;
+  document.getElementById('homeMastTitle').textContent = homeTitleText();
+  meta.textContent = homeRangeLineText();
+  document.querySelectorAll('#homeRangeSeg [data-range]').forEach(b => b.classList.toggle('on', HOME_STATE.range === b.dataset.range && (b.dataset.range !== 'day' || HOME_STATE.date === TODAY_ISO)));
+  document.getElementById('homePeriodLabel').textContent = homePeriodNavLabel();
+  document.getElementById('homeBackToday').hidden = homeIsOnToday();
+
+  const { relevant, guides } = newsInRangeSplit();
+  const newsSection = document.getElementById('homeNewsSection');
+  if (relevant.length) {
+    newsSection.hidden = false;
+    const featured = pickFeaturedNews(relevant);
+    const rest = relevant.filter(n => n.id !== featured.id);
+    document.getElementById('newsFeatured').innerHTML = newsFeaturedHTML(featured);
+    document.getElementById('newsGrid').innerHTML = rest.map(newsCardHTML).join('');
+  } else {
+    newsSection.hidden = true;
+  }
+  document.getElementById('newsGuides').innerHTML = guides.map(newsCardHTML).join('');
+
+  const pickedIds = curatedIdsInRange();
+  document.getElementById('pickedList').innerHTML = pickedIds.length ? pickedIds.map(curatedCardHTML).join('') : homePickedEmptyHTML();
+  const emptyCta = document.getElementById('homePickedEmptyCta'); if (emptyCta) emptyCta.onclick = goHomeToDiscover;
+
+  document.getElementById('homeGlanceHeading').textContent = t('home.glance.heading.' + HOME_STATE.range, HOME_STATE.range === 'month' ? {month: fmtMonthName(HOME_STATE.date)} : {});
+  document.getElementById('homeGlanceBody').innerHTML = homeGlanceHTML();
+  document.getElementById('homeDiscoverCta').onclick = goHomeToDiscover;
+}
+
+/* ---------- NEWS ARTICLE (full read, opened from a Home news card) ---------- */
+function renderNewsArticle(){
+  const n = NEWS.find(x => x.id === CURRENT_ARTICLE) || NEWS[0];
+  const tag = NEWS_TAGS[n.tag] ? NEWS_TAGS[n.tag][LANG] : n.tag;
+  document.getElementById('artMetaTop').innerHTML = `<span class="pill news-badge">🏢 ${t('news.staffBadge')}</span><span class="chip soft xs">${tag}</span><span class="xs muted">${t('news.readTime',{n:n.mins})} · ${t('news.updated',{t:n.updated[LANG]})}</span>`;
+  document.getElementById('artTitle').textContent = n.title[LANG];
+  document.getElementById('artByline').textContent = t('home.byline');
+  const cover = document.getElementById('artCover');
+  cover.style.background = n.grad; cover.innerHTML = `<span aria-hidden="true">${n.emoji}</span>`;
+  const body = (NEWS_BODY[n.id] && NEWS_BODY[n.id][LANG]) || [];
+  document.getElementById('artBody').innerHTML = body.map(p => `<p>${p}</p>`).join('');
+  const rel = document.getElementById('artRelated');
+  if (n.related && ev(n.related)) { rel.hidden = false; rel.innerHTML = `<h3 class="h3" style="margin-bottom:10px">${t('news.relatedEvent')}</h3>` + eventCard(ev(n.related), 'row', {saved: SAVED.has(n.related)}); }
+  else { rel.hidden = true; rel.innerHTML = ''; }
+  document.getElementById('artSource').textContent = t('news.sourceNote');
+}
+
+/* ---------- DISCOVER (list) — member-posted (UGC) events only, curated events live on Home ---------- */
+/* Hand-picked 2–3 review excerpts for "What people say" — highest-`helpful` reviews across the two
+   events that have sample review data. Reviews only ever come from checked-in attendees (UC-16). */
+const REVIEW_PICKS = [ ['lx', 0], ['volley', 0], ['volley', 1] ];
+function reviewCardHTML(eventId, review){
+  const e = ev(eventId);
+  return `<article class="review-card" data-ev="${eventId}">
+    <div class="row">${avatar(review,'sm')}<div class="grow"><b class="small">${review.name}</b> ${tb(review.trust)}</div></div>
+    <div class="stars-line" aria-hidden="true">${stars(review.stars)}</div>
+    <p class="small review-text">"${review.text}"</p>
+    <div class="xs muted">${review.attended[LANG]} · <b>${e.title}</b></div>
+  </article>`;
+}
+function renderDiscoverReviews(){
+  const el = document.getElementById('discReviews'); if (!el) return;
+  el.innerHTML = REVIEW_PICKS.map(([id, idx]) => reviewCardHTML(id, REVIEWS[id][idx])).join('');
+}
+function renderDiscover(){
+  bindTimeChips('discTimeChips');
+  renderFilterPanels();
+  const deckBody = document.getElementById('discDeckBody'); if (deckBody) deckBody.textContent = t('discover.deckBody', {n: DISCOVER_UGC_IDS.length});
+  const applied = document.getElementById('discAppliedChips'); if (applied) applied.innerHTML = appliedChipsHTML();
+  const listEl = document.getElementById('discList'); if (!listEl) return;
+  const pool = discoverEvents();
+  const items = sortEvents(pool.filter(matchesFilter));
+  const emptyEl = document.getElementById('discEmptyInline');
+  if (!items.length) { listEl.innerHTML = ''; if (emptyEl) emptyEl.hidden = false; }
+  else {
+    if (emptyEl) emptyEl.hidden = true;
+    let html = '';
+    DAY_ORDER.filter(d => items.some(e => e.day === d)).forEach(d => {
+      html += `<div class="dgh">${DAY_LABELS[d][LANG]}</div><div class="grid2">` + items.filter(e => e.day === d).map(e => eventCard(e, 'grid', {saved: SAVED.has(e.id)})).join('') + `</div>`;
+    });
+    listEl.innerHTML = html;
+  }
+  const note = document.getElementById('discCountNote'); if (note) note.textContent = t('discover.showingCount', {n: items.length, total: pool.length});
+  const footer = document.getElementById('discFooterAreas');
+  if (footer) footer.innerHTML = Object.keys(AREAS).map(k => `<button class="chip" data-go="area-landing"><span data-area="${k}"></span></button>`).join('');
+  renderDiscoverReviews();
+}
+
+/* ---------- DISCOVER MAP — member-posted (UGC) events only; foodwalk moved to Home (curated) ---------- */
+const MAP_AREA_POS = { 'son-tra':[300,90], 'hai-chau':[150,220], 'my-khe':[290,190], 'an-thuong':[300,260], 'my-an':[290,330], 'ngu-hanh-son':[270,410] };
+const MAP_PINS = [
+  {area:'my-khe', kind:'cluster', ids:['volley','surf']},
+  {area:'an-thuong', kind:'cluster', ids:['lx','cowork','quiz']},
+  {area:'hai-chau', kind:'single', ids:['salsa']},
+  {area:'son-tra', kind:'single', ids:['hike']},
+  {area:'my-an', kind:'cluster', ids:['yoga','boardgame','cleanup']},
+  {area:'ngu-hanh-son', kind:'approx', ids:['run']}
+];
+function renderDiscoverMap(){
+  const listEl = document.getElementById('mapList'); if (!listEl) return;
+  const visible = MAP_PINS.flatMap(p => p.ids).filter(id => matchesFilter(ev(id)));
+  listEl.innerHTML = visible.map(id => { const e = ev(id); return `<div class="map-listrow" data-maprow="${id}" data-ev="${id}">
+      <span class="rail-thumb" style="background:${e.grad}">${e.emoji}</span>
+      <span class="grow"><b class="small">${e.title}</b><div class="xs muted num">${e.when[LANG]} · ${area(e.area)}</div></span>
+    </div>`; }).join('') || `<p class="muted small" data-i18n="discover.map.legendSingle"></p>`;
+
+  const svg = document.getElementById('mapSvg'); if (!svg) return;
+  let g = `<path d="M340,0 C300,120 330,260 300,500 L400,500 L400,0 Z" fill="#CDEBF5"/>`;
+  Object.entries(AREAS).forEach(([slug,a]) => { const pos = MAP_AREA_POS[slug]; if (!pos) return;
+    g += `<text x="${pos[0]}" y="${pos[1]-18}" font-size="10" fill="#64748B" text-anchor="middle" font-weight="700">${a[LANG]}</text>`; });
+  MAP_PINS.forEach(p => {
+    const pos = MAP_AREA_POS[p.area]; const visibleIds = p.ids.filter(id => matchesFilter(ev(id)));
+    if (!pos || !visibleIds.length) return;
+    if (p.kind === 'approx') {
+      g += `<circle class="map-pin" data-ev="${visibleIds[0]}" cx="${pos[0]}" cy="${pos[1]}" r="34" fill="#D97706" opacity=".22"/>`;
+      g += `<circle class="map-pin dot" data-ev="${visibleIds[0]}" cx="${pos[0]}" cy="${pos[1]}" r="4" fill="#D97706"/>`;
+    } else if (p.kind === 'cluster' && visibleIds.length > 1) {
+      g += `<g class="map-pin" data-ev="${visibleIds[0]}"><circle class="dot" cx="${pos[0]}" cy="${pos[1]}" r="13" fill="#3730A3"/><text x="${pos[0]}" y="${pos[1]+4}" font-size="11" fill="#fff" text-anchor="middle" font-weight="800">${visibleIds.length}</text></g>`;
+    } else {
+      g += `<circle class="map-pin dot" data-ev="${visibleIds[0]}" cx="${pos[0]}" cy="${pos[1]}" r="9" fill="#0369A1"/>`;
+    }
+  });
+  svg.innerHTML = g;
+  bindMapInteractions();
+}
+function bindMapInteractions(){
+  document.querySelectorAll('#mapList .map-listrow').forEach(row => {
+    row.onmouseenter = () => highlightMapPin(row.dataset.maprow, true);
+    row.onmouseleave = () => highlightMapPin(row.dataset.maprow, false);
+  });
+  document.querySelectorAll('#mapSvg .map-pin').forEach(pin => {
+    pin.onclick = (ev2) => { ev2.stopPropagation(); const id = pin.dataset.ev; const row = document.querySelector(`.map-listrow[data-maprow="${id}"]`); if (row) { row.scrollIntoView({block:'nearest'}); highlightMapPin(id, true); setTimeout(() => highlightMapPin(id, false), 1500); } };
+  });
+  const canvas = document.getElementById('mapCanvas');
+  if (canvas) canvas.onclick = (ev2) => { if (ev2.target.closest('.map-pin') || ev2.target.closest('#btnSearchArea')) return; document.getElementById('btnSearchArea').hidden = false; toast(t('discover.map.movedHint')); };
+  const btn = document.getElementById('btnSearchArea');
+  if (btn) btn.onclick = () => { btn.hidden = true; const pool = discoverEvents(); toast(t('discover.showingCount', {n: pool.filter(matchesFilter).length, total: pool.length})); };
+}
+function highlightMapPin(id, on){
+  document.querySelectorAll(`.map-listrow[data-maprow="${id}"]`).forEach(r => r.classList.toggle('hi', on));
+  document.querySelectorAll(`.map-pin[data-ev="${id}"]`).forEach(p => p.classList.toggle('hi', on));
+}
+
+/* ---------- DISCOVER EMPTY STATES ---------- */
+function showEmptyVariant(v){
+  ['noMatch','noData','nearby'].forEach(k => { const el = document.getElementById('empty' + k[0].toUpperCase() + k.slice(1)); if (el) el.hidden = (k !== v); });
+  document.querySelectorAll('#emptySeg button').forEach(b => b.classList.toggle('on', b.dataset.variant === v));
+}
+function renderDiscoverEmpty(){
+  document.querySelectorAll('#emptySeg button').forEach(b => b.onclick = () => showEmptyVariant(b.dataset.variant));
+  const label = document.getElementById('nearbyPopularLabel'); if (label) label.textContent = t('area.popular', {area: area('my-an')});
+  const list = document.getElementById('nearbyList');
+  if (list) list.innerHTML = ['yoga','boardgame','cleanup'].map(id => eventCard(ev(id), 'grid', {saved: SAVED.has(id)})).join('');
+  const active = document.querySelector('#emptySeg button.on'); showEmptyVariant(active ? active.dataset.variant : 'noMatch');
+}
+
+/* ---------- CALENDAR ---------- */
+let CAL_YEAR = 2026, CAL_MONTH = 8; // September = index 8
+let CAL_SELECTED = 18;
+function renderCalendar(){
+  const weekStartsMonday = LANG === 'vi';
+  const dow = document.getElementById('calDow');
+  const labelsEn = ['S','M','T','W','T','F','S'], labelsVi = ['T2','T3','T4','T5','T6','T7','CN'];
+  dow.innerHTML = (weekStartsMonday ? labelsVi : labelsEn).map(d => `<div class="cal-dow">${d}</div>`).join('');
+  const monthFmt = {format: d => fmtMonthYear(toISODate(d))};
+  document.getElementById('calMonthLabel').textContent = monthFmt.format(new Date(CAL_YEAR, CAL_MONTH, 1));
+  const first = new Date(CAL_YEAR, CAL_MONTH, 1);
+  const daysInMonth = new Date(CAL_YEAR, CAL_MONTH+1, 0).getDate();
+  let startCol = first.getDay(); if (weekStartsMonday) startCol = (startCol + 6) % 7;
+  const grid = document.getElementById('calGrid');
+  let html = '';
+  for (let i=0;i<startCol;i++) html += `<div class="cal-cell empty"></div>`;
+  const isSept2026 = CAL_YEAR === 2026 && CAL_MONTH === 8;
+  for (let d=1; d<=daysInMonth; d++){
+    const hasEvents = isSept2026 && Object.values(DAY_TO_DATE).includes(d);
+    const isToday = isSept2026 && d === 18;
+    const isSel = isSept2026 && d === CAL_SELECTED;
+    html += `<button class="cal-cell ${isToday?'today':''} ${isSel?'sel':''}" data-day="${d}">${d}${hasEvents?'<span class="cal-dot"></span>':''}</button>`;
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { CAL_SELECTED = Number(b.dataset.day); renderCalendar(); });
+  const panel = document.getElementById('calDayPanel');
+  const dayKey = Object.keys(DAY_TO_DATE).find(k => DAY_TO_DATE[k] === CAL_SELECTED);
+  const dateObj = new Date(CAL_YEAR, CAL_MONTH, CAL_SELECTED);
+  const fullFmt = {format: d => fmtLongDate(toISODate(d))};
+  if (isSept2026 && dayKey) {
+    panel.innerHTML = `<h3 class="h3" style="margin-bottom:10px">${fullFmt.format(dateObj)}</h3><div class="stack">` + EVENTS.filter(e => e.day === dayKey).map(e => eventCard(e, 'row', {saved: SAVED.has(e.id)})).join('') + `</div>`;
+  } else {
+    panel.innerHTML = `<h3 class="h3" style="margin-bottom:10px">${fullFmt.format(dateObj)}</h3><div class="empty"><div class="ico">🗓️</div><h3 data-i18n="calendar.noEvents"></h3><p data-i18n="calendar.noEventsDesc"></p><div class="acts"><button class="btn btn-outline" onclick="CAL_SELECTED=18;renderCalendar();" data-i18n="calendar.seeWeek"></button></div></div>`;
+    applyI18n();
+  }
+}
+document.getElementById('calPrev') && (document.getElementById('calPrev').onclick = () => { CAL_MONTH--; if (CAL_MONTH<0){CAL_MONTH=11;CAL_YEAR--;} renderCalendar(); });
+document.getElementById('calNext') && (document.getElementById('calNext').onclick = () => { CAL_MONTH++; if (CAL_MONTH>11){CAL_MONTH=0;CAL_YEAR++;} renderCalendar(); });
+
+/* ---------- SEARCH ---------- */
+let SEARCH_TAB = 'events';
+const PEOPLE = [
+  {name:'Tom R.', ini:'TR', color:'#0369A1', trust:3, bio:'Plays volleyball every weekend at My Khe beach.'},
+  {name:'Anna B.', ini:'AB', color:'#4338CA', trust:3, bio:'Organises volleyball and board game nights in My An.'}
+];
+function highlightText(str, q){ if (!q) return str; const i = str.toLowerCase().indexOf(q.toLowerCase()); if (i===-1) return str; return str.slice(0,i) + '<mark class="search-mark">' + str.slice(i,i+q.length) + '</mark>' + str.slice(i+q.length); }
+function renderSearch(){
+  const q = (document.getElementById('searchQ')||{}).value || '';
+  document.getElementById('searchResultsFor').textContent = t('search.resultsFor', {q});
+  const evMatches = discoverEvents().filter(e => e.title.toLowerCase().includes(q.toLowerCase())); // Discover search only covers member-posted (UGC) events
+  const peopleMatches = PEOPLE.filter(p => p.bio.toLowerCase().includes(q.toLowerCase()));
+  const areaAlias = q.trim().toLowerCase() === 'marble mountains' ? 'ngu-hanh-son' : null;
+  document.querySelectorAll('#searchTabs button').forEach(b => {
+    b.classList.toggle('on', b.dataset.tab === SEARCH_TAB);
+    const cnt = b.dataset.tab === 'events' ? evMatches.length : b.dataset.tab === 'people' ? peopleMatches.length : (areaAlias ? 1 : 0);
+    b.innerHTML = t('search.tab' + b.dataset.tab[0].toUpperCase() + b.dataset.tab.slice(1)) + ` <span class="cnt num">${cnt}</span>`;
+  });
+  const pane = document.getElementById('searchPane');
+  if (SEARCH_TAB === 'events') {
+    pane.innerHTML = evMatches.length ? `<div class="stack">` + evMatches.map(e => {
+      const card = eventCard(e,'row',{saved:SAVED.has(e.id)});
+      return q ? card.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'i'), '<mark class="search-mark">$1</mark>') : card;
+    }).join('') + `</div>` :
+      `<div class="empty"><div class="ico">🔍</div><h3>${t('search.noResults',{q})}</h3></div>`;
+  } else if (SEARCH_TAB === 'people') {
+    pane.innerHTML = peopleMatches.length ? `<div class="stack">` + peopleMatches.map(p => `<div class="card row"><span class="av" style="background:${p.color}">${p.ini}</span><div class="grow"><div class="row"><b>${p.name}</b>${tb(p.trust)}</div><div class="small sec">${highlightText(p.bio,q)}</div></div></div>`).join('') + `</div>` :
+      `<div class="empty"><div class="ico">🔍</div><h3>${t('search.noResults',{q})}</h3></div>`;
+  } else {
+    pane.innerHTML = areaAlias ? `<div class="note info">${t('search.aliasNote',{area:area(areaAlias), alias:'Marble Mountains'})}</div><p class="small muted" style="margin-top:8px">${t('search.aliasHint',{area:area(areaAlias)})}</p>` :
+      `<div class="empty"><div class="ico">🔍</div><h3>${t('search.noResults',{q})}</h3></div>`;
+  }
+}
+document.getElementById('searchQ') && (document.getElementById('searchQ').oninput = renderSearch);
+document.getElementById('btnTryAlias') && (document.getElementById('btnTryAlias').onclick = () => { document.getElementById('searchQ').value = 'marble mountains'; SEARCH_TAB = 'areas'; renderSearch(); });
+document.getElementById('searchTabs') && (document.getElementById('searchTabs').onclick = e => { const b = e.target.closest('[data-tab]'); if (b) { SEARCH_TAB = b.dataset.tab; renderSearch(); } });
+
+/* ---------- THIS WEEK (public SEO) ---------- */
+function renderThisWeek(){
+  const el = document.getElementById('weekList'); if (!el) return;
+  let html = '';
+  DAY_ORDER.forEach(d => { const items = EVENTS.filter(e => e.day === d); if (!items.length) return;
+    html += `<div class="dgh">${DAY_LABELS[d][LANG]}</div>` + items.map(e => eventCard(e,'row',{saved:SAVED.has(e.id)})).join(''); });
+  el.innerHTML = html;
+}
+
+/* ---------- AREA LANDING (public SEO, An Thuong) ---------- */
+function renderAreaLanding(){
+  const up = document.getElementById('areaUpcomingList'); if (!up) return;
+  const items = EVENTS.filter(e => e.area === 'an-thuong');
+  document.getElementById('areaUpcomingLabel').textContent = t('area.upcoming', {area: area('an-thuong')});
+  up.innerHTML = items.map(e => eventCard(e,'grid',{saved:SAVED.has(e.id)})).join('');
+  document.getElementById('areaPopularLabel').textContent = t('area.popular', {area: area('an-thuong')});
+  document.getElementById('areaStat1').textContent = t('area.popularStat1', {n: 12});
+  document.getElementById('areaStat2').textContent = t('area.popularStat2', {n: 340});
+  document.getElementById('areaNearbyChips').innerHTML = ['my-khe','my-an'].map(k => `<button class="chip" onclick="toast(t('area.notBuiltInMock', {area: area('${k}')}))"><span data-area="${k}"></span></button>`).join('');
+  document.getElementById('areaNotifyTitle').textContent = t('area.notifyTitle', {area: area('an-thuong')});
+  const btn = document.getElementById('areaNotifyBtn');
+  if (btn) btn.onclick = () => toast(t('area.notifySent', {area: area('an-thuong')}));
+}
+
+/* ---------- render dispatch ---------- */
+function renderAll(){
+  if (CURRENT === 'home') renderHome();
+  else if (CURRENT === 'news-article') renderNewsArticle();
+  else if (CURRENT === 'discover') renderDiscover();
+  else if (CURRENT === 'discover-map') { renderFilterPanels(); renderDiscoverMap(); }
+  else if (CURRENT === 'discover-filters') renderFilterPanels();
+  else if (CURRENT === 'discover-empty') renderDiscoverEmpty();
+  else if (CURRENT === 'calendar') renderCalendar();
+  else if (CURRENT === 'search') renderSearch();
+  else if (CURRENT === 'this-week') renderThisWeek();
+  else if (CURRENT === 'area-landing') renderAreaLanding();
+}
+onRender(renderAll);
+onRender(id => {
+  const isBareGuest = (id === 'this-week' || id === 'area-landing');
+  const rail = document.getElementById('appRail'); if (rail) rail.hidden = isBareGuest;
+  const tabs = document.querySelector('.app-tabs'); if (tabs) tabs.hidden = isBareGuest; /* base only hides side-nav/top-bar for `bare`, not the rail/bottom tabs — both leak app-only nav to guests without this */
+}); /* bare = full shell hidden, per brief */
+onRender(id => { if (id === 'discover-filters') openOverlay('filterDrawer'); });
+onRender(id => {
+  // Sample "Weather this weekend" rail card — Home only (owner decision 2026-09-19, optional add-on).
+  const card = document.getElementById('railWeatherCard'); if (!card) return;
+  card.hidden = (id !== 'home');
+  if (id === 'home') document.getElementById('railWeatherBody').innerHTML =
+    `<div class="row between"><span class="small">${t('rail.weather.sat')}</span><span class="small num">🌦 29°C</span></div>` +
+    `<div class="row between"><span class="small">${t('rail.weather.sun')}</span><span class="small num">☀️ 31°C</span></div>` +
+    `<p class="xs muted" data-i18n="rail.weather.note"></p>`;
+});
+
+parseFilterFromURL();
+parseHomeStateFromURL();
+if (params.get('news')) CURRENT_ARTICLE = params.get('news');
+boot('discover');
+</script>
+</body>
+</html>

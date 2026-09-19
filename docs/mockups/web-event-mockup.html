@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Da Nang Connect — Web mockup · Event detail & Create (③)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   SHARED BASE for the web-client mockup set. Copy this <style> block
+   verbatim into every web mockup file, then append screen-specific CSS
+   in a second <style> block. Do not rename shared classes.
+   Tokens mirror packages/tokens (what apps/web-client-side ships).
+   Doc 10 §12 (teal #0E7C74 + Inter) is a documented drift.
+   ===================================================================== */
+:root{
+  --brand:#0EA5E9; --brand-dark:#0369A1; --sun:#F59E0B;
+  --surface:#FFFFFF; --bg:#F8FAFC; --sunken:#F1F5F9; --text:#0F172A; --text-sec:#475569; --text-mut:#64748B; --line:#E2E8F0; --line-strong:#CBD5E1;
+  --success:#16A34A; --success-text:#11703A; --warning:#D97706; --warning-text:#8A5A09; --danger:#DC2626; --danger-text:#9C1C14;
+  --accent-subtle:#E7F5FD; --success-subtle:#E8F6EE; --warning-subtle:#FBF1E0; --danger-subtle:#FCEAEA; --sun-subtle:#FDF3E1; --info-subtle:#EAF1FB; --info-text:#28558F;
+  --r-sm:6px; --r-md:10px; --r-lg:16px;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px -16px rgba(15,23,42,.18);
+  --shadow-2:0 4px 12px rgba(15,23,42,.10);
+  --shadow-3:0 12px 32px rgba(15,23,42,.18);
+  --side-w:240px; --rail-w:300px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Be Vietnam Pro',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;overflow-x:clip}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{line-height:1.25}
+ul{list-style:none}
+:focus-visible{outline:2px solid var(--brand-dark);outline-offset:2px}
+[hidden]{display:none !important}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- Mockup chrome (NOT app UI) ---------- */
+.mk-banner{position:sticky;top:0;z-index:95;background:var(--text);color:#fff;font-size:12px;padding:6px 14px;text-align:center}
+.mk-banner strong{color:#FCD34D}
+.mk-files{display:flex;gap:4px;align-items:center;background:#1E293B;padding:6px 12px;overflow-x:auto}
+.mk-files a{flex:0 0 auto;color:#CBD5E1;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;white-space:nowrap}
+.mk-files a:hover{background:#334155;color:#fff}
+.mk-files a.on{background:#fff;color:var(--text)}
+.mk-files .lbl{color:#94A3B8;font-size:11px;font-weight:700;margin-right:6px;flex:0 0 auto}
+.mk-toolbar{position:sticky;top:29px;z-index:90;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:8px 12px}
+.mk-scrchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;flex:1;min-width:0;padding-bottom:2px}
+.mk-scrchip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-md);padding:5px 10px;font-size:11.5px;font-weight:600;color:var(--text-sec);min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;line-height:1.3}
+.mk-scrchip b{font-size:9.5px;font-weight:800;letter-spacing:.03em;color:var(--brand-dark);text-transform:uppercase}
+.mk-scrchip.on{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.mk-scrchip.on b{color:#BAE6FD}
+.mk-toolright{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.seg-lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg-lang button{padding:8px 12px;font-size:12px;font-weight:700;color:var(--text-sec);min-height:36px}
+.seg-lang button.on{background:var(--brand-dark);color:#fff}
+.mk-notesbtn{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--brand-dark);min-height:36px;white-space:nowrap}
+.mk-notesbtn:hover,.mk-notesbtn.on{background:var(--accent-subtle)}
+.mk-notes{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow-3);z-index:120;transform:translateX(100%);transition:transform .24s cubic-bezier(.2,.9,.2,1);display:flex;flex-direction:column}
+.mk-notes.open{transform:none}
+.mk-notes header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.mk-notes header h3{font-size:15px}
+.mk-notes .body{padding:16px 18px 40px;overflow-y:auto;font-size:13.5px;color:var(--text-sec)}
+.mk-notes .body h4{font-size:13px;color:var(--text);margin:14px 0 6px}
+.mk-notes .body h4:first-child{margin-top:0}
+.mk-notes .body li{margin:0 0 6px 16px;list-style:disc}
+.mk-notes .body code{font-size:12px;background:var(--sunken);padding:1px 5px;border-radius:4px;color:var(--text)}
+.mk-notes .drift{background:var(--warning-subtle);color:var(--warning-text);border-radius:var(--r-md);padding:10px 12px;margin-top:10px;font-weight:600}
+.mk-mockonly{display:inline-block;font-size:11.5px;color:var(--text-sec);border:1px dashed var(--line-strong);border-radius:var(--r-md);padding:6px 10px}
+.mk-mockonly b{color:var(--brand-dark)}
+
+/* ---------- App shell (mirrors apps/web-client-side AppShell) ---------- */
+.app{display:flex;max-width:1280px;margin:0 auto;min-height:calc(100vh - 120px)}
+.app-side{position:sticky;top:90px;align-self:flex-start;height:calc(100vh - 90px);width:var(--side-w);flex:0 0 auto;border-right:1px solid var(--line);background:var(--surface);padding:18px 14px;display:flex;flex-direction:column;gap:4px}
+.app-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px;padding:6px 10px 18px}
+.app-logo i{width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.nav-item{display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 12px;border-radius:var(--r-md);color:var(--text-sec);font-weight:600;font-size:14.5px;width:100%;text-align:left;position:relative}
+.nav-item:hover{background:var(--sunken);color:var(--text)}
+.nav-item.on{background:var(--accent-subtle);color:var(--brand-dark);font-weight:700}
+.nav-item .ic{width:24px;text-align:center;font-size:18px}
+.nav-item .cnt{margin-left:auto;background:var(--danger);color:#fff;font-size:11px;font-weight:800;border-radius:999px;padding:1px 7px}
+.app-create{margin-top:12px}
+.app-sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+.app-me{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-md)}
+.app-me:hover{background:var(--sunken)}
+.app-me .meta{min-width:0;font-size:13px;line-height:1.3}
+.app-me .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-col{flex:1;min-width:0;display:flex;flex-direction:column}
+.app-top{position:sticky;top:90px;z-index:40;height:60px;display:flex;align-items:center;gap:12px;padding:0 24px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.app-search{flex:1;max-width:460px;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 14px;min-height:40px;color:var(--text-mut);font-size:14px}
+.app-search input{border:0;outline:0;background:none;flex:1;min-width:0;min-height:38px}
+.app-topright{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:18px;position:relative;color:var(--text-sec)}
+.icon-btn:hover{background:var(--sunken)}
+.icon-btn .dot{position:absolute;top:8px;right:8px;min-width:17px;height:17px;border-radius:999px;background:var(--danger);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg)}
+.app-body{display:flex;justify-content:center;gap:24px;padding:20px 24px 80px}
+.app-main{width:100%;max-width:600px;min-width:0}
+.app-rail{width:var(--rail-w);flex:0 0 auto;display:flex;flex-direction:column;gap:16px;position:sticky;top:170px;align-self:flex-start}
+.app.wide .app-main{max-width:980px}
+.app.wide .app-rail,.app.norail .app-rail{display:none}
+.app.bare .app-side,.app.bare .app-top{display:none}
+.app.bare .app-main{max-width:1100px}
+.app-tabs{display:none}
+.rail-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px}
+.rail-card h3{font-size:14px;margin-bottom:10px}
+.rail-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.rail-row:first-of-type{border-top:0}
+.rail-row .grow{flex:1;min-width:0}
+.rail-row .grow b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px}
+.rail-row .muted{color:var(--text-mut);font-size:12px}
+.rail-thumb{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto}
+@media (max-width:1279px){ .app-rail{display:none} }
+@media (max-width:1023px){
+  :root{--side-w:76px}
+  .app-side{padding:14px 8px;align-items:center}
+  .app-logo span,.nav-item .lbl,.app-me .meta,.app-create .lbl,.app-sidefoot .seg-lang{display:none}
+  .nav-item{justify-content:center;padding:8px}
+  .nav-item .cnt{position:absolute;top:4px;right:4px}
+  .app-create .btn{width:44px;padding:0}
+}
+@media (max-width:767px){
+  .app-side{display:none}
+  .app-top{padding:0 12px}
+  .app-body{padding:14px 12px 96px}
+  .app-tabs{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--surface);border-top:1px solid var(--line);justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .app-tabs button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;font-weight:600;color:var(--text-mut);min-width:56px;min-height:48px;justify-content:center;position:relative}
+  .app-tabs button.on{color:var(--brand-dark)}
+  .app-tabs .ic{font-size:19px}
+  .app-tabs .fab{width:48px;height:48px;border-radius:50%;background:var(--brand-dark);color:#fff;font-size:22px;margin-top:-18px;box-shadow:var(--shadow-2)}
+}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:999px;padding:10px 18px;font-weight:700;font-size:14px;white-space:nowrap;transition:background .12s}
+.btn-primary{background:var(--brand-dark);color:#fff}
+.btn-primary:hover{background:#02537f}
+.btn-outline{border:1px solid var(--line-strong);color:var(--text);background:var(--surface)}
+.btn-outline:hover{background:var(--sunken)}
+.btn-ghost{color:var(--brand-dark)}
+.btn-ghost:hover{background:var(--accent-subtle)}
+.btn-success{background:var(--success-subtle);color:var(--success-text);border:1px solid color-mix(in srgb,var(--success) 40%,transparent)}
+.btn-warn{background:var(--warning-subtle);color:var(--warning-text);border:1px solid color-mix(in srgb,var(--warning) 40%,transparent)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger-ghost{color:var(--danger-text)}
+.btn-danger-ghost:hover{background:var(--danger-subtle)}
+.btn:disabled,.btn.disabled{background:var(--sunken);color:var(--text-mut);border-color:var(--line);cursor:not-allowed}
+.btn-block{width:100%}
+.btn-sm{min-height:36px;padding:6px 14px;font-size:13px}
+
+/* ---------- Chips / segmented / tabs ---------- */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;color:var(--text-sec);min-height:40px;white-space:nowrap}
+.chip:hover{border-color:var(--line-strong);color:var(--text)}
+.chip.on{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.chip.soft{background:var(--accent-subtle);border-color:color-mix(in srgb,var(--brand) 40%,transparent);color:var(--brand-dark)}
+.chip .x{font-weight:800;opacity:.8}
+.chip .c{font-size:11.5px;opacity:.75;font-weight:700}
+.seg{display:inline-flex;background:var(--sunken);border-radius:999px;padding:3px;gap:2px}
+.seg button{padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;color:var(--text-sec);min-height:36px}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(15,23,42,.12)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{padding:12px 14px;font-weight:700;font-size:14px;color:var(--text-mut);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;min-height:44px}
+.tabs button.on{color:var(--brand-dark);border-bottom-color:var(--brand-dark)}
+.tabs .cnt{font-size:11.5px;background:var(--sunken);color:var(--text-sec);border-radius:999px;padding:1px 7px;margin-left:6px}
+
+/* ---------- Trust badge (doc 05 §5.3 — canonical T0–T5 ladder) ---------- */
+.tb{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700;white-space:nowrap;line-height:1.5}
+.tb:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8}
+.tb.t0{background:var(--sunken);color:var(--text-sec)}
+.tb.t1{background:var(--accent-subtle);color:var(--brand-dark)}
+.tb.t2{background:#D3EBFA;color:#075985}
+.tb.t3{background:var(--brand-dark);color:#fff}
+.tb.t4{background:#E0E7FF;color:#3730A3}
+.tb.t5{background:var(--sun-subtle);color:#92400E;box-shadow:inset 0 0 0 1px var(--sun)}
+.tb.limited{background:var(--danger-subtle);color:var(--danger-text)}
+
+/* ---------- Avatars ---------- */
+.av{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;color:#fff;flex:0 0 auto;background:var(--brand-dark)}
+.av.sm{width:28px;height:28px;font-size:11px}
+.av.lg{width:56px;height:56px;font-size:18px}
+.av.xl{width:96px;height:96px;font-size:30px}
+.avstack{display:inline-flex;align-items:center}
+.avstack .av{border:2px solid var(--surface);margin-left:-8px}
+.avstack .av:first-child{margin-left:0}
+.avstack .more{margin-left:6px;font-size:12.5px;font-weight:700;color:var(--text-sec)}
+
+/* ---------- Event card ---------- */
+.ev{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column}
+.ev:hover{border-color:var(--line-strong)}
+.ev-cover{position:relative;aspect-ratio:16/8;display:flex;align-items:center;justify-content:center;font-size:44px}
+.ev-cover .tag{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.ev-cover .save{position:absolute;right:10px;top:10px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--shadow-2)}
+.ev-cover .save.on{color:var(--danger)}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.94);color:var(--text)}
+.pill.src{background:var(--info-subtle);color:var(--info-text)}
+.pill.going{background:var(--success);color:#fff}
+.pill.wait{background:var(--warning);color:#fff}
+.pill.full{background:var(--text);color:#fff}
+.pill.cancel{background:var(--danger);color:#fff}
+.ev-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.ev-when{font-size:12.5px;font-weight:700;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.02em}
+.ev-title{font-size:17px;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev-meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;color:var(--text-sec)}
+.ev-host{display:flex;align-items:center;gap:8px;font-size:13px;min-width:0}
+.ev-host b{white-space:nowrap}
+.ev-foot{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:auto;padding-top:10px;border-top:1px solid var(--line)}
+.ev.row{flex-direction:row}
+.ev.row .ev-cover{width:180px;aspect-ratio:auto;flex:0 0 auto;font-size:36px}
+.cap{font-size:13px;font-weight:700;color:var(--text)}
+.cap.low{color:var(--warning-text)}
+.cap.full{color:var(--danger-text)}
+.cap-bar{height:6px;border-radius:999px;background:var(--sunken);overflow:hidden;margin-top:4px}
+.cap-bar i{display:block;height:100%;background:var(--success)}
+.cap-bar.low i{background:var(--warning)}
+.cap-bar.full i{background:var(--danger)}
+.dgh{position:sticky;top:150px;z-index:5;background:var(--bg);padding:10px 0 8px;font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--text-mut);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.dgh:after{content:'';flex:1;height:1px;background:var(--line)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.wrap{flex-wrap:wrap}
+.muted{color:var(--text-mut)}
+.sec{color:var(--text-sec)}
+.h1{font-size:26px;font-weight:800;letter-spacing:-.3px}
+.h2{font-size:20px;font-weight:700}
+.h3{font-size:16px;font-weight:700}
+.small{font-size:13px}
+.xs{font-size:12px}
+
+/* ---------- Surfaces ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.note{border-radius:var(--r-md);padding:10px 14px;font-size:13px;display:flex;gap:9px;align-items:flex-start;font-weight:600}
+.note.info{background:var(--info-subtle);color:var(--info-text)}
+.note.warn{background:var(--warning-subtle);color:var(--warning-text)}
+.note.danger{background:var(--danger-subtle);color:var(--danger-text)}
+.note.ok{background:var(--success-subtle);color:var(--success-text)}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.kv dt{color:var(--text-mut)}
+
+/* ---------- Forms ---------- */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .lbl{font-size:13px;font-weight:700;color:var(--text-sec)}
+.field input,.field select,.field textarea{border:1px solid var(--line-strong);border-radius:var(--r-md);padding:10px 12px;min-height:44px;background:var(--surface);width:100%}
+.field textarea{min-height:110px;resize:vertical}
+.field .hint{font-size:12px;color:var(--text-mut)}
+.field.err input{border-color:var(--danger)}
+.field .errt{font-size:12px;color:var(--danger-text);font-weight:600}
+.check{display:flex;gap:10px;align-items:center;font-size:14px;min-height:40px}
+.check input{width:18px;height:18px;accent-color:var(--brand-dark)}
+.switch{position:relative;width:44px;height:26px;border-radius:999px;background:var(--line-strong);flex:0 0 auto;transition:.15s}
+.switch:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:.15s}
+.switch.on{background:var(--brand-dark)}
+.switch.on:after{left:21px}
+
+/* ---------- Table ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-mut);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:hover td{background:var(--bg)}
+
+/* ---------- Empty state ---------- */
+.empty{text-align:center;padding:48px 24px;background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--r-lg)}
+.empty .ico{font-size:40px;margin-bottom:10px}
+.empty h3{font-size:18px;margin-bottom:6px}
+.empty p{color:var(--text-sec);max-width:440px;margin:0 auto 16px;font-size:14px}
+.empty .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ---------- Dialog / drawer / toast ---------- */
+.scrim{position:fixed;inset:0;background:rgba(15,23,42,.46);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow-3);width:100%;max-width:460px;max-height:calc(100vh - 32px);overflow-y:auto}
+.dlg.wide{max-width:640px}
+.dlg-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.dlg-h h3{font-size:17px}
+.dlg-b{padding:18px 20px}
+.dlg-f{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line)}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(360px,100vw);background:var(--surface);box-shadow:var(--shadow-3);z-index:101;overflow-y:auto}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--text);color:#fff;border-radius:var(--r-md);padding:12px 16px;font-size:14px;font-weight:600;z-index:130;box-shadow:var(--shadow-3);display:flex;gap:14px;align-items:center;max-width:calc(100vw - 32px)}
+.toast button{color:#7DD3FC;font-weight:800}
+@media (max-width:767px){.toast{bottom:84px}}
+
+/* ---------- Screens ---------- */
+.scr{display:none}
+.scr.show{display:block}
+</style>
+<style>
+/* =====================================================================
+   FILE-SPECIFIC CSS — file ③ Event detail & Create.
+   New classes only, prefixed to avoid clashing with the shared base.
+   ===================================================================== */
+.evd-cover{position:relative;aspect-ratio:16/7;display:flex;align-items:center;justify-content:center;font-size:64px;border-radius:var(--r-lg);overflow:hidden}
+.evd-cover .tag{position:absolute;left:12px;top:12px;display:flex;gap:6px;flex-wrap:wrap}
+.evd-cover .acts{position:absolute;right:12px;top:12px;display:flex;gap:8px}
+.evd-cover .acts .icon-btn{background:rgba(255,255,255,.92);color:var(--text)}
+.evd-body{padding:18px 0 4px;display:flex;flex-direction:column;gap:20px}
+.evd-block{display:flex;flex-direction:column;gap:8px}
+.evd-block h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-mut);display:flex;align-items:center;gap:6px}
+.evd-stats{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700;font-size:14px}
+.evd-stats .dot{color:var(--line-strong)}
+.minimap{height:120px;border-radius:var(--r-md);background:linear-gradient(135deg,#E2F1EA,#BFE3D0);display:flex;align-items:center;justify-content:center;font-size:26px;position:relative;overflow:hidden}
+.minimap .approx{position:absolute;width:104px;height:104px;border-radius:50%;background:rgba(14,165,233,.20);border:1.5px dashed var(--brand-dark)}
+.hostcard{display:flex;align-items:center;gap:12px;background:var(--sunken);border-radius:var(--r-lg);padding:12px 14px}
+.hostcard .grow{flex:1;min-width:0}
+.hostcard .grow b{display:block;font-size:14.5px}
+.hostcard .grow .muted{font-size:12.5px}
+.curatedbox{background:var(--info-subtle);border-radius:var(--r-lg);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.curatedbox .src{font-size:13px;color:var(--info-text)}
+.rsvpbar{background:var(--surface);border-top:1px solid var(--line);padding:14px 16px;margin:16px -16px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;box-shadow:0 -4px 16px -8px rgba(15,23,42,.18)}
+@media (max-width:767px){.rsvpbar{position:fixed;left:0;right:0;bottom:0;z-index:55;margin:0;padding:10px 14px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 16px -8px rgba(15,23,42,.22)}
+  .j-detail{padding-bottom:76px}}
+.rsvpbar .info{display:flex;flex-direction:column;gap:6px}
+@keyframes evdPulse{0%,100%{box-shadow:0 0 0 0 rgba(14,165,233,.45)}50%{box-shadow:0 0 0 9px rgba(14,165,233,0)}}
+.btn-pulse{animation:evdPulse 1.8s infinite}
+.hostbar{position:sticky;top:150px;z-index:6;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:12px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.hostbar .stats{font-weight:700;font-size:13.5px}
+.hostbar .acts{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.offerbanner{background:var(--warning-subtle);color:var(--warning-text);border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700;flex-wrap:wrap}
+.wl-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:10px}
+.wl-panel .pos{font-size:21px;font-weight:800}
+.comment{display:flex;gap:10px}
+.comment .grow{flex:1;min-width:0}
+.comment .grow .meta{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--text-mut);flex-wrap:wrap}
+.comment .grow p{font-size:14px;margin-top:2px}
+.comment .grow .rp{font-size:12px;font-weight:700;color:var(--text-mut);margin-top:4px}
+.comment .grow .rp:hover{color:var(--danger-text)}
+.evd-cta-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---- report dialog (2-step) ---- */
+.rp-reasons{display:flex;flex-direction:column;gap:2px}
+.rp-reason{display:flex;align-items:flex-start;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}
+.rp-reason input{width:18px;height:18px;margin-top:2px;flex:0 0 auto}
+.rp-reason .rd{display:flex;flex-direction:column;gap:2px}
+.rp-reason .rd small{color:var(--text-mut);font-weight:400}
+.rp-step[hidden]{display:none}
+.rp-done{text-align:center;padding:10px 4px 4px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.rp-done .ico{font-size:38px}
+
+/* ---- wizard (create event) ---- */
+.wiz{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+@media (max-width:980px){.wiz{grid-template-columns:1fr}}
+.wiz-form{display:flex;flex-direction:column;gap:20px}
+.stepper{display:flex;align-items:center;gap:4px;list-style:none}
+.step-dot{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;position:relative;background:none;border:0;padding:2px}
+.step-dot i{width:26px;height:26px;border-radius:50%;background:var(--sunken);color:var(--text-mut);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;font-style:normal}
+.step-dot span{font-size:10.5px;font-weight:700;color:var(--text-mut);text-align:center;white-space:nowrap}
+.step-dot.done i{background:var(--success);color:#fff}
+.step-dot.on i{background:var(--brand-dark);color:#fff}
+.step-dot.on span{color:var(--text)}
+.step-dot:not(:last-child):after{content:'';position:absolute;top:13px;left:56%;width:100%;height:2px;background:var(--line);z-index:-1}
+.step-dot.done:not(:last-child):after{background:var(--success)}
+.wiz-autosave{font-size:12px;color:var(--text-mut);display:flex;align-items:center;gap:6px}
+.wiz-nav{display:flex;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid var(--line)}
+.wiz-preview{position:sticky;top:170px}
+.wiz-preview h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-mut);margin-bottom:10px}
+.qrow{display:flex;gap:8px;align-items:flex-start}
+.qrow .field{flex:1}
+.checklist{display:flex;flex-direction:column;gap:8px;list-style:none}
+.checklist li{display:flex;gap:8px;align-items:center;font-size:14px}
+.checklist .ok{color:var(--success-text)}
+.checklist .warn{color:var(--warning-text)}
+.chipgrid{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---- gate / claim / published centered cards ---- */
+.centerwrap{max-width:520px;margin:32px auto 0;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center}
+.bigicon{font-size:46px}
+.claim-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;width:100%}
+.claim-stat{background:var(--sunken);border-radius:var(--r-md);padding:12px;text-align:center}
+.claim-stat b{display:block;font-size:22px}
+.stars{display:flex;gap:6px;font-size:24px}
+.stars button{color:var(--line-strong)}
+.stars button.on{color:var(--sun)}
+
+/* ---- reviews block (owner decision 2026-09-19: UGC events show host reviews + comments) ---- */
+.rt{font-weight:700}
+.rt.new{color:var(--text-mut);font-weight:600}
+.cm{margin-left:10px;color:var(--text-mut);font-weight:600}
+.reviewbig{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:110px}
+.reviewbig b{font-size:30px;font-weight:800;line-height:1}
+.reviewbig .stars-static{color:var(--sun);font-size:16px;letter-spacing:1px}
+.distcol{flex:1;min-width:180px;display:flex;flex-direction:column;gap:4px;justify-content:center}
+.distrow{display:flex;align-items:center;gap:8px;font-size:11.5px}
+.distrow .xs:first-child{width:22px}
+.distrow .xs:last-child{width:32px;text-align:right}
+.distbar{flex:1;height:6px;border-radius:999px;background:var(--sunken);overflow:hidden}
+.distbar i{display:block;height:100%;background:var(--sun)}
+#evdJump{margin-top:6px}
+#evdJump a{text-decoration:none}
+#evdJump a:hover{text-decoration:underline}
+#ev-reviews,#ev-comments{scroll-margin-top:170px}
+.comment.pinned{background:var(--sunken);border-radius:var(--r-md);padding:8px 10px;margin:0 -10px}
+.comment .replies{margin-left:38px;margin-top:10px;display:flex;flex-direction:column;gap:10px;border-left:2px solid var(--line);padding-left:12px}
+/* Doc 10 §12.3: never fully uppercase Vietnamese with diacritics — stacked marks collide on some devices. */
+html[lang="vi"] *{text-transform:none !important}
+/* Cover tags must never run under the save button on narrow cards. */
+.ev-cover .tag{max-width:calc(100% - 64px)}
+.ev-cover .tag .pill{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block}
+</style>
+</head>
+<body>
+
+<div class="mk-banner"><strong>MOCKUP TĨNH</strong> · chưa nối API · giờ hiển thị theo Asia/Ho_Chi_Minh (dữ liệu thật lưu UTC) · hôm nay giả lập: Thứ Sáu 18/09/2026</div>
+<nav class="mk-files" aria-label="Mockup files">
+  <span class="lbl">Bộ mockup web:</span>
+  <a href="auth-onboarding-web-mockup.html" data-file="auth">① Auth &amp; onboarding</a>
+  <a href="web-discover-mockup.html" data-file="discover">② Feed &amp; Discover</a>
+  <a href="web-event-mockup.html" data-file="event">③ Event &amp; Create</a>
+  <a href="web-myspace-mockup.html" data-file="myspace">④ My space &amp; Profile</a>
+  <a href="web-swipe-mockup.html" data-file="swipe">⑤ Swipe (Tinder-style)</a>
+</nav>
+<div class="mk-toolbar">
+  <div class="mk-scrchips" id="mkChips" role="tablist" aria-label="Screens"></div>
+  <div class="mk-toolright">
+    <div class="seg-lang" role="group" aria-label="Language">
+      <button data-lang="en" class="on">EN</button><button data-lang="vi">VI</button>
+    </div>
+    <button class="mk-notesbtn" id="mkNotesBtn">📝 Notes</button>
+  </div>
+</div>
+
+<aside class="mk-notes" id="mkNotes" aria-label="Ghi chú mockup">
+  <header><h3 id="mkNotesTitle">Ghi chú</h3><button class="icon-btn" id="mkNotesClose" aria-label="Đóng">✕</button></header>
+  <div class="body" id="mkNotesBody"></div>
+</aside>
+
+<!-- ================= APP SHELL (one instance, screens swap inside .app-main) ================= -->
+<div class="app" id="app">
+  <aside class="app-side" aria-label="Primary navigation">
+    <a class="app-logo" href="#"><i></i><span>Da Nang Connect</span></a>
+    <button class="nav-item" data-nav="home"><span class="ic">🏠</span><span class="lbl" data-i18n="nav.home"></span></button>
+    <button class="nav-item" data-nav="discover"><span class="ic">🧭</span><span class="lbl" data-i18n="nav.discover"></span></button>
+    <button class="nav-item" data-nav="myevents"><span class="ic">📅</span><span class="lbl" data-i18n="nav.myEvents"></span></button>
+    <button class="nav-item" data-nav="notifications"><span class="ic">🔔</span><span class="lbl" data-i18n="nav.notifications"></span><span class="cnt me-only">3</span></button>
+    <button class="nav-item" data-nav="profile"><span class="ic">👤</span><span class="lbl" data-i18n="nav.profile"></span></button>
+    <div class="app-create"><button class="btn btn-primary btn-block" data-go-create><span>＋</span><span class="lbl" data-i18n="nav.createEvent"></span></button></div>
+    <div class="app-sidefoot">
+      <div class="seg-lang" role="group" aria-label="Language (app)"><button data-lang="en" class="on">EN</button><button data-lang="vi">VI</button></div>
+      <div class="app-me me-only"><span class="av sm" style="background:#7C3AED">AL</span><span class="meta"><b>Alex Morgan</b><span class="tb t1" data-tb="1"></span></span></div>
+      <button class="btn btn-outline btn-block guest-only"><span data-i18n="nav.signIn"></span></button>
+    </div>
+  </aside>
+
+  <div class="app-col">
+    <header class="app-top">
+      <label class="app-search"><span aria-hidden="true">🔍</span><input data-i18n-ph="top.search" aria-label="Search"></label>
+      <div class="app-topright">
+        <button class="icon-btn me-only" aria-label="Notifications">🔔<span class="dot">3</span></button>
+        <button class="btn btn-primary btn-sm guest-only"><span data-i18n="nav.signIn"></span></button>
+      </div>
+    </header>
+    <div class="app-body">
+      <main class="app-main" id="appMain">
+        <!-- =============== SCREENS GO HERE =============== -->
+
+        <!-- ============ W-20 Event detail — 10 viewer-state variants ============ -->
+        <section class="scr" data-screen="event" data-code="W-20" data-title="Event detail — member, has spots" data-nav="discover" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>Route &amp; render</h4>
+            <ul><li><code>/[locale]/events/[slug]</code> · SSR + OG image động (doc 10 §5, W-20)</li>
+            <li>Đọc <code>?ev=&lt;id&gt;</code> để đổi sự kiện demo (mặc định <code>volley</code>)</li></ul>
+            <h4>Endpoint</h4>
+            <ul><li><code>GET /api/v1/occurrences/{occurrenceId}</code> → <code>viewerContext {canRsvp, myRsvpStatus, seatsLeft, requiredTrustLevel}</code> (UC-38)</li>
+            <li><code>POST /api/v1/occurrences/{occurrenceId}/rsvps</code> với header <code>Idempotency-Key</code> (UC-38 bước 5)</li></ul>
+            <h4>Quy tắc</h4>
+            <ul><li>Trạng thái nút RSVP theo bảng doc 10 §7.4 — 8 trạng thái, xem các biến thể <code>event-*</code> khác trong bộ chip phía trên</li>
+            <li>Thứ tự khối theo doc 10 §8.3: giờ → địa điểm → ai tham gia → host → mô tả → hỏi đáp → report (không phải thẩm mỹ, là quyết định UX)</li>
+            <li>Đây là thành viên T1 (đã xác thực email), <b>chưa</b> RSVP, sự kiện còn chỗ</li></ul>
+            <div class="drift">DRIFT: <code>EventResponse</code> thật của <code>apps/api</code> phẳng hoá occurrence sớm nhất của <code>events/{eventId}</code> — mockup mô phỏng đúng 1 occurrence/sự kiện, chưa dựng UI chọn buổi cho sự kiện lặp lại (T-17 chưa làm ở backend).</div>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="event-guest" data-code="W-20" data-title="Event detail — guest (T0, chưa đăng nhập)" data-nav="discover" data-layout="feed" data-guest="1">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>Ràng buộc Q-01 — guest-first</h4>
+            <ul><li>Khách xem được toàn bộ nội dung công khai; chỉ ẩn địa chỉ chính xác và danh sách người tham dự (UC-09, UC-19 hậu điều kiện <code>BR-15</code>)</li>
+            <li>Chạm nút RSVP → auth gate <code>M-05</code> → lưu <code>pendingIntent</code> → sau đăng nhập tự thực thi RSVP (UC-38 A-3)</li></ul>
+            <h4>Liên kết chéo file</h4>
+            <ul><li>Dialog auth gate trong mockup này dẫn sang <code>auth-onboarding-web-mockup.html?screen=gate</code></li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="event-going" data-code="W-20" data-title="Event detail — đã RSVP (going)" data-nav="myevents" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>Trạng thái</h4>
+            <ul><li>Nút chính đổi thành “You are going” — kiểu success nhạt, mở menu quản lý (Cancel · Add to calendar · Invite · My QR) thay vì mở lại sheet RSVP (doc 10 §7.4)</li>
+            <li>Địa chỉ chính xác đã mở khoá (<code>BR-15</code>, UC-38 bước 15)</li></ul>
+            <h4>Endpoint huỷ</h4>
+            <ul><li><code>DELETE /api/v1/occurrences/{occurrenceId}/rsvps</code> tương ứng UC-39, kích hoạt <code>waitlist:promote</code> cho người kế tiếp (UC-40 bước 8)</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="event-waitlist" data-code="W-20" data-title="Event detail — trong waitlist" data-nav="myevents" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>M-26 Waitlist status</h4>
+            <ul><li>Vị trí hiển thị là số thật, không dùng câu chung chung “You're on the waitlist” (tiêu chí chấp nhận UC-40)</li>
+            <li>Endpoint: <code>GET /api/v1/occurrences/{occurrenceId}/waitlist/me</code> trả <code>{position, estimatedChance}</code></li>
+            <li>“Typically N of M get in” <b>chỉ hiện khi ≥ 20 lượt thăng hạng lịch sử</b> cùng loại hình (doc 10 §7.5) — mockup này cố tình <b>ẩn</b> số đó để mô phỏng trường hợp chưa đủ dữ liệu</li></ul>
+            <div class="drift">DRIFT: backend hiện thăng hạng thẳng sang <code>going</code>, chưa có trạng thái trung gian <code>offered</code> giữ chỗ 12 giờ (T-16 UC-40 bước 11 chưa triển khai) — xem biến thể <code>event-offer</code> để thấy UI kỳ vọng khi có.</div>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="event-offer" data-code="W-20" data-title="Event detail — được mời từ waitlist (offered)" data-nav="myevents" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>UC-40 bước 11–15</h4>
+            <ul><li>Cửa sổ xác nhận: 12 giờ nếu còn &gt; 2 giờ tới giờ diễn ra, rút còn 30 phút nếu occurrence bắt đầu trong &lt; 2 giờ</li>
+            <li><code>POST /api/v1/rsvps/{rsvpId}/accept-offer</code> · hết hạn thì <code>waitlist:expire-offer</code> đẩy người kế tiếp và đưa người bỏ lỡ về <b>cuối</b> hàng đợi (1 lần), lần 2 thì rời hẳn</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="event-full" data-code="W-20" data-title="Event detail — hết chỗ, không có waitlist" data-nav="discover" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>Board Game Night — <code>has_waitlist = false</code></h4>
+            <ul><li>Nút RSVP disabled hẳn, kèm 3 gợi ý sự kiện tương tự cùng khu vực/loại hình thay vì để ngõ cụt (doc 10 §7.4 nhánh <code>Q</code> → <code>T</code>)</li>
+            <li>Server trả <code>409</code> nếu vẫn cố gọi RSVP mà không có waitlist</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="event-cancelled" data-code="X-04" data-title="Event detail — đã huỷ" data-nav="discover" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>UC-23 huỷ hoạt động</h4>
+            <ul><li>Banner nêu lý do từ danh mục cố định (Weather · Not enough people · Venue issue · Personal · Other) — organizer chọn khi huỷ, xem dialog Cancel event ở màn <code>event-host</code></li>
+            <li>Mọi hành động bị vô hiệu: RSVP, Add to calendar, Share vẫn hiện nhưng không hoạt động</li>
+            <li>Người từng <code>going</code>/<code>waitlisted</code> nhận thông báo huỷ (UC-40 A-4); huỷ trong 24 giờ cuối trước giờ diễn ra ghi trust signal âm cho host (doc 05 §5.2)</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="event-past" data-code="W-20" data-title="Event detail — đã diễn ra" data-nav="myevents" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>Chế độ past</h4>
+            <ul><li>Thay nút RSVP bằng “Leave a review” (<code>M-55</code>) — dialog demo có sao đánh giá + nhận xét</li>
+            <li>Hiện ảnh tổng kết (recap) nếu host đã tải lên sau sự kiện — mockup dùng placeholder gradient</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="event-host" data-code="W-20 · M-41" data-title="Event detail — chủ sự kiện (host view)" data-nav="myevents" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>Thanh quản lý host (F-07)</h4>
+            <ul><li><b>Edit</b> → <code>/[locale]/events/[slug]/edit</code> (W-34, xem chip <code>edit</code>)</li>
+            <li><b>Manage attendees</b> → <code>/[locale]/my/events/[slug]/attendees</code> (W-42) — trong bộ mockup, dẫn sang <code>web-myspace-mockup.html?screen=attendees</code> do file ④ sở hữu</li>
+            <li><b>Duplicate</b> → nhân bản mọi trường trừ thời gian, mở lại wizard ở bước 1 (UC-28)</li>
+            <li><b>Cancel event</b> → dialog bắt buộc chọn lý do + gõ đúng “CANCEL” để xác nhận (UC-23 bước O1–O3)</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="event-curated" data-code="W-20" data-title="Event detail — listing curate (chưa được nhận)" data-nav="discover" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>Q-07 minh bạch nguồn gốc + UC-65/UC-66</h4>
+            <ul><li>Nhãn không thể tắt: “Listed by the Da Nang Connect team from a public source. Not yet managed by the organizer.” kèm nguồn + ngày kiểm chứng</li>
+            <li>RSVP hoạt động bình thường (UC-38) — đây là cách nền tảng đo tín hiệu quan tâm thật trước khi mời organizer gốc nhận quyền (UC-65 bước 7–8)</li>
+            <li>CTA “Are you the organiser? Claim this listing” → màn <code>claim</code> (W-29)</li></ul>
+          </template>
+        </section>
+
+        <!-- ============ Dialog-as-screen: mở sẵn overlay để chụp ảnh ============ -->
+        <section class="scr" data-screen="rsvp-confirm" data-code="W-21" data-title="RSVP confirm sheet (dialog mở sẵn)" data-nav="discover" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>Q-06 — RSVP tối đa 2 chạm</h4>
+            <ul><li>Chạm RSVP → sheet này → xong. Không có bước trung gian nào khác trừ khi organizer bật câu hỏi tuỳ chỉnh (tối đa 3, ≤300 ký tự/câu — UC-38 bước 4)</li>
+            <li><code>POST /api/v1/occurrences/{occurrenceId}/rsvps</code> trả trạng thái cuối cùng ngay lần gọi đầu (going / waitlisted / pending_approval — không bao giờ lỗi khi hết chỗ)</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="report" data-code="F-08" data-title="Report dialog — bước 1 (dialog mở sẵn)" data-nav="discover" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>UC-60 · F-08 — báo cáo 2 bước</h4>
+            <ul><li>Bước 1: chọn đối tượng (tự điền) + 1 trong 8 nhóm lý do (doc 10 §7.8); bước 2: mô tả tự do ≤ 500 ký tự + đính kèm tuỳ chọn + tuỳ chọn chặn hai chiều; bước 3: xác nhận trung tính</li>
+            <li><code>POST /api/v1/reports</code> kèm <code>Idempotency-Key</code>; nội dung bị ẩn <b>ngay</b> khỏi tầm nhìn người báo cáo, optimistic, không chờ moderator (UC-60 bước 15)</li>
+            <li>Report luôn có mặt trên mọi bề mặt nội dung người dùng tạo — trong mockup: nút “⋯ Report” cấp sự kiện + link “Report” dưới mỗi bình luận</li></ul>
+            <div class="drift">DRIFT: UC-60 có 14 mã lý do đầy đủ (R-01..R-14) theo mức nghiêm trọng; mockup dùng đúng 8 nhóm rút gọn của doc 10 §7.8 cho UI người dùng cuối — danh mục chi tiết hơn thuộc tầng xử lý của Moderator (AD-30, không thuộc app này).</div>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="review-write" data-code="M-55 · W-55" data-title="Leave a review — dialog mở sẵn" data-nav="myevents" data-layout="feed">
+          <div class="j-detail"></div>
+          <template class="notes">
+            <h4>UC-16 · M-55/W-55 — đánh giá sau hoạt động</h4>
+            <ul><li>Chỉ hiện được cho thành viên có <code>rsvps.status = 'checked_in'</code> ở occurrence này; cửa sổ mở từ <code>T+2h</code> sau <code>ends_at</code> tới <code>T+7 ngày</code> (doc 05 §9.2 — mốc double-blind)</li>
+            <li>Đánh giá <b>hai chiều</b>: người tham dự chấm host và host cũng chấm người tham dự trong cùng cửa sổ (UC-16); cả hai review bị giữ ở <code>status='pending'</code>, không ai thấy của ai cho tới khi cả hai gửi xong hoặc hết 7 ngày — chống lạm phát điểm và trả đũa (doc 05 §9.1–9.2)</li>
+            <li>Chip gợi ý là lối tắt nhập nhanh, không thay thế nhận xét tự do; “Post without my name” chỉ ẩn tên hiển thị, hệ thống vẫn lưu <code>author_user_id</code> thật để kiểm duyệt được (doc 05 §9.4)</li>
+            <li>Endpoint: <code>POST /api/v1/occurrences/{occurrenceId}/reviews</code> — service kiểm tra đã <code>checked_in</code>, chưa review occurrence này, <code>rating 1..5</code></li>
+            <li>Review ≥ 4★ đã publish sinh <code>trust_signals.positive_review</code> (+3, trần +24 tổng theo loại tín hiệu này — doc 03 §8.5 mục 5, công thức <code>reputation_points</code> doc 05 §5.3)</li></ul>
+            <h4>Đề xuất dữ liệu (chưa hiện thực ở <code>apps/api</code>)</h4>
+            <ul><li>Bảng tối thiểu: <code>reviews(occurrence_id, reviewer_id, reviewee_id, stars, text, created_at)</code> — bản đầy đủ trong doc 03 §8.5 có thêm <code>target_type/target_id</code> đa hình (user hoặc venue), <code>sub_ratings jsonb</code>, <code>status</code>, <code>is_verified_attendance</code>, <code>helpful_count</code>, <code>moderation_state</code>, ràng buộc UNIQUE một review/người/occurrence</li>
+            <li>Kiểm duyệt: review là nội dung người dùng tạo như comment — dùng chung hàng đợi report (UC-60/UC-61), không có luồng duyệt riêng; report trên review dẫn thẳng sang <code>dlgReport</code> giống mọi nơi khác</li></ul>
+            <div class="drift">DRIFT: cửa sổ đánh giá lệch giữa hai tài liệu — doc 05 §9.2 (thiết kế double-blind) ghi <b>7 ngày</b>, doc 03 §8.5 (đặc tả cột) ghi <b>14 ngày</b>. Mockup này dùng 7 ngày vì đó là mốc gắn liền với cơ chế an toàn double-blind. UC-16 là <code>Should</code> (doc 02 §10.3), hoãn sang đợt 2 sau MVP — chưa có bảng <code>reviews</code> nào chạy thật trong <code>apps/api</code>.</div>
+          </template>
+        </section>
+
+        <!-- ============ W-29 Claim listing ============ -->
+        <section class="scr" data-screen="claim" data-code="W-29" data-title="Claim curated listing" data-nav="discover" data-layout="bare">
+          <div class="j-claim"></div>
+          <template class="notes">
+            <h4>Route</h4>
+            <ul><li><code>/[locale]/events/[slug]/claim</code> — mở được không cần tài khoản, giữ <code>claim_token</code> có hạn 14 ngày (UC-68 bước 11)</li></ul>
+            <h4>Luồng xác minh</h4>
+            <ul><li>3 cách: email trùng miền nguồn, SĐT trùng số công khai (tự động chấp nhận), hoặc Curator duyệt thủ công trong 48 giờ</li>
+            <li>Bắt buộc đạt <code>T2</code> (đã xác thực SĐT) trước khi nhận quyền — mã lỗi <code>403 CLAIM_REQUIRES_PHONE_VERIFICATION</code> (UC-68 bước 15)</li>
+            <li>Nhận quyền <b>giữ nguyên toàn bộ</b> RSVP/bình luận, không tạo event mới (UC-68 bước 16)</li></ul>
+          </template>
+        </section>
+
+        <!-- ============ W-30 Create event wizard — 4 bước ============ -->
+        <section class="scr" data-screen="create-1" data-code="W-30 · M-30" data-title="Create event — bước 1 Basics" data-nav="myevents" data-layout="wide">
+          <div class="j-wizard"></div>
+          <template class="notes">
+            <h4>Route &amp; endpoint</h4>
+            <ul><li><code>/[locale]/events/new</code> (CSR, T1) · publish gọi <code>POST /api/v1/events</code> kèm <code>Idempotency-Key</code> ở bước 4 (UC-19 bước 10)</li></ul>
+            <h4>Ngân sách 90 giây (doc 10 §7.6)</h4>
+            <ul><li>Bước 1 — title/category/starts_at: 25s. <code>starts_at</code> mặc định “hôm nay + 3 giờ, làm tròn 30 phút”; category dạng chip 1 chạm</li></ul>
+            <div class="drift">DRIFT lớn nhất của màn này: <code>apps/web-client-side</code> hiện tại tạo sự kiện bằng <b>một form đơn</b> (khoá i18n <code>event.create.*</code>), chưa phải wizard 4 bước có preview trực tiếp như doc 10 §4.4/§7.6 và mockup này. Đây là gap cần Tech Lead xác nhận trước khi build thật.</div>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="create-2" data-code="W-30 · M-31" data-title="Create event — bước 2 When &amp; where" data-nav="myevents" data-layout="wide">
+          <div class="j-wizard"></div>
+          <template class="notes">
+            <h4>Giờ &amp; địa điểm</h4>
+            <ul><li>Nhập theo <code>Asia/Ho_Chi_Minh</code>, client quy đổi UTC trước khi gửi (<code>BR-16</code>, UC-19 bước 6)</li>
+            <li>Ghim toạ độ → <code>POST /api/v1/geo/resolve-area</code> suy khu vực, cho xác nhận/ghi đè thủ công (UC-19 bước 4, UC-20)</li>
+            <li>Chọn <code>locationPrecision = approximate</code> ⇒ <code>hide_exact_location = true</code> (<code>BR-15</code>) — đúng là toggle “ẩn địa chỉ chính xác tới khi RSVP” trong mockup này</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="create-3" data-code="W-30 · M-30" data-title="Create event — bước 3 Details" data-nav="myevents" data-layout="wide">
+          <div class="j-wizard"></div>
+          <template class="notes">
+            <h4>Sức chứa, giá, đối tượng</h4>
+            <ul><li>Preset sức chứa <code>8 · 12 · 20 · No limit</code>, <code>has_waitlist</code> bật sẵn (ngân sách 15s)</li>
+            <li><code>allowGuests</code> chỉ bật được ở <code>T2</code>; giá &gt; 0 cần <code>T2</code> trở lên, chặn kèm nút dẫn Trust center nếu chưa đạt (doc 10 §7.6 nhánh S3a)</li>
+            <li>Câu hỏi tuỳ chỉnh tối đa 3, mỗi câu ≤ 300 ký tự (UC-41)</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="create-4" data-code="W-30 · M-32" data-title="Create event — bước 4 Review &amp; publish" data-nav="myevents" data-layout="wide">
+          <div class="j-wizard"></div>
+          <template class="notes">
+            <h4>Preview &amp; publish</h4>
+            <ul><li><code>M-32</code> render đúng như <code>M-20</code>/<code>W-20</code> sẽ hiển thị (UC-19 bước 9)</li>
+            <li>Publish khi <code>trust_level = 1</code> và mô tả có link ngoài ⇒ <code>status = pending_review</code>, vào hàng đợi <code>AD-33</code>, SLA 4 giờ (doc 10 §7.6 nhánh S8/S9) — xem màn <code>create-published</code></li>
+            <li>“Save as draft” gọi cùng <code>POST /api/v1/events</code> với <code>status = draft</code>, bỏ qua validate trường không bắt buộc (UC-19 A-1)</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="create-published" data-code="W-30" data-title="Create event — thành công / chờ duyệt" data-nav="myevents" data-layout="norail">
+          <div class="j-published"></div>
+          <template class="notes">
+            <h4>Q-09 — empty/success state là tính năng</h4>
+            <ul><li>Người tạo là <code>ME.trust = 1 (T1)</code> trong dữ liệu mẫu ⇒ mặc định mockup hiện biến thể “pending review” (nội dung chờ duyệt hiển thị rõ ràng, không âm thầm biến mất — N-9 nguyên tắc chống “ẩn nội dung im lặng”)</li>
+            <li>Nút “Xem cả 2 biến thể” ở góc trên chỉ có trong mockup (mk-mockonly), không có ở sản phẩm thật</li>
+            <li>Endpoint trả <code>{eventId, slug, occurrences[], shareUrl}</code> (UC-19 bước 14); CTA chính sau publish: “Share to your WhatsApp group” (doc 10 §7.6 S11)</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="create-gate" data-code="W-30" data-title="Create event — chặn mềm T0 (N-7)" data-nav="myevents" data-layout="norail">
+          <div class="j-gate"></div>
+          <template class="notes">
+            <h4>N-7 — giảm ma sát theo tier, không chặn theo tier</h4>
+            <ul><li>Nút “Create event” <b>không bị ẩn</b> với người T0 — họ vẫn thấy hành động, thấy rõ điều kiện mở khoá (xác minh email) và đường đi tới đó (doc 10 §2.1 N-7)</li>
+            <li><code>403 TRUST_LEVEL_TOO_LOW</code> nếu vẫn cố gọi <code>POST /api/v1/events</code> ở <code>trust_level = 0</code> (UC-19 E-1)</li>
+            <li>Toàn bộ nội dung đã nhập trước đó (nếu có) được giữ nguyên, không mất khi đi xác minh rồi quay lại</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="edit" data-code="W-34 · M-34" data-title="Edit published event — có người đã tham gia" data-nav="myevents" data-layout="wide">
+          <div class="j-edit"></div>
+          <template class="notes">
+            <h4>UC-22 chỉnh sửa hoạt động đã xuất bản</h4>
+            <ul><li>Thay đổi trọng yếu (giờ · địa điểm · giảm sức chứa) bắt buộc ghi chú cho người tham dự + gửi push/email cho toàn bộ danh sách (doc 10 §7.7 nhánh N1 → N2)</li>
+            <li>Thay đổi không trọng yếu lưu im lặng, chỉ ghi lịch sử thay đổi (nhánh N3)</li>
+            <li>Sự kiện demo có 13 người đã RSVP — con số này lấy từ đề bài, dùng để minh hoạ cảnh báo</li></ul>
+          </template>
+        </section>
+
+        <!-- =============== END SCREENS =============== -->
+      </main>
+      <aside class="app-rail" id="appRail">
+        <div class="rail-card">
+          <h3 data-i18n="rail.upcoming"></h3>
+          <div id="railUpcoming"></div>
+        </div>
+        <div class="rail-card">
+          <h3 data-i18n="rail.areas"></h3>
+          <div class="chips wrap" style="flex-wrap:wrap" id="railAreas"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <nav class="app-tabs" aria-label="Bottom navigation">
+    <button data-nav="home"><span class="ic">🏠</span><span data-i18n="nav.home"></span></button>
+    <button data-nav="discover"><span class="ic">🧭</span><span data-i18n="nav.discover"></span></button>
+    <button class="fab" data-go-create aria-label="Create event">＋</button>
+    <button data-nav="notifications"><span class="ic">🔔</span><span data-i18n="nav.notifications"></span></button>
+    <button data-nav="profile"><span class="ic">👤</span><span data-i18n="nav.profile"></span></button>
+  </nav>
+</div>
+
+<!-- ================= Shared overlays (content filled per-render by screen script) ================= -->
+<div class="scrim" data-overlay id="dlgRsvpConfirm" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rcTitle">
+    <div class="dlg-h"><h3 id="rcTitle" data-i18n="rc.title"></h3><button class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-b stack" id="rcBody"></div>
+    <div class="dlg-f"><button class="btn btn-outline" data-close data-i18n="rp.back" style="visibility:hidden"></button><button class="btn btn-primary" id="rcSubmit" data-i18n="rc.submit"></button></div>
+  </div>
+</div>
+
+<div class="scrim" data-overlay id="dlgGoingMenu" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="gmTitle">
+    <div class="dlg-h"><h3 id="gmTitle" data-i18n="going.menu.title"></h3><button class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-b stack">
+      <button class="btn btn-outline btn-block" id="gmCalendar" data-i18n="going.menu.calendar"></button>
+      <button class="btn btn-outline btn-block" id="gmInvite" data-i18n="going.menu.invite"></button>
+      <button class="btn btn-outline btn-block" id="gmQr" data-i18n="going.menu.qr"></button>
+      <div class="divider"></div>
+      <button class="btn btn-danger-ghost btn-block" id="gmCancel" data-i18n="going.menu.cancel"></button>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" data-overlay id="dlgWaitlist" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="wlTitle">
+    <div class="dlg-h"><h3 id="wlTitle" data-i18n="wl.title"></h3><button class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-b stack" id="wlBody"></div>
+    <div class="dlg-f"><button class="btn btn-outline btn-block" id="wlLeave" data-i18n="wl.leave"></button></div>
+  </div>
+</div>
+
+<div class="scrim" data-overlay id="dlgReport" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rpTitle">
+    <div class="dlg-h"><h3 id="rpTitle" data-i18n="rp.title"></h3><button class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-b">
+      <p class="xs muted" style="margin-bottom:10px" data-i18n="rp.target"></p>
+      <p class="small" style="font-weight:700;margin:-6px 0 12px" id="reportTargetLabel"></p>
+      <div class="rp-step" data-step="1">
+        <div class="rp-reasons" id="rpReasons"></div>
+      </div>
+      <div class="rp-step" data-step="2" hidden>
+        <div class="field" style="margin-bottom:12px">
+          <label class="lbl" data-i18n="rp.step2"></label>
+          <textarea id="rpDetails" maxlength="500" data-i18n-ph="rp.details.ph"></textarea>
+        </div>
+        <div class="note info" style="margin-bottom:12px"><span>📎</span><span data-i18n="rp.attach"></span></div>
+        <label class="check"><input type="checkbox" id="rpBlock"><span data-i18n="rp.block"></span></label>
+      </div>
+      <div class="rp-step rp-done" data-step="3" hidden>
+        <div class="ico">✅</div>
+        <h3 class="h3" data-i18n="rp.done.title"></h3>
+        <p class="small muted" data-i18n="rp.done.body"></p>
+      </div>
+    </div>
+    <div class="dlg-f" id="rpFooter"></div>
+  </div>
+</div>
+
+<div class="scrim" data-overlay id="dlgAuthGate" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="agTitle">
+    <div class="dlg-h"><h3 id="agTitle" data-i18n="ag.title"></h3><button class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-b stack">
+      <p class="small sec" data-i18n="ag.body"></p>
+      <button class="btn btn-primary btn-block" data-go="auth-onboarding-web-mockup.html?screen=gate" data-i18n="ag.cta"></button>
+      <button class="btn btn-ghost btn-block" data-close data-i18n="ag.later"></button>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" data-overlay id="dlgCancelEvent" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ceTitle">
+    <div class="dlg-h"><h3 id="ceTitle" data-i18n="ce.title"></h3><button class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-b stack">
+      <p class="small sec" id="ceBody"></p>
+      <div class="field">
+        <label class="lbl" data-i18n="ce.reasonLabel"></label>
+        <select id="ceReason">
+          <option data-i18n="ce.reason.weather"></option>
+          <option data-i18n="ce.reason.people"></option>
+          <option data-i18n="ce.reason.venue"></option>
+          <option data-i18n="ce.reason.personal"></option>
+          <option data-i18n="ce.reason.other"></option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl" id="ceTypeLabel"></label>
+        <input id="ceConfirmInput" autocomplete="off">
+      </div>
+    </div>
+    <div class="dlg-f"><button class="btn btn-outline" data-close data-i18n="rp.back" style="visibility:hidden"></button><button class="btn btn-danger" id="ceSubmit" disabled data-i18n="ce.submit"></button></div>
+  </div>
+</div>
+
+<div class="scrim" data-overlay id="dlgReview" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
+    <div class="dlg-h"><h3 id="rvTitle" data-i18n="rv.title"></h3><button class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-b stack">
+      <p class="small muted" id="rvEventName"></p>
+      <div class="stars" id="rvStars" role="radiogroup" aria-label="Rating">
+        <button type="button" data-star="1">★</button><button type="button" data-star="2">★</button><button type="button" data-star="3">★</button><button type="button" data-star="4">★</button><button type="button" data-star="5">★</button>
+      </div>
+      <div class="chipgrid" id="rvChips">
+        <button type="button" class="chip" data-i18n="rv.chips.organised"></button>
+        <button type="button" class="chip" data-i18n="rv.chips.friendly"></button>
+        <button type="button" class="chip" data-i18n="rv.chips.ontime"></button>
+        <button type="button" class="chip" data-i18n="rv.chips.beginners"></button>
+      </div>
+      <div class="field"><textarea id="rvText" data-i18n-ph="rv.ph"></textarea></div>
+      <label class="check"><input type="checkbox" id="rvAnon"><span data-i18n="rv.anon"></span></label>
+      <p class="xs muted" id="rvRulesNote"></p>
+    </div>
+    <div class="dlg-f"><button class="btn btn-outline" data-close data-i18n="rp.back" style="visibility:hidden"></button><button class="btn btn-primary" id="rvSubmit" data-i18n="rv.submit"></button></div>
+  </div>
+</div>
+
+<div class="scrim" data-overlay id="dlgReviewsAll" hidden>
+  <div class="dlg wide" role="dialog" aria-modal="true" aria-labelledby="raTitle">
+    <div class="dlg-h"><h3 id="raTitle" data-i18n="reviews.dialogTitle"></h3><button class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-b">
+      <div class="chips" id="raFilters" style="margin-bottom:14px"></div>
+      <div class="stack" id="raList" style="gap:14px;max-height:60vh;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   SHARED BASE JS. Copy verbatim, then add screen-specific strings with
+   addI18n({en:{...},vi:{...}}) and screen logic in a second <script>.
+   ===================================================================== */
+const I18N = {
+  en: {
+    'nav.home':'Home','nav.discover':'Discover','nav.myEvents':'My events','nav.notifications':'Notifications','nav.profile':'Profile','nav.createEvent':'Create event','nav.signIn':'Sign in',
+    'top.search':'Search events, people, areas…',
+    'rail.upcoming':'Coming up for you','rail.areas':'Browse by area',
+    'home.title':"What's on in Da Nang",
+    'time.tonight':'Tonight','time.tomorrow':'Tomorrow','time.weekend':'This weekend','time.next7':'Next 7 days',
+    'date.today':'Today · Friday 18 September',
+    'ev.spotsLeft':'{n} of {c} spots left','ev.full':'Full','ev.fullWaiting':'Full · {w} waiting','ev.going':'{n} going','ev.free':'Free','ev.curated':'Listed by Da Nang Connect','ev.hostedBy':'Hosted by {name}',
+    'rsvp.join':'RSVP · {n} spots left','rsvp.waitlist':'Join waitlist · {w} waiting','rsvp.full':'Event is full','rsvp.going':'You are going','rsvp.waiting':'Waiting · #{p}','rsvp.confirm':'Confirm your spot · {h}h left','rsvp.cancelled':'Cancelled','rsvp.review':'Leave a review',
+    'trust.0':'New','trust.1':'Email verified','trust.2':'Phone verified','trust.3':'Active member','trust.4':'Trusted','trust.5':'Community leader','trust.limited':'Limited',
+    'cat.sports':'Sports','cat.language':'Language exchange','cat.social':'Social meetup','cat.food':'Food and drink','cat.wellness':'Wellness','cat.music':'Music and arts','cat.outdoor':'Outdoor','cat.family':'Family','cat.professional':'Professional'
+  },
+  vi: {
+    'nav.home':'Trang chủ','nav.discover':'Khám phá','nav.myEvents':'Sự kiện của tôi','nav.notifications':'Thông báo','nav.profile':'Hồ sơ','nav.createEvent':'Tạo sự kiện','nav.signIn':'Đăng nhập',
+    'top.search':'Tìm sự kiện, người, khu vực…',
+    'rail.upcoming':'Sắp tới của bạn','rail.areas':'Xem theo khu vực',
+    'home.title':'Đà Nẵng có gì',
+    'time.tonight':'Tối nay','time.tomorrow':'Ngày mai','time.weekend':'Cuối tuần này','time.next7':'7 ngày tới',
+    'date.today':'Hôm nay · Thứ Sáu 18 tháng 9',
+    'ev.spotsLeft':'Còn {n}/{c} chỗ','ev.full':'Đã đầy','ev.fullWaiting':'Đã đầy · {w} người chờ','ev.going':'{n} người tham gia','ev.free':'Miễn phí','ev.curated':'Do Da Nang Connect tổng hợp','ev.hostedBy':'Tổ chức bởi {name}',
+    'rsvp.join':'Đăng ký · còn {n} chỗ','rsvp.waitlist':'Vào danh sách chờ · {w} người đang chờ','rsvp.full':'Sự kiện đã đầy','rsvp.going':'Bạn sẽ tham gia','rsvp.waiting':'Đang chờ · #{p}','rsvp.confirm':'Xác nhận chỗ · còn {h} giờ','rsvp.cancelled':'Đã huỷ','rsvp.review':'Viết đánh giá',
+    'trust.0':'Thành viên mới','trust.1':'Đã xác thực email','trust.2':'Đã xác thực số điện thoại','trust.3':'Thành viên tích cực','trust.4':'Đáng tin cậy','trust.5':'Người dẫn dắt cộng đồng','trust.limited':'Đang bị hạn chế',
+    'cat.sports':'Thể thao','cat.language':'Trao đổi ngôn ngữ','cat.social':'Gặp gỡ giao lưu','cat.food':'Ẩm thực','cat.wellness':'Sức khoẻ và thư giãn','cat.music':'Âm nhạc và nghệ thuật','cat.outdoor':'Ngoài trời','cat.family':'Gia đình','cat.professional':'Nghề nghiệp'
+  }
+};
+function addI18n(extra){ for (const l of ['en','vi']) Object.assign(I18N[l], extra[l] || {}); }
+let LANG = 'en';
+function t(key, vars){ let s = (I18N[LANG] && I18N[LANG][key]) ?? I18N.en[key] ?? key; if (vars) for (const [k,v] of Object.entries(vars)) s = s.replaceAll('{'+k+'}', v); return s; }
+
+/* Doc 10 §13.6: EN shows names WITHOUT diacritics, VI shows full diacritics. */
+const AREAS = {
+  'an-thuong':{en:'An Thuong',vi:'An Thượng',count:12},
+  'my-khe':{en:'My Khe Beach',vi:'Biển Mỹ Khê',count:6},
+  'my-an':{en:'My An',vi:'Mỹ An',count:8},
+  'hai-chau':{en:'Hai Chau',vi:'Hải Châu',count:4},
+  'son-tra':{en:'Son Tra',vi:'Sơn Trà',count:3},
+  'ngu-hanh-son':{en:'Ngu Hanh Son',vi:'Ngũ Hành Sơn',count:2}
+};
+function area(slug){ const a = AREAS[slug]; return a ? a[LANG] : slug; }
+
+/* Shared sample data — use these ids everywhere so the set stays consistent.
+   Titles/descriptions are user content: NOT translated (doc 10 §13.9). */
+const EVENTS = [
+  {id:'volley', title:'Sunset Beach Volleyball', cat:'sports', emoji:'🏐', grad:'linear-gradient(135deg,#BAE6FD,#0EA5E9)', area:'my-khe', when:{en:'Sat 19 Sep · 17:00',vi:'T7, 19/09 · 17:00'}, day:'sat', cap:20, going:13, waiting:0, waitlist:true, price:0, host:{name:'Tom R.',ini:'TR',color:'#0369A1',trust:3,hosted:14}, langs:['EN'], curated:false},
+  {id:'lx', title:'Vietnamese ⇄ English Language Exchange', cat:'language', emoji:'🗣️', grad:'linear-gradient(135deg,#FDE68A,#F59E0B)', area:'an-thuong', when:{en:'Tonight · 19:00',vi:'Tối nay · 19:00'}, day:'today', cap:30, going:30, waiting:4, waitlist:true, price:0, host:{name:'Linh N.',ini:'LN',color:'#B45309',trust:5,hosted:41}, langs:['EN','VI'], curated:false},
+  {id:'hike', title:'Sunday Hike: Bai But Loop', cat:'outdoor', emoji:'🥾', grad:'linear-gradient(135deg,#A7F3D0,#059669)', area:'son-tra', when:{en:'Sun 20 Sep · 06:00',vi:'CN, 20/09 · 06:00'}, day:'sun', cap:15, going:12, waiting:0, waitlist:true, price:0, host:{name:'James T.',ini:'JT',color:'#047857',trust:2,hosted:3}, langs:['EN'], curated:false},
+  {id:'foodwalk', title:'Banh Mi & Coffee Food Walk', cat:'food', emoji:'🥖', grad:'linear-gradient(135deg,#FBCFE8,#DB2777)', area:'hai-chau', when:{en:'Sat 19 Sep · 09:00',vi:'T7, 19/09 · 09:00'}, day:'sat', cap:12, going:5, waiting:0, waitlist:false, price:150000, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN'], curated:true, source:'Da Nang Food Tours (Facebook page)'},
+  {id:'cowork', title:'Coworking Morning', cat:'professional', emoji:'💻', grad:'linear-gradient(135deg,#E2E8F0,#64748B)', area:'an-thuong', when:{en:'Mon 21 Sep · 08:30',vi:'T2, 21/09 · 08:30'}, day:'mon', cap:25, going:9, waiting:0, waitlist:true, price:0, host:{name:'Mai P.',ini:'MP',color:'#6D28D9',trust:4,hosted:22}, langs:['EN','VI'], curated:false},
+  {id:'yoga', title:'Sunrise Yoga on the Beach', cat:'wellness', emoji:'🧘', grad:'linear-gradient(135deg,#DDD6FE,#7C3AED)', area:'my-an', when:{en:'Tue 22 Sep · 05:30',vi:'T3, 22/09 · 05:30'}, day:'tue', cap:20, going:18, waiting:0, waitlist:true, price:50000, host:{name:'Sofia K.',ini:'SK',color:'#BE185D',trust:3,hosted:9}, langs:['EN'], curated:false},
+  {id:'run', title:'Marble Mountains Trail Run 10K', cat:'sports', emoji:'🏃', grad:'linear-gradient(135deg,#FED7AA,#EA580C)', area:'ngu-hanh-son', when:{en:'Wed 23 Sep · 05:45',vi:'T4, 23/09 · 05:45'}, day:'wed', cap:30, going:11, waiting:0, waitlist:true, price:0, host:{name:'Duc H.',ini:'DH',color:'#C2410C',trust:1,hosted:0}, langs:['EN','VI'], curated:false},
+  {id:'boardgame', title:'Board Game Night', cat:'social', emoji:'🎲', grad:'linear-gradient(135deg,#C7D2FE,#4F46E5)', area:'my-an', when:{en:'Thu 24 Sep · 19:30',vi:'T5, 24/09 · 19:30'}, day:'thu', cap:16, going:16, waiting:0, waitlist:false, price:30000, host:{name:'Anna B.',ini:'AB',color:'#4338CA',trust:3,hosted:6}, langs:['EN'], curated:false}
+];
+const ME = {name:'Alex Morgan', handle:'alexm', ini:'AL', color:'#7C3AED', trust:1, area:'an-thuong'};
+function ev(id){ return EVENTS.find(e => e.id === id); }
+function price(p){ if (!p) return t('ev.free'); return LANG === 'vi' ? p.toLocaleString('vi-VN') + ' ₫' : p.toLocaleString('en-US') + ' ₫'; }
+function tb(level){ return `<span class="tb t${level}" data-tb="${level}">${t('trust.'+level)}</span>`; }
+function avatar(p, size){ return `<span class="av ${size||''}" style="background:${p.color}">${p.ini}</span>`; }
+function capText(e){
+  const left = e.cap - e.going;
+  if (left > 0) { const cls = left / e.cap < 0.2 ? 'low' : ''; return `<span class="cap num ${cls}">${t('ev.spotsLeft',{n:left,c:e.cap})}</span>`; }
+  return `<span class="cap num full">${e.waitlist && e.waiting ? t('ev.fullWaiting',{w:e.waiting}) : t('ev.full')}</span>`;
+}
+/* Event card. variant: 'grid' (default) | 'row'. opts: {state:'going'|'waiting'|null, saved:bool} */
+function eventCard(e, variant, opts){
+  opts = opts || {};
+  const tags = [];
+  if (e.curated) tags.push(`<span class="pill src">🏷 ${t('ev.curated')}</span>`);
+  if (opts.state === 'going') tags.push(`<span class="pill going">✓ ${t('rsvp.going')}</span>`);
+  if (opts.state === 'waiting') tags.push(`<span class="pill wait">${t('rsvp.waiting',{p:3})}</span>`);
+  if (e.going >= e.cap && !opts.state) tags.push(`<span class="pill full">${t('ev.full')}</span>`);
+  return `<article class="ev ${variant==='row'?'row':''}" data-ev="${e.id}">
+    <div class="ev-cover" style="background:${e.grad}"><span aria-hidden="true">${e.emoji}</span>
+      <div class="tag">${tags.join('')}</div>
+      <button class="save ${opts.saved?'on':''}" aria-label="Save">${opts.saved?'♥':'♡'}</button></div>
+    <div class="ev-body">
+      <div class="ev-when num">${e.when[LANG]}</div>
+      <h3 class="ev-title">${e.title}</h3>
+      <div class="ev-meta"><span>📍 ${area(e.area)}</span><span>${t('cat.'+e.cat)}</span><span>🗣 ${e.langs.join(' · ')}</span></div>
+      <div class="ev-host">${avatar(e.host,'sm')}<b>${e.host.name}</b>${tb(e.host.trust)}</div>
+      <div class="ev-foot">${capText(e)}<span class="small" style="font-weight:700">${price(e.price)}</span></div>
+    </div></article>`;
+}
+
+/* ---------- screen switching ---------- */
+const params = new URLSearchParams(location.search);
+const screens = [...document.querySelectorAll('.scr')];
+const chips = document.getElementById('mkChips');
+screens.forEach(s => {
+  const b = document.createElement('button');
+  b.className = 'mk-scrchip'; b.dataset.target = s.dataset.screen; b.setAttribute('role','tab');
+  b.innerHTML = `<b>${s.dataset.code||''}</b>${s.dataset.screen}`;
+  b.title = s.dataset.title || '';
+  b.onclick = () => show(s.dataset.screen, true);
+  chips.appendChild(b);
+});
+const renderHooks = [];            // push(fn) — called after every show() and setLang()
+function onRender(fn){ renderHooks.push(fn); }
+let CURRENT = null;
+function show(id, push){
+  const s = screens.find(x => x.dataset.screen === id) || screens[0];
+  CURRENT = s.dataset.screen;
+  screens.forEach(x => x.classList.toggle('show', x === s));
+  chips.querySelectorAll('.mk-scrchip').forEach(c => { const on = c.dataset.target === CURRENT; c.classList.toggle('on', on); if (on) c.scrollIntoView({block:'nearest',inline:'nearest'}); });
+  const app = document.getElementById('app');
+  app.classList.remove('wide','norail','bare');
+  const layout = s.dataset.layout || 'feed';          // feed | wide | norail | bare
+  if (layout !== 'feed') app.classList.add(layout);
+  const guest = s.dataset.guest === '1';
+  document.querySelectorAll('.me-only').forEach(el => el.hidden = guest);
+  document.querySelectorAll('.guest-only').forEach(el => el.hidden = !guest);
+  document.querySelectorAll('[data-nav]').forEach(n => { if (n.classList.contains('nav-item') || n.closest('.app-tabs')) n.classList.toggle('on', n.dataset.nav === s.dataset.nav); });
+  closeAllOverlays();
+  renderNotes(s);
+  if (push) { const u = new URL(location); u.searchParams.set('screen', CURRENT); history.replaceState(null,'',u); }
+  window.scrollTo(0,0);
+  runHooks();
+}
+function runHooks(){ renderHooks.forEach(fn => fn(CURRENT)); applyI18n(); }
+
+/* ---------- i18n ---------- */
+function applyI18n(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-html]').forEach(el => el.innerHTML = t(el.dataset.i18nHtml));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => el.placeholder = t(el.dataset.i18nPh));
+  document.querySelectorAll('[data-area]').forEach(el => el.textContent = area(el.dataset.area));
+  document.querySelectorAll('[data-tb]').forEach(el => el.textContent = t('trust.' + el.dataset.tb));
+  document.querySelectorAll('.seg-lang button').forEach(b => b.classList.toggle('on', b.dataset.lang === LANG));
+}
+function setLang(l, push){
+  LANG = l;
+  if (push) { const u = new URL(location); u.searchParams.set('lang', l); history.replaceState(null,'',u); }
+  runHooks();
+}
+document.querySelectorAll('.seg-lang button').forEach(b => b.onclick = () => setLang(b.dataset.lang, true));
+
+/* ---------- notes drawer ---------- */
+const notes = document.getElementById('mkNotes');
+function renderNotes(s){
+  const tpl = s.querySelector('template.notes');
+  document.getElementById('mkNotesTitle').textContent = (s.dataset.code ? s.dataset.code + ' · ' : '') + (s.dataset.title || s.dataset.screen);
+  document.getElementById('mkNotesBody').innerHTML = tpl ? tpl.innerHTML : '<p>Chưa có ghi chú.</p>';
+}
+document.getElementById('mkNotesBtn').onclick = () => { notes.classList.toggle('open'); document.getElementById('mkNotesBtn').classList.toggle('on'); };
+document.getElementById('mkNotesClose').onclick = () => { notes.classList.remove('open'); document.getElementById('mkNotesBtn').classList.remove('on'); };
+
+/* ---------- cross-file navigation ----------
+   goTo('screen-id')                         -> screen in this file
+   goTo('web-event-mockup.html?screen=x')    -> other file, keeps current language */
+const NAV_TARGETS = {
+  home:'web-discover-mockup.html?screen=home',
+  discover:'web-discover-mockup.html?screen=discover',
+  myevents:'web-myspace-mockup.html?screen=my-going',
+  notifications:'web-myspace-mockup.html?screen=notifications',
+  profile:'web-myspace-mockup.html?screen=profile-me'
+};
+function goTo(target){
+  if (!target) return;
+  if (!target.includes('.html')) { show(target, true); return; }
+  const [file, q] = target.split('?');
+  const sid = new URLSearchParams(q || '').get('screen');
+  if (location.pathname.endsWith('/' + file) && sid && screens.some(s => s.dataset.screen === sid)) { show(sid, true); return; }
+  location.href = file + '?' + (q ? q + '&' : '') + 'lang=' + LANG;
+}
+
+/* ---------- overlays + toast ---------- */
+function openOverlay(id){ closeAllOverlays(); const el = document.getElementById(id); if (el) el.hidden = false; }
+function closeAllOverlays(){ document.querySelectorAll('[data-overlay]').forEach(o => o.hidden = true); }
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-overlay]')) closeAllOverlays();          // click on scrim
+  const c = e.target.closest('[data-close]'); if (c) closeAllOverlays();
+  const o = e.target.closest('[data-open]'); if (o) openOverlay(o.dataset.open);
+  const g = e.target.closest('[data-go]'); if (g) goTo(g.dataset.go);
+  const n = e.target.closest('[data-nav]'); if (n && (n.classList.contains('nav-item') || n.closest('.app-tabs'))) goTo(NAV_TARGETS[n.dataset.nav]);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllOverlays(); });
+let toastTimer;
+function toast(msg, action){
+  let el = document.getElementById('mkToast');
+  if (!el) { el = document.createElement('div'); el.id = 'mkToast'; el.className = 'toast'; el.setAttribute('role','status'); document.body.appendChild(el); }
+  el.innerHTML = `<span>${msg}</span>${action ? `<button>${action}</button>` : ''}`;
+  el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => el.hidden = true, 3200);
+}
+
+/* ---------- default rail ---------- */
+onRender(() => {
+  document.getElementById('railUpcoming').innerHTML = ['volley','lx','hike'].map(id => { const e = ev(id); return `<div class="rail-row"><span class="rail-thumb" style="background:${e.grad}">${e.emoji}</span><span class="grow"><b>${e.title}</b><span class="muted num">${e.when[LANG]} · ${area(e.area)}</span></span></div>`; }).join('');
+  document.getElementById('railAreas').innerHTML = Object.keys(AREAS).map(k => `<button class="chip"><span data-area="${k}"></span><span class="c num">${AREAS[k].count}</span></button>`).join('');
+});
+
+/* ---------- boot: call AFTER screen-specific scripts register their hooks ---------- */
+function boot(fileKey){
+  document.querySelectorAll('.mk-files a').forEach(a => a.classList.toggle('on', a.dataset.file === fileKey));
+  document.querySelectorAll('[data-go-create]').forEach(b => b.addEventListener('click', () => goTo('web-event-mockup.html?screen=create-1')));
+  LANG = params.get('lang') === 'vi' ? 'vi' : 'en';
+  show(params.get('screen') || screens[0].dataset.screen, false);
+}
+</script>
+<!-- Pasted verbatim from scratchpad/shared-data-v2.js (owner decision 2026-09-19) — do not
+     edit inside this script tag; extend RATINGS/COMMENTS/REVIEWS/REVIEW_DIST/EVENTS from this
+     file's own "local-only sample data" section further down instead. -->
+<script>
+/* ===================================================================
+   SHARED DATA v2 — paste verbatim into the screen-specific <script>
+   of every web mockup (before any code that renders events).
+   Owner decision 2026-09-19:
+     • Home     = staff-published local news + staff-curated local events
+     • Discover = events posted by members (UGC), with reviews + comments,
+                  plus a Tinder-style swipe mode for people who don't know
+                  what they want (web-swipe-mockup.html?screen=deck)
+     • Tapping an event opens the event detail page (not the deck)
+   =================================================================== */
+
+/* Extra events. Guarded so a file that already defines some of them is not duplicated. */
+[
+  // Staff-curated (Home only). cap is a soft headcount for "interested", not a hard RSVP limit.
+  {id:'lantern', title:'Mid-Autumn Lantern Night on Bach Dang', cat:'family', emoji:'🏮', grad:'linear-gradient(135deg,#FDE68A,#DC2626)', area:'hai-chau', when:{en:'Fri 25 Sep · 18:30',vi:'T6, 25/09 · 18:30'}, day:'fri25', cap:500, going:120, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public event page (Facebook)'},
+  {id:'dragon', title:'Dragon Bridge Fire & Water Show', cat:'music', emoji:'🐉', grad:'linear-gradient(135deg,#FECACA,#B91C1C)', area:'hai-chau', when:{en:'Sat 19 Sep · 21:00',vi:'T7, 19/09 · 21:00'}, day:'sat', cap:1000, going:86, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public weekend schedule (city tourism page)'},
+  // Member-posted extras (also used by the swipe deck).
+  {id:'quiz', title:'Pub Quiz Night', cat:'social', emoji:'🧠', grad:'linear-gradient(135deg,#FECACA,#DC2626)', area:'an-thuong', when:{en:'Tonight · 20:00',vi:'Tối nay · 20:00'}, day:'today', cap:48, going:30, waiting:0, waitlist:true, price:0, host:{name:'Ben W.',ini:'BW',color:'#B91C1C',trust:3,hosted:11}, langs:['EN'], curated:false},
+  {id:'cleanup', title:'My An Beach Clean-up', cat:'outdoor', emoji:'🌊', grad:'linear-gradient(135deg,#BBF7D0,#15803D)', area:'my-an', when:{en:'Sat 19 Sep · 08:00',vi:'T7, 19/09 · 08:00'}, day:'sat', cap:50, going:17, waiting:0, waitlist:true, price:0, host:{name:'Linh N.',ini:'LN',color:'#B45309',trust:5,hosted:41}, langs:['EN','VI'], curated:false},
+  {id:'salsa', title:'Salsa Social Night', cat:'music', emoji:'💃', grad:'linear-gradient(135deg,#FDE68A,#DB2777)', area:'hai-chau', when:{en:'Sat 19 Sep · 20:00',vi:'T7, 19/09 · 20:00'}, day:'sat', cap:40, going:22, waiting:0, waitlist:true, price:100000, host:{name:'Carlos M.',ini:'CM',color:'#9D174D',trust:3,hosted:8}, langs:['EN','VI'], curated:false},
+  {id:'surf', title:'Beginner Surf Session', cat:'sports', emoji:'🏄', grad:'linear-gradient(135deg,#99F6E4,#0E7490)', area:'my-khe', when:{en:'Sun 20 Sep · 07:00',vi:'CN, 20/09 · 07:00'}, day:'sun', cap:8, going:6, waiting:0, waitlist:true, price:300000, host:{name:'Kai L.',ini:'KL',color:'#0E7490',trust:4,hosted:17}, langs:['EN'], curated:false}
+].forEach(e => { if (!EVENTS.some(x => x.id === e.id)) EVENTS.push(e); });
+
+/* Which events live where. foodwalk is staff-curated, so it moves to Home. */
+const HOME_CURATED_IDS = ['lantern', 'dragon', 'foodwalk'];
+const DISCOVER_UGC_IDS = ['lx', 'quiz', 'cleanup', 'volley', 'salsa', 'hike', 'surf', 'cowork', 'yoga', 'run', 'boardgame'];
+
+/* Host rating = average of reviews left by checked-in attendees of that host's past sessions
+   (doc 02 UC-16; only people who actually attended can review). null = new host, no reviews yet. */
+const RATINGS = {
+  volley:{avg:4.8,count:32}, lx:{avg:4.9,count:58}, hike:{avg:4.6,count:7}, cowork:{avg:4.7,count:19},
+  yoga:{avg:4.8,count:15}, run:null, boardgame:{avg:4.5,count:11}, quiz:{avg:4.6,count:23},
+  cleanup:{avg:4.9,count:58}, salsa:{avg:4.7,count:14}, surf:{avg:4.9,count:40}
+};
+const COMMENTS = {volley:12, lx:21, hike:4, cowork:6, yoga:9, run:2, boardgame:7, quiz:8, cleanup:5, salsa:10, surf:6, foodwalk:3, lantern:14, dragon:9};
+
+/* Sample reviews — user content, NOT translated (doc 10 §13.9). `attended` is the session the reviewer checked in to. */
+const REVIEWS = {
+  volley: [
+    {name:'Sarah K.', ini:'SK', color:'#BE185D', trust:2, stars:5, attended:{en:'Attended Sat 12 Sep',vi:'Đã tham gia T7, 12/09'}, text:'Great vibe. Tom explains the rules for beginners and mixes the teams so nobody is left out.', helpful:9},
+    {name:'Marco P.', ini:'MP', color:'#047857', trust:3, stars:5, attended:{en:'Attended Sat 5 Sep',vi:'Đã tham gia T7, 05/09'}, text:'Nets were up on time and the sunset was unreal. Bring sunscreen and water.', helpful:6},
+    {name:'Hana L.', ini:'HL', color:'#6D28D9', trust:1, stars:4, attended:{en:'Attended Sat 29 Aug',vi:'Đã tham gia T7, 29/08'}, text:'A bit crowded with 20 people, but still a lot of fun. Would come again.', helpful:3}
+  ],
+  lx: [
+    {name:'Minh T.', ini:'MT', color:'#0369A1', trust:3, stars:5, attended:{en:'Attended Fri 11 Sep',vi:'Đã tham gia T6, 11/09'}, text:'Linh keeps the switch between English and Vietnamese really smooth. Made two friends in one evening.', helpful:12},
+    {name:'Jonas B.', ini:'JB', color:'#B45309', trust:2, stars:5, attended:{en:'Attended Fri 4 Sep',vi:'Đã tham gia T6, 04/09'}, text:'Best way to practise Vietnamese without feeling embarrassed.', helpful:8}
+  ]
+};
+/* Star distribution for the review summary bars (5★ → 1★), percentages. */
+const REVIEW_DIST = {volley:[84,12,3,1,0], lx:[91,7,2,0,0]};
+
+/* Staff-published news for Home. Staff content is published in BOTH languages (unlike user content).
+   Sample copy for the mockup — not verified reporting. */
+const NEWS = [
+  {id:'midautumn', tag:'festival', emoji:'🏮', grad:'linear-gradient(135deg,#FDE68A,#F97316)', mins:4, updated:{en:'2 hours ago',vi:'2 giờ trước'},
+   title:{en:'Mid-Autumn Festival: where to see lanterns in Da Nang (Fri 25 Sep)',vi:'Tết Trung Thu: xem lồng đèn ở đâu tại Đà Nẵng (T6, 25/09)'},
+   dek:{en:'Lantern parades, mooncake stalls and the quieter spots for families with small kids.',vi:'Rước đèn, gian hàng bánh trung thu và những chỗ yên tĩnh hơn cho gia đình có con nhỏ.'}, related:'lantern'},
+  {id:'dragon-show', tag:'getting-around', emoji:'🐉', grad:'linear-gradient(135deg,#FECACA,#B91C1C)', mins:3, updated:{en:'Yesterday',vi:'Hôm qua'},
+   title:{en:'Dragon Bridge fire show: weekend schedule and the best viewing spots',vi:'Cầu Rồng phun lửa: lịch cuối tuần và những chỗ xem đẹp nhất'},
+   dek:{en:'Where to stand, where to park your motorbike, and which side stays dry when it sprays water.',vi:'Đứng đâu, gửi xe ở đâu, và bên nào không bị ướt khi rồng phun nước.'}, related:'dragon'},
+  {id:'rainy', tag:'weather', emoji:'🌧️', grad:'linear-gradient(135deg,#BFDBFE,#1E40AF)', mins:6, updated:{en:'2 days ago',vi:'2 ngày trước'},
+   title:{en:'Rainy season is coming: what to know before October',vi:'Mùa mưa sắp tới: cần biết gì trước tháng 10'},
+   dek:{en:'Flood-prone streets, how outdoor events get rescheduled, and what to keep at home.',vi:'Những tuyến đường hay ngập, sự kiện ngoài trời được dời lịch ra sao, và nên chuẩn bị gì ở nhà.'}},
+  {id:'residence', tag:'admin', emoji:'📄', grad:'linear-gradient(135deg,#E2E8F0,#475569)', mins:7, updated:{en:'5 days ago',vi:'5 ngày trước'},
+   title:{en:'Temporary residence registration for expats: a step-by-step guide',vi:'Đăng ký tạm trú cho người nước ngoài: hướng dẫn từng bước'},
+   dek:{en:'Who registers you, which documents to bring, and what to do if your landlord has not done it.',vi:'Ai đăng ký cho bạn, cần mang giấy tờ gì, và làm gì nếu chủ nhà chưa đăng ký.'}}
+];
+const NEWS_TAGS = {festival:{en:'Festival',vi:'Lễ hội'}, 'getting-around':{en:'Getting around',vi:'Đi lại'}, weather:{en:'Weather & safety',vi:'Thời tiết & an toàn'}, admin:{en:'Visas & admin',vi:'Giấy tờ & thủ tục'}};
+
+/* Helpers */
+function stars(avg){ const f = Math.round(avg); return '★★★★★'.slice(0, f) + '☆☆☆☆☆'.slice(0, 5 - f); }
+function ratingLine(id){
+  const r = RATINGS[id];
+  const n = COMMENTS[id] || 0;
+  const rate = r ? `<span class="rt">★ ${r.avg.toLocaleString(LANG === 'vi' ? 'vi-VN' : 'en-US', {minimumFractionDigits: 1})} <span class="muted">(${r.count})</span></span>` : `<span class="rt new">${LANG === 'vi' ? 'Người tổ chức mới' : 'New host'}</span>`;
+  return `${rate}<span class="cm">💬 ${n}</span>`;
+}
+
+/* ===================================================================
+   SHARED DATA v3 additions — paste right AFTER the v2 block.
+   Adds calendar dates so Home/Discover can filter by day / week / month,
+   and three more staff-curated events spread across the rest of the month.
+   =================================================================== */
+[
+  {id:'walktour', title:'Free Walking Tour: Han Market & Riverside', cat:'outdoor', emoji:'🚶', grad:'linear-gradient(135deg,#FEF3C7,#D97706)', area:'hai-chau', when:{en:'Sat 26 Sep · 08:00',vi:'T7, 26/09 · 08:00'}, day:'sat26', cap:30, going:12, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public listing (volunteer guide group page)'},
+  {id:'artmarket', title:'Weekend Art & Craft Market', cat:'music', emoji:'🎨', grad:'linear-gradient(135deg,#E9D5FF,#9333EA)', area:'son-tra', when:{en:'Sun 27 Sep · 16:00',vi:'CN, 27/09 · 16:00'}, day:'sun27', cap:300, going:45, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public event page (Facebook)'},
+  {id:'streetfood', title:'Autumn Street Food Night', cat:'food', emoji:'🍢', grad:'linear-gradient(135deg,#FED7AA,#C2410C)', area:'my-an', when:{en:'Sat 3 Oct · 18:00',vi:'T7, 03/10 · 18:00'}, day:'sat3oct', cap:400, going:60, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public event page (Facebook)'}
+].forEach(e => { if (!EVENTS.some(x => x.id === e.id)) EVENTS.push(e); });
+['walktour', 'artmarket', 'streetfood'].forEach(id => { if (!HOME_CURATED_IDS.includes(id)) HOME_CURATED_IDS.push(id); });
+Object.assign(COMMENTS, {walktour: 4, artmarket: 6, streetfood: 2});
+
+/* Local calendar dates (Asia/Ho_Chi_Minh) of each event's occurrences.
+   The Dragon Bridge show repeats every weekend, so it has several. */
+const EVENT_DATES = {
+  lx:['2026-09-18'], quiz:['2026-09-18'],
+  cleanup:['2026-09-19'], foodwalk:['2026-09-19'], volley:['2026-09-19'], salsa:['2026-09-19'],
+  dragon:['2026-09-19','2026-09-20','2026-09-26','2026-09-27','2026-10-03','2026-10-04'],
+  hike:['2026-09-20'], surf:['2026-09-20'], cowork:['2026-09-21'], yoga:['2026-09-22'], run:['2026-09-23'],
+  boardgame:['2026-09-24'], lantern:['2026-09-25'], walktour:['2026-09-26'], artmarket:['2026-09-27'],
+  streetfood:['2026-10-03']
+};
+
+/* News relevance: `published` date, optional `relevant` [from, to] the story is about,
+   `evergreen` guides stay visible whatever period is selected. */
+const NEWS_DATES = {
+  midautumn:{published:'2026-09-18', relevant:['2026-09-25','2026-09-25']},
+  'dragon-show':{published:'2026-09-17', relevant:['2026-09-19','2026-10-04']},
+  rainy:{published:'2026-09-16', relevant:['2026-10-01','2026-12-31']},
+  residence:{published:'2026-09-13', evergreen:true}
+};
+const TODAY_ISO = '2026-09-18';
+
+</script>
+<script>
+/* =====================================================================
+   FILE-SPECIFIC SCRIPT — file ③ Event detail & Create.
+   ===================================================================== */
+addI18n({
+en:{
+  'detail.timezoneLabel':'GMT+7 · Da Nang time','detail.timezoneNote':"That's {time} in your timezone ({tz})",'detail.simulateTz':'Simulate a different device timezone (mock only)',
+  'detail.exactAfterRsvp':'Exact address shown after you RSVP','detail.approxNote':'Approximate area shown for privacy — the exact pin appears once you are going','detail.openMaps':'Open in maps',
+  'detail.attendeesVisibleMembers':'The attendee list is visible to members','detail.seeWhoGoing':'See who is going','detail.hostedBy':'HOSTED BY','detail.eventsHosted':'{n} events hosted','detail.message':'Message',
+  'detail.about':'ABOUT','detail.languages':'Languages','detail.comments':'Comments ({n})','detail.tabReviews':'Reviews','detail.tabComments':'Comments','detail.reportEvent':'Report this event','detail.share':'Share','detail.addCalendar':'Add to calendar',
+  'reviews.title':"Reviews of {host}'s past sessions",'reviews.basedOn':'Based on {n} reviews','reviews.newHostTitle':'New host — no reviews yet',
+  'reviews.newHostBody':"Only members who checked in to one of {host}'s past sessions can leave a review. Check back after this event ends.",
+  'reviews.curatedNote':'This listing is curated from a public source, so there are no host reviews yet — they will appear once the organiser claims it.',
+  'reviews.verifiedAttendee':'Verified attendee','reviews.helpful':'Helpful ({n})','reviews.seeAll':'See all {n} reviews','reviews.dialogTitle':'All reviews',
+  'reviews.filterAll':'All','reviews.noneForFilter':'No reviews with this rating yet.','reviews.pendingBadge':'Pending','reviews.anonName':'Anonymous attendee',
+  'comments.sort.newest':'Newest','comments.sort.top':'Top','comments.pinned':'Pinned by host','comments.pin':'Pin','comments.unpin':'Unpin','comments.reply':'Reply',
+  'comments.replyPh':'Write a reply…','comments.replySubmit':'Post reply','comments.composePh':'Ask a question or leave a comment…','comments.post':'Post',
+  'comments.signInPrompt':'Sign in to ask a question or leave a comment.','comments.empty':'No comments yet — be the first to ask something.',
+  'comments.postedToast':'Comment posted.','comments.replyPostedToast':'Reply posted.',
+  'detail.similar':'You might also like','detail.cancelledTitle':'This event has been cancelled','detail.cancelledReason':'Reason: {reason}','detail.pastTitle':'This event has ended','detail.recap':'Event recap',
+  'detail.curatedNotice':'Listed by the Da Nang Connect team from a public source. Not yet managed by the organiser.','detail.curatedSource':'Source: {source} · verified {date}','detail.claimCta':'Are you the organiser? Claim this listing',
+  'detail.going':'{n} going','detail.spotsLeftNum':'{n} spots left','detail.waitingNum':'{n} waiting','detail.fullLabel':'Full','detail.reportComment':'Report','detail.whosGoing':"Who's coming",
+  'a11y.save':'Save event','a11y.share':'Share','a11y.search':'Search events, areas, and people','a11y.close':'Close','a11y.rating':'Rating',
+  'time.hoursAgo':'{n}h ago','content.original':'Original ({locale})','content.seeTranslation':'See translation',
+  'trustgate.button':'Verify your phone to join small events','trustgate.previewLabel':'Preview trust (mock only):','trustgate.t1':'T1 — can join','trustgate.t0':'T0 — needs verification',
+  'host.bar.edit':'Edit','host.bar.attendees':'Manage attendees','host.bar.duplicate':'Duplicate','host.bar.cancel':'Cancel event',
+  'going.menu.title':'Manage your RSVP','going.menu.cancel':'Cancel RSVP','going.menu.calendar':'Add to calendar','going.menu.invite':'Invite a friend','going.menu.qr':'My QR code',
+  'wl.title':'Waitlist status','wl.position':'You are #{n} on the waitlist','wl.explain':"If a spot opens up, we'll hold it for you for 12 hours before offering it to the next person.",
+  'wl.hideOdds':"We don't have enough history for this event type yet, so we're not showing an estimated chance.",'wl.leave':'Leave waitlist','wl.left':'You left the waitlist.',
+  'offer.banner':'A spot opened up for {title}. Confirm within {time}.','offer.confirmed':"You're going! 🎉",
+  'rc.title':'Confirm your RSVP','rc.summary':'Summary','rc.when':'When','rc.where':'Where','rc.price':'Price','rc.questions':"Organiser's questions",
+  'rc.policy':'You can cancel anytime before the event starts.','rc.submit':'Confirm · You are going','rc.confirmedToast':"You're going to {title}!",
+  'rp.title':'Report this event','rp.target':'Reporting','rp.step2':'Add more detail (optional)','rp.details.ph':'Tell us more…','rp.attach':'Attach a screenshot (optional)',
+  'rp.block':'Also block this person','rp.next':'Next','rp.back':'Back','rp.submit':'Submit report','rp.done.title':'Thanks — report received',
+  'rp.done.body':'We review reports within 4 hours. You will not see this content again.','rp.close':'Close',
+  'rp.reason.scam':'Scam or money request','rp.reason.spam':'Spam or advertising','rp.reason.harassment':'Harassment or hate','rp.reason.notexist':'Event does not exist',
+  'rp.reason.fake':'Fake or impersonation','rp.reason.sexual':'Sexual or adult content','rp.reason.personalinfo':'Personal info exposed','rp.reason.other':'Something else',
+  'rp.targetEvent':'Event · {title}','rp.targetComment':'Comment by {name}',
+  'ag.title':'Sign in to RSVP','ag.body':'Create a free account to join events, save your spot, and message hosts. It takes less than a minute.','ag.cta':'Continue to sign in','ag.later':'Not now',
+  'ce.title':'Cancel this event?','ce.body':'{n} people are registered. They will be notified immediately with your reason.','ce.reasonLabel':'Reason',
+  'ce.reason.weather':'Weather','ce.reason.people':'Not enough people','ce.reason.venue':'Venue issue','ce.reason.personal':'Personal','ce.reason.other':'Other',
+  'ce.typeLabel':'Type CANCEL to confirm','ce.submit':'Cancel event','ce.done':'Event cancelled. {n} people notified.',
+  'rv.title':'Leave a review','rv.ph':'How was it? What would other people like to know?','rv.submit':'Submit review',
+  'rv.done':"Thanks — saved. It stays private until {host} also reviews you, or after 7 days.",
+  'rv.chips.organised':'Well organised','rv.chips.friendly':'Friendly group','rv.chips.ontime':'Started on time','rv.chips.beginners':'Good for beginners',
+  'rv.anon':'Post without my name','rv.needStars':'Choose a star rating first.',
+  'rv.rulesNote':"Only people who checked in can review, within 7 days after the event. {host} will also rate attendees — both stay hidden until both are submitted, or the window closes.",
+  'claim.eyebrow':'Curated listing','claim.title':'Is this your event?','claim.body':'We listed this from a public source. Claim it to manage RSVPs, message attendees, and keep it up to date — all existing RSVPs stay exactly as they are.',
+  'claim.interested':'people interested','claim.views':'page views','claim.verify':'Verification','claim.verify.email':'Sign-up email matches the source domain',
+  'claim.verify.phone':'Phone number matches the public source','claim.verify.manual':'Send proof to our team — reviewed within 48h',
+  'claim.needPhone':'Verify your phone number to finish claiming (T2 required)','claim.notMine':'This is not my event','claim.signIn':'Sign in to claim','claim.signUp':'Create an account to claim',
+  'claim.claimNow':'Claim this listing','claim.previewAs':'Preview as (mock only)','claim.asGuest':'Not signed in','claim.asMember':'Signed in · T2 verified','claim.expiresIn':'Invitation expires in {n} days',
+  'cr.saveExit':'Save & exit','cr.stepOf':'Step {n} of 4','cr.saved':'Saved · {n}s ago','cr.step1':'Basics','cr.step2':'When & where','cr.step3':'Details','cr.step4':'Review & publish',
+  'cr.s1.q':'What are you organising?','cr.s1.titleLabel':'Event title','cr.s1.titlePh':'Sunset run at My Khe','cr.s1.pickType':'Pick a type','cr.s1.language':'Language of the event',
+  'cr.s1.cover':'Cover image','cr.s1.coverHint':'Optional — we generate one from your category if you skip this. Uploads go through a presigned URL, not through this form.','cr.s1.upload':'Upload cover photo',
+  'cr.s2.when':'When','cr.s2.date':'Date','cr.s2.time':'Start time','cr.s2.duration':'Duration','cr.s2.tzNote':'All times are Da Nang time (Asia/Ho_Chi_Minh) · stored as UTC',
+  'cr.s2.repeat':'Repeats','cr.s2.repeatPattern':'Weekly on Saturday · 12 upcoming sessions generated','cr.s2.where':'Where','cr.s2.address':'Address or venue name',
+  'cr.s2.area':'Area (auto-detected, editable)','cr.s2.hideExact':'Hide exact address until someone RSVPs',
+  'cr.s3.desc':'Description','cr.s3.descHint':'What to bring, where exactly to meet, who it is for… (min. 30 characters)','cr.s3.capacity':'Capacity','cr.s3.noLimit':'No limit',
+  'cr.s3.waitlist':'Enable waitlist when full','cr.s3.price':'Price','cr.s3.priceAmount':'Amount (VND)','cr.s3.audience':'Audience','cr.s3.familyFriendly':'Family friendly','cr.s3.alcoholFree':'Alcohol-free',
+  'cr.s3.minTrust':'Minimum trust level to join','cr.s3.questions':'Custom RSVP questions (up to 3)','cr.s3.addQuestion':'+ Add a question','cr.s3.questionPh':'e.g. Any dietary restrictions?',
+  'cr.s4.checklist':'Before you publish','cr.s4.check.title':'Title added','cr.s4.check.time':'Date & time set','cr.s4.check.location':'Location set','cr.s4.check.desc':'Description is at least 30 characters',
+  'cr.s4.preview':'Preview — this is what people will see','cr.saveDraft':'Save as draft','cr.publish':'Publish','cr.back':'Back','cr.next':'Next','cr.draftToast':'Saved as draft.',
+  'pub.liveTitle':"You're live!",'pub.liveBody':'Your event is published and already visible in the {area} feed.','pub.pendingTitle':'Submitted for review',
+  'pub.pendingBody':"New hosts with a link in the description go through a quick check first. Usually done within 4 hours — we'll email you.",
+  'pub.share':'Share to your WhatsApp group','pub.invite':'Invite 5 people from your last event','pub.viewEvent':'View event page','pub.viewVariant':'Preview both outcomes (mock only)',
+  'pub.published':'Published','pub.pending':'Pending review',
+  'gate.title':'Verify your email to create events','gate.body':"Anyone can browse and RSVP without this. Creating an event just needs one more step, so attendees know who they're meeting.",
+  'gate.step.signedUp':'Account created','gate.step.verify':'Verify your email address','gate.cta':'Verify email','gate.why':'Why do I need this?',
+  'gate.whyBody':'Verified organisers get fewer no-shows and higher trust from attendees — it protects everyone in the community, including you.',
+  'edit.title':'Edit event','edit.warn':'Changing the date, time, or location will notify {n} people who already RSVPed.',
+  'edit.criticalNote':'Explain the change to attendees (required for major changes)','edit.criticalPh':'e.g. We moved indoors because of the weather forecast.',
+  'edit.save':'Save changes','edit.cancelLink':'Cancel this event instead','edit.confirmTitle':'Notify attendees?',
+  'edit.confirmBody':"This is a major change. We'll email and push-notify all {n} attendees immediately.",'edit.confirmCta':'Save and notify',
+  'edit.saved':'Saved. {n} attendees notified.','edit.savedQuiet':'Saved.'
+},
+vi:{
+  'detail.timezoneLabel':'GMT+7 · Giờ Đà Nẵng','detail.timezoneNote':'Tức là {time} theo múi giờ của bạn ({tz})','detail.simulateTz':'Giả lập thiết bị ở múi giờ khác (chỉ mockup)',
+  'detail.exactAfterRsvp':'Địa chỉ chính xác hiện ra sau khi bạn đăng ký','detail.approxNote':'Hiện vùng gần đúng để bảo vệ riêng tư — vị trí chính xác hiện khi bạn đã tham gia','detail.openMaps':'Mở bản đồ',
+  'detail.attendeesVisibleMembers':'Danh sách người tham dự chỉ hiện với thành viên','detail.seeWhoGoing':'Xem ai sẽ tham gia','detail.hostedBy':'TỔ CHỨC BỞI','detail.eventsHosted':'{n} sự kiện đã tổ chức','detail.message':'Nhắn tin',
+  'detail.about':'GIỚI THIỆU','detail.languages':'Ngôn ngữ','detail.comments':'Bình luận ({n})','detail.tabReviews':'Đánh giá','detail.tabComments':'Bình luận','detail.reportEvent':'Báo cáo sự kiện này','detail.share':'Chia sẻ','detail.addCalendar':'Thêm vào lịch',
+  'reviews.title':'Đánh giá về các buổi trước của {host}','reviews.basedOn':'Dựa trên {n} đánh giá','reviews.newHostTitle':'Người tổ chức mới — chưa có đánh giá',
+  'reviews.newHostBody':'Chỉ thành viên đã check-in ở một buổi trước của {host} mới có thể đánh giá. Quay lại sau khi sự kiện này kết thúc.',
+  'reviews.curatedNote':'Listing này do đội ngũ tổng hợp từ nguồn công khai nên chưa có đánh giá host — đánh giá sẽ xuất hiện khi ban tổ chức nhận quyền quản lý.',
+  'reviews.verifiedAttendee':'Đã xác thực tham dự','reviews.helpful':'Hữu ích ({n})','reviews.seeAll':'Xem tất cả {n} đánh giá','reviews.dialogTitle':'Tất cả đánh giá',
+  'reviews.filterAll':'Tất cả','reviews.noneForFilter':'Chưa có đánh giá nào ở mức sao này.','reviews.pendingBadge':'Đang chờ duyệt','reviews.anonName':'Người tham dự ẩn danh',
+  'comments.sort.newest':'Mới nhất','comments.sort.top':'Nổi bật','comments.pinned':'Được người tổ chức ghim','comments.pin':'Ghim','comments.unpin':'Bỏ ghim','comments.reply':'Trả lời',
+  'comments.replyPh':'Viết câu trả lời…','comments.replySubmit':'Gửi trả lời','comments.composePh':'Đặt câu hỏi hoặc để lại bình luận…','comments.post':'Đăng',
+  'comments.signInPrompt':'Đăng nhập để đặt câu hỏi hoặc bình luận.','comments.empty':'Chưa có bình luận nào — hãy là người đầu tiên đặt câu hỏi.',
+  'comments.postedToast':'Đã đăng bình luận.','comments.replyPostedToast':'Đã đăng câu trả lời.',
+  'detail.similar':'Có thể bạn cũng thích','detail.cancelledTitle':'Sự kiện này đã bị huỷ','detail.cancelledReason':'Lý do: {reason}','detail.pastTitle':'Sự kiện đã diễn ra','detail.recap':'Ảnh tổng kết',
+  'detail.curatedNotice':'Do đội ngũ Da Nang Connect tổng hợp từ nguồn công khai. Chưa được ban tổ chức tiếp nhận.','detail.curatedSource':'Nguồn: {source} · đã kiểm chứng {date}','detail.claimCta':'Bạn là ban tổ chức? Nhận quyền quản lý listing này',
+  'detail.going':'{n} người tham gia','detail.spotsLeftNum':'còn {n} chỗ','detail.waitingNum':'{n} người đang chờ','detail.fullLabel':'Đã đầy','detail.reportComment':'Báo cáo','detail.whosGoing':'Ai sẽ tham gia',
+  'a11y.save':'Lưu sự kiện','a11y.share':'Chia sẻ','a11y.search':'Tìm sự kiện, khu vực và mọi người','a11y.close':'Đóng','a11y.rating':'Đánh giá',
+  'time.hoursAgo':'{n} giờ trước','content.original':'Bản gốc ({locale})','content.seeTranslation':'Xem bản dịch',
+  'trustgate.button':'Xác thực số điện thoại để tham gia sự kiện nhỏ','trustgate.previewLabel':'Xem thử theo bậc tin cậy (chỉ mockup):','trustgate.t1':'T1 — đủ điều kiện','trustgate.t0':'T0 — cần xác thực',
+  'host.bar.edit':'Sửa','host.bar.attendees':'Quản lý người tham dự','host.bar.duplicate':'Nhân bản','host.bar.cancel':'Huỷ sự kiện',
+  'going.menu.title':'Quản lý đăng ký của bạn','going.menu.cancel':'Huỷ đăng ký','going.menu.calendar':'Thêm vào lịch','going.menu.invite':'Mời bạn bè','going.menu.qr':'Mã QR của tôi',
+  'wl.title':'Trạng thái hàng chờ','wl.position':'Bạn đang xếp thứ #{n} trong hàng chờ','wl.explain':'Nếu có chỗ trống, chúng tôi sẽ giữ chỗ cho bạn trong 12 giờ trước khi mời người kế tiếp.',
+  'wl.hideOdds':'Chưa đủ dữ liệu lịch sử cho loại hình này nên chưa hiển thị tỉ lệ ước tính.','wl.leave':'Rời hàng chờ','wl.left':'Bạn đã rời hàng chờ.',
+  'offer.banner':'Đã có chỗ trống cho {title}. Xác nhận trong {time}.','offer.confirmed':'Bạn đã tham gia! 🎉',
+  'rc.title':'Xác nhận đăng ký','rc.summary':'Tóm tắt','rc.when':'Thời gian','rc.where':'Địa điểm','rc.price':'Giá','rc.questions':'Câu hỏi của người tổ chức',
+  'rc.policy':'Bạn có thể huỷ bất cứ lúc nào trước khi sự kiện bắt đầu.','rc.submit':'Xác nhận · Bạn sẽ tham gia','rc.confirmedToast':'Bạn đã đăng ký tham gia {title}!',
+  'rp.title':'Báo cáo sự kiện này','rp.target':'Đang báo cáo','rp.step2':'Thêm chi tiết (không bắt buộc)','rp.details.ph':'Cho chúng tôi biết thêm…','rp.attach':'Đính kèm ảnh chụp màn hình (không bắt buộc)',
+  'rp.block':'Đồng thời chặn người này','rp.next':'Tiếp tục','rp.back':'Quay lại','rp.submit':'Gửi báo cáo','rp.done.title':'Cảm ơn — đã nhận báo cáo',
+  'rp.done.body':'Chúng tôi xem xét báo cáo trong vòng 4 giờ. Bạn sẽ không thấy lại nội dung này.','rp.close':'Đóng',
+  'rp.reason.scam':'Lừa đảo hoặc đòi tiền','rp.reason.spam':'Spam hoặc quảng cáo','rp.reason.harassment':'Quấy rối hoặc thù ghét','rp.reason.notexist':'Sự kiện không có thật',
+  'rp.reason.fake':'Giả mạo danh tính','rp.reason.sexual':'Nội dung khiêu dâm / người lớn','rp.reason.personalinfo':'Lộ thông tin cá nhân','rp.reason.other':'Lý do khác',
+  'rp.targetEvent':'Sự kiện · {title}','rp.targetComment':'Bình luận của {name}',
+  'ag.title':'Đăng nhập để đăng ký tham gia','ag.body':'Tạo tài khoản miễn phí để tham gia sự kiện, giữ chỗ và nhắn tin cho người tổ chức. Chưa tới một phút.','ag.cta':'Tiếp tục đăng nhập','ag.later':'Để sau',
+  'ce.title':'Huỷ sự kiện này?','ce.body':'{n} người đã đăng ký. Họ sẽ được thông báo ngay kèm lý do của bạn.','ce.reasonLabel':'Lý do',
+  'ce.reason.weather':'Thời tiết','ce.reason.people':'Không đủ người','ce.reason.venue':'Sự cố địa điểm','ce.reason.personal':'Lý do cá nhân','ce.reason.other':'Khác',
+  'ce.typeLabel':'Gõ CANCEL để xác nhận','ce.submit':'Huỷ sự kiện','ce.done':'Đã huỷ sự kiện. Đã thông báo cho {n} người.',
+  'rv.title':'Viết đánh giá','rv.ph':'Buổi đó thế nào? Người khác nên biết điều gì?','rv.submit':'Gửi đánh giá',
+  'rv.done':'Cảm ơn — đã lưu. Đánh giá được giữ kín tới khi {host} cũng đánh giá bạn, hoặc sau 7 ngày.',
+  'rv.chips.organised':'Tổ chức tốt','rv.chips.friendly':'Nhóm thân thiện','rv.chips.ontime':'Bắt đầu đúng giờ','rv.chips.beginners':'Phù hợp người mới',
+  'rv.anon':'Đăng ẩn danh (không hiện tên)','rv.needStars':'Vui lòng chọn số sao trước.',
+  'rv.rulesNote':'Chỉ người đã check-in mới đánh giá được, trong vòng 7 ngày sau sự kiện. {host} cũng sẽ chấm điểm người tham dự — cả hai được giữ kín tới khi cả hai cùng gửi, hoặc hết hạn.',
+  'claim.eyebrow':'Listing do đội ngũ tổng hợp','claim.title':'Đây có phải sự kiện của bạn?','claim.body':'Chúng tôi đã tổng hợp mục này từ một nguồn công khai. Hãy nhận quyền để quản lý người đăng ký, nhắn tin và cập nhật thông tin — mọi lượt đăng ký hiện có được giữ nguyên.',
+  'claim.interested':'người quan tâm','claim.views':'lượt xem trang','claim.verify':'Xác minh','claim.verify.email':'Email đăng ký trùng miền của nguồn',
+  'claim.verify.phone':'Số điện thoại trùng với nguồn công khai','claim.verify.manual':'Gửi bằng chứng cho đội ngũ — xét duyệt trong 48 giờ',
+  'claim.needPhone':'Xác thực số điện thoại để hoàn tất nhận quyền (yêu cầu T2)','claim.notMine':'Đây không phải sự kiện của tôi','claim.signIn':'Đăng nhập để nhận quyền','claim.signUp':'Tạo tài khoản để nhận quyền',
+  'claim.claimNow':'Nhận quyền listing này','claim.previewAs':'Xem thử theo vai (chỉ mockup)','claim.asGuest':'Chưa đăng nhập','claim.asMember':'Đã đăng nhập · T2','claim.expiresIn':'Lời mời hết hạn sau {n} ngày',
+  'cr.saveExit':'Lưu & thoát','cr.stepOf':'Bước {n}/4','cr.saved':'Đã lưu · {n} giây trước','cr.step1':'Cơ bản','cr.step2':'Thời gian & địa điểm','cr.step3':'Chi tiết','cr.step4':'Xem lại & đăng',
+  'cr.s1.q':'Bạn đang tổ chức gì?','cr.s1.titleLabel':'Tiêu đề sự kiện','cr.s1.titlePh':'Chạy bộ lúc hoàng hôn ở Mỹ Khê','cr.s1.pickType':'Chọn loại hình','cr.s1.language':'Ngôn ngữ của sự kiện',
+  'cr.s1.cover':'Ảnh bìa','cr.s1.coverHint':'Không bắt buộc — nếu bỏ qua, hệ thống tự sinh ảnh theo loại hình. Ảnh tải lên qua presigned URL, không đi qua form này.','cr.s1.upload':'Tải ảnh bìa lên',
+  'cr.s2.when':'Khi nào','cr.s2.date':'Ngày','cr.s2.time':'Giờ bắt đầu','cr.s2.duration':'Thời lượng','cr.s2.tzNote':'Mọi giờ đều tính theo giờ Đà Nẵng (Asia/Ho_Chi_Minh) · lưu dưới dạng UTC',
+  'cr.s2.repeat':'Lặp lại','cr.s2.repeatPattern':'Hàng tuần vào Thứ Bảy · đã sinh 12 buổi sắp tới','cr.s2.where':'Ở đâu','cr.s2.address':'Địa chỉ hoặc tên địa điểm',
+  'cr.s2.area':'Khu vực (tự suy ra, có thể sửa)','cr.s2.hideExact':'Ẩn địa chỉ chính xác tới khi có người đăng ký',
+  'cr.s3.desc':'Mô tả','cr.s3.descHint':'Mang gì, gặp ở đâu chính xác, dành cho ai… (tối thiểu 30 ký tự)','cr.s3.capacity':'Sức chứa','cr.s3.noLimit':'Không giới hạn',
+  'cr.s3.waitlist':'Bật danh sách chờ khi hết chỗ','cr.s3.price':'Giá','cr.s3.priceAmount':'Số tiền (VND)','cr.s3.audience':'Đối tượng','cr.s3.familyFriendly':'Phù hợp cho gia đình','cr.s3.alcoholFree':'Không có đồ uống có cồn',
+  'cr.s3.minTrust':'Bậc tin cậy tối thiểu để tham gia','cr.s3.questions':'Câu hỏi tuỳ chỉnh khi đăng ký (tối đa 3)','cr.s3.addQuestion':'+ Thêm câu hỏi','cr.s3.questionPh':'VD: Bạn có kiêng món gì không?',
+  'cr.s4.checklist':'Trước khi đăng','cr.s4.check.title':'Đã có tiêu đề','cr.s4.check.time':'Đã đặt ngày giờ','cr.s4.check.location':'Đã đặt địa điểm','cr.s4.check.desc':'Mô tả có ít nhất 30 ký tự',
+  'cr.s4.preview':'Xem trước — đây là những gì mọi người sẽ thấy','cr.saveDraft':'Lưu nháp','cr.publish':'Đăng sự kiện','cr.back':'Quay lại','cr.next':'Tiếp theo','cr.draftToast':'Đã lưu dưới dạng nháp.',
+  'pub.liveTitle':'Sự kiện đã được đăng!','pub.liveBody':'Sự kiện của bạn đã được đăng và đang hiện trong nguồn tin khu vực {area}.','pub.pendingTitle':'Đã gửi để duyệt',
+  'pub.pendingBody':'Người tổ chức mới có link trong mô tả sẽ qua một bước kiểm tra nhanh trước. Thường xong trong vòng 4 giờ — chúng tôi sẽ gửi email cho bạn.',
+  'pub.share':'Chia sẻ vào nhóm WhatsApp của bạn','pub.invite':'Mời 5 người từ sự kiện trước của bạn','pub.viewEvent':'Xem trang sự kiện','pub.viewVariant':'Xem trước cả 2 kết quả (chỉ mockup)',
+  'pub.published':'Đã đăng','pub.pending':'Đang chờ duyệt',
+  'gate.title':'Xác thực email để tạo sự kiện','gate.body':'Ai cũng có thể xem và đăng ký tham gia mà không cần bước này. Việc tạo sự kiện chỉ cần thêm một bước, để người tham dự biết họ sẽ gặp ai.',
+  'gate.step.signedUp':'Đã tạo tài khoản','gate.step.verify':'Xác thực địa chỉ email','gate.cta':'Xác thực email','gate.why':'Vì sao tôi cần bước này?',
+  'gate.whyBody':'Người tổ chức đã xác thực gặp ít trường hợp bùng kèo hơn và được người tham dự tin tưởng hơn — điều này bảo vệ cả cộng đồng, kể cả bạn.',
+  'edit.title':'Chỉnh sửa sự kiện','edit.warn':'Thay đổi ngày, giờ hoặc địa điểm sẽ gửi thông báo cho {n} người đã đăng ký tham gia.',
+  'edit.criticalNote':'Giải thích thay đổi cho người tham dự (bắt buộc với thay đổi trọng yếu)','edit.criticalPh':'VD: Chúng tôi chuyển vào trong nhà vì dự báo thời tiết.',
+  'edit.save':'Lưu thay đổi','edit.cancelLink':'Huỷ sự kiện này thay vì sửa','edit.confirmTitle':'Thông báo cho người tham dự?',
+  'edit.confirmBody':'Đây là thay đổi trọng yếu. Chúng tôi sẽ gửi email và thông báo đẩy cho toàn bộ {n} người tham dự ngay lập tức.','edit.confirmCta':'Lưu và gửi thông báo',
+  'edit.saved':'Đã lưu. Đã thông báo cho {n} người tham dự.','edit.savedQuiet':'Đã lưu.'
+}
+});
+
+/* ---------------------------------------------------------------------
+   Local-only sample data. Kept in THIS file's own copy of EVENTS/ME —
+   does not touch the other mockup files, which have their own copies.
+   --------------------------------------------------------------------- */
+EVENTS.push({id:'movienight', title:'Outdoor Movie Night: Local Short Films', cat:'social', emoji:'🎬', grad:'linear-gradient(135deg,#FBCFE8,#7C3AED)', area:'my-an', when:{en:'Tue 15 Sep · 19:00',vi:'T3, 15/09 · 19:00'}, day:'past', cap:40, going:34, waiting:0, waitlist:true, price:0, host:{name:'Sofia K.',ini:'SK',color:'#BE185D',trust:3,hosted:9}, langs:['EN'], curated:false});
+ev('volley').hideExactUntilRsvp = true;
+ev('volley').questions = [{en:'Have you played beach volleyball before?',vi:'Bạn đã từng chơi bóng chuyền bãi biển chưa?'}];
+ev('foodwalk').verifiedAt = {en:'12 Sep 2026',vi:'12/09/2026'};
+/* Descriptions are user-generated content (events.description) — kept as authored, not translated (doc 10 §13.9). */
+ev('volley').description = "Casual 4v4 on the sand. We have two nets and extra balls, so just show up in whatever you'd wear to the beach. Total beginners are very welcome — half of the regulars started here with zero experience.";
+ev('lx').description = "Thirty minutes in English, thirty in Vietnamese, then free mingling over coffee. Bring a notebook if you like, but mostly it's just about talking to new people.";
+ev('boardgame').description = "A relaxed board game night — Catan, Codenames, Werewolf, and a shelf of others. No experience needed, we teach as we go. BYO snacks to share.";
+ev('foodwalk').description = "A guided walk through Hai Chau's best banh mi stalls and coffee shops, hosted by the Da Nang Connect team. About 2 hours, mostly outdoors. Cash only at most stops.";
+ev('movienight').description = "Bring a mat or a low chair — we screen short films by local student filmmakers on a big outdoor screen. Free popcorn while it lasts.";
+
+/* Local extensions to the shared RATINGS/COMMENTS/REVIEWS maps (doc 02 UC-16):
+   movienight isn't part of shared-data-v2.js, and salsa needs a seeded review
+   list (one entry kept in Vietnamese — content_locale is per review, not
+   translated, doc 10 §13.9) to demo the paid-UGC-event reviews state. */
+RATINGS.movienight = {avg:4.8, count:9};
+COMMENTS.movienight = 3;
+REVIEWS.movienight = [
+  {name:'Priya R.', ini:'PR', color:'#7C3AED', trust:2, stars:5, locale:'en', attended:{en:'Attended Tue 18 Aug',vi:'Đã tham gia T3, 18/08'}, text:'Loved the mix of short films — bring a blanket, the grass gets a bit damp after sunset.', helpful:5},
+  {name:'Dat N.', ini:'DN', color:'#0369A1', trust:1, stars:4, locale:'en', attended:{en:'Attended Tue 21 Jul',vi:'Đã tham gia T3, 21/07'}, text:'Sound was a little quiet in the back rows, otherwise a really relaxed evening.', helpful:2}
+];
+REVIEWS.salsa = [
+  {name:'Elena V.', ini:'EV', color:'#DB2777', trust:2, stars:5, locale:'en', attended:{en:'Attended Sat 12 Sep',vi:'Đã tham gia T7, 12/09'}, text:'Carlos pairs beginners with regulars so nobody stands around waiting. Great energy on the floor.', helpful:7},
+  {name:'Quang H.', ini:'QH', color:'#9D174D', trust:3, stars:4, locale:'vi', attended:{en:'Attended Sat 29 Aug',vi:'Đã tham gia T7, 29/08'}, text:'Sàn hơi nhỏ khi đông người nhưng nhạc chọn rất hay, sẽ quay lại.', helpful:3}
+];
+
+const DETAIL_TIME = {
+  volley:{en:{date:'Saturday, 19 September 2026',range:'17:00 – 19:00'},vi:{date:'Thứ Bảy, 19 tháng 9, 2026',range:'17:00 – 19:00'}},
+  lx:{en:{date:'Today · Friday 18 September 2026',range:'19:00 – 21:00'},vi:{date:'Hôm nay · Thứ Sáu 18 tháng 9, 2026',range:'19:00 – 21:00'}},
+  boardgame:{en:{date:'Thursday, 24 September 2026',range:'19:30 – 22:00'},vi:{date:'Thứ Năm, 24 tháng 9, 2026',range:'19:30 – 22:00'}},
+  foodwalk:{en:{date:'Saturday, 19 September 2026',range:'09:00 – 11:30'},vi:{date:'Thứ Bảy, 19 tháng 9, 2026',range:'09:00 – 11:30'}},
+  movienight:{en:{date:'Tuesday, 15 September 2026',range:'19:00 – 21:30'},vi:{date:'Thứ Ba, 15 tháng 9, 2026',range:'19:00 – 21:30'}}
+};
+function detailTime(e){ return DETAIL_TIME[e.id] ? DETAIL_TIME[e.id][LANG] : {date:e.when[LANG], range:''}; }
+
+const REPORT_REASONS = ['scam','spam','harassment','notexist','fake','sexual','personalinfo','other'];
+const ATTENDEE_POOL = [{ini:'MT',color:'#0369A1'},{ini:'JK',color:'#B45309'},{ini:'LP',color:'#047857'},{ini:'RS',color:'#BE185D'},{ini:'HN',color:'#6D28D9'},{ini:'DV',color:'#C2410C'},{ini:'AK',color:'#4338CA'},{ini:'TQ',color:'#0F766E'}];
+function attendeeStackHTML(count){
+  const shown = ATTENDEE_POOL.slice(0, Math.min(4, count));
+  const more = count > 4 ? `<span class="more">+${count - 4}</span>` : '';
+  return `<span class="avstack">${shown.map(p => avatar(p,'sm')).join('')}${more}</span>`;
+}
+/* ---------------------------------------------------------------------
+   Comments — sort (Newest/Top), one level of replies, host pinning
+   (owner decision 2026-09-19). The "Comments (n)" badge on the page uses
+   the shared COMMENTS[id] count from shared-data-v2.js; the arrays below
+   are a rendered sample, same convention as REVIEWS below (a handful of
+   real items, not necessarily every one counted in the badge).
+   --------------------------------------------------------------------- */
+const COMMENT_THREADS = {
+  volley: [
+    {id:'v1', name:'Mia T.', trust:2, color:'#0369A1', ini:'MT', hours:6, locale:'en', up:5,
+     text:"Is it ok if I've never played before?",
+     replies:[{name:'Tom R.', trust:3, color:'#0369A1', ini:'TR', hours:5, locale:'en', isHost:true, text:'Totally, half of us have never played either — we keep it casual.'}]},
+    {id:'v2', name:'Marco P.', trust:3, color:'#047857', ini:'MP', hours:2, locale:'en', up:1,
+     text:'Nets go up around 16:30 if anyone wants to help carry gear from the car park.'}
+  ],
+  lx: [
+    {id:'l1', name:'Lan Pham', trust:1, color:'#047857', ini:'LP', hours:4, locale:'vi', up:2,
+     text:'Cho mình hỏi buổi tối nay có cần đăng ký trước không ạ?'}
+  ],
+  foodwalk: [
+    {id:'f1', name:'James K.', trust:2, color:'#B45309', ini:'JK', hours:6, locale:'en', up:0,
+     text:'Any vegetarian stops on the route?'}
+  ],
+  run: [
+    {id:'r1', name:'Sofia K.', trust:3, color:'#BE185D', ini:'SK', hours:8, locale:'en', up:1,
+     text:'Is there a shorter loop for people who are not used to trail running, or is 10K the only distance?'}
+  ]
+};
+/* Events without a hand-written sample thread get a generic one, so the list never says
+   "no comments yet" next to a non-zero comment count. User content: not translated. */
+EVENTS.forEach(e => {
+  if (COMMENT_THREADS[e.id] || !(COMMENTS[e.id] > 0)) return;
+  const host = e.curated ? null : e.host;
+  COMMENT_THREADS[e.id] = [
+    {id: e.id + '-g1', name:'Sam R.', trust:2, color:'#0E7490', ini:'SR', hours:5, locale:'en', up:3,
+     text:'Is it okay to come alone? It would be my first time joining.',
+     replies: host ? [{name:host.name, trust:host.trust, color:host.color, ini:host.ini, hours:4, locale:'en', isHost:true, text:'Absolutely — most people come solo. Say hi when you arrive and I will introduce you.'}] : []},
+    {id: e.id + '-g2', name:'Vy Tran', trust:1, color:'#BE185D', ini:'VT', hours:1, locale:'vi', up:1,
+     text:'Có chỗ gửi xe máy gần đó không mọi người?'}
+  ];
+});
+let COMMENT_SORT = 'new';
+function commentSortedList(evId){
+  const list = (COMMENT_THREADS[evId] || []).slice();
+  list.sort((a, b) => {
+    const pinDiff = (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+    if (pinDiff) return pinDiff;
+    return COMMENT_SORT === 'top' ? ((b.up || 0) - (a.up || 0)) || (a.hours - b.hours) : (a.hours - b.hours);
+  });
+  return list;
+}
+function commentMetaHTML(c){
+  const translate = (c.locale || 'en') !== LANG ? `<span>· <a href="#" onclick="return false" style="text-decoration:underline">${t('content.seeTranslation')}</a></span>` : '';
+  const pin = c.pinned ? `<span class="tb t1">📌 ${t('comments.pinned')}</span>` : '';
+  return `<div class="meta"><b style="color:var(--text)">${c.name}</b>${c.trust != null ? tb(c.trust) : ''}<span>${t('time.hoursAgo',{n:c.hours})}</span>${translate}${pin}</div>`;
+}
+function commentReplyHTML(r){
+  return `<div class="comment">${avatar(r,'sm')}<div class="grow">
+      ${commentMetaHTML(r)}
+      <p>${r.text}</p>
+      <a href="#" class="rp" data-open="dlgReport" data-report-target="${t('rp.targetComment',{name:r.name})}" onclick="rpReset()">⚑ ${t('detail.reportComment')}</a>
+    </div></div>`;
+}
+function commentItemHTML(c, evId, canPin){
+  const replies = (c.replies || []).map(commentReplyHTML).join('');
+  return `<div class="comment ${c.pinned ? 'pinned' : ''}">${avatar(c,'sm')}<div class="grow">
+      ${commentMetaHTML(c)}
+      <p>${c.text}</p>
+      <div class="row small wrap" style="gap:14px;margin-top:4px">
+        <button class="rp" onclick="toggleReplyBox('${evId}','${c.id}')">${t('comments.reply')}</button>
+        ${canPin ? `<button class="rp" onclick="toggleCommentPin('${evId}','${c.id}')">${c.pinned ? t('comments.unpin') : t('comments.pin')}</button>` : ''}
+        <a href="#" class="rp" data-open="dlgReport" data-report-target="${t('rp.targetComment',{name:c.name})}" onclick="rpReset()">⚑ ${t('detail.reportComment')}</a>
+      </div>
+      <div class="row" id="rb-${evId}-${c.id}" hidden style="gap:8px;margin-top:8px">
+        <input class="field" style="flex:1;min-height:36px" id="rbInput-${evId}-${c.id}" data-i18n-ph="comments.replyPh">
+        <button class="btn btn-primary btn-sm" onclick="submitCommentReply('${evId}','${c.id}')">${t('comments.replySubmit')}</button>
+      </div>
+      ${replies ? `<div class="replies">${replies}</div>` : ''}
+    </div></div>`;
+}
+function commentsHTML(evId, cfg){
+  const canPin = !!(cfg && cfg.state === 'host');
+  const isGuest = !!(cfg && cfg.guest);
+  const list = commentSortedList(evId);
+  const sortSeg = list.length > 1
+    ? `<div class="seg" id="cmtSortSeg" style="margin-bottom:12px"><button class="${COMMENT_SORT==='new'?'on':''}" data-sort="new">${t('comments.sort.newest')}</button><button class="${COMMENT_SORT==='top'?'on':''}" data-sort="top">${t('comments.sort.top')}</button></div>`
+    : '';
+  const compose = isGuest
+    ? `<div class="note info" style="margin-bottom:12px"><span>💬</span><span>${t('comments.signInPrompt')}</span><button class="btn btn-ghost btn-sm" data-open="dlgAuthGate">${t('nav.signIn')}</button></div>`
+    : `<div class="row" style="gap:8px;margin-bottom:14px;align-items:flex-start">${avatar(ME,'sm')}<input class="field" style="flex:1;min-height:40px" id="cmtCompose-${evId}" data-i18n-ph="comments.composePh"><button class="btn btn-primary btn-sm" onclick="submitComment('${evId}')">${t('comments.post')}</button></div>`;
+  const body = list.length ? list.map(c => commentItemHTML(c, evId, canPin)).join('') : `<p class="small muted">${t('comments.empty')}</p>`;
+  return `${sortSeg}${compose}${body}`;
+}
+function toggleReplyBox(evId, id){
+  if (DETAIL_SCREENS[CURRENT] && DETAIL_SCREENS[CURRENT].guest) { openOverlay('dlgAuthGate'); return; }
+  const el = document.getElementById('rb-' + evId + '-' + id);
+  if (el) el.hidden = !el.hidden;
+}
+function submitCommentReply(evId, id){
+  const input = document.getElementById('rbInput-' + evId + '-' + id);
+  const text = input && input.value.trim();
+  if (!text) return;
+  const c = (COMMENT_THREADS[evId] || []).find(x => x.id === id);
+  if (!c) return;
+  c.replies = c.replies || [];
+  c.replies.push({name:ME.name, trust:ME.trust, color:ME.color, ini:ME.ini, hours:0, locale:LANG, text});
+  toast(t('comments.replyPostedToast'));
+  renderCurrentDetail();
+}
+function submitComment(evId){
+  const input = document.getElementById('cmtCompose-' + evId);
+  const text = input && input.value.trim();
+  if (!text) return;
+  COMMENT_THREADS[evId] = COMMENT_THREADS[evId] || [];
+  COMMENT_THREADS[evId].unshift({id:'c' + Date.now(), name:ME.name, trust:ME.trust, color:ME.color, ini:ME.ini, hours:0, locale:LANG, up:0, text});
+  toast(t('comments.postedToast'));
+  renderCurrentDetail();
+}
+function toggleCommentPin(evId, id){
+  (COMMENT_THREADS[evId] || []).forEach(c => { c.pinned = c.id === id ? !c.pinned : false; });
+  renderCurrentDetail();
+}
+document.addEventListener('click', e => {
+  const seg = e.target.closest('#cmtSortSeg [data-sort]');
+  if (seg) { COMMENT_SORT = seg.dataset.sort; renderCurrentDetail(); }
+});
+
+/* ---------------------------------------------------------------------
+   Detail screens — config + builders
+   --------------------------------------------------------------------- */
+const DETAIL_SCREENS = {
+  'event':          {evId:'volley',    state:'default'},
+  'event-guest':    {evId:'volley',    state:'default', guest:true},
+  'event-going':    {evId:'volley',    state:'going'},
+  'event-waitlist': {evId:'lx',        state:'waitlist'},
+  'event-offer':    {evId:'lx',        state:'offer'},
+  'event-full':     {evId:'boardgame', state:'full'},
+  'event-cancelled':{evId:'volley',    state:'cancelled'},
+  'event-past':     {evId:'movienight',state:'past'},
+  'event-host':     {evId:'volley',    state:'host'},
+  'event-curated':  {evId:'foodwalk',  state:'default', curated:true},
+  'rsvp-confirm':   {evId:'volley',    state:'default', open:'dlgRsvpConfirm'},
+  'report':         {evId:'volley',    state:'default', open:'dlgReport'},
+  'review-write':   {evId:'movienight',state:'past',    open:'dlgReview'}
+};
+let TRUST_PREVIEW = 't1'; // mock-only toggle, 'event' screen only
+let RV_STARS = 0; // dlgReview star selection, reset every time the dialog is (re)populated
+
+/* ?ev=<id> lets any of the screens above preview a different sample event
+   (the screen notes already describe this; wiring it here makes it real). */
+function detailCfg(id){
+  const base = DETAIL_SCREENS[id];
+  if (!base) return null;
+  const q = params.get('ev');
+  return (q && ev(q) && q !== base.evId) ? Object.assign({}, base, {evId: q}) : base;
+}
+
+function evdCover(e, cfg){
+  const tags = [];
+  if (e.curated) tags.push(`<span class="pill src">🏷 ${t('ev.curated')}</span>`);
+  if (cfg.state === 'cancelled') tags.push(`<span class="pill cancel">${t('rsvp.cancelled')}</span>`);
+  if (cfg.state === 'going') tags.push(`<span class="pill going">✓ ${t('rsvp.going')}</span>`);
+  if (cfg.state === 'waitlist' || cfg.state === 'offer') tags.push(`<span class="pill wait">${t('rsvp.waiting',{p:3})}</span>`);
+  return `<div class="evd-cover" style="background:${e.grad}"><span aria-hidden="true">${e.emoji}</span>
+    <div class="tag">${tags.join('')}</div>
+    <div class="acts"><button class="icon-btn evd-save" aria-label="Save">♡</button><button class="icon-btn evd-share" aria-label="Share" onclick="toast(t('detail.share'))">↗</button></div></div>`;
+}
+function showExact(e, cfg){
+  if (cfg.guest) return false;
+  if (cfg.state === 'going' || cfg.state === 'host') return true;
+  return !e.hideExactUntilRsvp;
+}
+function locationBlock(e, cfg){
+  const exact = showExact(e, cfg);
+  return `<div class="evd-block"><h4>📍 ${area(e.area)}</h4>
+    <div class="minimap"><span>🗺️</span>${exact ? '' : '<span class="approx"></span>'}</div>
+    <p class="small ${exact?'':'muted'}">${exact ? (e.address || (area(e.area)+' · 12 Nguyen Van Thoai')) : t('detail.approxNote')}</p>
+    <button class="btn btn-outline btn-sm" style="align-self:flex-start" ${exact?'':'disabled'} onclick="toast(t('detail.openMaps'))">${t('detail.openMaps')}</button>
+  </div>`;
+}
+function cestequiv(range){
+  const m = /^(\d{2}):(\d{2})/.exec(range || '');
+  if (!m) return '—';
+  let h = (Number(m[1]) - 5 + 24) % 24; // Asia/Ho_Chi_Minh (UTC+7) -> CEST (UTC+2)
+  return String(h).padStart(2,'0') + ':' + m[2];
+}
+function timeBlock(e, cfg){
+  const dt = detailTime(e);
+  return `<div class="evd-block"><h4>🕒 ${t('detail.timezoneLabel')}</h4>
+    <div class="h3">${dt.date}</div>
+    <div class="row"><span class="small" style="font-weight:700">${dt.range}</span><span class="small muted">· ${t('detail.timezoneLabel')}</span></div>
+    <label class="row small muted" style="gap:6px"><input type="checkbox" id="tzSimToggle" onchange="renderCurrentDetail()" ${cfg._tz?'checked':''}><span>${t('detail.simulateTz')}</span></label>
+    <div class="note info" ${cfg._tz?'':'hidden'}>🌍 <span>${t('detail.timezoneNote',{time: cestequiv(dt.range), tz:'CEST'})}</span></div>
+  </div>`;
+}
+function attendeeBlock(e, cfg){
+  if (cfg.guest) return `<div class="evd-block"><h4>👥 ${t('detail.going',{n:e.going})}</h4><p class="small muted">${t('detail.attendeesVisibleMembers')}</p></div>`;
+  const left = e.cap - e.going;
+  const pct = Math.min(100, Math.round(e.going / e.cap * 100));
+  const capCls = left <= 0 ? 'full' : (left/e.cap < 0.2 ? 'low' : '');
+  return `<div class="evd-block"><h4>👥 ${t('detail.whosGoing')}</h4>
+    <div class="evd-stats"><span>${t('detail.going',{n:e.going})}</span><span class="dot">·</span><span class="num">${left>0 ? t('detail.spotsLeftNum',{n:left}) : t('detail.fullLabel')}</span>${e.waiting ? `<span class="dot">·</span><span class="num">${t('detail.waitingNum',{n:e.waiting})}</span>`:''}</div>
+    <div class="row" style="justify-content:space-between">${attendeeStackHTML(e.going)}<button class="btn btn-ghost btn-sm" onclick="toast(t('detail.seeWhoGoing'))">${t('detail.seeWhoGoing')}</button></div>
+    <div class="cap-bar ${capCls}"><i style="width:${pct}%"></i></div>
+  </div>`;
+}
+function hostBlock(e, cfg){
+  const rating = e.curated ? '' : `<div class="small" style="margin-top:3px">${ratingLine(e.id)}</div>`;
+  return `<div class="evd-block"><h4>${t('detail.hostedBy')}</h4>
+    <div class="hostcard">${avatar(e.host,'lg')}<div class="grow"><b>${e.host.name}</b>${tb(e.host.trust)}<div class="muted small">${t('detail.eventsHosted',{n:e.host.hosted})}</div>${rating}</div>
+    <button class="btn btn-outline btn-sm" onclick="toast(t('detail.message'))">${t('detail.message')}</button></div>
+  </div>`;
+}
+function curatedBlock(e){
+  const verified = e.verifiedAt ? e.verifiedAt[LANG] : '';
+  return `<div class="curatedbox"><b class="src">🏷 ${t('ev.curated')}</b><p class="src">${t('detail.curatedNotice')}</p>
+    <p class="src">${t('detail.curatedSource',{source:e.source||'—', date:verified})}</p>
+    <button class="btn btn-primary btn-sm" style="align-self:flex-start" data-go="claim">${t('detail.claimCta')}</button>
+  </div>`;
+}
+function descriptionBlock(e){
+  return `<div class="evd-block"><h4>${t('detail.about')}</h4><p class="small sec">${e.description || 'Casual, friendly, and beginner-welcome. Bring water and sunscreen — we bring the nets.'}</p></div>
+    <div class="evd-block"><h4>${t('detail.languages')}</h4><p class="small">🗣 ${e.langs.join(' · ')}</p></div>`;
+}
+
+/* ---------------------------------------------------------------------
+   Reviews of the host's past sessions (doc 02 UC-16, doc 05 §9). Curated
+   listings (foodwalk/lantern/dragon) have no organiser yet, so they show
+   an explanatory note instead of an aggregate. Hosts with RATINGS[id]
+   === null are new — nobody has checked in to one of their sessions yet.
+   --------------------------------------------------------------------- */
+function inferReviewDist(avg){
+  const weights = [5,4,3,2,1].map(s => 1 / (1 + Math.abs(s - avg) * 2.2));
+  const sum = weights.reduce((a,b) => a + b, 0);
+  const pct = weights.map(w => Math.round(w / sum * 100));
+  pct[0] += 100 - pct.reduce((a,b) => a + b, 0); // keep the bars summing to 100%
+  return pct;
+}
+function reviewDist(id){
+  if (REVIEW_DIST[id]) return REVIEW_DIST[id];
+  const r = RATINGS[id];
+  return r ? inferReviewDist(r.avg) : [0,0,0,0,0];
+}
+function contentLocaleWord(loc){
+  if (loc === 'vi') return LANG === 'vi' ? 'Tiếng Việt' : 'Vietnamese';
+  return LANG === 'vi' ? 'Tiếng Anh' : 'English';
+}
+function reviewItemHTML(r){
+  // Offer a translation only when the review is written in a different language from the UI (doc 10 §13.9).
+  const translate = (r.locale || 'en') !== LANG ? ` <span>· <a href="#" onclick="return false" style="text-decoration:underline">${t('content.seeTranslation')}</a> <span class="muted">${t('content.original',{locale:contentLocaleWord(r.locale||'en')})}</span></span>` : '';
+  const pending = r.pending ? `<span class="tb t0">${t('reviews.pendingBadge')}</span>` : '';
+  return `<div class="comment">${avatar(r,'sm')}<div class="grow">
+      <div class="meta"><b style="color:var(--text)">${r.name}</b>${r.trust != null ? tb(r.trust) : ''}${pending}</div>
+      <div class="row small" style="gap:8px;margin:2px 0 4px;flex-wrap:wrap"><span style="color:var(--sun)">${stars(r.stars)}</span><span class="muted">${r.attended[LANG]}</span><span style="color:var(--success-text);font-weight:700">✓ ${t('reviews.verifiedAttendee')}</span></div>
+      <p class="small">${r.text}${translate}</p>
+      <div class="row small" style="gap:16px;margin-top:6px">
+        <button class="rp" data-h="${r.helpful||0}" onclick="this.dataset.h=Number(this.dataset.h)+1;this.textContent=t('reviews.helpful',{n:this.dataset.h});">${t('reviews.helpful',{n:r.helpful||0})}</button>
+        <a href="#" class="rp" data-open="dlgReport" data-report-target="${t('rp.targetComment',{name:r.name})}" onclick="rpReset()">⚑ ${t('detail.reportComment')}</a>
+      </div>
+    </div></div>`;
+}
+function reviewsSectionHTML(e){
+  if (e.curated) return `<div class="evd-block" id="ev-reviews"><h4>⭐ ${t('detail.tabReviews')}</h4><p class="small muted">${t('reviews.curatedNote')}</p></div>`;
+  const r = RATINGS[e.id];
+  if (!r) {
+    return `<div class="evd-block" id="ev-reviews"><h4>⭐ ${t('detail.tabReviews')}</h4>
+      <div class="empty" style="padding:22px 16px"><div class="ico">🌱</div><h3 class="h3">${t('reviews.newHostTitle')}</h3><p class="small">${t('reviews.newHostBody',{host:e.host.name})}</p></div>
+    </div>`;
+  }
+  const dist = reviewDist(e.id);
+  const list = (REVIEWS[e.id] || []).slice(0, 3);
+  const distRows = [5,4,3,2,1].map((s,i) => `<div class="distrow"><span class="xs num">${s}★</span><div class="distbar"><i style="width:${dist[i]}%"></i></div><span class="xs muted num">${dist[i]}%</span></div>`).join('');
+  return `<div class="evd-block" id="ev-reviews">
+    <h4>⭐ ${t('detail.tabReviews')}</h4>
+    <div class="h3">${t('reviews.title',{host:e.host.name})}</div>
+    <div class="row wrap" style="gap:18px;align-items:center">
+      <div class="reviewbig"><b class="num">${r.avg.toLocaleString(LANG==='vi'?'vi-VN':'en-US',{minimumFractionDigits:1})}</b><span class="stars-static">${stars(r.avg)}</span><span class="xs muted">${t('reviews.basedOn',{n:r.count})}</span></div>
+      <div class="distcol">${distRows}</div>
+    </div>
+    <div class="stack" style="gap:14px;margin-top:4px">${list.length ? list.map(reviewItemHTML).join('') : `<p class="small muted">${t('reviews.newHostBody',{host:e.host.name})}</p>`}</div>
+    <button class="btn btn-outline btn-sm" style="align-self:flex-start" onclick="openReviewsDialog('${e.id}')">${t('reviews.seeAll',{n:r.count})}</button>
+  </div>`;
+}
+let RA_FILTER = 'all';
+function openReviewsDialog(evId){
+  RA_FILTER = 'all';
+  renderReviewsDialog(evId);
+  openOverlay('dlgReviewsAll');
+}
+function renderReviewsDialog(evId){
+  const all = REVIEWS[evId] || [];
+  document.getElementById('raFilters').innerHTML = ['all',5,4,3,2,1].map(f => `<button class="chip ${RA_FILTER===String(f)?'on':''}" data-f="${f}">${f==='all'?t('reviews.filterAll'):f+'★'}</button>`).join('');
+  document.getElementById('raFilters').onclick = evc => { const b = evc.target.closest('[data-f]'); if (!b) return; RA_FILTER = b.dataset.f; renderReviewsDialog(evId); };
+  const filtered = RA_FILTER === 'all' ? all : all.filter(r => r.stars === Number(RA_FILTER));
+  document.getElementById('raList').innerHTML = filtered.length ? filtered.map(reviewItemHTML).join('') : `<p class="small muted" style="padding:20px 0;text-align:center">${t('reviews.noneForFilter')}</p>`;
+}
+function questionsHTML(e){
+  if (!e.questions || !e.questions.length) return '';
+  return `<div class="field"><label class="lbl">${t('rc.questions')}</label>${e.questions.map((q,i)=>`<input style="margin-top:6px" placeholder="${q[LANG]}">`).join('')}</div>`;
+}
+function rsvpBarHTML(e, cfg){
+  const left = e.cap - e.going;
+  if (cfg.state === 'cancelled') return `<div class="rsvpbar"><div class="info"><span class="cap full">${t('detail.cancelledTitle')}</span></div><button class="btn btn-block disabled" disabled>${t('rsvp.cancelled')}</button></div>`;
+  if (cfg.state === 'past') return `<div class="rsvpbar"><div class="info">${attendeeStackHTML(e.going)}</div><button class="btn btn-outline" data-open="dlgReview">${t('rsvp.review')}</button></div>`;
+  if (cfg.state === 'host') return `<div class="rsvpbar"><div class="info">${attendeeStackHTML(e.going)}<span class="small muted">${t('detail.going',{n:e.going})} · ${left>0?t('detail.spotsLeftNum',{n:left}):t('detail.fullLabel')}${e.waiting?' · '+t('detail.waitingNum',{n:e.waiting}):''}</span></div><span class="pill" style="background:var(--sunken);color:var(--text-sec)">${t('detail.hostedBy')}</span></div>`;
+  if (cfg.guest) return `<div class="rsvpbar"><div class="info">${attendeeStackHTML(0)}<span class="small muted">${left>0?t('detail.spotsLeftNum',{n:left}):t('detail.fullLabel')}</span></div><button class="btn btn-primary" data-open="dlgAuthGate">${left>0?t('rsvp.join',{n:left}):t('rsvp.waitlist',{w:e.waiting})}</button></div>`;
+  if (cfg.state === 'going') return `<div class="rsvpbar"><div class="info">${attendeeStackHTML(e.going)}<span class="small muted">${t('detail.going',{n:e.going})}</span></div><button class="btn btn-success" data-open="dlgGoingMenu">✓ ${t('rsvp.going')}</button></div>`;
+  if (cfg.state === 'waitlist') return `<div class="rsvpbar"><div class="info">${attendeeStackHTML(e.going)}<span class="small muted">${t('detail.waitingNum',{n:e.waiting})}</span></div><button class="btn btn-warn" data-open="dlgWaitlist">${t('rsvp.waiting',{p:3})}</button></div>`;
+  if (cfg.state === 'offer') return `<div class="rsvpbar"><div class="info">${attendeeStackHTML(e.going)}<span class="small muted">${t('detail.waitingNum',{n:e.waiting})}</span></div><button class="btn btn-primary btn-pulse" id="offerConfirmBtn">${t('rsvp.confirm',{h:11})}</button></div>`;
+  if (cfg.state === 'full') return `<div class="rsvpbar"><div class="info">${attendeeStackHTML(e.going)}<span class="small muted">${t('ev.full')}</span></div><button class="btn disabled" disabled>${t('rsvp.full')}</button></div>`;
+  // default — T1 member, has spots. TRUST_PREVIEW mock toggle only applies here.
+  const t1bar = `<div class="rsvpbar"><div class="info">${attendeeStackHTML(e.going)}<span class="small muted">${price(e.price)}</span></div><button class="btn btn-primary" data-open="dlgRsvpConfirm">${left>0?t('rsvp.join',{n:left}):t('rsvp.waitlist',{w:e.waiting})}</button></div>`;
+  const t0bar = `<div class="rsvpbar"><div class="info">${attendeeStackHTML(e.going)}<span class="small muted">${price(e.price)}</span></div><button class="btn btn-outline" data-go="web-myspace-mockup.html?screen=trust">🔒 ${t('trustgate.button')}</button></div>`;
+  return TRUST_PREVIEW === 't0' ? t0bar : t1bar;
+}
+function detailHTML(cfg){
+  const e = ev(cfg.evId);
+  const parts = [];
+  if (cfg.state === 'host') parts.push(hostBarHTML(e));
+  if (cfg.state === 'cancelled') parts.push(`<div class="note danger" style="margin-bottom:14px"><span>🚫</span><span>${t('detail.cancelledTitle')} · ${t('detail.cancelledReason',{reason:t('ce.reason.venue')})}</span></div>`);
+  if (cfg.state === 'offer') parts.push(`<div class="offerbanner" style="margin-bottom:14px"><span>⏳ ${t('offer.banner',{title:e.title, time:'11h 24m'})}</span></div>`);
+  if (cfg.state === 'past') parts.push(`<div class="note ok" style="margin-bottom:14px"><span>✅</span><span>${t('detail.pastTitle')}</span></div>`);
+  parts.push(`<article class="evd">${evdCover(e, cfg)}
+    <div class="evd-body">
+      <div>
+        ${cfg.state==='default' && cfg.evId==='volley' && !cfg.guest ? `<div class="row small muted" style="gap:8px;margin-bottom:6px"><span>${t('trustgate.previewLabel')}</span><div class="seg" id="trustSeg"><button class="${TRUST_PREVIEW==='t1'?'on':''}" data-trust="t1">${t('trustgate.t1')}</button><button class="${TRUST_PREVIEW==='t0'?'on':''}" data-trust="t0">${t('trustgate.t0')}</button></div></div>`:''}
+        <h1 class="h1">${e.title}</h1>
+        <div class="ev-meta" style="margin-top:6px"><span>${t('cat.'+e.cat)}</span><span>🗣 ${e.langs.join(' · ')}</span></div>
+        <div class="row small" id="evdJump"><a href="#ev-reviews">⭐ ${t('detail.tabReviews')}</a><span class="muted">·</span><a href="#ev-comments">💬 ${t('detail.tabComments')}</a></div>
+      </div>
+      ${cfg.curated ? curatedBlock(e) : ''}
+      ${timeBlock(e, cfg)}
+      ${locationBlock(e, cfg)}
+      ${attendeeBlock(e, cfg)}
+      ${hostBlock(e, cfg)}
+      ${cfg.state==='waitlist' ? waitlistPanelHTML(e) : ''}
+      ${descriptionBlock(e)}
+      ${reviewsSectionHTML(e)}
+      <div class="evd-block" id="ev-comments"><h4>💬 ${t('detail.comments',{n: COMMENTS[e.id] != null ? COMMENTS[e.id] : (COMMENT_THREADS[e.id]||[]).length})}</h4>${commentsHTML(e.id, cfg)}</div>
+      <div class="evd-cta-row">
+        <button class="btn btn-ghost btn-sm" data-open="dlgReport" data-report-target="${t('rp.targetEvent',{title:e.title})}" onclick="rpReset()">⚑ ${t('detail.reportEvent')}</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast(t('detail.share'))">↗ ${t('detail.share')}</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast(t('detail.addCalendar'))">📅 ${t('detail.addCalendar')}</button>
+      </div>
+    </div>
+  </article>`);
+  parts.push(rsvpBarHTML(e, cfg));
+  if (cfg.state === 'full') {
+    const others = EVENTS.filter(x => x.id !== e.id && !x.curated).slice(0,3);
+    parts.push(`<div class="evd-block" style="margin-top:20px"><h4>${t('detail.similar')}</h4><div class="grid3">${others.map(x=>eventCard(x)).join('')}</div></div>`);
+  }
+  return parts.join('');
+}
+function hostBarHTML(e){
+  const left = e.cap - e.going;
+  return `<div class="hostbar"><span class="stats">${t('detail.going',{n:e.going})} · ${left>0?t('detail.spotsLeftNum',{n:left}):t('detail.fullLabel')}${e.waiting?' · '+t('detail.waitingNum',{n:e.waiting}):''}</span>
+    <div class="acts">
+      <button class="btn btn-outline btn-sm" data-go="edit">${t('host.bar.edit')}</button>
+      <button class="btn btn-outline btn-sm" data-go="web-myspace-mockup.html?screen=attendees">${t('host.bar.attendees')}</button>
+      <button class="btn btn-outline btn-sm" id="hostDuplicateBtn">${t('host.bar.duplicate')}</button>
+      <button class="btn btn-danger-ghost btn-sm" data-open="dlgCancelEvent">${t('host.bar.cancel')}</button>
+    </div></div>`;
+}
+function waitlistPanelHTML(e){
+  return `<div class="wl-panel"><div class="pos">${t('wl.position',{n:3})}</div>
+    <p class="small sec">${t('wl.explain')}</p>
+    <p class="xs muted">${t('wl.hideOdds')}</p>
+  </div>`;
+}
+function renderCurrentDetail(){
+  const cfg = detailCfg(CURRENT);
+  if (!cfg) return;
+  cfg._tz = document.getElementById('tzSimToggle') ? document.getElementById('tzSimToggle').checked : cfg._tz;
+  const root = document.querySelector('.scr.show .j-detail');
+  if (root) root.innerHTML = detailHTML(cfg);
+  applyI18n();
+}
+onRender(id => {
+  const cfg = detailCfg(id);
+  if (!cfg) return;
+  const e = ev(cfg.evId);
+  const root = document.querySelector('.scr.show .j-detail');
+  if (root) root.innerHTML = detailHTML(cfg);
+  populateSharedDialogs(e, cfg);
+  if (cfg.open) { openOverlay(cfg.open); if (cfg.open === 'dlgReport') rpShowStep(1); }
+});
+
+/* ---------- shared dialog content, populated per detail screen ---------- */
+function populateSharedDialogs(e, cfg){
+  document.getElementById('rcBody').innerHTML = `
+    <div class="kv"><dt>${t('rc.when')}</dt><dd>${detailTime(e).date} · ${detailTime(e).range}</dd>
+    <dt>${t('rc.where')}</dt><dd>${area(e.area)}</dd>
+    <dt>${t('rc.price')}</dt><dd>${price(e.price)}</dd></div>
+    ${questionsHTML(e)}
+    <p class="xs muted">${t('rc.policy')}</p>`;
+  document.getElementById('rcSubmit').onclick = () => { closeAllOverlays(); toast(t('rc.confirmedToast',{title:e.title})); if (CURRENT !== 'event-going') show('event-going', true); };
+
+  document.getElementById('gmCalendar').onclick = () => { closeAllOverlays(); toast(t('going.menu.calendar')); };
+  document.getElementById('gmInvite').onclick = () => { closeAllOverlays(); toast(t('going.menu.invite')); };
+  document.getElementById('gmQr').onclick = () => { closeAllOverlays(); toast('🔳 QR'); };
+  document.getElementById('gmCancel').onclick = () => { closeAllOverlays(); toast(t('rsvp.cancelled')); show('event', true); };
+
+  document.getElementById('wlBody').innerHTML = `<div class="pos">${t('wl.position',{n:3})}</div><p class="small sec">${t('wl.explain')}</p><p class="xs muted">${t('wl.hideOdds')}</p>`;
+  document.getElementById('wlLeave').onclick = () => { closeAllOverlays(); toast(t('wl.left')); };
+
+  document.getElementById('reportTargetLabel').textContent = t('rp.targetEvent',{title:e.title});
+
+  document.getElementById('ceBody').textContent = t('ce.body',{n:13});
+  document.getElementById('ceTypeLabel').textContent = t('ce.typeLabel');
+  const ceInput = document.getElementById('ceConfirmInput'); const ceSubmit = document.getElementById('ceSubmit');
+  ceInput.value = ''; ceSubmit.disabled = true;
+  ceInput.oninput = () => { ceSubmit.disabled = ceInput.value.trim().toUpperCase() !== 'CANCEL'; };
+  ceSubmit.onclick = () => { closeAllOverlays(); toast(t('ce.done',{n:13})); show('event-cancelled', true); };
+  document.getElementById('hostDuplicateBtn') && (document.getElementById('hostDuplicateBtn').onclick = () => { toast(t('host.bar.duplicate') + ' → ' + t('cr.step1')); goTo('create-1'); });
+  document.getElementById('offerConfirmBtn') && (document.getElementById('offerConfirmBtn').onclick = () => { closeAllOverlays(); toast(t('offer.confirmed')); show('event-going', true); });
+
+  document.getElementById('rvEventName').textContent = e.title;
+  RV_STARS = 0;
+  document.querySelectorAll('#rvStars button').forEach(b => {
+    b.classList.remove('on');
+    b.onclick = () => { RV_STARS = Number(b.dataset.star); document.querySelectorAll('#rvStars button').forEach(x => x.classList.toggle('on', Number(x.dataset.star) <= RV_STARS)); };
+  });
+  document.querySelectorAll('#rvChips .chip').forEach(c => { c.classList.remove('on'); c.onclick = () => c.classList.toggle('on'); });
+  document.getElementById('rvText').value = '';
+  document.getElementById('rvAnon').checked = false;
+  document.getElementById('rvRulesNote').textContent = t('rv.rulesNote', {host: e.host.name});
+  document.getElementById('rvSubmit').onclick = () => {
+    if (!RV_STARS) { toast(t('rv.needStars')); return; }
+    closeAllOverlays();
+    const anon = document.getElementById('rvAnon').checked;
+    const chosenChips = Array.from(document.querySelectorAll('#rvChips .chip.on')).map(b => t(b.dataset.i18n));
+    const typed = document.getElementById('rvText').value.trim();
+    REVIEWS[e.id] = REVIEWS[e.id] || [];
+    REVIEWS[e.id].unshift({
+      name: anon ? t('reviews.anonName') : ME.name, ini: anon ? '?' : ME.ini, color: anon ? '#64748B' : ME.color,
+      trust: anon ? null : ME.trust, stars: RV_STARS, locale: LANG,
+      attended: {en:'Attended this event', vi:'Đã tham gia sự kiện này'},
+      text: typed || chosenChips.join(' · ') || t('rv.chips.organised'),
+      helpful: 0, pending: true
+    });
+    if (!RATINGS[e.id]) RATINGS[e.id] = {avg: RV_STARS, count: 1};
+    toast(t('rv.done', {host: e.host.name}));
+    renderCurrentDetail();
+  };
+}
+
+/* ---------- report dialog: 8 reasons + 2-step navigation ---------- */
+document.getElementById('rpReasons').innerHTML = REPORT_REASONS.map((r,i) => `<label class="rp-reason"><input type="radio" name="rpr" ${i===0?'checked':''}><span class="rd"><b></b></span></label>`).join('');
+function rpBuildReasons(){ document.querySelectorAll('#rpReasons .rp-reason').forEach((el,i) => { el.querySelector('b').textContent = t('rp.reason.'+REPORT_REASONS[i]); }); }
+function rpShowStep(n){
+  document.querySelectorAll('#dlgReport .rp-step').forEach(s => s.hidden = Number(s.dataset.step) !== n);
+  const footer = document.getElementById('rpFooter');
+  if (n === 1) footer.innerHTML = `<button class="btn btn-primary" id="rpNext">${t('rp.next')}</button>`;
+  else if (n === 2) footer.innerHTML = `<button class="btn btn-outline" id="rpBack">${t('rp.back')}</button><button class="btn btn-danger" id="rpSubmit">${t('rp.submit')}</button>`;
+  else footer.innerHTML = `<button class="btn btn-primary btn-block" id="rpClose">${t('rp.close')}</button>`;
+  const next = document.getElementById('rpNext'); if (next) next.onclick = () => rpShowStep(2);
+  const back = document.getElementById('rpBack'); if (back) back.onclick = () => rpShowStep(1);
+  const sub = document.getElementById('rpSubmit'); if (sub) sub.onclick = () => rpShowStep(3);
+  const close = document.getElementById('rpClose'); if (close) close.onclick = () => closeAllOverlays();
+}
+function rpReset(){ rpShowStep(1); }
+document.addEventListener('click', e => { const rt = e.target.closest('[data-report-target]'); if (rt) document.getElementById('reportTargetLabel').textContent = rt.dataset.reportTarget; });
+
+/* ---------- claim page (W-29) ---------- */
+let CLAIM_ROLE = 'guest';
+function claimHTML(){
+  const e = ev('foodwalk');
+  return `<div class="centerwrap">
+    <div class="bigicon">🏷️</div>
+    <p class="xs" style="color:var(--info-text);font-weight:800;text-transform:uppercase;letter-spacing:.06em">${t('claim.eyebrow')}</p>
+    <h1 class="h1">${t('claim.title')}</h1>
+    <div style="width:100%">${eventCard(e)}</div>
+    <p class="small sec">${t('claim.body')}</p>
+    <div class="claim-stats">
+      <div class="claim-stat"><b class="num">12</b><span class="xs muted">${t('claim.interested')}</span></div>
+      <div class="claim-stat"><b class="num">38</b><span class="xs muted">${t('claim.views')}</span></div>
+    </div>
+    <div class="card" style="width:100%;text-align:left">
+      <h3 class="h3" style="margin-bottom:10px">${t('claim.verify')}</h3>
+      <ul style="display:flex;flex-direction:column;gap:8px;list-style:none">
+        <li class="small row">✉️ ${t('claim.verify.email')}</li>
+        <li class="small row">📱 ${t('claim.verify.phone')}</li>
+        <li class="small row">🧑‍💼 ${t('claim.verify.manual')}</li>
+      </ul>
+    </div>
+    <div class="row small muted" style="gap:8px"><span>${t('claim.previewAs')}</span><div class="seg" id="claimRoleSeg"><button class="${CLAIM_ROLE==='guest'?'on':''}" data-role="guest">${t('claim.asGuest')}</button><button class="${CLAIM_ROLE==='member'?'on':''}" data-role="member">${t('claim.asMember')}</button></div></div>
+    ${CLAIM_ROLE === 'guest'
+      ? `<div class="row wrap" style="justify-content:center;gap:10px;width:100%"><button class="btn btn-primary" data-go="auth-onboarding-web-mockup.html?screen=signup">${t('claim.signUp')}</button><button class="btn btn-outline" data-go="auth-onboarding-web-mockup.html?screen=signin">${t('claim.signIn')}</button></div>`
+      : `<button class="btn btn-primary btn-block" onclick="toast(t('claim.claimNow'))">${t('claim.claimNow')}</button>`}
+    <p class="xs muted">${t('claim.expiresIn',{n:14})}</p>
+    <button class="btn btn-ghost btn-sm" onclick="toast(t('claim.notMine'))">${t('claim.notMine')}</button>
+  </div>`;
+}
+onRender(id => { if (id !== 'claim') return; document.querySelector('.j-claim').innerHTML = claimHTML();
+  document.getElementById('claimRoleSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; CLAIM_ROLE = b.dataset.role; document.querySelector('.j-claim').innerHTML = claimHTML(); document.getElementById('claimRoleSeg').addEventListener('click', arguments.callee, {once:true}); });
+});
+
+/* ---------- create-gate (W-30, T0) ---------- */
+function gateHTML(){
+  return `<div class="centerwrap">
+    <div class="bigicon">🔓</div>
+    <h1 class="h1">${t('gate.title')}</h1>
+    <p class="small sec">${t('gate.body')}</p>
+    <ul class="checklist" style="width:100%;text-align:left">
+      <li><span class="ok">✅</span> ${t('gate.step.signedUp')}</li>
+      <li><span class="warn">⭕</span> ${t('gate.step.verify')}</li>
+    </ul>
+    <button class="btn btn-primary btn-block" data-go="auth-onboarding-web-mockup.html?screen=verify">${t('gate.cta')}</button>
+    <details style="width:100%;text-align:left"><summary class="small" style="cursor:pointer;font-weight:700">${t('gate.why')}</summary><p class="small muted" style="margin-top:8px">${t('gate.whyBody')}</p></details>
+  </div>`;
+}
+onRender(id => { if (id === 'create-gate') document.querySelector('.j-gate').innerHTML = gateHTML(); });
+
+/* ---------------------------------------------------------------------
+   Create event wizard (W-30, M-30..M-32) — 4 steps sharing one DRAFT
+   --------------------------------------------------------------------- */
+const CATS = ['sports','language','social','food','wellness','music','outdoor','family','professional'];
+const CAT_EMOJI = {sports:'🏐',language:'🗣️',social:'🤝',food:'🍜',wellness:'🧘',music:'🎵',outdoor:'🌄',family:'👨‍👩‍👧',professional:'💼'};
+const CAT_GRAD = {sports:'linear-gradient(135deg,#BAE6FD,#0EA5E9)',language:'linear-gradient(135deg,#FDE68A,#F59E0B)',social:'linear-gradient(135deg,#C7D2FE,#4F46E5)',food:'linear-gradient(135deg,#FBCFE8,#DB2777)',wellness:'linear-gradient(135deg,#DDD6FE,#7C3AED)',music:'linear-gradient(135deg,#FECACA,#DC2626)',outdoor:'linear-gradient(135deg,#A7F3D0,#059669)',family:'linear-gradient(135deg,#FED7AA,#EA580C)',professional:'linear-gradient(135deg,#E2E8F0,#64748B)'};
+let DRAFT = {title:'',cat:'social',langs:['EN'],date:'Sat 26 Sep',dateISO:'2026-09-26',time:'18:00',duration:'2 hours',area:'an-thuong',address:'',hideExact:false,repeat:false,description:'',capacity:20,waitlist:true,price:0,familyFriendly:false,alcoholFree:false,minTrust:0,questions:[]};
+let AUTOSAVE_S = 0;
+setInterval(() => { AUTOSAVE_S++; const el = document.getElementById('wizAutosave'); if (el) el.textContent = t('cr.saved',{n:AUTOSAVE_S}); }, 1000);
+function touchDraft(){ AUTOSAVE_S = 0; }
+const WD_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], WD_VI = ['CN','T2','T3','T4','T5','T6','T7'];
+const MO_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function draftWhen(){
+  if (!DRAFT.dateISO) return {en:DRAFT.date+' · '+DRAFT.time, vi:DRAFT.date+' · '+DRAFT.time};
+  const d = new Date(DRAFT.dateISO+'T00:00:00');
+  if (isNaN(d)) return {en:DRAFT.date+' · '+DRAFT.time, vi:DRAFT.date+' · '+DRAFT.time};
+  const wd = d.getDay(), day = d.getDate(), mo = d.getMonth();
+  return {en: WD_EN[wd]+' '+day+' '+MO_EN[mo]+' · '+DRAFT.time, vi: WD_VI[wd]+', '+String(day).padStart(2,'0')+'/'+String(mo+1).padStart(2,'0')+' · '+DRAFT.time};
+}
+function draftPreviewEvent(){
+  return {id:'draft', title: DRAFT.title || t('cr.s1.titlePh'), cat: DRAFT.cat, emoji: CAT_EMOJI[DRAFT.cat], grad: CAT_GRAD[DRAFT.cat], area: DRAFT.area,
+    when: draftWhen(), day:'draft', cap: DRAFT.capacity || 9999, going: 0, waiting:0, waitlist: DRAFT.waitlist,
+    price: DRAFT.price, host: ME, langs: DRAFT.langs.length ? DRAFT.langs : ['EN'], curated:false};
+}
+function stepperHTML(step){
+  const dots = [1,2,3,4].map(n => {
+    const cls = n < step ? 'done' : (n === step ? 'on' : '');
+    const click = n < step ? ' onclick="goTo(\'create-' + n + '\')"' : '';
+    const icon = n < step ? '✓' : String(n);
+    return '<button class="step-dot ' + cls + '"' + click + '><i>' + icon + '</i><span>' + t('cr.step' + n) + '</span></button>';
+  }).join('');
+  return `<div class="row between"><button class="btn btn-ghost btn-sm" onclick="toast(t('cr.saveExit'));goTo('myevents')">✕ ${t('cr.saveExit')}</button>
+    <span class="xs muted num">${t('cr.stepOf',{n:step})}</span></div>
+    <div class="stepper">${dots}</div>`;
+}
+function wizardNav(step, canNext){
+  const isLast = step === 4;
+  return `<div class="wiz-nav">
+    ${step>1 ? `<button class="btn btn-outline" onclick="goTo('create-${step-1}')">${t('cr.back')}</button>` : `<span></span>`}
+    ${isLast
+      ? `<div class="row"><button class="btn btn-outline" id="wizDraftBtn">${t('cr.saveDraft')}</button><button class="btn btn-primary" id="wizPublishBtn">${t('cr.publish')}</button></div>`
+      : `<button class="btn btn-primary" ${canNext?'':'disabled'} onclick="goTo('create-${step+1}')">${t('cr.next')}</button>`}
+  </div>`;
+}
+function wizStep1(){
+  return `${stepperHTML(1)}
+    <div class="field"><label class="lbl">${t('cr.s1.q')}</label>
+      <input id="dTitle" placeholder="${t('cr.s1.titlePh')}" value="${DRAFT.title}"></div>
+    <div class="field"><label class="lbl">${t('cr.s1.pickType')}</label>
+      <div class="chipgrid" id="dCatChips">${CATS.map(c => `<button class="chip ${DRAFT.cat===c?'on':''}" data-cat="${c}">${CAT_EMOJI[c]} ${t('cat.'+c)}</button>`).join('')}</div></div>
+    <div class="field"><label class="lbl">${t('cr.s1.language')}</label>
+      <div class="chipgrid" id="dLangChips"><button class="chip ${DRAFT.langs.includes('EN')?'on':''}" data-lang2="EN">English</button><button class="chip ${DRAFT.langs.includes('VI')?'on':''}" data-lang2="VI">Tiếng Việt</button></div></div>
+    <div class="field"><label class="lbl">${t('cr.s1.cover')}</label>
+      <button class="btn btn-outline" disabled>📷 ${t('cr.s1.upload')}</button>
+      <span class="hint">${t('cr.s1.coverHint')}</span></div>
+    ${wizardNav(1, true)}`;
+}
+function wizStep2(){
+  return `${stepperHTML(2)}
+    <div class="field"><label class="lbl">${t('cr.s2.when')}</label>
+      <div class="row"><input type="date" id="dDate" value="${DRAFT.dateISO||''}"><input type="time" id="dTime" value="${DRAFT.time}"></div>
+      <select id="dDuration"><option>1 hour</option><option selected>2 hours</option><option>3 hours</option></select>
+      <span class="hint">ⓘ ${t('cr.s2.tzNote')}</span></div>
+    <label class="row"><span class="switch ${DRAFT.repeat?'on':''}" id="dRepeatSwitch"></span><span class="small">${t('cr.s2.repeat')}</span></label>
+    <p class="xs muted" id="dRepeatHint" ${DRAFT.repeat?'':'hidden'}>${t('cr.s2.repeatPattern')}</p>
+    <div class="field"><label class="lbl">${t('cr.s2.where')}</label>
+      <input id="dAddress" placeholder="${t('cr.s2.address')}" value="${DRAFT.address}">
+      <div class="minimap"><span>📍</span></div>
+      <select id="dArea"><label class="lbl">${t('cr.s2.area')}</label>${Object.keys(AREAS).map(k=>`<option value="${k}" ${DRAFT.area===k?'selected':''}>${AREAS[k][LANG]}</option>`).join('')}</select></div>
+    <label class="row"><span class="switch ${DRAFT.hideExact?'on':''}" id="dHideExactSwitch"></span><span class="small">${t('cr.s2.hideExact')}</span></label>
+    ${wizardNav(2, true)}`;
+}
+function wizStep3(){
+  const caps = [8,12,20,'nolimit'];
+  return `${stepperHTML(3)}
+    <div class="field"><label class="lbl">${t('cr.s3.desc')}</label><textarea id="dDesc" placeholder="${t('cr.s3.descHint')}">${DRAFT.description}</textarea><span class="hint num">${DRAFT.description.length}/30+</span></div>
+    <div class="field"><label class="lbl">${t('cr.s3.capacity')}</label>
+      <div class="chipgrid" id="dCapChips">${caps.map(c => `<button class="chip ${DRAFT.capacity===(c==='nolimit'?null:c)?'on':''}" data-cap="${c}">${c==='nolimit'?t('cr.s3.noLimit'):c}</button>`).join('')}</div></div>
+    <label class="row"><span class="switch ${DRAFT.waitlist?'on':''}" id="dWaitlistSwitch"></span><span class="small">${t('cr.s3.waitlist')}</span></label>
+    <div class="field"><label class="lbl">${t('cr.s3.price')}</label>
+      <div class="seg" id="dPriceSeg"><button class="${DRAFT.price===0?'on':''}" data-price="free">${t('ev.free')}</button><button class="${DRAFT.price>0?'on':''}" data-price="paid">${t('cr.s3.priceAmount')}</button></div>
+      <input id="dPriceAmount" type="number" placeholder="${t('cr.s3.priceAmount')}" value="${DRAFT.price||''}" ${DRAFT.price===0?'hidden':''}></div>
+    <div class="field"><label class="lbl">${t('cr.s3.audience')}</label>
+      <label class="row"><span class="switch ${DRAFT.familyFriendly?'on':''}" id="dFamilySwitch"></span><span class="small">${t('cr.s3.familyFriendly')}</span></label>
+      <label class="row"><span class="switch ${DRAFT.alcoholFree?'on':''}" id="dAlcoholSwitch"></span><span class="small">${t('cr.s3.alcoholFree')}</span></label></div>
+    <div class="field"><label class="lbl">${t('cr.s3.minTrust')}</label>
+      <select id="dMinTrust">${[0,1,2,3].map(l=>`<option value="${l}" ${DRAFT.minTrust===l?'selected':''}>${t('trust.'+l)}</option>`).join('')}</select></div>
+    <div class="field"><label class="lbl">${t('cr.s3.questions')}</label>
+      <div id="dQuestions">${DRAFT.questions.map((q,i)=>`<div class="qrow"><input class="field" value="${q}" data-qidx="${i}"><button class="icon-btn" data-qdel="${i}" aria-label="Remove">✕</button></div>`).join('')}</div>
+      <button class="btn btn-ghost btn-sm" id="dAddQuestion" ${DRAFT.questions.length>=3?'disabled':''}>${t('cr.s3.addQuestion')}</button></div>
+    ${wizardNav(3, true)}`;
+}
+function wizStep4(){
+  const checks = [
+    [!!DRAFT.title, 'cr.s4.check.title'], [!!DRAFT.date, 'cr.s4.check.time'], [!!DRAFT.address || !!DRAFT.area, 'cr.s4.check.location'], [DRAFT.description.length>=30, 'cr.s4.check.desc']
+  ];
+  return `${stepperHTML(4)}
+    <div class="card"><h3 class="h3" style="margin-bottom:10px">${t('cr.s4.checklist')}</h3>
+      <ul class="checklist">${checks.map(c=>`<li><span class="${c[0]?'ok':'warn'}">${c[0]?'✅':'⚠️'}</span> ${t(c[1])}</li>`).join('')}</ul></div>
+    ${wizardNav(4, true)}`;
+}
+function renderWizard(){
+  const step = Number(CURRENT.split('-')[1]);
+  const form = document.querySelector('.scr.show .j-wizard .wiz-form');
+  const preview = document.querySelector('.scr.show .j-wizard .wiz-preview .prevslot');
+  if (!form) return;
+  form.innerHTML = ({1:wizStep1,2:wizStep2,3:wizStep3,4:wizStep4})[step]();
+  if (preview) preview.innerHTML = eventCard(draftPreviewEvent());
+  wireWizardStep(step);
+}
+function wireWizardStep(step){
+  const q = s => document.querySelector(s);
+  if (step === 1) {
+    q('#dTitle').oninput = e => { DRAFT.title = e.target.value; touchDraft(); renderWizard(); };
+    q('#dCatChips').onclick = e => { const b = e.target.closest('[data-cat]'); if (!b) return; DRAFT.cat = b.dataset.cat; touchDraft(); renderWizard(); };
+    q('#dLangChips').onclick = e => { const b = e.target.closest('[data-lang2]'); if (!b) return; const L = b.dataset.lang2; DRAFT.langs = DRAFT.langs.includes(L) ? DRAFT.langs.filter(x=>x!==L) : [...DRAFT.langs, L]; touchDraft(); renderWizard(); };
+  } else if (step === 2) {
+    q('#dDate').onchange = e => { if (e.target.value) { DRAFT.dateISO = e.target.value; touchDraft(); renderWizard(); } };
+    q('#dTime').onchange = e => { DRAFT.time = e.target.value; touchDraft(); renderWizard(); };
+    q('#dDuration').onchange = e => { DRAFT.duration = e.target.value; touchDraft(); };
+    q('#dAddress').oninput = e => { DRAFT.address = e.target.value; touchDraft(); };
+    q('#dArea').onchange = e => { DRAFT.area = e.target.value; touchDraft(); renderWizard(); };
+    q('#dRepeatSwitch').onclick = e => { DRAFT.repeat = !DRAFT.repeat; touchDraft(); renderWizard(); };
+    q('#dHideExactSwitch').onclick = e => { DRAFT.hideExact = !DRAFT.hideExact; touchDraft(); renderWizard(); };
+  } else if (step === 3) {
+    q('#dDesc').oninput = e => { DRAFT.description = e.target.value; touchDraft(); q('.hint.num').textContent = DRAFT.description.length+'/30+'; };
+    q('#dCapChips').onclick = e => { const b = e.target.closest('[data-cap]'); if (!b) return; DRAFT.capacity = b.dataset.cap === 'nolimit' ? null : Number(b.dataset.cap); touchDraft(); renderWizard(); };
+    q('#dWaitlistSwitch').onclick = () => { DRAFT.waitlist = !DRAFT.waitlist; touchDraft(); renderWizard(); };
+    q('#dPriceSeg').onclick = e => { const b = e.target.closest('button'); if (!b) return; DRAFT.price = b.dataset.price === 'free' ? 0 : (DRAFT.price || 50000); touchDraft(); renderWizard(); };
+    q('#dPriceAmount') && (q('#dPriceAmount').oninput = e => { DRAFT.price = Number(e.target.value)||0; touchDraft(); renderWizard(); });
+    q('#dFamilySwitch').onclick = () => { DRAFT.familyFriendly = !DRAFT.familyFriendly; touchDraft(); renderWizard(); };
+    q('#dAlcoholSwitch').onclick = () => { DRAFT.alcoholFree = !DRAFT.alcoholFree; touchDraft(); renderWizard(); };
+    q('#dMinTrust').onchange = e => { DRAFT.minTrust = Number(e.target.value); touchDraft(); };
+    q('#dAddQuestion').onclick = () => { if (DRAFT.questions.length<3) DRAFT.questions.push(''); touchDraft(); renderWizard(); };
+    document.querySelectorAll('[data-qdel]').forEach(b => b.onclick = () => { DRAFT.questions.splice(Number(b.dataset.qdel),1); touchDraft(); renderWizard(); });
+    document.querySelectorAll('[data-qidx]').forEach(inp => inp.oninput = e => { DRAFT.questions[Number(inp.dataset.qidx)] = e.target.value; touchDraft(); });
+  } else if (step === 4) {
+    q('#wizDraftBtn').onclick = () => { toast(t('cr.draftToast')); goTo('myevents'); };
+    q('#wizPublishBtn').onclick = () => { PUBLISH_PENDING = ME.trust < 2; goTo('create-published'); };
+  }
+}
+onRender(id => {
+  if (!/^create-[1-4]$/.test(id)) return;
+  const root = document.querySelector('.scr.show .j-wizard');
+  if (root && !root.dataset.built) { root.innerHTML = `<div class="wiz"><div class="wiz-form"></div><aside class="wiz-preview"><h3>${t('cr.s4.preview')}</h3><div class="prevslot"></div><div class="wiz-autosave" style="margin-top:10px">💾 <span id="wizAutosave">${t('cr.saved',{n:AUTOSAVE_S})}</span></div></aside></div>`; root.dataset.built = '1'; }
+  renderWizard();
+});
+
+/* ---------- create-published ---------- */
+let PUBLISH_PENDING = ME.trust < 2;
+function publishedHTML(){
+  const pending = PUBLISH_PENDING;
+  return `<div class="centerwrap">
+    <div class="bigicon">${pending ? '🕓' : '🎉'}</div>
+    <span class="pill ${pending?'wait':'going'}">${pending ? t('pub.pending') : t('pub.published')}</span>
+    <h1 class="h1">${pending ? t('pub.pendingTitle') : t('pub.liveTitle')}</h1>
+    <p class="small sec">${pending ? t('pub.pendingBody') : t('pub.liveBody',{area:area(DRAFT.area)})}</p>
+    <div style="width:100%">${eventCard(draftPreviewEvent())}</div>
+    <div class="row wrap" style="justify-content:center;gap:10px">
+      <button class="btn btn-primary" onclick="toast(t('pub.share'))">${t('pub.share')}</button>
+      <button class="btn btn-outline" onclick="toast(t('pub.invite'))">${t('pub.invite')}</button>
+      <button class="btn btn-ghost" data-go="event">${t('pub.viewEvent')}</button>
+    </div>
+    <button class="mk-notesbtn" id="pubToggle">🔁 ${t('pub.viewVariant')}</button>
+  </div>`;
+}
+onRender(id => { if (id !== 'create-published') return; document.querySelector('.j-published').innerHTML = publishedHTML();
+  document.getElementById('pubToggle').onclick = () => { PUBLISH_PENDING = !PUBLISH_PENDING; document.querySelector('.j-published').innerHTML = publishedHTML(); document.getElementById('pubToggle').onclick = arguments.callee; };
+});
+
+/* ---------- edit (W-34) ---------- */
+let EDIT_CRITICAL = false;
+function editHTML(){
+  const e = ev('volley');
+  return `<div class="wiz"><div class="wiz-form">
+      <h1 class="h1">${t('edit.title')} · ${e.title}</h1>
+      <div class="note warn" id="editWarn" ${EDIT_CRITICAL?'':'hidden'}><span>⚠️</span><span>${t('edit.warn',{n:13})}</span></div>
+      <div class="field"><label class="lbl">${t('cr.s1.titleLabel')}</label><input value="${e.title}"></div>
+      <div class="field"><label class="lbl">${t('cr.s2.when')}</label>
+        <div class="row"><input type="date" id="eDate"><input type="time" id="eTime" value="17:00"></div>
+        <span class="hint">ⓘ ${t('cr.s2.tzNote')}</span></div>
+      <div class="field"><label class="lbl">${t('cr.s2.address')}</label><input id="eAddress" value="My Khe Beach"></div>
+      <div class="field" ${EDIT_CRITICAL?'':'hidden'} id="eNoteField"><label class="lbl">${t('edit.criticalNote')}</label><textarea id="eNote" placeholder="${t('edit.criticalPh')}"></textarea></div>
+      <div class="wiz-nav"><a href="#" class="small" style="color:var(--danger-text);font-weight:700" data-open="dlgCancelEvent">${t('edit.cancelLink')}</a><button class="btn btn-primary" id="editSaveBtn">${t('edit.save')}</button></div>
+    </div>
+    <aside class="wiz-preview"><h3>${t('cr.s4.preview')}</h3>${eventCard(e)}</aside></div>`;
+}
+onRender(id => { if (id !== 'edit') return; document.querySelector('.j-edit').innerHTML = editHTML();
+  const markCritical = () => { EDIT_CRITICAL = true; document.getElementById('editWarn').hidden = false; document.getElementById('eNoteField').hidden = false; };
+  document.getElementById('eDate').onchange = markCritical;
+  document.getElementById('eTime').onchange = markCritical;
+  document.getElementById('eAddress').oninput = markCritical;
+  document.getElementById('editSaveBtn').onclick = () => {
+    if (EDIT_CRITICAL) {
+      if (confirm(t('edit.confirmTitle') + '\\n' + t('edit.confirmBody',{n:13}))) { toast(t('edit.saved',{n:13})); EDIT_CRITICAL = false; }
+    } else { toast(t('edit.savedQuiet')); }
+  };
+});
+
+/* ---------- trust preview toggle + report reasons i18n on every render ---------- */
+onRender(() => {
+  rpBuildReasons();
+  const seg = document.getElementById('trustSeg');
+  if (seg) seg.onclick = e => { const b = e.target.closest('[data-trust]'); if (!b) return; TRUST_PREVIEW = b.dataset.trust; renderCurrentDetail(); };
+});
+
+/* ---------- localize aria-labels that live on shared-shell elements ----------
+   The shared base markup (app shell, .ev card, dialog close buttons) hardcodes
+   a few EN aria-labels. We do not edit that shared block; instead we patch the
+   attribute at runtime here, keyed by stable structural selectors (classes/ids),
+   never by the current label text, so it keeps working after the first patch. */
+function patchSharedA11y(){
+  document.querySelectorAll('.ev .save, .evd-save').forEach(el => el.setAttribute('aria-label', t('a11y.save')));
+  document.querySelectorAll('.evd-share').forEach(el => el.setAttribute('aria-label', t('a11y.share')));
+  document.querySelectorAll('.app-search input').forEach(el => el.setAttribute('aria-label', t('a11y.search')));
+  document.querySelectorAll('.app-top .icon-btn.me-only').forEach(el => el.setAttribute('aria-label', t('nav.notifications')));
+  document.querySelectorAll('.app-tabs .fab').forEach(el => el.setAttribute('aria-label', t('nav.createEvent')));
+  document.querySelectorAll('[data-close][aria-label]').forEach(el => el.setAttribute('aria-label', t('a11y.close')));
+  const rv = document.getElementById('rvStars'); if (rv) rv.setAttribute('aria-label', t('a11y.rating'));
+}
+onRender(patchSharedA11y);
+
+/* Tapping a suggested event ("You might also like") opens that event's own detail page, not the
+   swipe deck (owner correction 2026-09-19 — swipe is a separate opt-in mode inside Discover). */
+document.addEventListener('click', e => {
+  if (e.target.closest('.save')) return;
+  const card = e.target.closest('.ev[data-ev]');
+  if (card) location.href = 'web-event-mockup.html?screen=event&ev=' + card.dataset.ev + '&lang=' + LANG;
+});
+boot('event');
+</script>
+</body>
+</html>

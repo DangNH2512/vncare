@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Da Nang Connect — Web mockup · ⑤ Swipe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   SHARED BASE for the web-client mockup set. Copy this <style> block
+   verbatim into every web mockup file, then append screen-specific CSS
+   in a second <style> block. Do not rename shared classes.
+   Tokens mirror packages/tokens (what apps/web-client-side ships).
+   Doc 10 §12 (teal #0E7C74 + Inter) is a documented drift.
+   ===================================================================== */
+:root{
+  --brand:#0EA5E9; --brand-dark:#0369A1; --sun:#F59E0B;
+  --surface:#FFFFFF; --bg:#F8FAFC; --sunken:#F1F5F9; --text:#0F172A; --text-sec:#475569; --text-mut:#64748B; --line:#E2E8F0; --line-strong:#CBD5E1;
+  --success:#16A34A; --success-text:#11703A; --warning:#D97706; --warning-text:#8A5A09; --danger:#DC2626; --danger-text:#9C1C14;
+  --accent-subtle:#E7F5FD; --success-subtle:#E8F6EE; --warning-subtle:#FBF1E0; --danger-subtle:#FCEAEA; --sun-subtle:#FDF3E1; --info-subtle:#EAF1FB; --info-text:#28558F;
+  --r-sm:6px; --r-md:10px; --r-lg:16px;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px -16px rgba(15,23,42,.18);
+  --shadow-2:0 4px 12px rgba(15,23,42,.10);
+  --shadow-3:0 12px 32px rgba(15,23,42,.18);
+  --side-w:240px; --rail-w:300px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Be Vietnam Pro',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;overflow-x:clip}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{line-height:1.25}
+ul{list-style:none}
+:focus-visible{outline:2px solid var(--brand-dark);outline-offset:2px}
+[hidden]{display:none !important}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- Mockup chrome (NOT app UI) ---------- */
+.mk-banner{position:sticky;top:0;z-index:95;background:var(--text);color:#fff;font-size:12px;padding:6px 14px;text-align:center}
+.mk-banner strong{color:#FCD34D}
+.mk-files{display:flex;gap:4px;align-items:center;background:#1E293B;padding:6px 12px;overflow-x:auto}
+.mk-files a{flex:0 0 auto;color:#CBD5E1;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;white-space:nowrap}
+.mk-files a:hover{background:#334155;color:#fff}
+.mk-files a.on{background:#fff;color:var(--text)}
+.mk-files .lbl{color:#94A3B8;font-size:11px;font-weight:700;margin-right:6px;flex:0 0 auto}
+.mk-toolbar{position:sticky;top:29px;z-index:90;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:8px 12px}
+.mk-scrchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;flex:1;min-width:0;padding-bottom:2px}
+.mk-scrchip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-md);padding:5px 10px;font-size:11.5px;font-weight:600;color:var(--text-sec);min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;line-height:1.3}
+.mk-scrchip b{font-size:9.5px;font-weight:800;letter-spacing:.03em;color:var(--brand-dark);text-transform:uppercase}
+.mk-scrchip.on{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.mk-scrchip.on b{color:#BAE6FD}
+.mk-toolright{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.seg-lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg-lang button{padding:8px 12px;font-size:12px;font-weight:700;color:var(--text-sec);min-height:36px}
+.seg-lang button.on{background:var(--brand-dark);color:#fff}
+.mk-notesbtn{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--brand-dark);min-height:36px;white-space:nowrap}
+.mk-notesbtn:hover,.mk-notesbtn.on{background:var(--accent-subtle)}
+.mk-notes{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow-3);z-index:120;transform:translateX(100%);transition:transform .24s cubic-bezier(.2,.9,.2,1);display:flex;flex-direction:column}
+.mk-notes.open{transform:none}
+.mk-notes header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.mk-notes header h3{font-size:15px}
+.mk-notes .body{padding:16px 18px 40px;overflow-y:auto;font-size:13.5px;color:var(--text-sec)}
+.mk-notes .body h4{font-size:13px;color:var(--text);margin:14px 0 6px}
+.mk-notes .body h4:first-child{margin-top:0}
+.mk-notes .body li{margin:0 0 6px 16px;list-style:disc}
+.mk-notes .body code{font-size:12px;background:var(--sunken);padding:1px 5px;border-radius:4px;color:var(--text)}
+.mk-notes .drift{background:var(--warning-subtle);color:var(--warning-text);border-radius:var(--r-md);padding:10px 12px;margin-top:10px;font-weight:600}
+.mk-mockonly{display:inline-block;font-size:11.5px;color:var(--text-sec);border:1px dashed var(--line-strong);border-radius:var(--r-md);padding:6px 10px}
+.mk-mockonly b{color:var(--brand-dark)}
+
+/* ---------- App shell (mirrors apps/web-client-side AppShell) ---------- */
+.app{display:flex;max-width:1280px;margin:0 auto;min-height:calc(100vh - 120px)}
+.app-side{position:sticky;top:90px;align-self:flex-start;height:calc(100vh - 90px);width:var(--side-w);flex:0 0 auto;border-right:1px solid var(--line);background:var(--surface);padding:18px 14px;display:flex;flex-direction:column;gap:4px}
+.app-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px;padding:6px 10px 18px}
+.app-logo i{width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.nav-item{display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 12px;border-radius:var(--r-md);color:var(--text-sec);font-weight:600;font-size:14.5px;width:100%;text-align:left;position:relative}
+.nav-item:hover{background:var(--sunken);color:var(--text)}
+.nav-item.on{background:var(--accent-subtle);color:var(--brand-dark);font-weight:700}
+.nav-item .ic{width:24px;text-align:center;font-size:18px}
+.nav-item .cnt{margin-left:auto;background:var(--danger);color:#fff;font-size:11px;font-weight:800;border-radius:999px;padding:1px 7px}
+.app-create{margin-top:12px}
+.app-sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+.app-me{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-md)}
+.app-me:hover{background:var(--sunken)}
+.app-me .meta{min-width:0;font-size:13px;line-height:1.3}
+.app-me .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-col{flex:1;min-width:0;display:flex;flex-direction:column}
+.app-top{position:sticky;top:90px;z-index:40;height:60px;display:flex;align-items:center;gap:12px;padding:0 24px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.app-search{flex:1;max-width:460px;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 14px;min-height:40px;color:var(--text-mut);font-size:14px}
+.app-search input{border:0;outline:0;background:none;flex:1;min-width:0;min-height:38px}
+.app-topright{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:18px;position:relative;color:var(--text-sec)}
+.icon-btn:hover{background:var(--sunken)}
+.icon-btn .dot{position:absolute;top:8px;right:8px;min-width:17px;height:17px;border-radius:999px;background:var(--danger);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg)}
+.app-body{display:flex;justify-content:center;gap:24px;padding:20px 24px 80px}
+.app-main{width:100%;max-width:600px;min-width:0}
+.app-rail{width:var(--rail-w);flex:0 0 auto;display:flex;flex-direction:column;gap:16px;position:sticky;top:170px;align-self:flex-start}
+.app.wide .app-main{max-width:980px}
+.app.wide .app-rail,.app.norail .app-rail{display:none}
+.app.bare .app-side,.app.bare .app-top{display:none}
+.app.bare .app-main{max-width:1100px}
+.app-tabs{display:none}
+.rail-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px}
+.rail-card h3{font-size:14px;margin-bottom:10px}
+.rail-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.rail-row:first-of-type{border-top:0}
+.rail-row .grow{flex:1;min-width:0}
+.rail-row .grow b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px}
+.rail-row .muted{color:var(--text-mut);font-size:12px}
+.rail-thumb{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto}
+@media (max-width:1279px){ .app-rail{display:none} }
+@media (max-width:1023px){
+  :root{--side-w:76px}
+  .app-side{padding:14px 8px;align-items:center}
+  .app-logo span,.nav-item .lbl,.app-me .meta,.app-create .lbl,.app-sidefoot .seg-lang{display:none}
+  .nav-item{justify-content:center;padding:8px}
+  .nav-item .cnt{position:absolute;top:4px;right:4px}
+  .app-create .btn{width:44px;padding:0}
+}
+@media (max-width:767px){
+  .app-side{display:none}
+  .app-top{padding:0 12px}
+  .app-body{padding:14px 12px 96px}
+  .app-tabs{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--surface);border-top:1px solid var(--line);justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .app-tabs button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;font-weight:600;color:var(--text-mut);min-width:56px;min-height:48px;justify-content:center;position:relative}
+  .app-tabs button.on{color:var(--brand-dark)}
+  .app-tabs .ic{font-size:19px}
+  .app-tabs .fab{width:48px;height:48px;border-radius:50%;background:var(--brand-dark);color:#fff;font-size:22px;margin-top:-18px;box-shadow:var(--shadow-2)}
+}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:999px;padding:10px 18px;font-weight:700;font-size:14px;white-space:nowrap;transition:background .12s}
+.btn-primary{background:var(--brand-dark);color:#fff}
+.btn-primary:hover{background:#02537f}
+.btn-outline{border:1px solid var(--line-strong);color:var(--text);background:var(--surface)}
+.btn-outline:hover{background:var(--sunken)}
+.btn-ghost{color:var(--brand-dark)}
+.btn-ghost:hover{background:var(--accent-subtle)}
+.btn-success{background:var(--success-subtle);color:var(--success-text);border:1px solid color-mix(in srgb,var(--success) 40%,transparent)}
+.btn-warn{background:var(--warning-subtle);color:var(--warning-text);border:1px solid color-mix(in srgb,var(--warning) 40%,transparent)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger-ghost{color:var(--danger-text)}
+.btn-danger-ghost:hover{background:var(--danger-subtle)}
+.btn:disabled,.btn.disabled{background:var(--sunken);color:var(--text-mut);border-color:var(--line);cursor:not-allowed}
+.btn-block{width:100%}
+.btn-sm{min-height:36px;padding:6px 14px;font-size:13px}
+
+/* ---------- Chips / segmented / tabs ---------- */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;color:var(--text-sec);min-height:40px;white-space:nowrap}
+.chip:hover{border-color:var(--line-strong);color:var(--text)}
+.chip.on{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.chip.soft{background:var(--accent-subtle);border-color:color-mix(in srgb,var(--brand) 40%,transparent);color:var(--brand-dark)}
+.chip .x{font-weight:800;opacity:.8}
+.chip .c{font-size:11.5px;opacity:.75;font-weight:700}
+.seg{display:inline-flex;background:var(--sunken);border-radius:999px;padding:3px;gap:2px}
+.seg button{padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;color:var(--text-sec);min-height:36px}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(15,23,42,.12)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{padding:12px 14px;font-weight:700;font-size:14px;color:var(--text-mut);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;min-height:44px}
+.tabs button.on{color:var(--brand-dark);border-bottom-color:var(--brand-dark)}
+.tabs .cnt{font-size:11.5px;background:var(--sunken);color:var(--text-sec);border-radius:999px;padding:1px 7px;margin-left:6px}
+
+/* ---------- Trust badge (doc 05 §5.3 — canonical T0–T5 ladder) ---------- */
+.tb{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700;white-space:nowrap;line-height:1.5}
+.tb:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8}
+.tb.t0{background:var(--sunken);color:var(--text-sec)}
+.tb.t1{background:var(--accent-subtle);color:var(--brand-dark)}
+.tb.t2{background:#D3EBFA;color:#075985}
+.tb.t3{background:var(--brand-dark);color:#fff}
+.tb.t4{background:#E0E7FF;color:#3730A3}
+.tb.t5{background:var(--sun-subtle);color:#92400E;box-shadow:inset 0 0 0 1px var(--sun)}
+.tb.limited{background:var(--danger-subtle);color:var(--danger-text)}
+
+/* ---------- Avatars ---------- */
+.av{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;color:#fff;flex:0 0 auto;background:var(--brand-dark)}
+.av.sm{width:28px;height:28px;font-size:11px}
+.av.lg{width:56px;height:56px;font-size:18px}
+.av.xl{width:96px;height:96px;font-size:30px}
+.avstack{display:inline-flex;align-items:center}
+.avstack .av{border:2px solid var(--surface);margin-left:-8px}
+.avstack .av:first-child{margin-left:0}
+.avstack .more{margin-left:6px;font-size:12.5px;font-weight:700;color:var(--text-sec)}
+
+/* ---------- Event card ---------- */
+.ev{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column}
+.ev:hover{border-color:var(--line-strong)}
+.ev-cover{position:relative;aspect-ratio:16/8;display:flex;align-items:center;justify-content:center;font-size:44px}
+.ev-cover .tag{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.ev-cover .save{position:absolute;right:10px;top:10px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--shadow-2)}
+.ev-cover .save.on{color:var(--danger)}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.94);color:var(--text)}
+.pill.src{background:var(--info-subtle);color:var(--info-text)}
+.pill.going{background:var(--success);color:#fff}
+.pill.wait{background:var(--warning);color:#fff}
+.pill.full{background:var(--text);color:#fff}
+.pill.cancel{background:var(--danger);color:#fff}
+.ev-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.ev-when{font-size:12.5px;font-weight:700;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.02em}
+.ev-title{font-size:17px;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev-meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;color:var(--text-sec)}
+.ev-host{display:flex;align-items:center;gap:8px;font-size:13px;min-width:0}
+.ev-host b{white-space:nowrap}
+.ev-foot{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:auto;padding-top:10px;border-top:1px solid var(--line)}
+.ev.row{flex-direction:row}
+.ev.row .ev-cover{width:180px;aspect-ratio:auto;flex:0 0 auto;font-size:36px}
+.cap{font-size:13px;font-weight:700;color:var(--text)}
+.cap.low{color:var(--warning-text)}
+.cap.full{color:var(--danger-text)}
+.cap-bar{height:6px;border-radius:999px;background:var(--sunken);overflow:hidden;margin-top:4px}
+.cap-bar i{display:block;height:100%;background:var(--success)}
+.cap-bar.low i{background:var(--warning)}
+.cap-bar.full i{background:var(--danger)}
+.dgh{position:sticky;top:150px;z-index:5;background:var(--bg);padding:10px 0 8px;font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--text-mut);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.dgh:after{content:'';flex:1;height:1px;background:var(--line)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.wrap{flex-wrap:wrap}
+.muted{color:var(--text-mut)}
+.sec{color:var(--text-sec)}
+.h1{font-size:26px;font-weight:800;letter-spacing:-.3px}
+.h2{font-size:20px;font-weight:700}
+.h3{font-size:16px;font-weight:700}
+.small{font-size:13px}
+.xs{font-size:12px}
+
+/* ---------- Surfaces ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.note{border-radius:var(--r-md);padding:10px 14px;font-size:13px;display:flex;gap:9px;align-items:flex-start;font-weight:600}
+.note.info{background:var(--info-subtle);color:var(--info-text)}
+.note.warn{background:var(--warning-subtle);color:var(--warning-text)}
+.note.danger{background:var(--danger-subtle);color:var(--danger-text)}
+.note.ok{background:var(--success-subtle);color:var(--success-text)}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.kv dt{color:var(--text-mut)}
+
+/* ---------- Forms ---------- */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .lbl{font-size:13px;font-weight:700;color:var(--text-sec)}
+.field input,.field select,.field textarea{border:1px solid var(--line-strong);border-radius:var(--r-md);padding:10px 12px;min-height:44px;background:var(--surface);width:100%}
+.field textarea{min-height:110px;resize:vertical}
+.field .hint{font-size:12px;color:var(--text-mut)}
+.field.err input{border-color:var(--danger)}
+.field .errt{font-size:12px;color:var(--danger-text);font-weight:600}
+.check{display:flex;gap:10px;align-items:center;font-size:14px;min-height:40px}
+.check input{width:18px;height:18px;accent-color:var(--brand-dark)}
+.switch{position:relative;width:44px;height:26px;border-radius:999px;background:var(--line-strong);flex:0 0 auto;transition:.15s}
+.switch:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:.15s}
+.switch.on{background:var(--brand-dark)}
+.switch.on:after{left:21px}
+
+/* ---------- Table ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-mut);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:hover td{background:var(--bg)}
+
+/* ---------- Empty state ---------- */
+.empty{text-align:center;padding:48px 24px;background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--r-lg)}
+.empty .ico{font-size:40px;margin-bottom:10px}
+.empty h3{font-size:18px;margin-bottom:6px}
+.empty p{color:var(--text-sec);max-width:440px;margin:0 auto 16px;font-size:14px}
+.empty .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ---------- Dialog / drawer / toast ---------- */
+.scrim{position:fixed;inset:0;background:rgba(15,23,42,.46);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow-3);width:100%;max-width:460px;max-height:calc(100vh - 32px);overflow-y:auto}
+.dlg.wide{max-width:640px}
+.dlg-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.dlg-h h3{font-size:17px}
+.dlg-b{padding:18px 20px}
+.dlg-f{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line)}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(360px,100vw);background:var(--surface);box-shadow:var(--shadow-3);z-index:101;overflow-y:auto}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--text);color:#fff;border-radius:var(--r-md);padding:12px 16px;font-size:14px;font-weight:600;z-index:130;box-shadow:var(--shadow-3);display:flex;gap:14px;align-items:center;max-width:calc(100vw - 32px)}
+.toast button{color:#7DD3FC;font-weight:800}
+@media (max-width:767px){.toast{bottom:84px}}
+
+/* ---------- Screens ---------- */
+.scr{display:none}
+.scr.show{display:block}
+</style>
+<style>
+/* ===== Screen-specific: swipe (doc 14 §7–§8, PA B+) ===== */
+.kbd{display:inline-block;border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:11.5px;font-weight:700;color:var(--text-sec);background:var(--surface);line-height:1.6}
+
+/* ---------- Deck (M-18 / W-18) ---------- */
+.dk-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.dk-head{width:100%;display:flex;align-items:center;gap:10px}
+.dk-head .ttl{flex:1;min-width:0;text-align:center}
+.dk-head .ttl b{display:block;font-size:17px}
+.dk-head .ttl span{font-size:12.5px;color:var(--text-mut)}
+.dk-progress{width:100%;display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:var(--text-sec)}
+.dk-progress .bar{flex:1;height:5px;background:var(--sunken);border-radius:999px;overflow:hidden}
+.dk-progress .bar i{display:block;height:100%;background:var(--brand-dark);transition:width .2s}
+.dk-stage{position:relative;width:min(360px,100%);height:540px;touch-action:none;user-select:none;-webkit-user-select:none}
+.dk-card{position:absolute;inset:0;background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow-3);overflow:hidden;display:flex;flex-direction:column;will-change:transform}
+.dk-card.top{cursor:grab}
+.dk-card.top.drag{cursor:grabbing}
+.dk-card.anim{transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.dk-card.back1{transform:translateY(12px) scale(.94);box-shadow:var(--shadow-2)}
+.dk-card.back2{transform:translateY(24px) scale(.88);box-shadow:none}
+.dk-cover{height:236px;position:relative;display:flex;align-items:center;justify-content:center;font-size:76px;flex:0 0 auto}
+.dk-cover .tag{position:absolute;left:12px;top:12px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 70px)}
+.dk-cover .heart{position:absolute;right:12px;top:12px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:var(--shadow-2)}
+.dk-cover .heart.on{color:var(--danger)}
+.dk-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:9px;flex:1;min-height:0}
+.dk-when{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;font-weight:700;color:var(--brand-dark)}
+.dk-when .rel{background:var(--accent-subtle);border-radius:999px;padding:2px 9px;font-size:12px}
+.dk-title{font-size:21px;font-weight:800;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dk-line{display:flex;gap:6px 12px;align-items:center;font-size:13.5px;color:var(--text-sec);flex-wrap:wrap}
+.dk-cap{display:flex;flex-direction:column;gap:2px}
+.dk-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid var(--line)}
+.dk-foot .ev-host{flex:1;min-width:0;overflow:hidden}
+.dk-foot .ev-host .tb,.dk-foot .pill{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.dk-foot>b{white-space:nowrap;flex:0 0 auto}
+.dk-stamp{position:absolute;top:30px;padding:6px 14px;border:3px solid;border-radius:12px;font-size:24px;font-weight:900;letter-spacing:.04em;opacity:0;pointer-events:none;background:rgba(255,255,255,.92);z-index:3;white-space:nowrap}
+.dk-stamp.save{left:18px;color:var(--success-text);border-color:var(--success);transform:rotate(-10deg)}
+.dk-stamp.skip{right:18px;color:var(--text-sec);border-color:var(--text-sec);transform:rotate(10deg)}
+.dk-stamp.join{left:50%;top:150px;transform:translateX(-50%);color:var(--brand-dark);border-color:var(--brand-dark)}
+.dk-actions{display:flex;gap:14px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
+.dk-act{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-sec);min-width:64px}
+.dk-act .o{width:60px;height:60px;border-radius:50%;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-2);display:flex;align-items:center;justify-content:center;font-size:24px;transition:transform .12s}
+.dk-act:hover .o{transform:scale(1.06)}
+.dk-act.sm .o{width:48px;height:48px;font-size:19px}
+.dk-act.save .o{color:var(--success-text);border-color:color-mix(in srgb,var(--success) 45%,transparent)}
+.dk-act.join .o{color:var(--brand-dark);border-color:color-mix(in srgb,var(--brand) 45%,transparent)}
+.dk-act:disabled{opacity:.38;cursor:not-allowed}
+.dk-act:disabled .o{transform:none}
+.dk-hint{font-size:12.5px;color:var(--text-mut);display:flex;gap:6px 12px;flex-wrap:wrap;justify-content:center;align-items:center}
+.dk-sum{width:100%;display:flex;flex-direction:column;gap:14px}
+.dk-sumrow{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:8px}
+.dk-sumrow .th{width:64px;height:64px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:28px;flex:0 0 auto}
+.dk-sumrow .mid{flex:1;min-width:0}
+.dk-sumrow .mid b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dk-sumrow.clash{border-color:var(--warning);box-shadow:inset 3px 0 0 var(--warning)}
+
+/* ---------- Inline swipe rows (PA B, doc 14 §1.2 + §2) ---------- */
+.ln-coach{display:flex;align-items:center;gap:10px;background:var(--text);color:#fff;border-radius:999px;padding:6px 6px 6px 14px;font-size:13px;font-weight:600;width:max-content;max-width:100%}
+.ln-coach button{background:#fff;color:var(--text);border-radius:999px;padding:6px 12px;font-weight:700;font-size:12.5px;min-height:32px}
+.ln-list{display:flex;flex-direction:column;gap:10px}
+.ln-row{position:relative;height:108px;border-radius:var(--r-lg);overflow:hidden;background:var(--sunken);transition:height .2s ease-out,opacity .2s ease-out,margin .2s ease-out;flex:0 0 auto}
+.ln-row.gone{height:0;opacity:0;margin-top:-10px}
+.ln-rail{position:absolute;top:0;bottom:0;display:flex}
+.ln-rail.l{left:0}
+.ln-rail.r{right:0}
+.ln-rail button{width:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12.5px;font-weight:700}
+.ln-rail button .i{font-size:20px}
+.ln-rail.l button{width:88px;background:var(--brand-dark);color:#fff}
+.ln-rail .share{background:var(--info-text);color:#fff}
+.ln-rail .skip{background:var(--line);color:var(--text)}
+.ln-rail .lbl{transition:opacity .1s}
+.ln-fg{position:absolute;inset:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);display:flex;gap:12px;padding:5px;align-items:center;touch-action:pan-y;cursor:pointer;transition:transform .28s cubic-bezier(.2,.8,.2,1);user-select:none;-webkit-user-select:none}
+.ln-fg.drag{transition:none;cursor:grabbing}
+.ln-row.kfocus .ln-fg,.ln-fg:focus-visible{outline:2px solid var(--brand-dark);outline-offset:-2px}
+.ln-thumb{width:96px;height:96px;border-radius:var(--r-md);flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative}
+.ln-thumb .src{position:absolute;left:4px;bottom:4px;font-size:10px;padding:1px 6px}
+.ln-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ln-title{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ln-sub{font-size:12.5px;color:var(--text-sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ln-sub b{color:var(--brand-dark)}
+.ln-cap{display:flex;align-items:center;gap:8px;font-size:12.5px;min-width:0}
+.ln-cap .cap-bar{flex:0 0 70px;margin:0}
+.ln-cap .cap{font-size:12.5px;white-space:nowrap}
+.ln-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-mut);white-space:nowrap;overflow:hidden;min-width:0}
+.ln-meta .tb{font-size:10.5px;padding:1px 7px}
+.ln-side{display:flex;flex-direction:column;gap:8px;align-items:center;flex:0 0 auto}
+.ln-side .icon-btn{width:44px;height:44px;font-size:17px}
+.ln-side .icon-btn.on{color:var(--danger)}
+.ln-entry{display:flex;align-items:center;gap:14px;border-radius:var(--r-lg);padding:14px 16px;background:linear-gradient(120deg,var(--accent-subtle),#EEF2FF);border:1px solid color-mix(in srgb,var(--brand) 30%,transparent);width:100%;text-align:left}
+.ln-entry .stack3{position:relative;width:54px;height:62px;flex:0 0 auto}
+.ln-entry .stack3 i{position:absolute;inset:0;border-radius:10px;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-style:normal;box-shadow:var(--shadow-2)}
+.ln-entry .stack3 i:nth-child(1){transform:rotate(-10deg) translateX(-6px)}
+.ln-entry .stack3 i:nth-child(2){transform:rotate(6deg) translateX(6px)}
+.ln-entry b{display:block;font-size:15px}
+.ln-entry span{font-size:13.5px;color:var(--brand-dark);font-weight:700}
+.sw-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--text);color:#fff;border-radius:var(--r-md);font-size:14px;font-weight:600;z-index:130;box-shadow:var(--shadow-3);max-width:calc(100vw - 32px);overflow:hidden}
+.sw-toast .in{display:flex;gap:16px;align-items:center;padding:10px 10px 10px 16px}
+.sw-toast button{color:#7DD3FC;font-weight:800;min-height:44px;padding:0 10px}
+.sw-toast .cd{height:3px;background:#7DD3FC;transform-origin:left;animation:swcd 6s linear forwards}
+@keyframes swcd{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@media (max-width:767px){.sw-toast{bottom:84px}.dk-stage{height:500px}.dk-cover{height:200px}}
+@media (prefers-reduced-motion:reduce){
+  .dk-card.anim,.ln-fg,.ln-row,.dk-progress .bar i{transition:none !important}
+  .sw-toast .cd{animation:none;display:none}
+}
+/* Doc 10 §12.3: never fully uppercase Vietnamese with diacritics — stacked marks collide on some devices. */
+html[lang="vi"] *{text-transform:none !important}
+.rt{color:#B45309;font-weight:700}
+.rt .muted{font-weight:500}
+.rt.new{color:var(--brand-dark)}
+.cm{color:var(--text-sec)}
+</style>
+</head>
+<body>
+
+<div class="mk-banner"><strong>MOCKUP TĨNH</strong> · chưa nối API · giờ hiển thị theo Asia/Ho_Chi_Minh (dữ liệu thật lưu UTC) · hôm nay giả lập: Thứ Sáu 18/09/2026</div>
+<nav class="mk-files" data-i18n-aria="aria.files">
+  <span class="lbl">Bộ mockup web:</span>
+  <a href="auth-onboarding-web-mockup.html" data-file="auth">① Auth &amp; onboarding</a>
+  <a href="web-discover-mockup.html" data-file="discover">② Feed &amp; Discover</a>
+  <a href="web-event-mockup.html" data-file="event">③ Event &amp; Create</a>
+  <a href="web-myspace-mockup.html" data-file="myspace">④ My space &amp; Profile</a>
+  <a href="web-swipe-mockup.html" data-file="swipe">⑤ Swipe (Tinder-style)</a>
+</nav>
+<div class="mk-toolbar">
+  <div class="mk-scrchips" id="mkChips" role="tablist" data-i18n-aria="aria.screens"></div>
+  <div class="mk-toolright">
+    <div class="seg-lang" role="group" data-i18n-aria="aria.language">
+      <button data-lang="en" class="on">EN</button><button data-lang="vi">VI</button>
+    </div>
+    <button class="mk-notesbtn" id="mkNotesBtn">📝 Notes</button>
+  </div>
+</div>
+
+<aside class="mk-notes" id="mkNotes" data-i18n-aria="aria.notes">
+  <header><h3 id="mkNotesTitle">Ghi chú</h3><button class="icon-btn" id="mkNotesClose" data-i18n-aria="sw.close">✕</button></header>
+  <div class="body" id="mkNotesBody"></div>
+</aside>
+
+<!-- ================= APP SHELL (one instance, screens swap inside .app-main) ================= -->
+<div class="app" id="app">
+  <aside class="app-side" data-i18n-aria="aria.primaryNav">
+    <a class="app-logo" href="#"><i></i><span>Da Nang Connect</span></a>
+    <button class="nav-item" data-nav="home"><span class="ic">🏠</span><span class="lbl" data-i18n="nav.home"></span></button>
+    <button class="nav-item" data-nav="discover"><span class="ic">🧭</span><span class="lbl" data-i18n="nav.discover"></span></button>
+    <button class="nav-item" data-nav="myevents"><span class="ic">📅</span><span class="lbl" data-i18n="nav.myEvents"></span></button>
+    <button class="nav-item" data-nav="notifications"><span class="ic">🔔</span><span class="lbl" data-i18n="nav.notifications"></span><span class="cnt me-only">3</span></button>
+    <button class="nav-item" data-nav="profile"><span class="ic">👤</span><span class="lbl" data-i18n="nav.profile"></span></button>
+    <div class="app-create"><button class="btn btn-primary btn-block" data-go-create><span>＋</span><span class="lbl" data-i18n="nav.createEvent"></span></button></div>
+    <div class="app-sidefoot">
+      <div class="seg-lang" role="group" data-i18n-aria="aria.language"><button data-lang="en" class="on">EN</button><button data-lang="vi">VI</button></div>
+      <div class="app-me me-only"><span class="av sm" style="background:#7C3AED">AL</span><span class="meta"><b>Alex Morgan</b><span class="tb t1" data-tb="1"></span></span></div>
+      <button class="btn btn-outline btn-block guest-only"><span data-i18n="nav.signIn"></span></button>
+    </div>
+  </aside>
+
+  <div class="app-col">
+    <header class="app-top">
+      <label class="app-search"><span aria-hidden="true">🔍</span><input data-i18n-ph="top.search" data-i18n-aria="aria.search"></label>
+      <div class="app-topright">
+        <button class="icon-btn me-only" data-i18n-aria="nav.notifications">🔔<span class="dot">3</span></button>
+        <button class="btn btn-primary btn-sm guest-only"><span data-i18n="nav.signIn"></span></button>
+      </div>
+    </header>
+    <div class="app-body">
+      <main class="app-main" id="appMain">
+        <!-- =============== SCREENS GO HERE =============== -->
+        <!-- ============ DECK (W-18 / M-18) ============ -->
+        <section class="scr" data-screen="deck" data-code="W-18 · M-18" data-title="Discovery Deck — Plan your week" data-nav="discover" data-layout="norail">
+          <div class="dk-wrap" id="deckMount"></div>
+          <template class="notes">
+            <h4>Đây là gì</h4>
+            <ul>
+              <li>Deck kiểu Tinder theo <b>PA B+</b> đã chốt ở doc 14 §8.1.5 và §8.2.8: <b>không phải tab</b>, không phải màn Discover mặc định. Người dùng mở nó <b>có chủ đích</b> từ thẻ điểm vào trong feed (xem màn <code>inline</code>).</li>
+              <li>Tối đa <b>12 thẻ</b>, có điểm dừng và màn tổng kết. Deck hữu hạn nên nó là công cụ lên kế hoạch, không phải máy lướt vô hạn.</li>
+              <li>Mã màn mới <code>M-18</code> (mobile) và <code>W-18</code> (web) chưa có trong sitemap doc 10. Phải bổ sung vào dải 10–19.</li>
+            </ul>
+            <h4>Quyết định chủ dự án 19/09/2026</h4>
+            <ul>
+              <li><b>Swipe là một chế độ riêng trong Discover</b>, dành cho người chưa biết mình muốn gì. Vào từ nút <b>🃏 Swipe</b> hoặc thẻ "Not sure what you want?" ở Discover.</li>
+              <li>Deck chỉ lấy <b>sự kiện do thành viên đăng</b> (UGC). Sự kiện do staff curate nằm ở Trang chủ, không vào deck.</li>
+              <li>Nhấn vào sự kiện ở bất kỳ danh sách nào vẫn mở <b>trang chi tiết</b> (có reviews + bình luận). Trong deck, chạm vào thẻ mở xem nhanh, rồi "Open full page".</li>
+              <li>Mỗi thẻ hiện ★ điểm host (từ review của người đã check-in, UC-16) và 💬 số bình luận.</li>
+            </ul>
+            <div class="drift">Còn lệch doc 14 §1.5: doc khoá deck sau cổng G1 (≥ 40 sự kiện mở/7 ngày) + G2 (≥ 12 thẻ hợp lệ/người), sớm nhất M4–M5. Chủ dự án muốn có swipe trong Discover — cần chốt: bật ngay từ MVP hay giữ cổng (dưới cổng thì ẩn điểm vào).</div>
+            <h4>Cử chỉ và phím tắt (có nút tương đương cho mọi cử chỉ)</h4>
+            <ul>
+              <li>Kéo phải (≥ 28% chiều rộng, hoặc vận tốc ≥ 800 dp/s): <b>Lưu</b>, ghi vào <code>saved_occurrences</code> qua <code>POST /occurrences/{id}/save</code> (UC-35). <b>Không phải RSVP.</b></li>
+              <li>Kéo trái: <b>Bỏ qua</b>, hạ thứ hạng 72 giờ nhưng không xoá. Sự kiện vẫn nằm trong feed và vẫn tìm được.</li>
+              <li>Kéo lên (≥ 22% chiều cao): mở sheet xác nhận RSVP <code>M-21</code>. Không bao giờ tự chốt RSVP, giữ đúng ngân sách 2 chạm của Q-06.</li>
+              <li>Chạm vào thẻ: xem nhanh chi tiết. Nút <b>↺ Hoàn tác</b> khôi phục đúng 1 thẻ vừa xử lý, rồi bị vô hiệu cho tới lần xử lý kế tiếp.</li>
+              <li>Web: <span class="kbd">←</span> bỏ qua · <span class="kbd">→</span> lưu · <span class="kbd">↑</span> tham gia · <span class="kbd">U</span> hoàn tác · <span class="kbd">Enter</span> chi tiết.</li>
+              <li>Thẻ xoay tối đa ±8°, tâm xoay theo điểm nắm (nắm nửa dưới thì chiều xoay đảo). Bay ra trong 220 ms. Khi bật <code>prefers-reduced-motion</code> thì không có animation.</li>
+            </ul>
+            <h4>Thông tin bắt buộc trên thẻ (doc 14 §2.1)</h4>
+            <ul><li>Giờ bắt đầu + thời gian còn lại · khu vực + khoảng cách · số chỗ tuyệt đối · giá (<i>Free</i> là chữ) · ngôn ngữ · host + bậc trust. Không hiện địa chỉ chính xác, danh sách người tham dự hay <code>moderation_state</code>.</li></ul>
+            <h4>Cổng bật (phải đạt cả hai, đo liên tục 3 tuần)</h4>
+            <ul>
+              <li>G1: ≥ 40 occurrence mở trong 7 ngày tới, không khu vực MVP nào dưới 4.</li>
+              <li>G2: trung vị ≥ 12 thẻ hợp lệ trên mỗi người dùng sau khi lọc <code>dismissed + saved + rsvp</code>.</li>
+              <li>Dưới ngưỡng thì <b>không render điểm vào</b>. Doc 14 ước tính sớm nhất là M4–M5.</li>
+            </ul>
+            <div class="drift">Lệch phạm vi: doc 14 §7 kết luận <b>không</b> dùng deck làm màn khám phá chính, và deck bị khoá sau cổng G1+G2 (Đợt 2, sau M6). Deck cần ranking cá nhân hoá, trong khi UC-36 đang là <code>Won't</code> (MT-S2), và cần bảng hành vi <code>feed_signals</code> phải khai mục đích xử lý theo Luật 91/2025 (MT-S3). Mockup này để duyệt thiết kế, <b>không</b> có nghĩa là đưa vào MVP.</div>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="deck-rsvp" data-code="M-21" data-title="Deck — swipe up opens RSVP confirm" data-nav="discover" data-layout="norail">
+          <div class="dk-wrap" id="deckMount2"></div>
+          <template class="notes">
+            <h4>Kéo lên = mở sheet xác nhận, không tự đăng ký</h4>
+            <ul>
+              <li>Kéo lên hoặc bấm <b>Tham gia</b> chỉ mở sheet <code>M-21</code>. RSVP chỉ xảy ra khi bấm <b>Xác nhận đăng ký</b>: 1 cử chỉ + 1 xác nhận = đúng 2 chạm (Q-06).</li>
+              <li>Doc 14 §2.5 bắt buộc có sheet xác nhận với: sự kiện có phí, sự kiện ≤ 10 chỗ (cổng T2), sự kiện bắt đầu trong &lt; 2 giờ (huỷ sau đó là <code>late_cancel</code>, BR-10), nhà riêng hoặc 18+, nhận lời mời từ hàng chờ, và báo cáo vi phạm.</li>
+              <li>Màn này mở sẵn trên <i>Salsa Social Night</i> (có phí). Kéo lên thẻ <i>Beginner Surf Session</i> (8 chỗ, cần T2) hoặc <i>Language Exchange</i> (đã đầy) để xem các biến thể khác của sheet.</li>
+              <li>Endpoint: <code>POST /api/v1/events/:id/rsvp</code> kèm <code>Idempotency-Key</code> (BR-23).</li>
+            </ul>
+            <div class="drift">R-never (doc 14 §7 phần 4): vuốt phải = RSVP trực tiếp là <b>cấm</b>, vì làm tăng no-show. Chỉ cần no-show tăng quá 10,8 điểm phần trăm là toàn bộ phần RSVP tăng thêm do swipe bị xoá sạch.</div>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="deck-summary" data-code="W-18" data-title="Deck — weekend plan summary" data-nav="discover" data-layout="norail">
+          <div class="dk-wrap" id="deckMount3"></div>
+          <template class="notes">
+            <h4>Màn tổng kết: giá trị thật của deck</h4>
+            <ul>
+              <li>Doc 14 R2: điểm dừng biến deck thành công cụ lên kế hoạch. Màn này hiện các sự kiện đã lưu, <b>cảnh báo trùng giờ</b>, thêm tất cả vào lịch (.ics) và chia sẻ kế hoạch.</li>
+              <li>Ví dụ trùng giờ: <i>Vietnamese ⇄ English Language Exchange</i> (tối nay 19:00–21:00) chồng lên <i>Pub Quiz Night</i> (20:00–22:30).</li>
+              <li>Các thẻ đã bỏ qua không mất: vẫn nằm trong Discover, ẩn 72 giờ, và <b>Hiện lại</b> được ngay tại đây.</li>
+              <li>Mỗi dòng có nút <b>Đăng ký</b> riêng, mở cùng sheet xác nhận <code>M-21</code>.</li>
+            </ul>
+            <h4>Cấm tuyệt đối (R-never)</h4>
+            <ul><li>Giới hạn lượt vuốt mỗi ngày · undo trả phí · streak / điểm danh · deck tự phát vô hạn · ép đăng nhập hoặc cài app sau N thẻ · lọc bỏ sự kiện đã đầy (sự kiện đầy vẫn phải hiện để vào waitlist).</li></ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="deck-empty" data-code="W-18" data-title="Deck — exhausted" data-nav="discover" data-layout="norail">
+          <div class="dk-wrap">
+            <div class="empty" style="width:100%">
+              <div class="ico">🎉</div>
+              <h3 data-i18n="sw.emptyTitle"></h3>
+              <p data-i18n="sw.emptyBody"></p>
+              <div class="acts">
+                <button class="btn btn-primary" data-i18n="sw.emptyNext"></button>
+                <button class="btn btn-outline" data-i18n="sw.emptyRadius"></button>
+                <button class="btn btn-ghost" data-go-create data-i18n="sw.emptyHost"></button>
+              </div>
+            </div>
+            <div style="width:100%" class="stack">
+              <div class="dgh" style="position:static" data-i18n="sw.emptyAlso"></div>
+              <div class="stack" id="deckEmptyAlso"></div>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>Hết thẻ (doc 14 §2.4)</h4>
+            <ul>
+              <li>Khoá i18n <code>discover.deck.empty.exhausted</code>. CTA chính <b>Xem tuần sau</b>, CTA phụ <b>Mở rộng bán kính 5 km</b>, CTA thứ ba <b>Tổ chức một hoạt động</b>.</li>
+              <li>Kèm 3 sự kiện gợi ý ngay bên dưới. Theo E-6, có nội dung thay thế thì ưu tiên hơn empty state trống.</li>
+              <li>Trường hợp kho không đủ thẻ ngay từ đầu thì <b>không có màn nào cả</b>: điểm vào deck không được render (<code>discover.deck.empty.tooFew</code> chỉ dùng khi kho tụt giữa phiên).</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- ============ INLINE SWIPE (PA B — MVP) ============ -->
+        <section class="scr" data-screen="inline" data-code="W-10 · PA B" data-title="Swipe trong dòng — feed danh sách" data-nav="discover" data-layout="feed">
+          <div class="stack" id="inlineMount"></div>
+          <template class="notes">
+            <h4>PA B — phương án swipe đưa vào MVP (doc 14 §8.1.2, §8.2)</h4>
+            <ul>
+              <li>Feed danh sách giữ nguyên thứ tự theo giờ (không vi phạm UC-36 <code>Won't</code>). Mỗi hàng cao cố định <b>108 dp</b> để ảo hoá danh sách.</li>
+              <li>Kéo phải: lộ rail <b>Lưu</b> (nghỉ ở 88 dp). Kéo hết (≥ 45% chiều rộng, hoặc |vx| ≥ 1200 dp/s) thì chốt Lưu ngay.</li>
+              <li>Kéo trái: lộ <b>Chia sẻ</b> + <b>Bỏ qua</b> (nghỉ ở 152 dp). Kéo hết thì chốt Bỏ qua: hàng sập trong 200 ms, kèm toast hoàn tác 6 giây.</li>
+              <li>Chạm hàng khi rail đang mở chỉ <b>đóng rail</b>, không mở chi tiết (chống nhầm). Mỗi lúc chỉ mở một rail. Cuộn dọc luôn thắng cử chỉ ngang.</li>
+              <li>Vuốt liên tiếp gộp vào <b>một toast</b> ("Đã ẩn 3 hoạt động"). Hoàn tác khôi phục cả nhóm.</li>
+              <li>Nút <b>♡</b> và <b>⋯</b> luôn hiện: đây là đường chính cho người dùng screen reader. Menu ⋯ gồm Lưu · Chia sẻ · Không dành cho tôi · Báo cáo.</li>
+              <li>Phím tắt web: <span class="kbd">J</span>/<span class="kbd">K</span> di chuyển · <span class="kbd">S</span> lưu · <span class="kbd">X</span> bỏ qua · <span class="kbd">Enter</span> mở · <span class="kbd">U</span> hoàn tác · <span class="kbd">?</span> bảng phím tắt.</li>
+              <li>Mockup cho kéo bằng chuột để demo. Doc 14 R1 ghi web desktop <b>giữ nút</b>, cử chỉ chỉ bật trên màn hình cảm ứng.</li>
+            </ul>
+            <h4>Dữ liệu và hợp đồng</h4>
+            <ul>
+              <li>Lưu: <code>POST /occurrences/{id}/save</code> (UC-35 <code>Must</code>, đã có trong đặc tả).</li>
+              <li>Bỏ qua: bảng mới <code>occurrence_dismissals(user_id, occurrence_id, dismissed_at, expires_at, source)</code>, hết hạn sau 14 ngày. Nếu host đổi giờ, địa điểm hoặc giá (BR-12) thì lệnh ẩn bị vô hiệu và sự kiện quay lại kèm dải "Đã cập nhật". Ghi server trễ 900 ms: hoàn tác trong 900 ms thì không có request nào.</li>
+              <li>Khoá i18n mới: <code>discover.feed.swipe.coach.*</code>, <code>.saved</code>, <code>.dismissed</code>, <code>.dismissedMany</code>, <code>.queuedOffline</code>, <code>.rejected</code>.</li>
+            </ul>
+            <div class="drift">Chi phí PA B khoảng 11 ngày-người: Mobile 3 · Web cảm ứng 2,5 · BE 3 · QA 2 · Design 0,5. Cần thêm <code>react-native-gesture-handler</code> + <code>reanimated</code> (hiện 0 dependency cử chỉ trong repo). Canon doc 10 chưa có swipe (MT-S1): phải bổ sung dòng chuyển động vào §12.7 và kịch bản a11y thứ 5 vào §14.2.</div>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="inline-open" data-code="W-10 · PA B" data-title="Swipe trong dòng — rail đang mở" data-nav="discover" data-layout="feed">
+          <div class="stack" id="inlineMount2"></div>
+          <template class="notes">
+            <h4>Trạng thái rail đang mở</h4>
+            <ul>
+              <li>Hàng thứ nhất đang mở rail phải (<b>Lưu</b>, 88 dp). Hàng thứ ba đang mở rail trái (<b>Chia sẻ</b> + <b>Bỏ qua</b>, 152 dp) để minh hoạ cả hai phía cùng lúc. Trong app thật chỉ một rail được mở tại một thời điểm.</li>
+              <li>Rail che phần ưu tiên thấp nhất (ảnh bìa, cột nút). Không bao giờ che dòng thời gian/khu vực hay dòng sức chứa.</li>
+              <li><b>Bỏ qua</b> dùng nền xám trung tính, không dùng đỏ: đỏ chỉ dành cho Báo cáo và Huỷ sự kiện (doc 14 §2.7).</li>
+              <li>Màn hình hẹp hơn 360 dp: rail trái chỉ còn nút Bỏ qua, Chia sẻ lui vào menu ⋯.</li>
+            </ul>
+          </template>
+        </section>
+
+        <section class="scr" data-screen="inline-hidden" data-code="W-10 · PA B" data-title="Swipe trong dòng — đã ẩn hết" data-nav="discover" data-layout="feed">
+          <div class="stack">
+            <h1 class="h1" data-i18n="home.title"></h1>
+            <div class="empty">
+              <div class="ico">🙈</div>
+              <h3 data-i18n="sw.allHiddenTitle"></h3>
+              <p data-i18n="sw.allHiddenBody"></p>
+              <div class="acts">
+                <button class="btn btn-primary" data-go="inline" data-i18n="sw.unhideAll"></button>
+                <button class="btn btn-outline" data-i18n="sw.loosen"></button>
+              </div>
+            </div>
+          </div>
+          <template class="notes">
+            <h4>Ẩn hết feed (doc 14 §2.4)</h4>
+            <ul>
+              <li>Empty state mới <code>discover.feed.empty.allDismissed</code>: CTA chính <b>Bỏ ẩn tất cả</b>, CTA phụ <b>Nới lỏng bộ lọc</b>.</li>
+              <li>Mục đã ẩn đảo lại được bất cứ lúc nào ở màn <b>Đã ẩn</b> trong Cài đặt (<code>M-62</code> / <code>W-62</code>).</li>
+            </ul>
+          </template>
+        </section>
+        <!-- =============== END SCREENS =============== -->
+      </main>
+      <aside class="app-rail" id="appRail">
+        <div class="rail-card">
+          <h3 data-i18n="rail.upcoming"></h3>
+          <div id="railUpcoming"></div>
+        </div>
+        <div class="rail-card">
+          <h3 data-i18n="rail.areas"></h3>
+          <div class="chips wrap" style="flex-wrap:wrap" id="railAreas"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <nav class="app-tabs" data-i18n-aria="aria.bottomNav">
+    <button data-nav="home"><span class="ic">🏠</span><span data-i18n="nav.home"></span></button>
+    <button data-nav="discover"><span class="ic">🧭</span><span data-i18n="nav.discover"></span></button>
+    <button class="fab" data-go-create data-i18n-aria="nav.createEvent">＋</button>
+    <button data-nav="notifications"><span class="ic">🔔</span><span data-i18n="nav.notifications"></span></button>
+    <button data-nav="profile"><span class="ic">👤</span><span data-i18n="nav.profile"></span></button>
+  </nav>
+</div>
+
+<!-- ===== Swipe overlays (outside the shell so they sit above everything) ===== -->
+<div class="scrim" id="rsvpSheet" data-overlay hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
+    <div class="dlg-h"><h3 id="rsvpTitle" data-i18n="sw.rsvpTitle"></h3><button class="icon-btn" data-close data-i18n-aria="sw.close">✕</button></div>
+    <div class="dlg-b" id="rsvpBody"></div>
+    <div class="dlg-f" id="rsvpFoot"></div>
+  </div>
+</div>
+<div class="scrim" id="quickView" data-overlay hidden>
+  <div class="dlg wide" role="dialog" aria-modal="true" aria-labelledby="qvTitle">
+    <div id="qvBody"></div>
+  </div>
+</div>
+<div class="scrim" id="moreMenu" data-overlay hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="moreTitle" style="max-width:360px">
+    <div class="dlg-h"><h3 id="moreTitle" data-i18n="sw.more"></h3><button class="icon-btn" data-close data-i18n-aria="sw.close">✕</button></div>
+    <div class="dlg-b stack" id="moreBody" style="gap:6px"></div>
+  </div>
+</div>
+<div class="scrim" id="kbdHelp" data-overlay hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="kbdTitle">
+    <div class="dlg-h"><h3 id="kbdTitle" data-i18n="sw.shortcuts"></h3><button class="icon-btn" data-close data-i18n-aria="sw.close">✕</button></div>
+    <div class="dlg-b">
+      <table class="tbl">
+        <tbody>
+          <tr><td><span class="kbd">J</span> <span class="kbd">K</span> · <span class="kbd">↓</span> <span class="kbd">↑</span></td><td data-i18n="sw.kNext"></td></tr>
+          <tr><td><span class="kbd">S</span></td><td data-i18n="sw.save"></td></tr>
+          <tr><td><span class="kbd">X</span></td><td data-i18n="sw.skip"></td></tr>
+          <tr><td><span class="kbd">Enter</span></td><td data-i18n="sw.kEnter"></td></tr>
+          <tr><td><span class="kbd">U</span></td><td data-i18n="sw.undo"></td></tr>
+          <tr><td><span class="kbd">?</span></td><td data-i18n="sw.kHelp"></td></tr>
+          <tr><td colspan="2" class="xs muted" data-i18n="sw.kDeckTitle" style="padding-top:16px;font-weight:700"></td></tr>
+          <tr><td><span class="kbd">←</span></td><td data-i18n="sw.skip"></td></tr>
+          <tr><td><span class="kbd">→</span></td><td data-i18n="sw.save"></td></tr>
+          <tr><td><span class="kbd">↑</span></td><td data-i18n="sw.join"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   SHARED BASE JS. Copy verbatim, then add screen-specific strings with
+   addI18n({en:{...},vi:{...}}) and screen logic in a second <script>.
+   ===================================================================== */
+const I18N = {
+  en: {
+    'nav.home':'Home','nav.discover':'Discover','nav.myEvents':'My events','nav.notifications':'Notifications','nav.profile':'Profile','nav.createEvent':'Create event','nav.signIn':'Sign in',
+    'top.search':'Search events, people, areas…',
+    'rail.upcoming':'Coming up for you','rail.areas':'Browse by area',
+    'home.title':"What's on in Da Nang",
+    'time.tonight':'Tonight','time.tomorrow':'Tomorrow','time.weekend':'This weekend','time.next7':'Next 7 days',
+    'date.today':'Today · Friday 18 September',
+    'ev.spotsLeft':'{n} of {c} spots left','ev.full':'Full','ev.fullWaiting':'Full · {w} waiting','ev.going':'{n} going','ev.free':'Free','ev.curated':'Listed by Da Nang Connect','ev.hostedBy':'Hosted by {name}',
+    'rsvp.join':'RSVP · {n} spots left','rsvp.waitlist':'Join waitlist · {w} waiting','rsvp.full':'Event is full','rsvp.going':'You are going','rsvp.waiting':'Waiting · #{p}','rsvp.confirm':'Confirm your spot · {h}h left','rsvp.cancelled':'Cancelled','rsvp.review':'Leave a review',
+    'trust.0':'New','trust.1':'Email verified','trust.2':'Phone verified','trust.3':'Active member','trust.4':'Trusted','trust.5':'Community leader','trust.limited':'Limited',
+    'cat.sports':'Sports','cat.language':'Language exchange','cat.social':'Social meetup','cat.food':'Food and drink','cat.wellness':'Wellness','cat.music':'Music and arts','cat.outdoor':'Outdoor','cat.family':'Family','cat.professional':'Professional'
+  },
+  vi: {
+    'nav.home':'Trang chủ','nav.discover':'Khám phá','nav.myEvents':'Sự kiện của tôi','nav.notifications':'Thông báo','nav.profile':'Hồ sơ','nav.createEvent':'Tạo sự kiện','nav.signIn':'Đăng nhập',
+    'top.search':'Tìm sự kiện, người, khu vực…',
+    'rail.upcoming':'Sắp tới của bạn','rail.areas':'Xem theo khu vực',
+    'home.title':'Đà Nẵng có gì',
+    'time.tonight':'Tối nay','time.tomorrow':'Ngày mai','time.weekend':'Cuối tuần này','time.next7':'7 ngày tới',
+    'date.today':'Hôm nay · Thứ Sáu 18 tháng 9',
+    'ev.spotsLeft':'Còn {n}/{c} chỗ','ev.full':'Đã đầy','ev.fullWaiting':'Đã đầy · {w} người chờ','ev.going':'{n} người tham gia','ev.free':'Miễn phí','ev.curated':'Do Da Nang Connect tổng hợp','ev.hostedBy':'Tổ chức bởi {name}',
+    'rsvp.join':'Đăng ký · còn {n} chỗ','rsvp.waitlist':'Vào danh sách chờ · {w} người đang chờ','rsvp.full':'Sự kiện đã đầy','rsvp.going':'Bạn sẽ tham gia','rsvp.waiting':'Đang chờ · #{p}','rsvp.confirm':'Xác nhận chỗ · còn {h} giờ','rsvp.cancelled':'Đã huỷ','rsvp.review':'Viết đánh giá',
+    'trust.0':'Thành viên mới','trust.1':'Đã xác thực email','trust.2':'Đã xác thực số điện thoại','trust.3':'Thành viên tích cực','trust.4':'Đáng tin cậy','trust.5':'Người dẫn dắt cộng đồng','trust.limited':'Đang bị hạn chế',
+    'cat.sports':'Thể thao','cat.language':'Trao đổi ngôn ngữ','cat.social':'Gặp gỡ giao lưu','cat.food':'Ẩm thực','cat.wellness':'Sức khoẻ và thư giãn','cat.music':'Âm nhạc và nghệ thuật','cat.outdoor':'Ngoài trời','cat.family':'Gia đình','cat.professional':'Nghề nghiệp'
+  }
+};
+function addI18n(extra){ for (const l of ['en','vi']) Object.assign(I18N[l], extra[l] || {}); }
+let LANG = 'en';
+function t(key, vars){ let s = (I18N[LANG] && I18N[LANG][key]) ?? I18N.en[key] ?? key; if (vars) for (const [k,v] of Object.entries(vars)) s = s.replaceAll('{'+k+'}', v); return s; }
+
+/* Doc 10 §13.6: EN shows names WITHOUT diacritics, VI shows full diacritics. */
+const AREAS = {
+  'an-thuong':{en:'An Thuong',vi:'An Thượng',count:12},
+  'my-khe':{en:'My Khe Beach',vi:'Biển Mỹ Khê',count:6},
+  'my-an':{en:'My An',vi:'Mỹ An',count:8},
+  'hai-chau':{en:'Hai Chau',vi:'Hải Châu',count:4},
+  'son-tra':{en:'Son Tra',vi:'Sơn Trà',count:3},
+  'ngu-hanh-son':{en:'Ngu Hanh Son',vi:'Ngũ Hành Sơn',count:2}
+};
+function area(slug){ const a = AREAS[slug]; return a ? a[LANG] : slug; }
+
+/* Shared sample data — use these ids everywhere so the set stays consistent.
+   Titles/descriptions are user content: NOT translated (doc 10 §13.9). */
+const EVENTS = [
+  {id:'volley', title:'Sunset Beach Volleyball', cat:'sports', emoji:'🏐', grad:'linear-gradient(135deg,#BAE6FD,#0EA5E9)', area:'my-khe', when:{en:'Sat 19 Sep · 17:00',vi:'T7, 19/09 · 17:00'}, day:'sat', cap:20, going:13, waiting:0, waitlist:true, price:0, host:{name:'Tom R.',ini:'TR',color:'#0369A1',trust:3,hosted:14}, langs:['EN'], curated:false},
+  {id:'lx', title:'Vietnamese ⇄ English Language Exchange', cat:'language', emoji:'🗣️', grad:'linear-gradient(135deg,#FDE68A,#F59E0B)', area:'an-thuong', when:{en:'Tonight · 19:00',vi:'Tối nay · 19:00'}, day:'today', cap:30, going:30, waiting:4, waitlist:true, price:0, host:{name:'Linh N.',ini:'LN',color:'#B45309',trust:5,hosted:41}, langs:['EN','VI'], curated:false},
+  {id:'hike', title:'Sunday Hike: Bai But Loop', cat:'outdoor', emoji:'🥾', grad:'linear-gradient(135deg,#A7F3D0,#059669)', area:'son-tra', when:{en:'Sun 20 Sep · 06:00',vi:'CN, 20/09 · 06:00'}, day:'sun', cap:15, going:12, waiting:0, waitlist:true, price:0, host:{name:'James T.',ini:'JT',color:'#047857',trust:2,hosted:3}, langs:['EN'], curated:false},
+  {id:'foodwalk', title:'Banh Mi & Coffee Food Walk', cat:'food', emoji:'🥖', grad:'linear-gradient(135deg,#FBCFE8,#DB2777)', area:'hai-chau', when:{en:'Sat 19 Sep · 09:00',vi:'T7, 19/09 · 09:00'}, day:'sat', cap:12, going:5, waiting:0, waitlist:false, price:150000, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN'], curated:true, source:'Da Nang Food Tours (Facebook page)'},
+  {id:'cowork', title:'Coworking Morning', cat:'professional', emoji:'💻', grad:'linear-gradient(135deg,#E2E8F0,#64748B)', area:'an-thuong', when:{en:'Mon 21 Sep · 08:30',vi:'T2, 21/09 · 08:30'}, day:'mon', cap:25, going:9, waiting:0, waitlist:true, price:0, host:{name:'Mai P.',ini:'MP',color:'#6D28D9',trust:4,hosted:22}, langs:['EN','VI'], curated:false},
+  {id:'yoga', title:'Sunrise Yoga on the Beach', cat:'wellness', emoji:'🧘', grad:'linear-gradient(135deg,#DDD6FE,#7C3AED)', area:'my-an', when:{en:'Tue 22 Sep · 05:30',vi:'T3, 22/09 · 05:30'}, day:'tue', cap:20, going:18, waiting:0, waitlist:true, price:50000, host:{name:'Sofia K.',ini:'SK',color:'#BE185D',trust:3,hosted:9}, langs:['EN'], curated:false},
+  {id:'run', title:'Marble Mountains Trail Run 10K', cat:'sports', emoji:'🏃', grad:'linear-gradient(135deg,#FED7AA,#EA580C)', area:'ngu-hanh-son', when:{en:'Wed 23 Sep · 05:45',vi:'T4, 23/09 · 05:45'}, day:'wed', cap:30, going:11, waiting:0, waitlist:true, price:0, host:{name:'Duc H.',ini:'DH',color:'#C2410C',trust:1,hosted:0}, langs:['EN','VI'], curated:false},
+  {id:'boardgame', title:'Board Game Night', cat:'social', emoji:'🎲', grad:'linear-gradient(135deg,#C7D2FE,#4F46E5)', area:'my-an', when:{en:'Thu 24 Sep · 19:30',vi:'T5, 24/09 · 19:30'}, day:'thu', cap:16, going:16, waiting:0, waitlist:false, price:30000, host:{name:'Anna B.',ini:'AB',color:'#4338CA',trust:3,hosted:6}, langs:['EN'], curated:false}
+];
+const ME = {name:'Alex Morgan', handle:'alexm', ini:'AL', color:'#7C3AED', trust:1, area:'an-thuong'};
+function ev(id){ return EVENTS.find(e => e.id === id); }
+function price(p){ if (!p) return t('ev.free'); return LANG === 'vi' ? p.toLocaleString('vi-VN') + ' ₫' : p.toLocaleString('en-US') + ' ₫'; }
+function tb(level){ return `<span class="tb t${level}" data-tb="${level}">${t('trust.'+level)}</span>`; }
+function avatar(p, size){ return `<span class="av ${size||''}" style="background:${p.color}">${p.ini}</span>`; }
+function capText(e){
+  const left = e.cap - e.going;
+  if (left > 0) { const cls = left / e.cap < 0.2 ? 'low' : ''; return `<span class="cap num ${cls}">${t('ev.spotsLeft',{n:left,c:e.cap})}</span>`; }
+  return `<span class="cap num full">${e.waitlist && e.waiting ? t('ev.fullWaiting',{w:e.waiting}) : t('ev.full')}</span>`;
+}
+/* Event card. variant: 'grid' (default) | 'row'. opts: {state:'going'|'waiting'|null, saved:bool} */
+function eventCard(e, variant, opts){
+  opts = opts || {};
+  const tags = [];
+  if (e.curated) tags.push(`<span class="pill src">🏷 ${t('ev.curated')}</span>`);
+  if (opts.state === 'going') tags.push(`<span class="pill going">✓ ${t('rsvp.going')}</span>`);
+  if (opts.state === 'waiting') tags.push(`<span class="pill wait">${t('rsvp.waiting',{p:3})}</span>`);
+  if (e.going >= e.cap && !opts.state) tags.push(`<span class="pill full">${t('ev.full')}</span>`);
+  return `<article class="ev ${variant==='row'?'row':''}" data-ev="${e.id}">
+    <div class="ev-cover" style="background:${e.grad}"><span aria-hidden="true">${e.emoji}</span>
+      <div class="tag">${tags.join('')}</div>
+      <button class="save ${opts.saved?'on':''}" aria-label="${t('sw.save')}">${opts.saved?'♥':'♡'}</button></div>
+    <div class="ev-body">
+      <div class="ev-when num">${e.when[LANG]}</div>
+      <h3 class="ev-title">${e.title}</h3>
+      <div class="ev-meta"><span>📍 ${area(e.area)}</span><span>${t('cat.'+e.cat)}</span><span>🗣 ${e.langs.join(' · ')}</span></div>
+      <div class="ev-host">${avatar(e.host,'sm')}<b>${e.host.name}</b>${tb(e.host.trust)}</div>
+      <div class="ev-foot">${capText(e)}<span class="small" style="font-weight:700">${price(e.price)}</span></div>
+    </div></article>`;
+}
+
+/* ---------- screen switching ---------- */
+const params = new URLSearchParams(location.search);
+const screens = [...document.querySelectorAll('.scr')];
+const chips = document.getElementById('mkChips');
+screens.forEach(s => {
+  const b = document.createElement('button');
+  b.className = 'mk-scrchip'; b.dataset.target = s.dataset.screen; b.setAttribute('role','tab');
+  b.innerHTML = `<b>${s.dataset.code||''}</b>${s.dataset.screen}`;
+  b.title = s.dataset.title || '';
+  b.onclick = () => show(s.dataset.screen, true);
+  chips.appendChild(b);
+});
+const renderHooks = [];            // push(fn) — called after every show() and setLang()
+function onRender(fn){ renderHooks.push(fn); }
+let CURRENT = null;
+function show(id, push){
+  const s = screens.find(x => x.dataset.screen === id) || screens[0];
+  CURRENT = s.dataset.screen;
+  screens.forEach(x => x.classList.toggle('show', x === s));
+  chips.querySelectorAll('.mk-scrchip').forEach(c => { const on = c.dataset.target === CURRENT; c.classList.toggle('on', on); if (on) c.scrollIntoView({block:'nearest',inline:'nearest'}); });
+  const app = document.getElementById('app');
+  app.classList.remove('wide','norail','bare');
+  const layout = s.dataset.layout || 'feed';          // feed | wide | norail | bare
+  if (layout !== 'feed') app.classList.add(layout);
+  const guest = s.dataset.guest === '1';
+  document.querySelectorAll('.me-only').forEach(el => el.hidden = guest);
+  document.querySelectorAll('.guest-only').forEach(el => el.hidden = !guest);
+  document.querySelectorAll('[data-nav]').forEach(n => { if (n.classList.contains('nav-item') || n.closest('.app-tabs')) n.classList.toggle('on', n.dataset.nav === s.dataset.nav); });
+  closeAllOverlays();
+  renderNotes(s);
+  if (push) { const u = new URL(location); u.searchParams.set('screen', CURRENT); history.replaceState(null,'',u); }
+  window.scrollTo(0,0);
+  runHooks();
+}
+function runHooks(){ renderHooks.forEach(fn => fn(CURRENT)); applyI18n(); }
+
+/* ---------- i18n ---------- */
+function applyI18n(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-html]').forEach(el => el.innerHTML = t(el.dataset.i18nHtml));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => el.placeholder = t(el.dataset.i18nPh));
+  document.querySelectorAll('[data-area]').forEach(el => el.textContent = area(el.dataset.area));
+  document.querySelectorAll('[data-tb]').forEach(el => el.textContent = t('trust.' + el.dataset.tb));
+  document.querySelectorAll('.seg-lang button').forEach(b => b.classList.toggle('on', b.dataset.lang === LANG));
+}
+function setLang(l, push){
+  LANG = l;
+  if (push) { const u = new URL(location); u.searchParams.set('lang', l); history.replaceState(null,'',u); }
+  runHooks();
+}
+document.querySelectorAll('.seg-lang button').forEach(b => b.onclick = () => setLang(b.dataset.lang, true));
+
+/* ---------- notes drawer ---------- */
+const notes = document.getElementById('mkNotes');
+function renderNotes(s){
+  const tpl = s.querySelector('template.notes');
+  document.getElementById('mkNotesTitle').textContent = (s.dataset.code ? s.dataset.code + ' · ' : '') + (s.dataset.title || s.dataset.screen);
+  document.getElementById('mkNotesBody').innerHTML = tpl ? tpl.innerHTML : '<p>Chưa có ghi chú.</p>';
+}
+document.getElementById('mkNotesBtn').onclick = () => { notes.classList.toggle('open'); document.getElementById('mkNotesBtn').classList.toggle('on'); };
+document.getElementById('mkNotesClose').onclick = () => { notes.classList.remove('open'); document.getElementById('mkNotesBtn').classList.remove('on'); };
+
+/* ---------- cross-file navigation ----------
+   goTo('screen-id')                         -> screen in this file
+   goTo('web-event-mockup.html?screen=x')    -> other file, keeps current language */
+const NAV_TARGETS = {
+  home:'web-discover-mockup.html?screen=home',
+  discover:'web-discover-mockup.html?screen=discover',
+  myevents:'web-myspace-mockup.html?screen=my-going',
+  notifications:'web-myspace-mockup.html?screen=notifications',
+  profile:'web-myspace-mockup.html?screen=profile-me'
+};
+function goTo(target){
+  if (!target) return;
+  if (!target.includes('.html')) { show(target, true); return; }
+  const [file, q] = target.split('?');
+  const sid = new URLSearchParams(q || '').get('screen');
+  if (location.pathname.endsWith('/' + file) && sid && screens.some(s => s.dataset.screen === sid)) { show(sid, true); return; }
+  location.href = file + '?' + (q ? q + '&' : '') + 'lang=' + LANG;
+}
+
+/* ---------- overlays + toast ---------- */
+function openOverlay(id){ closeAllOverlays(); const el = document.getElementById(id); if (el) el.hidden = false; }
+function closeAllOverlays(){ document.querySelectorAll('[data-overlay]').forEach(o => o.hidden = true); }
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-overlay]')) closeAllOverlays();          // click on scrim
+  const c = e.target.closest('[data-close]'); if (c) closeAllOverlays();
+  const o = e.target.closest('[data-open]'); if (o) openOverlay(o.dataset.open);
+  const g = e.target.closest('[data-go]'); if (g) goTo(g.dataset.go);
+  const n = e.target.closest('[data-nav]'); if (n && (n.classList.contains('nav-item') || n.closest('.app-tabs'))) goTo(NAV_TARGETS[n.dataset.nav]);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllOverlays(); });
+let toastTimer;
+function toast(msg, action){
+  let el = document.getElementById('mkToast');
+  if (!el) { el = document.createElement('div'); el.id = 'mkToast'; el.className = 'toast'; el.setAttribute('role','status'); document.body.appendChild(el); }
+  el.innerHTML = `<span>${msg}</span>${action ? `<button>${action}</button>` : ''}`;
+  el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => el.hidden = true, 3200);
+}
+
+/* ---------- default rail ---------- */
+onRender(() => {
+  document.getElementById('railUpcoming').innerHTML = ['volley','lx','hike'].map(id => { const e = ev(id); return `<div class="rail-row"><span class="rail-thumb" style="background:${e.grad}">${e.emoji}</span><span class="grow"><b>${e.title}</b><span class="muted num">${e.when[LANG]} · ${area(e.area)}</span></span></div>`; }).join('');
+  document.getElementById('railAreas').innerHTML = Object.keys(AREAS).map(k => `<button class="chip"><span data-area="${k}"></span><span class="c num">${AREAS[k].count}</span></button>`).join('');
+});
+
+/* ---------- base sample (remove in real files) ---------- */
+
+
+/* ---------- boot: call AFTER screen-specific scripts register their hooks ---------- */
+function boot(fileKey){
+  document.querySelectorAll('.mk-files a').forEach(a => a.classList.toggle('on', a.dataset.file === fileKey));
+  document.querySelectorAll('[data-go-create]').forEach(b => b.addEventListener('click', () => goTo('web-event-mockup.html?screen=create-1')));
+  LANG = params.get('lang') === 'vi' ? 'vi' : 'en';
+  show(params.get('screen') || screens[0].dataset.screen, false);
+}
+</script>
+<script>
+addI18n({
+  en:{'aria.files':'Mockup files','aria.screens':'Screens','aria.language':'Language','aria.notes':'Mockup notes','aria.primaryNav':'Primary navigation','aria.bottomNav':'Bottom navigation','aria.search':'Search'},
+  vi:{'aria.files':'Danh sách file mockup','aria.screens':'Danh sách màn hình','aria.language':'Ngôn ngữ','aria.notes':'Ghi chú mockup','aria.primaryNav':'Điều hướng chính','aria.bottomNav':'Thanh điều hướng dưới','aria.search':'Tìm kiếm'}
+});
+/* ===================== Swipe screens (doc 14 §7–§8, PA B+) ===================== */
+addI18n({
+  en: {
+    'sw.back':'Discover','sw.close':'Close',
+    'sw.deckTitle':'Plan your week','sw.deckContext':'Next 7 days · {area} and nearby',
+    'sw.counter':'{i} of {n}','sw.undo':'Undo','sw.skip':'Skip','sw.save':'Save','sw.join':'Join','sw.details':'Details',
+    'sw.stampSave':'SAVE','sw.stampSkip':'SKIP','sw.stampJoin':'JOIN?',
+    'sw.tapHint':'Tap a card for details','sw.asList':'See as a list',
+    'sw.startsIn':'in {h}h {m}m','sw.startsInH':'in {h}h','sw.startsIn1Day':'in 1 day','sw.startsInDays':'in {d} days','sw.km':'{d} km away',
+    'sw.toastSaved':'Saved to your list','sw.toastSkipped':'Hidden for 72 hours — still in Discover','sw.toastRestored':'Card restored','sw.toastGoing':"You're going! The exact address is now unlocked.",
+    'sw.rsvpTitle':'Join this event?','sw.rsvpNote':'Swiping never signs you up on its own — this is your second tap.',
+    'sw.rsvpWhen':'When','sw.rsvpWhere':'Where','sw.rsvpWhereVal':'{area} · exact address shown after you RSVP','sw.rsvpHost':'Host','sw.rsvpPrice':'Price','sw.rsvpSpots':'Spots',
+    'sw.rsvpPaid':'This event costs {price}, paid to the host at the door. Cancelling less than 2 hours before counts as a late cancel.',
+    'sw.rsvpSmall':'Small group (10 people or fewer): you need Phone verified (T2) to join.','sw.rsvpVerify':'Verify my phone',
+    'sw.rsvpWait':"It's full — you'll join the waitlist at position #{p}. If a spot opens, we hold it for you for 12 hours.",
+    'sw.rsvpConfirm':'Confirm RSVP','sw.rsvpWaitConfirm':'Join waitlist','sw.rsvpCancel':'Not now','sw.toastWaitlist':"You're on the waitlist · #{p}",
+    'sw.sumTitle':'Your plan for the week','sw.sumSaved':'{n} saved','sw.sumNone':"You didn't save anything this time — everything is still in Discover.",
+    'sw.sumClash':'Time clash {day}: {a} overlaps with {b}.','sw.sumCal':'Add all to calendar','sw.sumShare':'Share my plan',
+    'sw.sumSkipped':'{n} skipped — hidden for 72 hours, still searchable in Discover.','sw.sumReview':'Review skipped','sw.sumHideReview':'Hide skipped',
+    'sw.sumSaveInstead':'Save instead','sw.sumRsvp':'RSVP','sw.sumBack':'Back to Discover','sw.sumRestart':'Start over',
+    'sw.sumCalToast':'{n} events added to your calendar','sw.shareToast':'Link to your plan copied',
+    'sw.emptyTitle':"That's everything for this week",'sw.emptyBody':'You have seen every event that matches your area and interests. New ones land every day.',
+    'sw.emptyNext':'See next week','sw.emptyRadius':'Widen radius to 5 km','sw.emptyHost':'Organise something','sw.emptyAlso':'Also happening nearby',
+    'sw.coach':'Swipe right to save · swipe left to skip','sw.coachOk':'Got it',
+    'sw.railSave':'Save','sw.railShare':'Share','sw.railSkip':'Skip',
+    'sw.hidden1':'Event hidden','sw.hiddenMany':'{n} events hidden','sw.unsaved':'Removed from your list','sw.linkCopied':'Link copied',
+    'sw.entryTitle':'Not sure where to go?','sw.entryBody':'Swipe through {n} events posted by the community →',
+    'sw.more':'More actions','sw.menuNotForMe':'Not for me','sw.menuReport':'Report','sw.menuShare':'Share',
+    'sw.shortcuts':'Keyboard shortcuts','sw.kNext':'Next / previous event','sw.kEnter':'Open details','sw.kHelp':'Show shortcuts','sw.kDeckTitle':'In the deck','sw.kbdBtn':'Shortcuts',
+    'sw.allHiddenTitle':"You've hidden everything that matches your filters",
+    'sw.allHiddenBody':'Hidden events come back after 14 days, or right away if the host changes the time, place or price.',
+    'sw.unhideAll':'Unhide all','sw.loosen':'Loosen filters',
+    'sw.openFull':'Open full page','sw.cardAria':'{title}. {when}, {area}, {km}. {cap}. {price}. Hosted by {host}, {trust}.',
+    'sw.day.today':'Today · Friday 18 September','sw.day.sat':'Saturday 19 September','sw.day.sun':'Sunday 20 September','sw.day.later':'Next week',
+    'sw.dayShort.sat':'on Saturday','sw.dayShort.sun':'on Sunday','sw.dayShort.today':'tonight'
+  },
+  vi: {
+    'sw.back':'Khám phá','sw.close':'Đóng',
+    'sw.deckTitle':'Lên kế hoạch tuần này','sw.deckContext':'7 ngày tới · {area} và lân cận',
+    'sw.counter':'{i}/{n}','sw.undo':'Hoàn tác','sw.skip':'Bỏ qua','sw.save':'Lưu','sw.join':'Tham gia','sw.details':'Chi tiết',
+    'sw.stampSave':'Lưu','sw.stampSkip':'Bỏ qua','sw.stampJoin':'Tham gia?',
+    'sw.tapHint':'Chạm vào thẻ để xem chi tiết','sw.asList':'Xem dạng danh sách',
+    'sw.startsIn':'còn {h} giờ {m} phút','sw.startsInH':'còn {h} giờ','sw.startsIn1Day':'còn 1 ngày','sw.startsInDays':'còn {d} ngày','sw.km':'cách {d} km',
+    'sw.toastSaved':'Đã lưu vào danh sách quan tâm','sw.toastSkipped':'Đã ẩn 72 giờ — vẫn còn trong Khám phá','sw.toastRestored':'Đã khôi phục thẻ','sw.toastGoing':'Bạn sẽ tham gia! Địa chỉ chính xác đã được mở.',
+    'sw.rsvpTitle':'Tham gia sự kiện này?','sw.rsvpNote':'Vuốt không bao giờ tự đăng ký cho bạn — đây là chạm thứ hai để xác nhận.',
+    'sw.rsvpWhen':'Thời gian','sw.rsvpWhere':'Địa điểm','sw.rsvpWhereVal':'{area} · địa chỉ chính xác hiện sau khi đăng ký','sw.rsvpHost':'Người tổ chức','sw.rsvpPrice':'Giá','sw.rsvpSpots':'Số chỗ',
+    'sw.rsvpPaid':'Sự kiện này có phí {price}, trả cho người tổ chức tại chỗ. Huỷ trong vòng 2 giờ trước giờ bắt đầu bị tính là huỷ muộn.',
+    'sw.rsvpSmall':'Nhóm nhỏ (từ 10 người trở xuống): cần mức Đã xác thực số điện thoại (T2) mới tham gia được.','sw.rsvpVerify':'Xác thực số điện thoại',
+    'sw.rsvpWait':'Đã đầy — bạn sẽ vào danh sách chờ ở vị trí #{p}. Khi có chỗ trống, chỗ được giữ cho bạn 12 giờ.',
+    'sw.rsvpConfirm':'Xác nhận đăng ký','sw.rsvpWaitConfirm':'Vào danh sách chờ','sw.rsvpCancel':'Để sau','sw.toastWaitlist':'Bạn đang trong danh sách chờ · #{p}',
+    'sw.sumTitle':'Kế hoạch tuần này của bạn','sw.sumSaved':'Đã lưu {n}','sw.sumNone':'Lần này bạn chưa lưu sự kiện nào — mọi thứ vẫn còn trong Khám phá.',
+    'sw.sumClash':'Trùng giờ {day}: {a} chồng lên {b}.','sw.sumCal':'Thêm tất cả vào lịch','sw.sumShare':'Chia sẻ kế hoạch',
+    'sw.sumSkipped':'Đã bỏ qua {n} — ẩn 72 giờ, vẫn tìm được trong Khám phá.','sw.sumReview':'Xem lại mục đã bỏ qua','sw.sumHideReview':'Ẩn mục đã bỏ qua',
+    'sw.sumSaveInstead':'Chuyển sang lưu','sw.sumRsvp':'Đăng ký','sw.sumBack':'Quay lại Khám phá','sw.sumRestart':'Lướt lại từ đầu',
+    'sw.sumCalToast':'Đã thêm {n} sự kiện vào lịch','sw.shareToast':'Đã sao chép liên kết kế hoạch',
+    'sw.emptyTitle':'Hết rồi — bạn đã xem hết tuần này','sw.emptyBody':'Bạn đã xem hết các sự kiện khớp khu vực và sở thích của mình. Sự kiện mới được thêm mỗi ngày.',
+    'sw.emptyNext':'Xem tuần sau','sw.emptyRadius':'Mở rộng bán kính lên 5 km','sw.emptyHost':'Tổ chức một hoạt động','sw.emptyAlso':'Cũng đang diễn ra gần đây',
+    'sw.coach':'Vuốt phải để lưu · vuốt trái để bỏ qua','sw.coachOk':'Đã hiểu',
+    'sw.railSave':'Lưu','sw.railShare':'Chia sẻ','sw.railSkip':'Bỏ qua',
+    'sw.hidden1':'Đã ẩn hoạt động này','sw.hiddenMany':'Đã ẩn {n} hoạt động','sw.unsaved':'Đã bỏ khỏi danh sách quan tâm','sw.linkCopied':'Đã sao chép liên kết',
+    'sw.entryTitle':'Chưa biết đi đâu?','sw.entryBody':'Lướt nhanh {n} hoạt động do cộng đồng đăng →',
+    'sw.more':'Thêm thao tác','sw.menuNotForMe':'Không dành cho tôi','sw.menuReport':'Báo cáo','sw.menuShare':'Chia sẻ',
+    'sw.shortcuts':'Phím tắt bàn phím','sw.kNext':'Sự kiện kế tiếp / trước đó','sw.kEnter':'Mở chi tiết','sw.kHelp':'Hiện bảng phím tắt','sw.kDeckTitle':'Trong chế độ lướt thẻ','sw.kbdBtn':'Phím tắt',
+    'sw.allHiddenTitle':'Bạn đã ẩn mọi hoạt động khớp bộ lọc',
+    'sw.allHiddenBody':'Hoạt động đã ẩn sẽ quay lại sau 14 ngày, hoặc ngay lập tức nếu người tổ chức đổi giờ, địa điểm hay giá.',
+    'sw.unhideAll':'Bỏ ẩn tất cả','sw.loosen':'Nới lỏng bộ lọc',
+    'sw.openFull':'Mở trang đầy đủ','sw.cardAria':'{title}. {when}, {area}, {km}. {cap}. {price}. Tổ chức bởi {host}, {trust}.',
+    'sw.day.today':'Hôm nay · Thứ Sáu 18 tháng 9','sw.day.sat':'Thứ Bảy 19 tháng 9','sw.day.sun':'Chủ nhật 20 tháng 9','sw.day.later':'Tuần sau',
+    'sw.dayShort.sat':'vào Thứ Bảy','sw.dayShort.sun':'vào Chủ nhật','sw.dayShort.today':'tối nay'
+  }
+});
+
+/* ===================================================================
+   SHARED DATA v2 — paste verbatim into the screen-specific <script>
+   of every web mockup (before any code that renders events).
+   Owner decision 2026-09-19:
+     • Home     = staff-published local news + staff-curated local events
+     • Discover = events posted by members (UGC), with reviews + comments,
+                  plus a Tinder-style swipe mode for people who don't know
+                  what they want (web-swipe-mockup.html?screen=deck)
+     • Tapping an event opens the event detail page (not the deck)
+   =================================================================== */
+
+/* Extra events. Guarded so a file that already defines some of them is not duplicated. */
+[
+  // Staff-curated (Home only). cap is a soft headcount for "interested", not a hard RSVP limit.
+  {id:'lantern', title:'Mid-Autumn Lantern Night on Bach Dang', cat:'family', emoji:'🏮', grad:'linear-gradient(135deg,#FDE68A,#DC2626)', area:'hai-chau', when:{en:'Fri 25 Sep · 18:30',vi:'T6, 25/09 · 18:30'}, day:'fri25', cap:500, going:120, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public event page (Facebook)'},
+  {id:'dragon', title:'Dragon Bridge Fire & Water Show', cat:'music', emoji:'🐉', grad:'linear-gradient(135deg,#FECACA,#B91C1C)', area:'hai-chau', when:{en:'Sat 19 Sep · 21:00',vi:'T7, 19/09 · 21:00'}, day:'sat', cap:1000, going:86, waiting:0, waitlist:false, price:0, host:{name:'Da Nang Connect',ini:'DN',color:'#0F172A',trust:5,hosted:0}, langs:['EN','VI'], curated:true, source:'Public weekend schedule (city tourism page)'},
+  // Member-posted extras (also used by the swipe deck).
+  {id:'quiz', title:'Pub Quiz Night', cat:'social', emoji:'🧠', grad:'linear-gradient(135deg,#FECACA,#DC2626)', area:'an-thuong', when:{en:'Tonight · 20:00',vi:'Tối nay · 20:00'}, day:'today', cap:48, going:30, waiting:0, waitlist:true, price:0, host:{name:'Ben W.',ini:'BW',color:'#B91C1C',trust:3,hosted:11}, langs:['EN'], curated:false},
+  {id:'cleanup', title:'My An Beach Clean-up', cat:'outdoor', emoji:'🌊', grad:'linear-gradient(135deg,#BBF7D0,#15803D)', area:'my-an', when:{en:'Sat 19 Sep · 08:00',vi:'T7, 19/09 · 08:00'}, day:'sat', cap:50, going:17, waiting:0, waitlist:true, price:0, host:{name:'Linh N.',ini:'LN',color:'#B45309',trust:5,hosted:41}, langs:['EN','VI'], curated:false},
+  {id:'salsa', title:'Salsa Social Night', cat:'music', emoji:'💃', grad:'linear-gradient(135deg,#FDE68A,#DB2777)', area:'hai-chau', when:{en:'Sat 19 Sep · 20:00',vi:'T7, 19/09 · 20:00'}, day:'sat', cap:40, going:22, waiting:0, waitlist:true, price:100000, host:{name:'Carlos M.',ini:'CM',color:'#9D174D',trust:3,hosted:8}, langs:['EN','VI'], curated:false},
+  {id:'surf', title:'Beginner Surf Session', cat:'sports', emoji:'🏄', grad:'linear-gradient(135deg,#99F6E4,#0E7490)', area:'my-khe', when:{en:'Sun 20 Sep · 07:00',vi:'CN, 20/09 · 07:00'}, day:'sun', cap:8, going:6, waiting:0, waitlist:true, price:300000, host:{name:'Kai L.',ini:'KL',color:'#0E7490',trust:4,hosted:17}, langs:['EN'], curated:false}
+].forEach(e => { if (!EVENTS.some(x => x.id === e.id)) EVENTS.push(e); });
+
+/* Which events live where. foodwalk is staff-curated, so it moves to Home. */
+const HOME_CURATED_IDS = ['lantern', 'dragon', 'foodwalk'];
+const DISCOVER_UGC_IDS = ['lx', 'quiz', 'cleanup', 'volley', 'salsa', 'hike', 'surf', 'cowork', 'yoga', 'run', 'boardgame'];
+
+/* Host rating = average of reviews left by checked-in attendees of that host's past sessions
+   (doc 02 UC-16; only people who actually attended can review). null = new host, no reviews yet. */
+const RATINGS = {
+  volley:{avg:4.8,count:32}, lx:{avg:4.9,count:58}, hike:{avg:4.6,count:7}, cowork:{avg:4.7,count:19},
+  yoga:{avg:4.8,count:15}, run:null, boardgame:{avg:4.5,count:11}, quiz:{avg:4.6,count:23},
+  cleanup:{avg:4.9,count:58}, salsa:{avg:4.7,count:14}, surf:{avg:4.9,count:40}
+};
+const COMMENTS = {volley:12, lx:21, hike:4, cowork:6, yoga:9, run:2, boardgame:7, quiz:8, cleanup:5, salsa:10, surf:6, foodwalk:3, lantern:14, dragon:9};
+
+/* Sample reviews — user content, NOT translated (doc 10 §13.9). `attended` is the session the reviewer checked in to. */
+const REVIEWS = {
+  volley: [
+    {name:'Sarah K.', ini:'SK', color:'#BE185D', trust:2, stars:5, attended:{en:'Attended Sat 12 Sep',vi:'Đã tham gia T7, 12/09'}, text:'Great vibe. Tom explains the rules for beginners and mixes the teams so nobody is left out.', helpful:9},
+    {name:'Marco P.', ini:'MP', color:'#047857', trust:3, stars:5, attended:{en:'Attended Sat 5 Sep',vi:'Đã tham gia T7, 05/09'}, text:'Nets were up on time and the sunset was unreal. Bring sunscreen and water.', helpful:6},
+    {name:'Hana L.', ini:'HL', color:'#6D28D9', trust:1, stars:4, attended:{en:'Attended Sat 29 Aug',vi:'Đã tham gia T7, 29/08'}, text:'A bit crowded with 20 people, but still a lot of fun. Would come again.', helpful:3}
+  ],
+  lx: [
+    {name:'Minh T.', ini:'MT', color:'#0369A1', trust:3, stars:5, attended:{en:'Attended Fri 11 Sep',vi:'Đã tham gia T6, 11/09'}, text:'Linh keeps the switch between English and Vietnamese really smooth. Made two friends in one evening.', helpful:12},
+    {name:'Jonas B.', ini:'JB', color:'#B45309', trust:2, stars:5, attended:{en:'Attended Fri 4 Sep',vi:'Đã tham gia T6, 04/09'}, text:'Best way to practise Vietnamese without feeling embarrassed.', helpful:8}
+  ]
+};
+/* Star distribution for the review summary bars (5★ → 1★), percentages. */
+const REVIEW_DIST = {volley:[84,12,3,1,0], lx:[91,7,2,0,0]};
+
+/* Staff-published news for Home. Staff content is published in BOTH languages (unlike user content).
+   Sample copy for the mockup — not verified reporting. */
+const NEWS = [
+  {id:'midautumn', tag:'festival', emoji:'🏮', grad:'linear-gradient(135deg,#FDE68A,#F97316)', mins:4, updated:{en:'2 hours ago',vi:'2 giờ trước'},
+   title:{en:'Mid-Autumn Festival: where to see lanterns in Da Nang (Fri 25 Sep)',vi:'Tết Trung Thu: xem lồng đèn ở đâu tại Đà Nẵng (T6, 25/09)'},
+   dek:{en:'Lantern parades, mooncake stalls and the quieter spots for families with small kids.',vi:'Rước đèn, gian hàng bánh trung thu và những chỗ yên tĩnh hơn cho gia đình có con nhỏ.'}, related:'lantern'},
+  {id:'dragon-show', tag:'getting-around', emoji:'🐉', grad:'linear-gradient(135deg,#FECACA,#B91C1C)', mins:3, updated:{en:'Yesterday',vi:'Hôm qua'},
+   title:{en:'Dragon Bridge fire show: weekend schedule and the best viewing spots',vi:'Cầu Rồng phun lửa: lịch cuối tuần và những chỗ xem đẹp nhất'},
+   dek:{en:'Where to stand, where to park your motorbike, and which side stays dry when it sprays water.',vi:'Đứng đâu, gửi xe ở đâu, và bên nào không bị ướt khi rồng phun nước.'}, related:'dragon'},
+  {id:'rainy', tag:'weather', emoji:'🌧️', grad:'linear-gradient(135deg,#BFDBFE,#1E40AF)', mins:6, updated:{en:'2 days ago',vi:'2 ngày trước'},
+   title:{en:'Rainy season is coming: what to know before October',vi:'Mùa mưa sắp tới: cần biết gì trước tháng 10'},
+   dek:{en:'Flood-prone streets, how outdoor events get rescheduled, and what to keep at home.',vi:'Những tuyến đường hay ngập, sự kiện ngoài trời được dời lịch ra sao, và nên chuẩn bị gì ở nhà.'}},
+  {id:'residence', tag:'admin', emoji:'📄', grad:'linear-gradient(135deg,#E2E8F0,#475569)', mins:7, updated:{en:'5 days ago',vi:'5 ngày trước'},
+   title:{en:'Temporary residence registration for expats: a step-by-step guide',vi:'Đăng ký tạm trú cho người nước ngoài: hướng dẫn từng bước'},
+   dek:{en:'Who registers you, which documents to bring, and what to do if your landlord has not done it.',vi:'Ai đăng ký cho bạn, cần mang giấy tờ gì, và làm gì nếu chủ nhà chưa đăng ký.'}}
+];
+const NEWS_TAGS = {festival:{en:'Festival',vi:'Lễ hội'}, 'getting-around':{en:'Getting around',vi:'Đi lại'}, weather:{en:'Weather & safety',vi:'Thời tiết & an toàn'}, admin:{en:'Visas & admin',vi:'Giấy tờ & thủ tục'}};
+
+/* Helpers */
+function stars(avg){ const f = Math.round(avg); return '★★★★★'.slice(0, f) + '☆☆☆☆☆'.slice(0, 5 - f); }
+function ratingLine(id){
+  const r = RATINGS[id];
+  const n = COMMENTS[id] || 0;
+  const rate = r ? `<span class="rt">★ ${r.avg.toLocaleString(LANG === 'vi' ? 'vi-VN' : 'en-US', {minimumFractionDigits: 1})} <span class="muted">(${r.count})</span></span>` : `<span class="rt new">${LANG === 'vi' ? 'Người tổ chức mới' : 'New host'}</span>`;
+  return `${rate}<span class="cm">💬 ${n}</span>`;
+}
+
+/* Start/end in Asia/Ho_Chi_Minh (+07:00); stored as UTC in the real system. km = distance from ME. */
+const META = {
+  lx:{s:'2026-09-18T19:00',e:'2026-09-18T21:00',km:0.4,desc:'Half English, half Vietnamese — we swap every 30 minutes. Drinks at the bar, no fee. Beginners welcome.'},
+  quiz:{s:'2026-09-18T20:00',e:'2026-09-18T22:30',km:0.3,desc:'Teams of up to 6, six rounds, general knowledge plus one round about Da Nang. Come solo and we will find you a team.'},
+  cleanup:{s:'2026-09-19T08:00',e:'2026-09-19T10:00',km:1.7,desc:'Gloves and bags provided. We sort plastics for the recycling co-op afterwards. Families welcome.'},
+  foodwalk:{s:'2026-09-19T09:00',e:'2026-09-19T11:30',km:4.6,desc:'Five banh mi stops and two coffee shops around Han Market. Price includes all tastings.'},
+  volley:{s:'2026-09-19T17:00',e:'2026-09-19T19:00',km:3.1,desc:'Casual, friendly, and beginner-welcome. Bring water and sunscreen — we bring the nets.'},
+  salsa:{s:'2026-09-19T20:00',e:'2026-09-19T23:00',km:4.2,desc:'30-minute beginner class, then open social dancing. No partner needed.'},
+  hike:{s:'2026-09-20T06:00',e:'2026-09-20T09:00',km:7.8,desc:'8 km loop on the Son Tra peninsula with a steep first kilometre. Bring 1.5 L of water.'},
+  surf:{s:'2026-09-20T07:00',e:'2026-09-20T09:00',km:2.8,desc:'Two-hour lesson with a certified coach, board and rash guard included. Max 8 people.'},
+  cowork:{s:'2026-09-21T08:30',e:'2026-09-21T12:00',km:0.6,desc:'Quiet table at a cafe with fast wifi. Lunch together afterwards for anyone who wants it.'},
+  yoga:{s:'2026-09-22T05:30',e:'2026-09-22T06:30',km:1.9,desc:'Gentle vinyasa at sunrise. Mats available for 20,000 VND.'},
+  run:{s:'2026-09-23T05:45',e:'2026-09-23T07:30',km:6.2,desc:'10 km trail around the Marble Mountains at an easy pace. Headlamp recommended.'},
+  boardgame:{s:'2026-09-24T19:30',e:'2026-09-24T22:00',km:1.9,desc:'Catan, Codenames and a big shelf of party games. Entry includes one drink.'}
+};
+const NOW = new Date('2026-09-18T15:00:00+07:00');
+const at = s => new Date(s + ':00+07:00');
+/* Owner decision 2026-09-19: the deck lives in Discover and only carries member-posted events. */
+const DECK_IDS = DISCOVER_UGC_IDS.slice();
+const DETAIL_PAGE_IDS = EVENTS.map(e => e.id);   // every shared event renders in web-event-mockup.html
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+function rel(e){
+  const mins = Math.round((at(META[e.id].s) - NOW) / 60000);
+  if (mins < 24 * 60) return mins % 60 ? t('sw.startsIn', {h: Math.floor(mins / 60), m: mins % 60}) : t('sw.startsInH', {h: mins / 60});
+  const d = Math.round(mins / 1440);
+  return d === 1 ? t('sw.startsIn1Day') : t('sw.startsInDays', {d});
+}
+function km(e){ return t('sw.km', {d: META[e.id].km.toLocaleString(LANG === 'vi' ? 'vi-VN' : 'en-US', {maximumFractionDigits: 1})}); }
+function capBar(e){
+  const left = e.cap - e.going, pct = Math.min(100, Math.round(e.going / e.cap * 100));
+  const cls = left <= 0 ? 'full' : (left / e.cap < 0.2 ? 'low' : '');
+  return `<div class="cap-bar ${cls}"><i style="width:${pct}%"></i></div>`;
+}
+function plainCap(e){ const d = document.createElement('div'); d.innerHTML = capText(e); return d.textContent; }
+function cardAria(e){ return t('sw.cardAria', {title: e.title, when: e.when[LANG], area: area(e.area), km: km(e), cap: plainCap(e), price: price(e.price), host: e.host.name, trust: t('trust.' + e.host.trust)}); }
+/* Curated listings carry the source badge instead of a member's trust badge (doc 10 Q-07). */
+function hostLine(e){ return e.curated ? `<span class="pill src">🏷 ${t('ev.curated')}</span>` : `${avatar(e.host, 'sm')}<b>${e.host.name}</b>${tb(e.host.trust)}`; }
+function openDetails(id){ if (DETAIL_PAGE_IDS.includes(id)) goTo('web-event-mockup.html?screen=event&ev=' + id); else openQuick(id); }
+
+/* ---------- single replaceable toast with 6 s undo window (doc 14 §2.3–§2.5) ---------- */
+let swToastTimer = null, swToastUndo = null;
+function swToast(msg, undoFn){
+  let el = document.getElementById('swToast');
+  if (!el) { el = document.createElement('div'); el.id = 'swToast'; el.className = 'sw-toast'; el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite'); document.body.appendChild(el); }
+  swToastUndo = undoFn || null;
+  el.innerHTML = `<div class="in"><span>${msg}</span>${undoFn ? `<button type="button">${t('sw.undo')}</button>` : ''}</div>${undoFn ? '<div class="cd"></div>' : ''}`;
+  if (undoFn) el.querySelector('button').onclick = () => { const fn = swToastUndo; hideSwToast(); if (fn) fn(); };
+  el.hidden = false;
+  clearTimeout(swToastTimer);
+  swToastTimer = setTimeout(hideSwToast, 6000);
+}
+function hideSwToast(){ const el = document.getElementById('swToast'); if (el) el.hidden = true; swToastUndo = null; clearTimeout(swToastTimer); }
+
+/* ================= DECK ================= */
+function newDeck(mount, preset){
+  const st = {mount, ids: DECK_IDS.slice(), idx: 0, saved: new Set(), skipped: [], going: new Set(), last: null, showSkipped: false};
+  if (preset) Object.assign(st, preset);
+  return st;
+}
+const deckA = newDeck('deckMount');
+const deckB = newDeck('deckMount2', {idx: 4});   // opens on the paid Salsa night to show the paid-RSVP confirmation rule
+const deckC = newDeck('deckMount3', {idx: DECK_IDS.length, saved: new Set(['lx', 'quiz', 'volley']), skipped: ['cleanup', 'salsa', 'hike', 'surf', 'cowork', 'yoga', 'run', 'boardgame']});
+let activeDeck = deckA;
+
+function deckCard(e, cls, st){
+  const tags = [];
+  if (e.curated) tags.push(`<span class="pill src">🏷 ${t('ev.curated')}</span>`);
+  if (st.going.has(e.id)) tags.push(`<span class="pill going">✓ ${t('rsvp.going')}</span>`);
+  else if (e.going >= e.cap) tags.push(`<span class="pill full">${t('ev.full')}</span>`);
+  return `<article class="dk-card ${cls}" data-id="${e.id}" ${cls === 'top' ? `tabindex="0" aria-label="${cardAria(e).replace(/"/g, '&quot;')}"` : 'aria-hidden="true"'}>
+    <div class="dk-stamp save">${t('sw.stampSave')}</div><div class="dk-stamp skip">${t('sw.stampSkip')}</div><div class="dk-stamp join">${t('sw.stampJoin')}</div>
+    <div class="dk-cover" style="background:${e.grad}"><span aria-hidden="true">${e.emoji}</span><div class="tag">${tags.join('')}</div><span class="heart ${st.saved.has(e.id) ? 'on' : ''}" aria-hidden="true">${st.saved.has(e.id) ? '♥' : '♡'}</span></div>
+    <div class="dk-body">
+      <div class="dk-when num"><span>${e.when[LANG]}</span><span class="rel">${rel(e)}</span></div>
+      <h3 class="dk-title">${e.title}</h3>
+      <div class="dk-line"><span>📍 ${area(e.area)}</span><span>${km(e)}</span></div>
+      <div class="dk-cap">${capText(e)}${capBar(e)}</div>
+      <div class="dk-line"><span>${t('cat.' + e.cat)}</span><span>🗣 ${e.langs.join(' · ')}</span></div>
+      <div class="dk-line">${ratingLine(e.id)}</div>
+      <div class="dk-foot"><div class="ev-host">${hostLine(e)}</div><b class="num">${price(e.price)}</b></div>
+    </div></article>`;
+}
+
+function renderDeck(st){
+  const m = document.getElementById(st.mount); if (!m) return;
+  if (st.idx >= st.ids.length) { renderSummary(st); return; }
+  const n = st.ids.length, visible = st.ids.slice(st.idx, st.idx + 3);
+  const cards = visible.map((id, i) => deckCard(ev(id), i === 0 ? 'top' : 'back' + i, st)).reverse().join('');
+  m.innerHTML = `
+    <div class="dk-head">
+      <button class="btn btn-ghost btn-sm" data-deck="back">← ${t('sw.back')}</button>
+      <div class="ttl"><b>${t('sw.deckTitle')}</b><span>${t('sw.deckContext', {area: area(ME.area)})}</span></div>
+      <button class="btn btn-outline btn-sm" data-deck="undo" ${st.last ? '' : 'disabled'}>↺ ${t('sw.undo')}</button>
+    </div>
+    <div class="dk-progress num"><div class="bar"><i style="width:${Math.round(st.idx / n * 100)}%"></i></div><span>${t('sw.counter', {i: st.idx + 1, n})}</span></div>
+    <div class="dk-stage">${cards}</div>
+    <div class="dk-actions">
+      <button class="dk-act skip" data-deck="skip"><span class="o">✕</span>${t('sw.skip')}</button>
+      <button class="dk-act sm" data-deck="undo" ${st.last ? '' : 'disabled'}><span class="o">↺</span>${t('sw.undo')}</button>
+      <button class="dk-act save" data-deck="save"><span class="o">♡</span>${t('sw.save')}</button>
+      <button class="dk-act join" data-deck="join"><span class="o">⤒</span>${t('sw.join')}</button>
+    </div>
+    <div class="dk-hint"><span>${t('sw.tapHint')}</span><span><span class="kbd">←</span> <span class="kbd">→</span> <span class="kbd">↑</span> <span class="kbd">U</span></span><button class="btn btn-ghost btn-sm" data-go="web-discover-mockup.html?screen=discover">${t('sw.asList')}</button></div>`;
+  const top = m.querySelector('.dk-card.top');
+  if (top) bindDeckDrag(top, st);
+  m.querySelectorAll('[data-deck]').forEach(b => b.onclick = () => deckAction(st, b.dataset.deck));
+}
+
+function deckAction(st, action){
+  activeDeck = st;
+  const m = document.getElementById(st.mount);
+  const top = m && m.querySelector('.dk-card.top');
+  if (action === 'back') return deckBack();
+  if (action === 'undo') return deckUndo(st);
+  if (!top) return;
+  if (action === 'join') return openRsvp(top.dataset.id, st);
+  if (action === 'details') return openDetails(top.dataset.id);
+  flyOut(top, st, action, 0);
+}
+
+function flyOut(card, st, action, dy){
+  const dir = action === 'save' ? 1 : -1;
+  const stamp = card.querySelector('.dk-stamp.' + action); if (stamp) stamp.style.opacity = 1;
+  if (reduceMotion()) return deckCommit(st, action);
+  card.classList.add('anim');
+  card.style.transform = `translate(${dir * 1.6 * card.offsetWidth}px, ${dy}px) rotate(${dir * 8}deg)`;
+  setTimeout(() => deckCommit(st, action), 220);
+}
+
+function deckCommit(st, action){
+  const id = st.ids[st.idx];
+  if (action === 'save') st.saved.add(id); else st.skipped.push(id);
+  st.last = {id, action};
+  st.idx++;
+  swToast(action === 'save' ? t('sw.toastSaved') : t('sw.toastSkipped'), () => deckUndo(st));
+  renderDeck(st);
+}
+
+/* Undo restores exactly the last card, then disables itself (doc 14 §2.8). */
+function deckUndo(st){
+  if (!st.last) return;
+  const {id, action} = st.last;
+  if (action === 'save') st.saved.delete(id); else st.skipped = st.skipped.filter(x => x !== id);
+  st.idx = Math.max(0, st.idx - 1);
+  st.last = null;
+  hideSwToast();
+  renderDeck(st);
+  swToast(t('sw.toastRestored'));
+}
+
+function bindDeckDrag(card, st){
+  const stage = card.parentElement;
+  const backs = [stage.querySelector('.back1'), stage.querySelector('.back2')];
+  let sx = 0, sy = 0, lx = 0, ly = 0, lt = 0, vx = 0, vy = 0, down = false, moved = false, pivot = 1;
+  const stamps = {save: card.querySelector('.dk-stamp.save'), skip: card.querySelector('.dk-stamp.skip'), join: card.querySelector('.dk-stamp.join')};
+  function apply(dx, dy){
+    const w = card.offsetWidth;
+    const rot = clamp(dx / (w / 2) * 8, -8, 8) * pivot;
+    card.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+    stamps.save.style.opacity = clamp((dx - 20) / 70, 0, 1);
+    stamps.skip.style.opacity = clamp((-dx - 20) / 70, 0, 1);
+    stamps.join.style.opacity = Math.abs(dx) < 40 ? clamp((-dy - 30) / 80, 0, 1) : 0;
+    const p = clamp(Math.max(Math.abs(dx) / (0.28 * w), -dy / (0.22 * card.offsetHeight)), 0, 1);
+    if (backs[0]) backs[0].style.transform = `translateY(${12 - 12 * p}px) scale(${0.94 + 0.06 * p})`;
+    if (backs[1]) backs[1].style.transform = `translateY(${24 - 12 * p}px) scale(${0.88 + 0.06 * p})`;
+  }
+  function reset(){
+    if (!reduceMotion()) { card.classList.add('anim'); backs.forEach(b => b && b.classList.add('anim')); }
+    card.style.transform = '';
+    backs.forEach(b => b && (b.style.transform = ''));
+    Object.values(stamps).forEach(s => s.style.opacity = 0);
+  }
+  card.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    card.setPointerCapture(e.pointerId);
+    down = true; moved = false; sx = lx = e.clientX; sy = ly = e.clientY; lt = performance.now(); vx = vy = 0;
+    const r = card.getBoundingClientRect();
+    pivot = (e.clientY - r.top) > r.height / 2 ? -1 : 1;   // grab the lower half and the card tilts the other way
+    card.classList.add('drag'); card.classList.remove('anim'); backs.forEach(b => b && b.classList.remove('anim'));
+  });
+  card.addEventListener('pointermove', e => {
+    if (!down) return;
+    const now = performance.now(), dt = Math.max(1, now - lt);
+    vx = (e.clientX - lx) / dt; vy = (e.clientY - ly) / dt; lx = e.clientX; ly = e.clientY; lt = now;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
+    if (moved) apply(dx, dy);
+  });
+  card.addEventListener('pointerup', e => {
+    if (!down) return;
+    down = false; card.classList.remove('drag');
+    const dx = e.clientX - sx, dy = e.clientY - sy, w = card.offsetWidth, h = card.offsetHeight;
+    activeDeck = st;
+    if (!moved) { reset(); openQuick(card.dataset.id); return; }
+    if (dx > 0.28 * w || vx > 0.8) return flyOut(card, st, 'save', dy);
+    if (dx < -0.28 * w || vx < -0.8) return flyOut(card, st, 'skip', dy);
+    reset();
+    if (dy < -0.22 * h || vy < -0.9) openRsvp(card.dataset.id, st);
+  });
+  card.addEventListener('pointercancel', () => { down = false; card.classList.remove('drag'); reset(); });
+}
+
+/* ---------- RSVP confirm sheet (M-21) — the only way a swipe leads to an RSVP ---------- */
+function openRsvp(id, st){
+  const e = ev(id);
+  const full = e.going >= e.cap, small = e.cap <= 10, pos = e.waiting + 1;
+  const rows = [
+    [t('sw.rsvpWhen'), `${e.when[LANG]} · ${rel(e)}`],
+    [t('sw.rsvpWhere'), t('sw.rsvpWhereVal', {area: area(e.area)})],
+    [t('sw.rsvpSpots'), plainCap(e)],
+    [t('sw.rsvpPrice'), price(e.price)],
+    [t('sw.rsvpHost'), e.curated ? `<span class="pill src">🏷 ${t('ev.curated')}</span>` : `${e.host.name} ${tb(e.host.trust)}`]
+  ];
+  const notes = [];
+  if (e.price > 0) notes.push(`<div class="note warn">💳 <span>${t('sw.rsvpPaid', {price: price(e.price)})}</span></div>`);
+  if (small && ME.trust < 2) notes.push(`<div class="note info">🔒 <span>${t('sw.rsvpSmall')}</span></div>`);
+  if (full) notes.push(`<div class="note warn">⏳ <span>${t('sw.rsvpWait', {p: pos})}</span></div>`);
+  document.getElementById('rsvpBody').innerHTML = `
+    <div class="row" style="gap:12px;margin-bottom:14px"><span class="rail-thumb" style="background:${e.grad};width:56px;height:56px;font-size:26px">${e.emoji}</span><b class="h3">${e.title}</b></div>
+    <dl class="kv" style="margin-bottom:14px">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+    <div class="stack" style="gap:8px">${notes.join('')}<p class="xs muted">${t('sw.rsvpNote')}</p></div>`;
+  const primary = small && ME.trust < 2
+    ? `<button class="btn btn-primary" data-rsvp="verify">${t('sw.rsvpVerify')}</button>`
+    : `<button class="btn btn-primary" data-rsvp="ok">${full ? t('sw.rsvpWaitConfirm') : t('sw.rsvpConfirm')}</button>`;
+  document.getElementById('rsvpFoot').innerHTML = `<button class="btn btn-outline" data-close>${t('sw.rsvpCancel')}</button>${primary}`;
+  document.querySelector('#rsvpFoot [data-rsvp]').onclick = ev2 => {
+    const kind = ev2.currentTarget.dataset.rsvp;
+    closeAllOverlays();
+    if (kind === 'verify') { goTo('web-myspace-mockup.html?screen=trust'); return; }
+    if (full) { swToast(t('sw.toastWaitlist', {p: pos})); return; }
+    if (st) { st.going.add(id); renderDeck(st); }
+    swToast(t('sw.toastGoing'));
+  };
+  openOverlay('rsvpSheet');
+}
+
+/* ---------- Quick view (tap on a card) ---------- */
+function openQuick(id){
+  const e = ev(id);
+  document.getElementById('qvBody').innerHTML = `
+    <div class="dk-cover" style="background:${e.grad};height:180px;border-radius:16px 16px 0 0"><span aria-hidden="true">${e.emoji}</span></div>
+    <div class="dlg-b stack" style="gap:10px">
+      <div class="dk-when num"><span>${e.when[LANG]}</span><span class="rel">${rel(e)}</span></div>
+      <h3 class="h2" id="qvTitle">${e.title}</h3>
+      <div class="dk-line"><span>📍 ${area(e.area)}</span><span>${km(e)}</span><span>${t('cat.' + e.cat)}</span><span>🗣 ${e.langs.join(' · ')}</span></div>
+      <div class="dk-cap">${capText(e)}${capBar(e)}</div>
+      <p class="sec" data-ugc>${META[e.id].desc}</p>
+      <div class="ev-host">${hostLine(e)}</div>
+    </div>
+    <div class="dlg-f">
+      <button class="btn btn-outline" data-close>${t('sw.close')}</button>
+      ${DETAIL_PAGE_IDS.includes(id) ? `<button class="btn btn-outline" data-go="web-event-mockup.html?screen=event&ev=${id}">${t('sw.openFull')}</button>` : ''}
+      <button class="btn btn-primary" data-qv-join="${id}">${t('sw.join')}</button>
+    </div>`;
+  document.querySelector('[data-qv-join]').onclick = () => openRsvp(id, activeDeck);
+  openOverlay('quickView');
+}
+
+/* ---------- Summary: the real value of a finite deck (doc 14 R2) ---------- */
+function clashes(ids){
+  const out = [];
+  const s = ids.slice().sort((a, b) => at(META[a].s) - at(META[b].s));
+  for (let i = 0; i < s.length; i++) for (let j = i + 1; j < s.length; j++) {
+    const A = META[s[i]], B = META[s[j]];
+    if (at(B.s) < at(A.e) && at(A.s) < at(B.e)) out.push([s[i], s[j]]);
+  }
+  return out;
+}
+function renderSummary(st){
+  const m = document.getElementById(st.mount);
+  const saved = [...st.saved].sort((a, b) => at(META[a].s) - at(META[b].s));
+  const cl = clashes(saved), clashIds = new Set(cl.flat());
+  const dayName = id => { const d = ev(id).day; return t(d === 'sat' ? 'sw.dayShort.sat' : d === 'sun' ? 'sw.dayShort.sun' : 'sw.dayShort.today'); };
+  const row = (id, btns) => { const e = ev(id); return `<div class="dk-sumrow ${clashIds.has(id) ? 'clash' : ''}">
+      <span class="th" style="background:${e.grad}" aria-hidden="true">${e.emoji}</span>
+      <div class="mid"><b>${e.title}</b><span class="xs sec num">${e.when[LANG]} · ${area(e.area)} · ${price(e.price)}</span><div class="xs">${capText(e)}</div></div>${btns(e)}</div>`; };
+  m.innerHTML = `
+    <div class="dk-head"><button class="btn btn-ghost btn-sm" data-go="web-discover-mockup.html?screen=discover">← ${t('sw.back')}</button><div class="ttl"><b>${t('sw.sumTitle')}</b><span>${t('sw.sumSaved', {n: saved.length})}</span></div><span style="width:90px"></span></div>
+    <div class="dk-sum">
+      ${cl.map(([a, b]) => `<div class="note warn">⚠️ <span>${t('sw.sumClash', {day: dayName(a), a: ev(a).title, b: ev(b).title})}</span></div>`).join('')}
+      ${saved.length ? saved.map(id => row(id, e => st.going.has(e.id) ? `<span class="pill going">✓ ${t('rsvp.going')}</span>` : `<button class="btn btn-primary btn-sm" data-sum-rsvp="${e.id}">${t('sw.sumRsvp')}</button>`)).join('') : `<div class="empty" style="padding:28px"><p>${t('sw.sumNone')}</p></div>`}
+      ${saved.length ? `<div class="row wrap"><button class="btn btn-primary" data-sum="cal">📅 ${t('sw.sumCal')}</button><button class="btn btn-outline" data-sum="share">↗ ${t('sw.sumShare')}</button></div>` : ''}
+      ${st.skipped.length ? `<div class="divider"></div><div class="row between wrap"><span class="small sec">${t('sw.sumSkipped', {n: st.skipped.length})}</span><button class="btn btn-ghost btn-sm" data-sum="review">${t(st.showSkipped ? 'sw.sumHideReview' : 'sw.sumReview')}</button></div>` : ''}
+      ${st.showSkipped ? st.skipped.map(id => row(id, e => `<button class="btn btn-outline btn-sm" data-sum-save="${e.id}">♡ ${t('sw.sumSaveInstead')}</button>`)).join('') : ''}
+      <div class="row wrap" style="justify-content:center;margin-top:6px"><button class="btn btn-outline" data-sum="restart">↺ ${t('sw.sumRestart')}</button><button class="btn btn-ghost" data-go="web-discover-mockup.html?screen=discover">${t('sw.sumBack')}</button></div>
+    </div>`;
+  m.querySelectorAll('[data-sum-rsvp]').forEach(b => b.onclick = () => openRsvp(b.dataset.sumRsvp, st));
+  m.querySelectorAll('[data-sum-save]').forEach(b => b.onclick = () => { const id = b.dataset.sumSave; st.skipped = st.skipped.filter(x => x !== id); st.saved.add(id); renderSummary(st); swToast(t('sw.toastSaved')); });
+  m.querySelectorAll('[data-sum]').forEach(b => b.onclick = () => {
+    const a = b.dataset.sum;
+    if (a === 'cal') swToast(t('sw.sumCalToast', {n: saved.length}));
+    if (a === 'share') swToast(t('sw.shareToast'));
+    if (a === 'review') { st.showSkipped = !st.showSkipped; renderSummary(st); }
+    if (a === 'restart') { Object.assign(st, newDeck(st.mount)); renderDeck(st); }
+  });
+}
+
+/* ================= INLINE SWIPE ROWS (PA B) ================= */
+const inl = {hidden: new Set(), saved: new Set(), coachDone: false, group: null, focus: -1};
+const RAIL_R = 88, RAIL_L = 152;
+const GROUPS = [
+  ['sw.day.today', ['lx', 'quiz']],
+  ['sw.day.sat', ['cleanup', 'volley', 'salsa']],
+  ['sw.day.sun', ['hike', 'surf']],
+  ['sw.day.later', ['cowork', 'yoga', 'run', 'boardgame']]
+];
+
+function lnRow(e){
+  const saved = inl.saved.has(e.id);
+  return `<div class="ln-row" data-id="${e.id}">
+    <div class="ln-rail l"><button class="save" data-act="save" tabindex="-1"><span class="i">♥</span><span class="lbl">${t('sw.railSave')}</span></button></div>
+    <div class="ln-rail r"><button class="share" data-act="share" tabindex="-1"><span class="i">↗</span><span class="lbl">${t('sw.railShare')}</span></button><button class="skip" data-act="skip" tabindex="-1"><span class="i">✕</span><span class="lbl">${t('sw.railSkip')}</span></button></div>
+    <div class="ln-fg" tabindex="0" role="button" aria-label="${cardAria(e).replace(/"/g, '&quot;')}">
+      <div class="ln-thumb" style="background:${e.grad}"><span aria-hidden="true">${e.emoji}</span>${e.curated ? `<span class="pill src">🏷</span>` : ''}</div>
+      <div class="ln-main">
+        <div class="ln-title">${e.title}</div>
+        <div class="ln-sub num"><b>${e.when[LANG]}</b> · ${rel(e)} · 📍 ${area(e.area)} · ${km(e)}</div>
+        <div class="ln-cap">${capBar(e)}${capText(e)}</div>
+        <div class="ln-meta"><span>${t('cat.' + e.cat)}</span>·<span>${e.langs.join(' · ')}</span>·<b class="num" style="color:var(--text)">${price(e.price)}</b>·${e.curated ? `<span class="pill src">🏷 ${t('ev.curated')}</span>` : `<span>${e.host.name}</span>${tb(e.host.trust)}`}</div>
+      </div>
+      <div class="ln-side">
+        <button class="icon-btn ${saved ? 'on' : ''}" data-act="heart" aria-pressed="${saved}" aria-label="${t('sw.save')}">${saved ? '♥' : '♡'}</button>
+        <button class="icon-btn" data-act="more" aria-label="${t('sw.more')}">⋯</button>
+      </div>
+    </div></div>`;
+}
+
+function renderInline(mountId, preOpen){
+  const m = document.getElementById(mountId); if (!m) return;
+  const visibleCount = DECK_IDS.filter(id => !inl.hidden.has(id)).length;
+  m.innerHTML = `
+    <div class="row between wrap"><h1 class="h1">${t('home.title')}</h1><button class="btn btn-ghost btn-sm" data-open="kbdHelp">⌨️ ${t('sw.kbdBtn')}</button></div>
+    <div class="chips"><button class="chip" data-i18n="time.tonight"></button><button class="chip" data-i18n="time.tomorrow"></button><button class="chip on" data-i18n="time.weekend"></button><button class="chip" data-i18n="time.next7"></button><button class="chip soft">📍 <span data-area="${ME.area}"></span></button></div>
+    ${inl.coachDone ? '' : `<div class="ln-coach" role="note"><span>👆 ${t('sw.coach')}</span><button type="button" data-coach>${t('sw.coachOk')}</button></div>`}
+    ${GROUPS.map(([label, ids], gi) => {
+      const rows = ids.filter(id => !inl.hidden.has(id)).map(id => lnRow(ev(id))).join('');
+      const entry = gi === 0 ? `<button class="ln-entry" data-go="deck"><span class="stack3"><i style="background:${ev('volley').grad}">🏐</i><i style="background:${ev('lx').grad}">🗣️</i><i style="background:${ev('hike').grad}">🥾</i></span><span><b>${t('sw.entryTitle')}</b><span>${t('sw.entryBody', {n: visibleCount})}</span></span></button>` : '';
+      return rows ? `<div class="dgh">${t(label)}</div><div class="ln-list">${rows}</div>${entry}` : entry;
+    }).join('')}`;
+  const coach = m.querySelector('[data-coach]');
+  if (coach) coach.onclick = () => { inl.coachDone = true; coach.parentElement.remove(); };
+  m.querySelectorAll('.ln-row').forEach(bindRow);
+  if (preOpen) {
+    const rows = m.querySelectorAll('.ln-row');
+    if (rows[0]) setRowX(rows[0], RAIL_R, false);
+    if (rows[2]) setRowX(rows[2], -RAIL_L, false);
+  }
+}
+
+function setRowX(row, x, animate){
+  const fg = row.querySelector('.ln-fg');
+  fg.classList.toggle('drag', animate === false || reduceMotion());
+  fg.style.transform = x ? `translateX(${x}px)` : '';
+  row.dataset.x = x;
+  row.querySelectorAll('.ln-rail.l .lbl').forEach(l => l.style.opacity = clamp((x - 24) / 40, 0, 1));
+  row.querySelectorAll('.ln-rail.r .lbl').forEach(l => l.style.opacity = clamp((-x - 24) / 40, 0, 1));
+}
+function closeOtherRails(except){
+  document.querySelectorAll('.scr.show .ln-row').forEach(r => { if (r !== except && +r.dataset.x) setRowX(r, 0, true); });
+}
+function anyRailOpen(){ return [...document.querySelectorAll('.scr.show .ln-row')].some(r => +r.dataset.x); }
+
+function bindRow(row){
+  const fg = row.querySelector('.ln-fg'), id = row.dataset.id;
+  let sx = 0, sy = 0, base = 0, lx = 0, lt = 0, vx = 0, down = false, active = false, cancelled = false, dragged = false;
+  fg.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || e.target.closest('[data-act]')) return;
+    down = true; active = false; cancelled = false; dragged = false;
+    sx = lx = e.clientX; sy = e.clientY; lt = performance.now(); vx = 0; base = +row.dataset.x || 0;
+  });
+  fg.addEventListener('pointermove', e => {
+    if (!down || cancelled) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    const now = performance.now(); vx = (e.clientX - lx) / Math.max(1, now - lt); lx = e.clientX; lt = now;
+    if (!active) {
+      if (Math.abs(dy) >= 10 && Math.abs(dx) < 12) { cancelled = true; return; }            // vertical scroll always wins
+      if (Math.abs(dx) >= 12 && Math.abs(dx) > 1.5 * Math.abs(dy)) { active = true; dragged = true; fg.setPointerCapture(e.pointerId); closeOtherRails(row); inl.coachDone = true; }
+      else return;
+    }
+    let x = base + dx;
+    if (x > RAIL_R) x = RAIL_R + (x - RAIL_R) * 0.35;                                         // rubber band past the rest position
+    if (x < -RAIL_L) x = -RAIL_L + (x + RAIL_L) * 0.35;
+    setRowX(row, x, false);
+  });
+  const end = e => {
+    if (!down) return; down = false;
+    if (!active) return;
+    const w = row.offsetWidth, dx = e.clientX - sx, total = base + dx, ratio = Math.abs(total) / w, speed = Math.abs(vx);
+    const commit = ratio >= 0.6 || (ratio >= 0.45 && speed >= 0.2) || speed >= 1.2;          // doc 14 §2.3 + §2.5 hesitation band
+    if (total > 0 && commit && vx >= 0) return rowSave(row, true);
+    if (total < 0 && commit && vx <= 0) return rowSkip(row);
+    const x = +row.dataset.x;
+    setRowX(row, x > RAIL_R / 2 ? RAIL_R : x < -RAIL_L / 2 ? -RAIL_L : 0, true);
+  };
+  fg.addEventListener('pointerup', end);
+  fg.addEventListener('pointercancel', () => { down = false; setRowX(row, 0, true); });
+  fg.addEventListener('click', e => {
+    if (e.target.closest('[data-act]')) return;
+    if (dragged) { dragged = false; return; }
+    if (anyRailOpen()) { closeOtherRails(null); return; }                                  // tap with a rail open only closes it
+    openDetails(id);
+  });
+  fg.addEventListener('focus', () => { inl.focus = [...document.querySelectorAll('.scr.show .ln-row')].indexOf(row); document.querySelectorAll('.ln-row.kfocus').forEach(r => r.classList.remove('kfocus')); });
+  row.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const a = b.dataset.act;
+    if (a === 'save') rowSave(row, true);
+    if (a === 'skip') rowSkip(row);
+    if (a === 'share') { setRowX(row, 0, true); swToast(t('sw.linkCopied')); }
+    if (a === 'heart') inl.saved.has(id) ? rowUnsave(row) : rowSave(row, false);
+    if (a === 'more') openMore(row);
+  }));
+}
+
+function rowSave(row, fly){
+  const id = row.dataset.id;
+  const finish = () => { inl.saved.add(id); rerenderInline(); swToast(t('sw.toastSaved'), () => { inl.saved.delete(id); rerenderInline(); }); };
+  if (fly && !reduceMotion()) { const fg = row.querySelector('.ln-fg'); fg.classList.remove('drag'); fg.style.transition = 'transform .18s cubic-bezier(.2,.8,.2,1)'; fg.style.transform = `translateX(${row.offsetWidth}px)`; setTimeout(finish, 180); }
+  else finish();
+}
+function rowUnsave(row){ const id = row.dataset.id; inl.saved.delete(id); rerenderInline(); swToast(t('sw.unsaved'), () => { inl.saved.add(id); rerenderInline(); }); }
+
+/* Consecutive skips inside the 6 s window collapse into one toast; undo restores the whole group. */
+function rowSkip(row){
+  const id = row.dataset.id, fg = row.querySelector('.ln-fg');
+  const finish = () => {
+    inl.hidden.add(id);
+    const now = Date.now();
+    if (!inl.group || now - inl.group.at > 6000) inl.group = {ids: [], at: now};
+    inl.group.ids.push(id); inl.group.at = now;
+    const ids = inl.group.ids.slice();
+    if (DECK_IDS.every(x => inl.hidden.has(x))) { show('inline-hidden', true); return; }
+    rerenderInline();
+    swToast(ids.length > 1 ? t('sw.hiddenMany', {n: ids.length}) : t('sw.hidden1'), () => { ids.forEach(x => inl.hidden.delete(x)); inl.group = null; rerenderInline(); });
+  };
+  if (reduceMotion()) return finish();
+  fg.classList.remove('drag'); fg.style.transition = 'transform .18s cubic-bezier(.2,.8,.2,1)'; fg.style.transform = `translateX(${-row.offsetWidth}px)`;
+  setTimeout(() => { row.classList.add('gone'); setTimeout(finish, 200); }, 180);
+}
+function rerenderInline(){ if (CURRENT === 'inline') renderInline('inlineMount'); if (CURRENT === 'inline-open') renderInline('inlineMount2'); applyI18n(); focusRow(inl.focus); }
+
+function openMore(row){
+  const id = row.dataset.id, saved = inl.saved.has(id);
+  const body = document.getElementById('moreBody');
+  body.innerHTML = `
+    <button class="btn btn-outline btn-block" data-m="save">${saved ? '♥' : '♡'} ${t('sw.save')}</button>
+    <button class="btn btn-outline btn-block" data-m="share">↗ ${t('sw.menuShare')}</button>
+    <button class="btn btn-outline btn-block" data-m="skip">✕ ${t('sw.menuNotForMe')}</button>
+    <button class="btn btn-danger-ghost btn-block" data-m="report">⚑ ${t('sw.menuReport')}</button>`;
+  body.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+    closeAllOverlays();
+    const a = b.dataset.m;
+    if (a === 'save') saved ? rowUnsave(row) : rowSave(row, false);
+    if (a === 'share') swToast(t('sw.linkCopied'));
+    if (a === 'skip') rowSkip(row);
+    if (a === 'report') goTo('web-event-mockup.html?screen=report');
+  });
+  openOverlay('moreMenu');
+}
+
+function focusRow(i){
+  const rows = [...document.querySelectorAll('.scr.show .ln-row')];
+  if (!rows.length || i < 0) return;
+  i = clamp(i, 0, rows.length - 1); inl.focus = i;
+  rows.forEach((r, k) => r.classList.toggle('kfocus', k === i));
+  rows[i].querySelector('.ln-fg').focus({preventScroll: false});
+}
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,textarea,select') || e.metaKey || e.ctrlKey || e.altKey) return;
+  if ([...document.querySelectorAll('[data-overlay]')].some(o => !o.hidden)) return;
+  const k = e.key;
+  if (CURRENT && CURRENT.startsWith('deck') && CURRENT !== 'deck-empty') {
+    const st = CURRENT === 'deck' ? deckA : CURRENT === 'deck-rsvp' ? deckB : deckC;
+    if (st.idx >= st.ids.length) return;
+    if (k === 'ArrowRight') { e.preventDefault(); deckAction(st, 'save'); }
+    else if (k === 'ArrowLeft') { e.preventDefault(); deckAction(st, 'skip'); }
+    else if (k === 'ArrowUp') { e.preventDefault(); deckAction(st, 'join'); }
+    else if (k === 'Enter') { e.preventDefault(); openQuick(st.ids[st.idx]); }
+    else if (k.toLowerCase() === 'u') deckAction(st, 'undo');
+    return;
+  }
+  if (CURRENT === 'inline' || CURRENT === 'inline-open') {
+    const rows = [...document.querySelectorAll('.scr.show .ln-row')];
+    const row = rows[inl.focus];
+    if (k === 'j' || k === 'ArrowDown') { e.preventDefault(); focusRow(inl.focus + 1); }
+    else if (k === 'k' || k === 'ArrowUp') { e.preventDefault(); focusRow(Math.max(0, inl.focus - 1)); }
+    else if (k === 's' && row) rowSave(row, true);
+    else if (k === 'x' && row) rowSkip(row);
+    else if (k === 'Enter' && row && document.activeElement === row.querySelector('.ln-fg')) { e.preventDefault(); openDetails(row.dataset.id); }
+    else if (k === 'u' && swToastUndo) { const fn = swToastUndo; hideSwToast(); fn(); }
+    else if (k === '?') openOverlay('kbdHelp');
+  }
+});
+
+/* ---------- render hooks ---------- */
+onRender(id => {
+  if (id === 'deck') { activeDeck = deckA; renderDeck(deckA); }
+  if (id === 'deck-rsvp') { activeDeck = deckB; renderDeck(deckB); openRsvp(deckB.ids[deckB.idx], deckB); }
+  if (id === 'deck-summary') { activeDeck = deckC; renderDeck(deckC); }
+  if (id === 'deck-empty') document.getElementById('deckEmptyAlso').innerHTML = ['cowork', 'yoga', 'run'].map(x => eventCard(ev(x), 'row')).join('');
+  if (id === 'inline') renderInline('inlineMount');
+  if (id === 'inline-open') renderInline('inlineMount2', true);
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+});
+document.getElementById('deckEmptyAlso').addEventListener('click', e => { const c = e.target.closest('[data-ev]'); if (c) openDetails(c.dataset.ev); });
+
+/* Owner request 2026-09-19: tapping an event anywhere opens this deck with that event on top.
+   The rest of the week follows in time order, so the card stack still reads as "your week". */
+function deckStartingAt(id){ return DECK_IDS.includes(id) ? [id].concat(DECK_IDS.filter(x => x !== id)) : DECK_IDS.slice(); }
+function openDeckAt(id){
+  Object.assign(deckA, newDeck('deckMount'), {ids: deckStartingAt(id)});
+  const u = new URL(location); u.searchParams.set('ev', id); history.replaceState(null, '', u);
+  show('deck', true);
+}
+/* Back returns to the page the member tapped the event on; inside this file it falls back to the list. */
+const CAME_FROM = document.referrer && /-mockup\.html/.test(document.referrer) && !/web-swipe-mockup\.html/.test(document.referrer) ? document.referrer : null;
+function deckBack(){ if (CAME_FROM) history.back(); else goTo('web-discover-mockup.html?screen=discover'); }
+if (params.get('ev')) deckA.ids = deckStartingAt(params.get('ev'));
+boot('swipe');
+</script>
+</body>
+</html>
