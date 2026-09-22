@@ -1,0 +1,12 @@
+# Allowlist. This folder lives in a public repository, so only reviewed Markdown
+# records and map-audit screenshots may be tracked here. Signed originals, counsel
+# opinions, filings, personal data and secrets stay outside git (see README.md).
+# `git add -f` bypasses this file, and nothing in CI catches it until secret
+# scanning ships with T-TL-02.
+*
+!*/
+!.gitignore
+!.gitkeep
+!*.md
+!map-audit/**/*.png
+!map-audit/**/*.webp

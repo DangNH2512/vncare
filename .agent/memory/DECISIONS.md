@@ -380,3 +380,23 @@ thì nó emit file entry mà bỏ chunk sibling, worker gãy khi import.
 
 **Bài học kiểm chứng:** lỗi này tồn tại từ lúc thêm `LocationPicker` nhưng lọt lưới vì
 các lần verify trước chỉ bấm chip khu vực, chưa bao giờ click thẳng lên bản đồ.
+
+## [2026-09-19] Chạy kịch bản tinh gọn 2 dev + Founder, cắt nhóm A + B (CH-06)
+
+**Bối cảnh:** CH-06 treo từ hạn 03/09; checklist M0–M6 vẫn lập theo đội đủ 5,5 FTE
+(191/330 mục chưa có người phụ trách, 25 mục gán vai Mobile không tồn tại), trong khi
+git log chỉ có một người commit.
+
+**Lựa chọn:** Founder chốt phương án tinh gọn của `docs/analysis/08` §9.2, cắt nhóm A
+(PWA thay app native, hoãn phát hành cửa hàng) và nhóm B (§10.2); giữ nhóm C. Vai:
+Founder (PO, curate, kiểm duyệt, pháp lý, không viết code) · Dev 1 (Backend & Platform,
+kiêm Tech Lead) · Dev 2 (Product & Web) · thuê ngoài Designer, QA hai đợt, dịch giả.
+Lịch L0 → L12 ở 28 SP/sprint, M6 dời sang 01/04/2027, beta kín 60 user. Ghi ở
+`docs/analysis/00` QĐ-77.
+
+**Hệ quả:** Checklist `docs/checklists/` phân việc lại cho ba người, thêm trạng thái
+"Cắt / hoãn" (không tính vào tỷ lệ xong) và nhóm "Bổ sung kịch bản tinh gọn". Soát chéo
+cho thấy lịch §10.4 vượt sức chứa ở L0, L1, L2, L4, L5, L7 và Dev 1 gánh khoảng 65%
+tổng SP — cần Founder + Dev 1 cân lại trước L1. Bus factor = 1 (RK-09 đỏ đậm).
+
+**Thay thế cho:** QĐ-71 (11 sprint S0 → S10 và Backend hợp đồng 10 tuần).

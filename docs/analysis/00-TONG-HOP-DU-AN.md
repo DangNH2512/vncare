@@ -20,11 +20,11 @@
 2. [Tác nhân & role](#2-tác-nhân--role) — *role enum 5 giá trị · ma trận RBAC · trust T0–T5, đã chốt*
 3. [Use case MVP theo MoSCoW](#3-use-case-mvp-theo-moscow) — *45 Must (waitlist đã lên Must) · L1→L7 điều kiện ra mắt*
 4. [Kiến trúc & tech stack đã chốt](#4-kiến-trúc--tech-stack-đã-chốt)
-5. [Roadmap & milestone](#5-roadmap--milestone) — *13 sprint lập lịch, 11 trước M6 · kịch bản tinh gọn 2 dev*
+5. [Roadmap & milestone](#5-roadmap--milestone) — *13 sprint lập lịch, 11 trước M6 · kịch bản tinh gọn 2 dev (đã chọn, QĐ-77)*
 6. [Top 10 rủi ro và cách xử lý](#6-top-10-rủi-ro-và-cách-xử-lý)
 7. [Mảng pháp lý — tạm gác, chưa xong](#7-mảng-pháp-lý--tạm-gác-chưa-xong) — *hoãn sang giai đoạn sau; phải làm xong trước khi ra mắt công khai*
-8. [Decision log](#8-decision-log) — *QĐ-01 → QĐ-76, trong đó QĐ-54 → QĐ-76 chốt ngày 31/08/2026*
-9. [Câu hỏi còn mở cần chủ dự án trả lời](#9-câu-hỏi-còn-mở-cần-chủ-dự-án-trả-lời) — *8/16 đã có câu trả lời chốt*
+8. [Decision log](#8-decision-log) — *QĐ-01 → QĐ-77, trong đó QĐ-54 → QĐ-76 chốt ngày 31/08/2026, QĐ-77 chốt ngày 19/09/2026*
+9. [Câu hỏi còn mở cần chủ dự án trả lời](#9-câu-hỏi-còn-mở-cần-chủ-dự-án-trả-lời) — *9/16 đã có câu trả lời chốt*
 10. [Việc cần làm ngay: 01/09 → 14/09/2026](#10-việc-cần-làm-ngay-0109--14092026)
 11. [Mục lục liên kết tới 9 tài liệu chi tiết](#11-mục-lục-liên-kết-tới-9-tài-liệu-chi-tiết)
 12. [Mâu thuẫn cần giải quyết](#12-mâu-thuẫn-cần-giải-quyết) — *11 đã giải · 2 còn mở · 2 tạm gác · 5 mới (MT-16 → MT-20)*
@@ -494,6 +494,8 @@ Khả dụng 99,5%/tháng · p95 API đọc < 300 ms · p95 tạo RSVP < 500 ms 
 
 ### 5.6 Kịch bản tinh gọn — nếu chỉ có 2 lập trình viên
 
+> ✅ **Đã chốt ngày 19/09/2026 (QĐ-77):** chạy kịch bản tinh gọn 2 dev + Founder, **cắt nhóm A + B**, M6 dời sang **01/04/2027**. Checklist `docs/checklists/` đã phân việc lại theo Founder / Dev 1 / Dev 2 và lịch L0 → L12.
+
 `08` §10 nay có bảng cắt scope chi tiết theo ba nhóm A/B/C. Đây là **lời giải bằng số** cho [CH-06], không còn là lời hứa suông.
 
 | Kịch bản cắt | Backlog còn lại | Số sprint *(28 SP/sprint)* | Ngày M6 khả thi |
@@ -515,7 +517,7 @@ Khả dụng 99,5%/tháng · p95 API đọc < 300 ms · p95 tạo RSVP < 500 ms 
 | Ngân sách 7 tháng | ≈ **2,04 tỷ VND ≈ 78.462 USD** | ≈ **0,91 tỷ VND ≈ 35.000 USD** |
 | Bus factor | 2–3 | **1** — RK-09 chuyển sang đỏ đậm |
 
-**Không bao giờ cắt, kể cả kịch bản tinh gọn:** tách `event_occurrences` · `trust_signals` append-only · `curated_sources` + `claim_tokens` · `audit_logs` bất biến · `consent_records` · Report/Block/Contact us · Sign in with Apple · xoá tài khoản + xuất dữ liệu · tư vấn pháp lý M0 và ToS/Privacy M4.
+**Không bao giờ cắt, kể cả kịch bản tinh gọn:** tách `event_occurrences` · `trust_signals` append-only · `curated_sources` + `claim_tokens` · `audit_logs` bất biến · `consent_records` · Report/Block/Contact us · ~~Sign in with Apple~~ *(QĐ-77: không bắt buộc khi chưa có app trên App Store — Guideline 4.8 chỉ áp cho app trên App Store, `08` §10.2 E2-S4; đưa lại vào danh sách này khi làm bản native)* · xoá tài khoản + xuất dữ liệu · tư vấn pháp lý M0 và ToS/Privacy M4.
 
 ---
 
@@ -677,7 +679,7 @@ Danh sách quyết định **đã chốt** qua 9 tài liệu phân tích. Một 
 | **QĐ-68** | Mục tiêu **WCA tại M6 là 220–280 lượt/tuần** (ngưỡng đỏ < 110). **Không** dùng con số 550 ở bất kỳ tài liệu hay báo cáo nào trong cửa sổ 6 tháng | **MT-10** | `01` D-23, `08` M6-3 |
 | **QĐ-69** | Gate M6 đo bằng **DÒNG CHẢY, không đo TỒN KHO**: **≥ 25 sự kiện đang mở mỗi tuần** (trung bình 4 tuần 25/01 – 21/02/2027, không tuần nào < 20) và **6/6 khu vực MVP** đều ≥ 1 sự kiện mỗi tuần. **Không** dùng chỉ tiêu "≥ 80 sự kiện". Trượt M6-1 hoặc M6-2 ⇒ **không ra mắt đúng hạn**, lùi 2–4 tuần | **MT-09** | `01` D-24, `08` §7.8 |
 | **QĐ-70** | Hàng đợi waitlist hiện thực bằng `rsvps.status = 'waitlisted'` + `position` + `promotion_expires_at` theo `02` §9.1 — ⚠️ **`03` §6.2 lại thiết kế bảng sổ cái `waitlist_entries` riêng. Chưa hợp nhất — xem MT-20** | *(một phần)* | `02` §9.1 vs `03` §6.2 |
-| **QĐ-71** | **13 sprint được lập lịch, đúng 11 sprint (S0 → S10) trước M6**; S11–S12 là sau ra mắt. Bản có hiệu lực để lập kế hoạch tuần là **`08` §6 (bản san tải)**, không phải `08` §5. Bắt buộc **1 Backend hợp đồng 10 tuần (S2 → S6, +70 SP, 150 triệu VND)** | **MT-01** | `08` §6.1 |
+| **QĐ-71** | **13 sprint được lập lịch, đúng 11 sprint (S0 → S10) trước M6**; S11–S12 là sau ra mắt. Bản có hiệu lực để lập kế hoạch tuần là **`08` §6 (bản san tải)**, không phải `08` §5. Bắt buộc **1 Backend hợp đồng 10 tuần (S2 → S6, +70 SP, 150 triệu VND)**. *(Thay bằng QĐ-77 ngày 19/09/2026 — lịch hiệu lực nay là `08` §10.4)* | **MT-01** | `08` §6.1 |
 | **QĐ-72** | Mọi con số GTM **trước 13/11/2026 là số tiền-app** và phải ghi rõ giai đoạn đo (P‑A tiền-app · P‑B RSVP live · P‑C beta kín · P‑D công khai). Hai hệ đánh số mốc **không được lẫn**: `M1`–`M6` là **tháng GTM**, `KT‑M0`–`KT‑M6` là **mốc kỹ thuật** của `08` | **MT-07** | `07` §12.1, §10.2 |
 
 **Pháp lý**
@@ -689,26 +691,33 @@ Danh sách quyết định **đã chốt** qua 9 tài liệu phân tích. Một 
 | **QĐ-75** | Moderator tình nguyện ngoài tổ chức (từ M4) **chưa được chạm PII** cho tới khi có thoả thuận xử lý dữ liệu theo Luật 91/2025; hàng đợi kiểm duyệt cho tình nguyện viên **che PII mặc định**. **CẦN LUẬT SƯ XÁC NHẬN** | — | `01` D-29 |
 | **QĐ-76** | Mọi hành động của `curator`/`moderator`/`admin`/`super_admin` trên dữ liệu người khác ghi **`audit_log` bất biến**; truy cập PII **bắt buộc kèm** `moderation_case_id` hoặc `support_ticket_id`. DB role ứng dụng bị thu hồi `UPDATE`/`DELETE` trên `audit_log` (bất biến INV-2, có test). Không tạo bảng audit thứ hai cho kiểm duyệt — `moderation_audit_log` chỉ là **view** `v_moderation_audit_log` lọc trên `audit_logs` | — | `01` D-25, `05` §13 |
 
+### 8.7 Quyết định chốt ngày 19/09/2026
+
+| # | Quyết định | Giải | Nguồn |
+|---|---|---|---|
+| **QĐ-77** | **Chạy kịch bản tinh gọn: 2 lập trình viên + Founder, cắt nhóm A + B.** Vai trò: **Founder** (PO, Community Manager, curate, kiểm duyệt, pháp lý; không viết code) · **Dev 1** (Backend & Platform, kiêm Tech Lead) · **Dev 2** (Product & Web) · thuê ngoài Designer, QA hai đợt, dịch giả. Ra mắt bằng **PWA**, hoãn app native và phát hành cửa hàng. Lịch hiệu lực là **13 sprint L0 → L12** ở 28 SP/sprint; mốc mới: M2 **13/11/2026** · M3 **11/12/2026** · M4 **25/12/2026** · M5 **26/02/2027** (beta kín **60 user**) · M6 **01/04/2027**. Gate M6 giữ nguyên tiêu chí dòng chảy (QĐ-69). **Thay cho QĐ-71.** Việc còn lại: Founder ký bảng "Những gì mất đi khi cắt" ở `08` §10.5 | **CH-06** | `08` §9.2, §10.2 – §10.5 |
+
 ---
 
 ## 9. Câu hỏi còn mở cần chủ dự án trả lời
 
 Mỗi câu ghi rõ **ảnh hưởng nếu trả lời khác nhau** và **deadline cần chốt**. Câu 🔴 là câu khoá cứng thiết kế — trả lời sai hoặc trả lời muộn đều tốn kém.
 
-> ✅ **Cập nhật bản 1.1 — 8 trong 16 câu đã có câu trả lời chốt.** Bảng đầy đủ giữ nguyên bên dưới để truy vết lập luận; bảng này ghi câu trả lời đã chốt.
+> ✅ **Cập nhật bản 1.1 — 9 trong 16 câu đã có câu trả lời chốt** (CH-06 chốt thêm ngày 19/09/2026). Bảng đầy đủ giữ nguyên bên dưới để truy vết lập luận; bảng này ghi câu trả lời đã chốt.
 >
 > | Câu | Đã chốt phương án nào | Quyết định |
 > |---|---|---|
 > | **CH-02** | *(A)* Enum 5 giá trị `member`/`curator`/`moderator`/`admin`/`super_admin`; organizer là ngữ cảnh | QĐ-54, QĐ-55 |
 > | **CH-03** | Không chọn A cũng không chọn B — chốt **thang T0–T5 duy nhất** với điều kiện đạt bậc bằng bằng chứng, `trust_signals` append-only + job `trust:recompute` | QĐ-58, QĐ-59 |
 > | **CH-04** | *(A)* **Occurrence.** Endpoint chính theo `occurrenceId`; đường tắt theo `eventId` trả 409 `AMBIGUOUS_OCCURRENCE` | QĐ-60, QĐ-61 |
+> | **CH-06** | *(B)* **Tinh gọn 2 dev + Founder**, cắt nhóm A + B, M6 ~01/04/2027 | QĐ-77 |
 > | **CH-07** | *(A)* **Waitlist là `Must`** | QĐ-62 |
 > | **CH-09** | *(B)* **SLA `critical` = 2 giờ** — cam kết công khai ở `05` đã sửa theo | QĐ-67 |
 > | **CH-10** | **T‑2h** (cùng T‑24h) | QĐ-66 |
 > | **CH-12** | *(B)* **Hiệu chỉnh về 220–280 WCA/tuần** ở M6 | QĐ-68 |
 > | **CH-13** | *(B)* **Dòng chảy** — ≥ 25 sự kiện đang mở/tuần, không khu vực nào bằng 0 | QĐ-69 |
 >
-> **Tám câu còn mở:** CH-01 🔴 (xác thực SĐT theo NĐ 147/2024) · CH-05 🔴 (ngưỡng giấy phép mạng xã hội) · CH-06 🔴 (kịch bản ngân sách — nay đã có bảng số ở [§5.6](#56-kịch-bản-tinh-gọn--nếu-chỉ-có-2-lập-trình-viên)) · CH-08 🟡 (analytics organizer) · CH-11 🟡 (UC-14 xác minh giấy tờ) · CH-14 🟢 · CH-15 🟢 · CH-16 🟢. **Thêm 12 câu hỏi phân quyền Q-01 → Q-12** ở `01` §14.4 và **14 câu Q-01 → Q-14** ở `02` §13 — cả hai đều có người quyết và hạn riêng, cần gộp vào lịch quyết định của Founder.
+> **Bảy câu còn mở:** CH-01 🔴 (xác thực SĐT theo NĐ 147/2024) · CH-05 🔴 (ngưỡng giấy phép mạng xã hội) · CH-08 🟡 (analytics organizer) · CH-11 🟡 (UC-14 xác minh giấy tờ) · CH-14 🟢 · CH-15 🟢 · CH-16 🟢. **Thêm 12 câu hỏi phân quyền Q-01 → Q-12** ở `01` §14.4 và **14 câu Q-01 → Q-14** ở `02` §13 — cả hai đều có người quyết và hạn riêng, cần gộp vào lịch quyết định của Founder.
 
 | # | Câu hỏi | Nếu trả lời A | Nếu trả lời B | Deadline | Ai quyết |
 |---|---|---|---|---|---|
@@ -745,7 +754,7 @@ Hai tuần này quyết định việc có kịp mốc M0 (18/09) hay không. **
 - [ ] **02/09** Mở **tài khoản Google Play Console (tổ chức)** — ⏱️ 14 ngày
 
 #### Quyết định khoá cứng — *Founder + Tech Lead*
-- [ ] **03/09** Chốt **[CH-06] kịch bản ngân sách và quy mô đội** (đủ đội 5,5 FTE hay tinh gọn 2 dev) — mọi việc còn lại phụ thuộc câu này
+- [ ] ~~**03/09** Chốt **[CH-06] kịch bản ngân sách và quy mô đội** (đủ đội 5,5 FTE hay tinh gọn 2 dev)~~ → ✅ **đã chốt 19/09/2026** (QĐ-77): tinh gọn 2 dev + Founder, cắt nhóm A + B. Việc còn lại: Founder ký bảng `08` §10.5
 - [ ] **04/09** Chốt **ADR data residency** (hosting trong nước) và ghi vào `docs/adr/` — *Tech Lead*
 - [ ] **05/09** Chốt và **đóng băng bảng ngưỡng thất bại** ở `docs/analysis/09` §8.2 — theo nguyên tắc N1, sau ngày 07/09 mọi thay đổi ngưỡng phải ghi lại lý do và người quyết
 
