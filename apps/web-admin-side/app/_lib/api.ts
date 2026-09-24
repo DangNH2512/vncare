@@ -1,0 +1,222 @@
+/**
+ * Client for the Da Nang Connect API, staff-facing auth surface only.
+ *
+ * Mirrors the transport in apps/web-client-side/app/_lib/api.ts: deliberately
+ * hand-written and small. `@dnc/api-client` (generated from the OpenAPI
+ * document) replaces it, and until that generator exists a thin wrapper beats
+ * a second hand-maintained type layer. Response shapes are imported from
+ * `@dnc/contracts`, so this file owns transport only, never data shapes.
+ *
+ * Only the endpoints the operations console needs are exposed here: auth
+ * (`login`, `refresh`, `logout`, `me`) and the admin surface
+ * (`getSystemHealth`). There is no `register` — staff accounts are
+ * provisioned another way, not self-served through this app.
+ */
+import type {
+  AdminSystemHealthResponseT,
+  AuthSessionResponseT,
+  LoginRequestT,
+  SessionUserResponseT,
+} from '@dnc/contracts';
+
+/**
+ * Same-origin by design.
+ *
+ * Next rewrites `/api/*` to the API process, so the refresh cookie is a
+ * first-party cookie and no request is preflighted. Nothing here should ever
+ * point at another origin.
+ */
+const API_BASE = '';
+
+/**
+ * The access token lives in a module variable, never in localStorage.
+ *
+ * Storage is readable by any script that gets onto the page; a variable is not,
+ * and the cost of losing it on reload is one silent refresh call. The refresh
+ * token itself is an httpOnly cookie this code cannot read at all.
+ */
+let accessToken: string | null = null;
+
+export function setAccessToken(token: string | null): void {
+  accessToken = token;
+}
+
+export function getAccessToken(): string | null {
+  return accessToken;
+}
+
+/** Distinguishes "the API said no" from "the API was not reachable". */
+export class ApiError extends Error {
+  constructor(
+    readonly status: number,
+    readonly code: string | undefined,
+    readonly messageKey: string | undefined,
+  ) {
+    super(`API ${status} ${code ?? ''}`.trim());
+    this.name = 'ApiError';
+  }
+
+  /** True when the request never reached a server — the API is probably not running. */
+  get isOffline(): boolean {
+    return this.status === 0;
+  }
+
+  /** True when the caller needs to sign in, or sign in again. */
+  get isUnauthenticated(): boolean {
+    return this.status === 401;
+  }
+}
+
+interface Envelope<T> {
+  success: boolean;
+  data: T;
+}
+
+/**
+ * Narrower than `RequestInit` on purpose: `HeadersInit` also admits `Headers`
+ * and an array of tuples, neither of which merges correctly into an object
+ * literal. A plain record is the only shape this client ever needs.
+ */
+interface CallInit {
+  method?: string;
+  body?: string;
+  headers?: Record<string, string>;
+  /** Set on the retry so a failed refresh cannot loop. */
+  retried?: boolean;
+}
+
+async function call<T>(path: string, init?: CallInit): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      // Spread rather than assign: `exactOptionalPropertyTypes` treats an
+      // explicit `undefined` as a value, and fetch does not accept one.
+      ...(init?.method === undefined ? {} : { method: init.method }),
+      ...(init?.body === undefined ? {} : { body: init.body }),
+      // The refresh cookie must ride along on the auth routes.
+      credentials: 'same-origin',
+      headers: {
+        'content-type': 'application/json',
+        ...(accessToken === null ? {} : { authorization: `Bearer ${accessToken}` }),
+        ...init?.headers,
+      },
+    });
+  } catch {
+    throw new ApiError(0, 'OFFLINE', undefined);
+  }
+
+  // An access token lasts fifteen minutes, so an expiry mid-session is normal
+  // rather than exceptional: refresh once, silently, and replay the call. The
+  // caller reaching this branch already holds (or held) a session — this is
+  // not the initial authentication decision, so adopting the renewed token
+  // outright is correct here, unlike `login`/the mount-time `refresh` call in
+  // AuthProvider, which must not adopt before checking the role (see below).
+  if (response.status === 401 && !init?.retried && path !== '/api/v1/auth/refresh') {
+    const renewed = await refresh().catch(() => null);
+    if (renewed) {
+      setAccessToken(renewed.accessToken);
+      return call<T>(path, { ...init, retried: true });
+    }
+  }
+
+  if (!response.ok) {
+    const body: unknown = await response.json().catch(() => null);
+    // Every guard and service in apps/api throws `new SomeHttpException({ code,
+    // messageKey })` — a plain object, not a string. Nest's default exception
+    // filter sends that object as the response body verbatim (no `message`
+    // envelope, no `statusCode` field), so the body is flat: confirmed against
+    // the running API and the RolesGuard e2e suite (`{ code: 'ROLE_NOT_ALLOWED',
+    // messageKey: 'errors.auth.roleNotAllowed' }`, no nesting).
+    const error =
+      typeof body === 'object' && body !== null
+        ? (body as { code?: string; messageKey?: string })
+        : {};
+    throw new ApiError(response.status, error.code, error.messageKey);
+  }
+
+  if (response.status === 204) return undefined as T;
+  const envelope = (await response.json()) as Envelope<T>;
+  return envelope.data;
+}
+
+/* -------------------------------------------------------------------- auth */
+
+/**
+ * Authenticates without adopting the session.
+ *
+ * Deliberately does not call `setAccessToken`: the caller (`AuthProvider`)
+ * has not yet checked whether this account holds a staff role, and this
+ * console must never hold even a member's access token in memory, not even
+ * for the instant between the API answering and that check running. The
+ * caller adopts the token itself once it decides the session belongs here.
+ */
+export async function login(body: LoginRequestT): Promise<AuthSessionResponseT> {
+  return call<AuthSessionResponseT>('/api/v1/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+/**
+ * In-flight refresh, shared by every concurrent caller.
+ *
+ * Refresh tokens rotate, so two simultaneous refreshes would spend the same
+ * token twice and read as a replay.
+ */
+let inFlightRefresh: Promise<AuthSessionResponseT | null> | null = null;
+
+/**
+ * Exchanges the refresh cookie for a new access token, without adopting it.
+ *
+ * Returns null both when there is no session to restore (204, the ordinary
+ * case for a first-time visitor) and when the cookie was rejected. The caller
+ * treats the two the same: show the signed-out view. Same "do not adopt
+ * before the role check" rule as `login` — this is also the mount-time call
+ * `AuthProvider` uses to silently restore a session, and the refresh cookie
+ * is host-scoped rather than port-scoped, so it can just as easily belong to
+ * a member signed in on `apps/web-client-side` on the same machine. The
+ * internal 401-retry in `call()` above adopts explicitly instead, since that
+ * caller already held a vetted session.
+ */
+export function refresh(): Promise<AuthSessionResponseT | null> {
+  inFlightRefresh ??= runRefresh().finally(() => {
+    inFlightRefresh = null;
+  });
+  return inFlightRefresh;
+}
+
+async function runRefresh(): Promise<AuthSessionResponseT | null> {
+  try {
+    const session = await call<AuthSessionResponseT | undefined>('/api/v1/auth/refresh', {
+      method: 'POST',
+    });
+    return session ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function logout(): Promise<void> {
+  await call<void>('/api/v1/auth/logout', { method: 'POST' }).catch(() => undefined);
+  setAccessToken(null);
+}
+
+/** The signed-in staff member, read straight from the database on every call. */
+export function me(): Promise<SessionUserResponseT> {
+  return call<SessionUserResponseT>('/api/v1/auth/me');
+}
+
+/* ---------------------------------------------------------------- admin */
+
+/**
+ * Aggregated readiness snapshot for the operations console.
+ *
+ * Requires `admin` or `super_admin` (`SYSTEM_HEALTH_ROLES` in `@dnc/domain`);
+ * every other role gets 403 `ROLE_NOT_ALLOWED`. Unlike the public
+ * `/health/ready` probe this always resolves 200 with `data.status` carrying
+ * the verdict, so a signed-in operator sees the page render even while a
+ * dependency is down.
+ */
+export function getSystemHealth(): Promise<AdminSystemHealthResponseT> {
+  return call<AdminSystemHealthResponseT>('/api/v1/admin/system/health');
+}

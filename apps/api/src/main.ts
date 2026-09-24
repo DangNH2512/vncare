@@ -24,6 +24,10 @@ function corsOrigins(): string[] {
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  // Without this, SIGTERM/SIGINT kill the process directly and every
+  // `onApplicationShutdown` hook (DB pool, Redis clients, SMTP transport) is
+  // skipped instead of running.
+  app.enableShutdownHooks();
   app.enableCors({
     origin: corsOrigins(),
     credentials: true,

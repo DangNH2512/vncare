@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { Pool } from 'pg';
 import request from 'supertest';
+import type { UserRoleT } from '@dnc/contracts';
 import { AppModule } from '../../src/app.module.js';
 
 /**
@@ -75,13 +76,14 @@ export function newPhone(): string {
 /**
  * Registers a real account.
  *
- * Registration grants T1, which is what most routes require. `trustLevel`
- * overrides it directly in the database for the cases that need a different
- * rung — a T0 account to prove the gate bites, or T2 to open a direct message.
+ * Registration grants T1 and role `member`, which is what most routes
+ * require. `trustLevel` and `role` override those directly in the database
+ * for the cases that need a different rung or a staff account — a T0 account
+ * to prove the gate bites, or an `admin` account to reach the console.
  */
 export async function createActor(
   app: INestApplication,
-  options: { trustLevel?: number } = {},
+  options: { trustLevel?: number; role?: UserRoleT } = {},
 ): Promise<Actor> {
   const suffix = randomUUID().replaceAll('-', '').slice(0, 12);
   const email = `e2e_${suffix}@example.test`;
@@ -102,9 +104,19 @@ export async function createActor(
   };
   actors.push(user.id);
 
-  if (options.trustLevel !== undefined && options.trustLevel !== 1) {
-    await setTrustLevel(user.id, options.trustLevel);
-    // The level is a token claim, so it only takes effect on a fresh token.
+  const needsTrustOverride = options.trustLevel !== undefined && options.trustLevel !== 1;
+  const needsRoleOverride = options.role !== undefined && options.role !== 'member';
+
+  if (needsTrustOverride) {
+    await setTrustLevel(user.id, options.trustLevel as number);
+  }
+  if (needsRoleOverride) {
+    await setRole(user.id, options.role as UserRoleT);
+  }
+
+  if (needsTrustOverride || needsRoleOverride) {
+    // Both are token claims, so an override only takes effect on a token
+    // minted after the database write.
     return refreshedActor(app, email, user.id, user.handle);
   }
 
@@ -143,6 +155,24 @@ export async function setTrustLevel(userId: string, trustLevel: number): Promise
       `UPDATE users SET trust_level = $2, trust_level_changed_at = now() WHERE id = $1`,
       [userId, trustLevel],
     );
+  } finally {
+    await pool.end();
+  }
+}
+
+/**
+ * Moves an account to a different global role directly in the database.
+ *
+ * There is no role-assignment endpoint yet (RBAC-4 is guard/console scope
+ * only), so this is the only way a spec can produce a non-member account —
+ * and, combined with an access token minted before the call, the only way to
+ * prove that a role change does not retroactively affect a token already
+ * issued (AC-6).
+ */
+export async function setRole(userId: string, role: UserRoleT): Promise<void> {
+  const pool = new Pool({ connectionString: DATABASE_URL, max: 2 });
+  try {
+    await pool.query(`UPDATE users SET role = $2 WHERE id = $1`, [userId, role]);
   } finally {
     await pool.end();
   }

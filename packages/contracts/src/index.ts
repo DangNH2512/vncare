@@ -5,6 +5,14 @@ export {
   type ApiErrorT,
 } from './common';
 export {
+  AdminDependencyStatus,
+  AdminSystemHealthResponse,
+  AdminSystemHealthStatus,
+  type AdminDependencyStatusT,
+  type AdminSystemHealthResponseT,
+  type AdminSystemHealthStatusT,
+} from './admin';
+export {
   AuthSessionResponse,
   LoginRequest,
   Password,

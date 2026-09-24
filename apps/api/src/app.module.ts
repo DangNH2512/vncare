@@ -2,8 +2,12 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './database/database.module.js';
 import { StorageModule } from './storage/storage.module.js';
+import { RedisModule } from './redis/redis.module.js';
+import { MailModule } from './mail/mail.module.js';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
+import { RolesGuard } from './common/guards/roles.guard.js';
 import { TrustLevelGuard } from './common/guards/trust-level.guard.js';
+import { AdminModule } from './modules/admin/index.js';
 import { AuthModule } from './modules/auth/index.js';
 import { ChatModule } from './modules/chat/index.js';
 import { CommentModule } from './modules/comment/index.js';
@@ -19,8 +23,11 @@ import { RsvpModule } from './modules/rsvp/index.js';
   imports: [
     DatabaseModule,
     StorageModule,
+    RedisModule,
+    MailModule,
     AuthModule,
     HealthModule,
+    AdminModule,
     MediaModule,
     ProfileModule,
     EventModule,
@@ -33,9 +40,12 @@ import { RsvpModule } from './modules/rsvp/index.js';
   providers: [
     // Applied to every route, in this order. Authentication denies by default —
     // a new endpoint is unreachable until someone marks it @Public, which is
-    // the safe direction to fail. The trust gate runs after, on the identity
-    // the first guard resolved.
+    // the safe direction to fail. The role gate runs next, on the identity the
+    // first guard resolved, and the trust gate runs last: D-07 orders access
+    // checks state -> role -> relationship -> trust, so a role mismatch is
+    // rejected before a trust floor is even read.
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_GUARD, useClass: TrustLevelGuard },
   ],
 })

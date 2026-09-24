@@ -295,6 +295,7 @@
     "auth": {
       "unauthenticated": "Please sign in to continue.",
       "trustLevelTooLow": "Your account needs a higher trust level for this.",
+      "roleNotAllowed": "You do not have permission to do this.",
       "invalidCredentials": "Those sign-in details do not match an account.",
       "invalidToken": "Your session has expired. Please sign in again.",
       "invalidRefresh": "Your session has expired. Please sign in again.",
@@ -533,6 +534,59 @@
     "createEvent": {
       "title": "Creating an event is not ready yet",
       "body": "The form is being built. In the meantime you can post to the community feed and arrange something there."
+    }
+  },
+  "role": {
+    "curator": { "label": "Curator" },
+    "moderator": { "label": "Moderator" },
+    "admin": { "label": "Admin" },
+    "superAdmin": { "label": "Super admin" }
+  },
+  "admin": {
+    "login": {
+      "title": "Staff sign-in",
+      "body": "Sign in with your Da Nang Connect staff account.",
+      "rejected": "This account does not have access to the operations console."
+    },
+    "nav": {
+      "overview": "Overview",
+      "systemHealth": "System health"
+    },
+    "overview": {
+      "title": "Overview",
+      "body": "Operations console for Da Nang Connect."
+    },
+    "header": {
+      "signedInAs": "Signed in as {name}"
+    },
+    "health": {
+      "title": "System health",
+      "checkedAt": "Checked at {time}",
+      "environmentLabel": "Environment",
+      "uptimeLabel": "Uptime",
+      "dependency": {
+        "database": "Database",
+        "redisCache": "Cache",
+        "redisQueue": "Job queue"
+      },
+      "dependencyStatus": {
+        "up": "Up",
+        "down": "Down"
+      },
+      "state": {
+        "allUp": {
+          "title": "All systems operational",
+          "body": "Database and both Redis instances are responding."
+        },
+        "degraded": {
+          "title": "Degraded",
+          "body": "{dependency} is not responding. Everything else is fine."
+        },
+        "unreachable": {
+          "title": "Cannot reach the API",
+          "body": "Check your connection and try again."
+        }
+      }
     }
   }
 }
