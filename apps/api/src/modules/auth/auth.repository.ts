@@ -14,6 +14,8 @@ export interface UserRow {
   role: UserRoleT;
   trust_level: number;
   status: UserStatusT;
+  /** End of a suspension; null for an open-ended one, which never lifts on its own. */
+  suspended_until: Date | null;
   locale: 'en' | 'vi';
   handle: string;
   display_name: string;
@@ -59,7 +61,7 @@ export interface SessionInput {
 const USER_COLUMNS = `
   u.id, u.email, u.email_verified_at, u.password_hash,
   u.phone, u.phone_verified_at, u.role,
-  u.trust_level, u.status, u.locale,
+  u.trust_level, u.status, u.suspended_until, u.locale,
   p.handle, p.display_name, p.avatar_media_id
 `;
 
@@ -137,6 +139,22 @@ export class AuthRepository {
       params,
     );
     return rows[0] ?? null;
+  }
+
+  /**
+   * Lifts a suspension whose end has passed, through the database function
+   * from 0009 (task board D4). The function locks the user row, flips the
+   * account back to active and writes the system's moderation action and
+   * audit entry in the same statement, so the auth module gets the lift with
+   * its trail without depending on the moderation module. True only when this
+   * call did the lifting; a concurrent sign-in that got there first sees false.
+   */
+  async liftExpiredSuspension(userId: string): Promise<boolean> {
+    const { rows } = await this.pool.query<{ lifted: boolean }>(
+      `SELECT lift_expired_suspension($1) AS lifted`,
+      [userId],
+    );
+    return rows[0]?.lifted === true;
   }
 
   async handleTaken(handle: string): Promise<boolean> {

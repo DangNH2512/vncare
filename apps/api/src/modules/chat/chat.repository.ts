@@ -10,6 +10,7 @@ import type {
 } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
 import { withTransaction } from '../../common/db/transaction.js';
+import { blockedBetween } from '../../common/db/block-filter.js';
 import { decodeCursor, encodeCursor } from '../../common/pagination.js';
 
 /**
@@ -419,28 +420,65 @@ export class ChatRepository {
     );
   }
 
-  /** Recipient's answer to a conversation request. Only they may call it. */
+  /**
+   * True when either person has blocked the other.
+   *
+   * The global `blocks` table is the one source of truth for "are these two
+   * blocked" (task board D5); `conversations.request_status = 'blocked'` only
+   * records how one request was answered and is not read for this.
+   */
+  async isBlockedBetween(userId: string, otherUserId: string): Promise<boolean> {
+    const { rows } = await this.pool.query<{ blocked: boolean }>(
+      `SELECT ${blockedBetween('$1', '$2::uuid')} AS blocked`,
+      [userId, otherUserId],
+    );
+    return rows[0]?.blocked ?? false;
+  }
+
+  /**
+   * Recipient's answer to a conversation request. Only they may call it.
+   *
+   * Answering `blocked` also blocks the requester globally, in the same
+   * transaction, so "blocked in chat" and "blocked" are one thing (D5): the
+   * requester then disappears from the recipient's events, posts and profile
+   * as well, and a later unblock lifts both — without reopening this closed
+   * thread.
+   */
   async respondToRequest(
     conversationId: string,
     recipientId: string,
     decision: 'accepted' | 'declined' | 'blocked',
   ): Promise<boolean> {
-    const { rowCount } = await this.pool.query(
-      // Both casts are load-bearing: without them PostgreSQL infers $3 as enum
-      // from the assignment and as text from the comparison, and refuses the
-      // statement with 42P08.
-      `UPDATE conversations
-          SET request_status = $3::conversation_request_status_enum,
-              status = CASE WHEN $3::text = 'blocked' THEN 'closed' ELSE status END,
-              updated_at = now()
-        WHERE id = $1
-          AND type = 'direct'
-          AND request_status = 'pending'
-          AND created_by_user_id <> $2
-          AND $2 IN (user_a_id, user_b_id)`,
-      [conversationId, recipientId, decision],
-    );
-    return (rowCount ?? 0) > 0;
+    return withTransaction(this.pool, async (tx) => {
+      const { rows } = await tx.query<{ created_by_user_id: string }>(
+        // Both casts are load-bearing: without them PostgreSQL infers $3 as enum
+        // from the assignment and as text from the comparison, and refuses the
+        // statement with 42P08.
+        `UPDATE conversations
+            SET request_status = $3::conversation_request_status_enum,
+                status = CASE WHEN $3::text = 'blocked' THEN 'closed' ELSE status END,
+                updated_at = now()
+          WHERE id = $1
+            AND type = 'direct'
+            AND request_status = 'pending'
+            AND created_by_user_id <> $2
+            AND $2 IN (user_a_id, user_b_id)
+          RETURNING created_by_user_id`,
+        [conversationId, recipientId, decision],
+      );
+      const requester = rows[0]?.created_by_user_id;
+      if (requester === undefined) return false;
+
+      if (decision === 'blocked') {
+        await tx.query(
+          `INSERT INTO blocks (blocker_user_id, blocked_user_id)
+           VALUES ($1, $2)
+           ON CONFLICT (blocker_user_id, blocked_user_id) DO NOTHING`,
+          [recipientId, requester],
+        );
+      }
+      return true;
+    });
   }
 
   /** Recipients of a realtime broadcast: everyone still in the room. */

@@ -8,15 +8,19 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
 import { RolesGuard } from './common/guards/roles.guard.js';
 import { TrustLevelGuard } from './common/guards/trust-level.guard.js';
 import { AdminModule } from './modules/admin/index.js';
+import { AreaModule } from './modules/area/index.js';
+import { AuditModule } from './modules/audit/index.js';
 import { AuthModule } from './modules/auth/index.js';
 import { ChatModule } from './modules/chat/index.js';
 import { CommentModule } from './modules/comment/index.js';
 import { EventModule } from './modules/event/index.js';
 import { HealthModule } from './modules/health/index.js';
 import { MediaModule } from './modules/media/index.js';
+import { ModerationModule } from './modules/moderation/index.js';
 import { PostModule } from './modules/post/index.js';
 import { ProfileModule } from './modules/profile/index.js';
 import { ReactionModule } from './modules/reaction/index.js';
+import { ReportModule } from './modules/report/index.js';
 import { RsvpModule } from './modules/rsvp/index.js';
 
 @Module({
@@ -28,6 +32,7 @@ import { RsvpModule } from './modules/rsvp/index.js';
     AuthModule,
     HealthModule,
     AdminModule,
+    AreaModule,
     MediaModule,
     ProfileModule,
     EventModule,
@@ -36,6 +41,9 @@ import { RsvpModule } from './modules/rsvp/index.js';
     CommentModule,
     ReactionModule,
     ChatModule,
+    ReportModule,
+    AuditModule,
+    ModerationModule,
   ],
   providers: [
     // Applied to every route, in this order. Authentication denies by default —

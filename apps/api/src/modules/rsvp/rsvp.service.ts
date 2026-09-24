@@ -52,7 +52,11 @@ export class RsvpService {
         }
 
         const occurrence = await this.rsvps.lockOccurrence(tx, occurrenceId, viewer.id);
-        if (!occurrence) throw this.notFound();
+        // An occurrence of an event organized by someone the caller has a block
+        // with answers exactly like one that does not exist (brief §6). Only
+        // new registrations: an RSVP made before the block is left alone
+        // (AC-15), and cancelling it still works.
+        if (!occurrence || occurrence.blocked_with_organizer) throw this.notFound();
 
         const decision = decideRsvpOutcome({
           seatsTaken: occurrence.seats_taken,
@@ -134,8 +138,11 @@ export class RsvpService {
    * Who is going. Members only — the docs treat the attendee list as
    * meet-in-person safety data, so it is never served anonymously.
    */
-  async attendees(occurrenceId: string): Promise<AttendeeResponseT[]> {
-    const rows = await this.rsvps.listAttendees(occurrenceId);
+  async attendees(
+    occurrenceId: string,
+    viewer: CurrentUserContext,
+  ): Promise<AttendeeResponseT[]> {
+    const rows = await this.rsvps.listAttendees(occurrenceId, viewer.id);
     const avatarIds = [...new Set(rows.map((r) => r.avatar_media_id).filter((v): v is string => v !== null))];
     const avatars = new Map(
       (await this.media.resolveGallery(avatarIds)).map((item) => [item.id, item.url]),

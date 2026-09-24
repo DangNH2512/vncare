@@ -1,9 +1,21 @@
 import type {
+  BlockedUserResponseT,
   MediaResponseT,
   MyProfileResponseT,
   PublicProfileResponseT,
 } from '@dnc/contracts';
-import type { ProfileRow } from './profile.repository.js';
+import type { BlockedUserRow, ProfileRow } from './profile.repository.js';
+
+/** One row of the caller's own block list: display identity and when, nothing more. */
+export function toBlockedUser(row: BlockedUserRow, avatarUrl: string | null): BlockedUserResponseT {
+  return {
+    userId: row.user_id,
+    handle: row.handle,
+    displayName: row.display_name,
+    avatarUrl,
+    blockedAt: row.blocked_at.toISOString(),
+  };
+}
 
 /** Ratings mean nothing below this many; showing "5.0 from one review" is noise. */
 const MIN_RATINGS_TO_SHOW = 3;

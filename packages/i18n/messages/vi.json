@@ -290,7 +290,8 @@
       "duplicate": "Nội dung này đã tồn tại.",
       "referenceNotFound": "Đối tượng được tham chiếu không còn tồn tại.",
       "constraintViolated": "Yêu cầu này vi phạm một ràng buộc dữ liệu.",
-      "retryLater": "Hệ thống đang bận. Vui lòng thử lại sau giây lát."
+      "retryLater": "Hệ thống đang bận. Vui lòng thử lại sau giây lát.",
+      "idempotencyKeyRequired": "Yêu cầu thiếu khoá chống gửi trùng. Vui lòng thử lại."
     },
     "auth": {
       "unauthenticated": "Vui lòng đăng nhập để tiếp tục.",
@@ -304,6 +305,10 @@
       "handleFormat": "Dùng 3-24 ký tự thường, số hoặc dấu gạch dưới.",
       "accountSuspended": "Tài khoản này đang bị đình chỉ.",
       "accountUnavailable": "Tài khoản này không khả dụng."
+    },
+    "area": {
+      "notFound": "Khu vực này không tồn tại.",
+      "outsideCoverage": "Vị trí này nằm ngoài các khu vực đang hỗ trợ."
     },
     "event": {
       "notFound": "Sự kiện này không còn tồn tại.",
@@ -342,6 +347,32 @@
       "notFound": "Hồ sơ này không còn tồn tại.",
       "phoneInvalid": "Đây không giống một số điện thoại.",
       "phoneTaken": "Số điện thoại này đã thuộc về tài khoản khác."
+    },
+    "report": {
+      "targetNotFound": "Không tìm thấy nội dung bạn muốn báo cáo.",
+      "selfNotAllowed": "Bạn không thể báo cáo nội dung hoặc hồ sơ của chính mình.",
+      "descriptionTooLong": "Mô tả tối đa 2.000 ký tự.",
+      "rateLimited": "Hôm nay bạn đã gửi nhiều báo cáo. Vui lòng thử lại sau."
+    },
+    "block": {
+      "selfNotAllowed": "Bạn không thể tự chặn chính mình."
+    },
+    "content": {
+      "underModeration": "Nội dung này đang bị kiểm duyệt nên không sửa được."
+    },
+    "moderation": {
+      "noteTooShort": "Hãy ghi chú ít nhất 20 ký tự giải thích quyết định.",
+      "noteTooLong": "Ghi chú tối đa 2.000 ký tự.",
+      "reasonRequired": "Hãy chọn lý do.",
+      "ticketNotFound": "Không tìm thấy ticket này.",
+      "targetNotFound": "Nội dung hoặc tài khoản không còn tồn tại.",
+      "ticketAlreadyClosed": "Ticket này đã được người khác xử lý. Tải lại để xem trạng thái mới nhất.",
+      "conflictOfInterest": "Bạn không thể xử lý ticket này vì bạn có liên quan.",
+      "selfNotAllowed": "Bạn không thể kiểm duyệt nội dung hoặc tài khoản của chính mình.",
+      "targetProtected": "Vai trò của tài khoản này cần nhân sự cấp cao hơn xử lý.",
+      "suspensionTooLong": "Vai trò của bạn chỉ được khoá tối đa {maxDays} ngày.",
+      "invalidState": "Hành động này không áp dụng được với trạng thái hiện tại. Tải lại và thử lại.",
+      "targetNotInTicket": "Đối tượng này không thuộc ticket."
     }
   },
   "post": {
@@ -550,7 +581,9 @@
     },
     "nav": {
       "overview": "Tổng quan",
-      "systemHealth": "Tình trạng hệ thống"
+      "systemHealth": "Tình trạng hệ thống",
+      "moderationQueue": "Hàng đợi kiểm duyệt",
+      "auditLog": "Nhật ký kiểm toán"
     },
     "overview": {
       "title": "Tổng quan",
@@ -587,6 +620,228 @@
           "body": "Kiểm tra kết nối mạng và thử lại."
         }
       }
+    },
+    "moderation": {
+      "queue": {
+        "title": "Hàng đợi kiểm duyệt",
+        "filter": {
+          "open": "Đang mở",
+          "closed": "Đã xử lý",
+          "allSeverities": "Mọi mức"
+        },
+        "column": {
+          "severity": "Mức",
+          "target": "Đối tượng",
+          "reasons": "Lý do",
+          "reports": "Số báo cáo",
+          "firstReported": "Báo cáo đầu",
+          "sla": "SLA",
+          "outcome": "Kết quả",
+          "closedAt": "Đóng lúc"
+        },
+        "empty": {
+          "open": "Không có ticket nào đang mở.",
+          "closed": "Chưa có ticket nào được xử lý."
+        },
+        "loadMore": "Tải thêm",
+        "error": {
+          "title": "Không tải được hàng đợi",
+          "body": "Đồng hồ tạm dừng cho tới khi tải lại được dữ liệu."
+        }
+      },
+      "severity": {
+        "critical": "P0 · Khẩn cấp",
+        "high": "P1 · Cao",
+        "normal": "P2 · Thường",
+        "low": "P3 · Thấp"
+      },
+      "sla": {
+        "normal": "Trong hạn · còn {remaining}",
+        "dueSoon": "Sắp quá hạn · còn {remaining}",
+        "overdue": "Quá hạn {overdue}",
+        "stopped": "Đã dừng"
+      },
+      "targetType": {
+        "event": "Sự kiện",
+        "post": "Bài đăng",
+        "comment": "Bình luận",
+        "user": "Tài khoản"
+      },
+      "ticketStatus": {
+        "open": "Đang mở",
+        "resolved": "Đã xử lý",
+        "dismissed": "Đã bác"
+      },
+      "ticket": {
+        "back": "Về hàng đợi",
+        "snapshotTitle": "Nội dung lúc báo cáo",
+        "currentStatus": "Trạng thái hiện tại: {status}",
+        "targetDeleted": "Đã bị tác giả xoá",
+        "owner": "Chủ sở hữu",
+        "suspendedUntil": "Bị khoá đến {time}",
+        "reportsTitle": "Báo cáo ({count})",
+        "reporter": "Người báo cáo: {name}",
+        "reporterDeleted": "Tài khoản người báo cáo đã xoá",
+        "noDescription": "Không có mô tả",
+        "historyTitle": "Lịch sử xử lý",
+        "historyEmpty": "Chưa có hành động nào.",
+        "actorSystem": "Hệ thống",
+        "addAction": "Thêm hành động khác",
+        "error": {
+          "title": "Không tải được ticket"
+        }
+      },
+      "action": {
+        "hide_content": "Ẩn nội dung",
+        "restore_content": "Khôi phục nội dung",
+        "suspend_event": "Tạm gỡ sự kiện",
+        "take_down_event": "Gỡ sự kiện",
+        "restore_event": "Khôi phục sự kiện",
+        "suspend_user": "Khoá tài khoản",
+        "unsuspend_user": "Mở khoá tài khoản",
+        "dismiss": "Bác báo cáo (không vi phạm)",
+        "changeSeverity": "Đổi mức"
+      },
+      "actionType": {
+        "content_hidden": "Đã ẩn nội dung",
+        "content_restored": "Đã khôi phục nội dung",
+        "event_suspended": "Đã tạm gỡ sự kiện",
+        "event_taken_down": "Đã gỡ sự kiện",
+        "event_restored": "Đã khôi phục sự kiện",
+        "user_suspended": "Đã khoá tài khoản",
+        "user_unsuspended": "Đã mở khoá tài khoản",
+        "no_action": "Không vi phạm (đã bác)",
+        "severity_changed": "Đổi mức {from} → {to}"
+      },
+      "form": {
+        "reason": "Lý do",
+        "note": "Ghi chú (ít nhất 20 ký tự)",
+        "noteCounter": "{count} / tối thiểu 20",
+        "duration": "Thời hạn (ngày)",
+        "durationHint": "Tối đa {maxDays} ngày với vai trò của bạn",
+        "severity": "Mức mới",
+        "submit": "Xác nhận",
+        "submitting": "Đang lưu…",
+        "cancel": "Huỷ",
+        "errorGeneric": "Chưa lưu được hành động. Hãy thử lại."
+      }
+    },
+    "audit": {
+      "title": "Nhật ký kiểm toán",
+      "readOnly": "Chỉ đọc. Không thể sửa hay xoá bản ghi.",
+      "filter": {
+        "from": "Từ",
+        "to": "Đến",
+        "action": "Hành động",
+        "actor": "Người thực hiện (ID)",
+        "entityType": "Loại đối tượng",
+        "any": "Tất cả",
+        "apply": "Áp dụng",
+        "reset": "Đặt lại"
+      },
+      "column": {
+        "time": "Thời điểm",
+        "actor": "Người thực hiện",
+        "action": "Hành động",
+        "entity": "Đối tượng",
+        "change": "Thay đổi",
+        "reason": "Lý do"
+      },
+      "system": "Hệ thống",
+      "empty": "Không có bản ghi nào khớp bộ lọc.",
+      "loadMore": "Tải thêm",
+      "error": {
+        "title": "Không tải được nhật ký kiểm toán"
+      },
+      "action": {
+        "content_hidden": "Ẩn nội dung",
+        "content_restored": "Khôi phục nội dung",
+        "event_suspended": "Tạm gỡ sự kiện",
+        "event_taken_down": "Gỡ sự kiện",
+        "event_restored": "Khôi phục sự kiện",
+        "user_suspended": "Khoá tài khoản",
+        "user_unsuspended": "Mở khoá tài khoản",
+        "report_dismissed": "Bác báo cáo",
+        "severity_changed": "Đổi mức"
+      },
+      "entityType": {
+        "post": "Bài đăng",
+        "comment": "Bình luận",
+        "event": "Sự kiện",
+        "user": "Tài khoản",
+        "moderation_ticket": "Ticket"
+      },
+      "severity": {
+        "info": "Thông tin",
+        "notice": "Lưu ý",
+        "warning": "Cảnh báo",
+        "critical": "Nghiêm trọng"
+      }
+    }
+  },
+  "safety": {
+    "menu": {
+      "more": "Thêm tuỳ chọn"
+    },
+    "report": {
+      "action": "Báo cáo",
+      "title": {
+        "event": "Báo cáo sự kiện này",
+        "post": "Báo cáo bài đăng này",
+        "comment": "Báo cáo bình luận này",
+        "user": "Báo cáo người này"
+      },
+      "reassurance": "Báo cáo là ẩn danh. Người bị báo cáo sẽ không biết đó là bạn.",
+      "emergency_first": "Nếu có người đang gặp nguy hiểm ngay lúc này, hãy gọi Công an (113) hoặc Cấp cứu (115) trước.",
+      "reasonLabel": "Vì sao bạn báo cáo?",
+      "reason": {
+        "danger": "Có người đang gặp nguy hiểm",
+        "harassment": "Quấy rối hoặc bắt nạt",
+        "sexual": "Nội dung hoặc tiếp cận tình dục không mong muốn",
+        "hate": "Ngôn từ thù ghét hoặc phân biệt đối xử",
+        "scam": "Lừa đảo hoặc xin tiền",
+        "ghost_event": "Sự kiện này không có thật",
+        "impersonation": "Giả mạo người khác",
+        "spam": "Spam hoặc quảng cáo",
+        "privacy": "Chia sẻ thông tin riêng tư của người khác",
+        "illegal": "Hoạt động vi phạm pháp luật",
+        "unsafe_setup": "Sự kiện tổ chức thiếu an toàn",
+        "other": "Vấn đề khác"
+      },
+      "descriptionLabel": "Mô tả thêm (không bắt buộc)",
+      "descriptionCounter": "{count} / 2.000",
+      "alsoBlock": "Chặn luôn người này",
+      "submit": "Gửi báo cáo",
+      "submitting": "Đang gửi…",
+      "submitted": "Cảm ơn bạn — chúng tôi đã nhận được báo cáo.",
+      "submittedBody": "Đội kiểm duyệt sẽ xem xét. Chúng tôi không bao giờ tiết lộ ai là người báo cáo.",
+      "close": "Đóng",
+      "errorGeneric": "Chưa gửi được báo cáo. Vui lòng thử lại.",
+      "errorOffline": "Có vẻ bạn đang mất kết nối. Kiểm tra mạng và thử lại."
+    },
+    "block": {
+      "action": "Chặn người này",
+      "actionAuthor": "Chặn tác giả",
+      "actionOrganizer": "Chặn người tổ chức",
+      "confirmTitle": "Chặn người này?",
+      "confirmBody": "Hai bạn sẽ không thấy sự kiện, bài đăng, bình luận hay hồ sơ của nhau và không nhắn tin được cho nhau. Người này sẽ không nhận được thông báo.",
+      "confirm": "Chặn",
+      "cancel": "Huỷ",
+      "working": "Đang chặn…",
+      "blocked": "Đã chặn",
+      "unblock": "Bỏ chặn",
+      "error": "Chưa cập nhật được việc chặn. Vui lòng thử lại.",
+      "list": {
+        "title": "Người đã chặn",
+        "empty": "Bạn chưa chặn ai.",
+        "blockedAt": "Đã chặn {time}"
+      }
+    },
+    "label": {
+      "contentHidden": "Đã bị ẩn do vi phạm Quy tắc cộng đồng",
+      "eventSuspended": "Tạm gỡ để xem xét",
+      "eventTakenDown": "Đã bị gỡ do vi phạm Quy tắc cộng đồng",
+      "eventUnavailable": "Sự kiện này không còn khả dụng"
     }
   }
 }

@@ -9,6 +9,7 @@ import type {
 } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
 import { decodeCursor, encodeCursor } from '../../common/pagination.js';
+import { notBlockedBetween } from '../../common/db/block-filter.js';
 
 /**
  * One `posts` row joined with the viewer's own reaction.
@@ -109,7 +110,8 @@ export class PostRepository {
   /**
    * Reads one post. A post that is not `visible` is returned only to its
    * author, so an author can still see and fix their own post while it sits in
-   * pre-publish review.
+   * pre-publish review. A post by someone the viewer has a block with, either
+   * way, reads as absent (brief §6).
    */
   async findById(id: string, viewerUserId: string | null): Promise<PostRow | null> {
     const { rows } = await this.pool.query<PostRow>(
@@ -118,19 +120,26 @@ export class PostRepository {
          LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = $2
         WHERE p.id = $1
           AND p.deleted_at IS NULL
-          AND (p.status = 'visible' OR p.author_user_id = $2)`,
+          AND (p.status = 'visible' OR p.author_user_id = $2)
+          AND ${notBlockedBetween('$2', 'p.author_user_id')}`,
       [id, viewerUserId],
     );
     return rows[0] ?? null;
   }
 
-  /** Author id only — used for ownership checks that must not leak the body. */
-  async findOwner(id: string): Promise<string | null> {
-    const { rows } = await this.pool.query<{ author_user_id: string }>(
-      `SELECT author_user_id FROM posts WHERE id = $1 AND deleted_at IS NULL`,
+  /**
+   * Author and moderation status only — used for ownership checks that must
+   * not leak the body. The status lets an edit of a hidden post be refused
+   * without reading anything else.
+   */
+  async findOwner(
+    id: string,
+  ): Promise<{ author_user_id: string; status: ContentStatusT } | null> {
+    const { rows } = await this.pool.query<{ author_user_id: string; status: ContentStatusT }>(
+      `SELECT author_user_id, status FROM posts WHERE id = $1 AND deleted_at IS NULL`,
       [id],
     );
-    return rows[0]?.author_user_id ?? null;
+    return rows[0] ?? null;
   }
 
   /**
@@ -151,6 +160,7 @@ export class PostRepository {
          LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = $1
         WHERE p.deleted_at IS NULL
           AND p.status = 'visible'
+          AND ${notBlockedBetween('$1', 'p.author_user_id')}
           AND ($2::uuid IS NULL OR p.area_id = $2)
           AND ($3::post_kind_enum IS NULL OR p.kind = $3)
           AND ($4::uuid IS NULL OR p.author_user_id = $4)

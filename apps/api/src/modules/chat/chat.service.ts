@@ -64,6 +64,13 @@ export class ChatService {
         details: { required: DIRECT_MESSAGE_MIN_TRUST },
       });
     }
+    // After the self and trust checks, never before: the order in which errors
+    // appear must not differ between a blocked pair and any other, or the
+    // error sequence itself would reveal the block. The code is the one a
+    // declined request already gets, so a block cannot be told apart (§6).
+    if (await this.chats.isBlockedBetween(viewer.id, recipientUserId)) {
+      throw this.requestRefused();
+    }
 
     try {
       const { id } = await this.chats.findOrCreateDirect(viewer.id, recipientUserId);
@@ -178,16 +185,25 @@ export class ChatService {
    * accepted.
    */
   private async assertRequestQuota(
-    conversation: { id: string; type: string; request_status: string; created_by_user_id: string },
+    conversation: {
+      id: string;
+      type: string;
+      request_status: string;
+      created_by_user_id: string;
+      participants: ReadonlyArray<{ userId: string }>;
+    },
     viewer: CurrentUserContext,
   ): Promise<void> {
     if (conversation.type !== 'direct') return;
 
     if (conversation.request_status === 'declined' || conversation.request_status === 'blocked') {
-      throw new ForbiddenException({
-        code: 'CONVERSATION_REQUEST_REFUSED',
-        messageKey: 'errors.chat.requestRefused',
-      });
+      throw this.requestRefused();
+    }
+    // A block placed after the thread was accepted stops new messages both
+    // ways. History stays readable: listMessages does not come through here.
+    const other = conversation.participants.find((p) => p.userId !== viewer.id);
+    if (other && (await this.chats.isBlockedBetween(viewer.id, other.userId))) {
+      throw this.requestRefused();
     }
     if (conversation.request_status !== 'pending') return;
     if (conversation.created_by_user_id !== viewer.id) return;
@@ -239,6 +255,13 @@ export class ChatService {
     await this.loadOrThrow(conversationId, viewer);
     await this.chats.markRead(conversationId, viewer.id, input.lastReadMessageId);
     return this.findOne(conversationId, viewer);
+  }
+
+  private requestRefused(): ForbiddenException {
+    return new ForbiddenException({
+      code: 'CONVERSATION_REQUEST_REFUSED',
+      messageKey: 'errors.chat.requestRefused',
+    });
   }
 
   /**

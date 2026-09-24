@@ -30,6 +30,19 @@ import {
   formatEventTimeRange,
   toDateTimeAttribute,
 } from '../../../_lib/datetime';
+import type { MessageKey } from '../../../_lib/i18n';
+import { SafetyMenu } from '../../_components/safety/safety-menu';
+
+/**
+ * Status badge text. The two moderation states get the plain-language label
+ * rather than the bare status word, so an organizer reads why their event is
+ * gone, not only that it is.
+ */
+function statusLabel(status: EventResponseT['status']): MessageKey {
+  if (status === 'suspended') return 'safety.label.eventSuspended';
+  if (status === 'taken_down') return 'safety.label.eventTakenDown';
+  return `event.status.${status}` as MessageKey;
+}
 
 /**
  * One event, in full: when, where, who is hosting, who is going, and the
@@ -139,24 +152,37 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
     <div className="flex flex-col gap-4 px-4 py-6 md:px-0 md:py-8">
       <Card padding="lg" className="flex flex-col gap-4">
         {event.status !== 'published' && (
-          <Badge tone={cancelled ? 'danger' : 'warning'} className="self-start">
-            {t(`event.status.${event.status}` as never)}
+          <Badge
+            tone={cancelled || event.status === 'taken_down' ? 'danger' : 'warning'}
+            className="self-start"
+          >
+            {t(statusLabel(event.status))}
           </Badge>
         )}
 
-        <div className="min-w-0">
-          <h1 className="font-display text-3xl font-bold break-words text-fg">
-            {event.title}
-          </h1>
-          <p className="mt-2 text-md text-fg-muted">
-            <time dateTime={toDateTimeAttribute(event.startsAt)}>
-              {formatEventDateLong(event.startsAt, locale)}
-            </time>
-            {' · '}
-            {formatEventTimeRange(event.startsAt, event.endsAt, locale)}
-          </p>
-          {area !== undefined && (
-            <p className="mt-1 text-md text-fg-muted">📍 {areaName(area, locale)}</p>
+        <div className="flex min-w-0 items-start gap-2">
+          <div className="min-w-0 flex-1">
+            <h1 className="font-display text-3xl font-bold break-words text-fg">
+              {event.title}
+            </h1>
+            <p className="mt-2 text-md text-fg-muted">
+              <time dateTime={toDateTimeAttribute(event.startsAt)}>
+                {formatEventDateLong(event.startsAt, locale)}
+              </time>
+              {' · '}
+              {formatEventTimeRange(event.startsAt, event.endsAt, locale)}
+            </p>
+            {area !== undefined && (
+              <p className="mt-1 text-md text-fg-muted">📍 {areaName(area, locale)}</p>
+            )}
+          </div>
+          {/* Report/Block for everyone but the organizer (AC-1, AC-2). */}
+          {!isOwn && (
+            <SafetyMenu
+              target={{ type: 'event', id: event.id }}
+              owner={{ handle: event.organizer.handle }}
+              blockLabel="safety.block.actionOrganizer"
+            />
           )}
         </div>
 

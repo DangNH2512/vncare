@@ -3,6 +3,7 @@ import type { Pool, PoolClient } from 'pg';
 import type { RsvpStatusT } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
 import { withTransaction } from '../../common/db/transaction.js';
+import { blockedBetween, notBlockedBetween } from '../../common/db/block-filter.js';
 
 export interface RsvpRow {
   id: string;
@@ -25,6 +26,8 @@ export interface LockedOccurrence {
   organizer_id: string;
   seats_taken: number;
   existing_active_status: RsvpStatusT | null;
+  /** A block exists between the caller and the organizer, in either direction. */
+  blocked_with_organizer: boolean;
 }
 
 export interface AttendeeRow {
@@ -81,7 +84,8 @@ export class RsvpRepository {
               (SELECT r.status FROM rsvps r
                 WHERE r.occurrence_id = o.id AND r.user_id = $2
                   AND r.status IN ('confirmed', 'held', 'waitlisted')
-                  AND r.deleted_at IS NULL) AS existing_active_status
+                  AND r.deleted_at IS NULL) AS existing_active_status,
+              ${blockedBetween('$2', 'e.organizer_id')} AS blocked_with_organizer
          FROM event_occurrences o
          JOIN events e ON e.id = o.event_id
         WHERE o.id = $1 AND o.deleted_at IS NULL AND e.deleted_at IS NULL
@@ -252,8 +256,14 @@ export class RsvpRepository {
     return rows[0] ?? null;
   }
 
-  /** Confirmed people first in join order, then the queue in queue order. */
-  async listAttendees(occurrenceId: string): Promise<AttendeeRow[]> {
+  /**
+   * Confirmed people first in join order, then the queue in queue order.
+   *
+   * Anyone the viewer has a block with, either way, is left out of the list
+   * the viewer reads. The seat counters are untouched, so the gap is not
+   * visible as a mismatch between the list and the count (BA #4).
+   */
+  async listAttendees(occurrenceId: string, viewerUserId: string): Promise<AttendeeRow[]> {
     const { rows } = await this.pool.query<AttendeeRow>(
       `SELECT r.user_id, p.handle, p.display_name, p.avatar_media_id,
               u.trust_level, r.status
@@ -265,8 +275,9 @@ export class RsvpRepository {
         WHERE r.occurrence_id = $1
           AND r.status IN ('confirmed', 'held', 'waitlisted', 'attended')
           AND r.deleted_at IS NULL
+          AND ${notBlockedBetween('$2', 'r.user_id')}
         ORDER BY (r.status = 'waitlisted') ASC, coalesce(w.position, 0) ASC, r.created_at ASC`,
-      [occurrenceId],
+      [occurrenceId, viewerUserId],
     );
     return rows;
   }

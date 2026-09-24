@@ -290,7 +290,8 @@
       "duplicate": "That already exists.",
       "referenceNotFound": "Something this refers to no longer exists.",
       "constraintViolated": "That request breaks a rule of this data.",
-      "retryLater": "The service is busy. Please try again in a moment."
+      "retryLater": "The service is busy. Please try again in a moment.",
+      "idempotencyKeyRequired": "This request is missing its retry key. Please try again."
     },
     "auth": {
       "unauthenticated": "Please sign in to continue.",
@@ -304,6 +305,10 @@
       "handleFormat": "Use 3-24 lowercase letters, numbers or underscores.",
       "accountSuspended": "This account is suspended.",
       "accountUnavailable": "This account is not available."
+    },
+    "area": {
+      "notFound": "That area does not exist.",
+      "outsideCoverage": "That point is outside every area we cover."
     },
     "event": {
       "notFound": "This event no longer exists.",
@@ -342,6 +347,32 @@
       "notFound": "That profile no longer exists.",
       "phoneInvalid": "That does not look like a phone number.",
       "phoneTaken": "That phone number is already on another account."
+    },
+    "report": {
+      "targetNotFound": "We couldn't find what you're trying to report.",
+      "selfNotAllowed": "You can't report your own content or profile.",
+      "descriptionTooLong": "Please keep the description under 2,000 characters.",
+      "rateLimited": "You've sent a lot of reports today. Please try again later."
+    },
+    "block": {
+      "selfNotAllowed": "You can't block yourself."
+    },
+    "content": {
+      "underModeration": "This content is under moderation and can't be edited."
+    },
+    "moderation": {
+      "noteTooShort": "Write a note of at least 20 characters explaining the decision.",
+      "noteTooLong": "Keep the note under 2,000 characters.",
+      "reasonRequired": "Choose a reason.",
+      "ticketNotFound": "This ticket doesn't exist.",
+      "targetNotFound": "The content or account no longer exists.",
+      "ticketAlreadyClosed": "Someone has already handled this ticket. Reload to see the latest.",
+      "conflictOfInterest": "You can't handle this ticket because you're involved in it.",
+      "selfNotAllowed": "You can't take moderation action on your own content or account.",
+      "targetProtected": "This account's role needs a more senior staff member.",
+      "suspensionTooLong": "Your role can suspend for at most {maxDays} days.",
+      "invalidState": "This action doesn't apply to the current state. Reload and try again.",
+      "targetNotInTicket": "This target doesn't belong to the ticket."
     }
   },
   "post": {
@@ -550,7 +581,9 @@
     },
     "nav": {
       "overview": "Overview",
-      "systemHealth": "System health"
+      "systemHealth": "System health",
+      "moderationQueue": "Moderation queue",
+      "auditLog": "Audit log"
     },
     "overview": {
       "title": "Overview",
@@ -587,6 +620,228 @@
           "body": "Check your connection and try again."
         }
       }
+    },
+    "moderation": {
+      "queue": {
+        "title": "Moderation queue",
+        "filter": {
+          "open": "Open",
+          "closed": "Handled",
+          "allSeverities": "All severities"
+        },
+        "column": {
+          "severity": "Severity",
+          "target": "Reported item",
+          "reasons": "Reasons",
+          "reports": "Reports",
+          "firstReported": "First reported",
+          "sla": "SLA",
+          "outcome": "Outcome",
+          "closedAt": "Closed"
+        },
+        "empty": {
+          "open": "No open tickets.",
+          "closed": "No handled tickets yet."
+        },
+        "loadMore": "Load more",
+        "error": {
+          "title": "Couldn't load the queue",
+          "body": "Timers are paused until the data is refreshed."
+        }
+      },
+      "severity": {
+        "critical": "P0 · Critical",
+        "high": "P1 · High",
+        "normal": "P2 · Normal",
+        "low": "P3 · Low"
+      },
+      "sla": {
+        "normal": "On track · {remaining} left",
+        "dueSoon": "Due soon · {remaining} left",
+        "overdue": "Overdue by {overdue}",
+        "stopped": "Stopped"
+      },
+      "targetType": {
+        "event": "Event",
+        "post": "Post",
+        "comment": "Comment",
+        "user": "Account"
+      },
+      "ticketStatus": {
+        "open": "Open",
+        "resolved": "Resolved",
+        "dismissed": "Dismissed"
+      },
+      "ticket": {
+        "back": "Back to queue",
+        "snapshotTitle": "Content at the time of the report",
+        "currentStatus": "Current status: {status}",
+        "targetDeleted": "Deleted by its author",
+        "owner": "Owner",
+        "suspendedUntil": "Suspended until {time}",
+        "reportsTitle": "Reports ({count})",
+        "reporter": "Reported by {name}",
+        "reporterDeleted": "Reporter account deleted",
+        "noDescription": "No description",
+        "historyTitle": "Action history",
+        "historyEmpty": "No actions yet.",
+        "actorSystem": "System",
+        "addAction": "Add another action",
+        "error": {
+          "title": "Couldn't load this ticket"
+        }
+      },
+      "action": {
+        "hide_content": "Hide content",
+        "restore_content": "Restore content",
+        "suspend_event": "Suspend event",
+        "take_down_event": "Take down event",
+        "restore_event": "Restore event",
+        "suspend_user": "Suspend account",
+        "unsuspend_user": "Lift suspension",
+        "dismiss": "Dismiss (no violation)",
+        "changeSeverity": "Change severity"
+      },
+      "actionType": {
+        "content_hidden": "Content hidden",
+        "content_restored": "Content restored",
+        "event_suspended": "Event suspended",
+        "event_taken_down": "Event taken down",
+        "event_restored": "Event restored",
+        "user_suspended": "Account suspended",
+        "user_unsuspended": "Suspension lifted",
+        "no_action": "No violation (dismissed)",
+        "severity_changed": "Severity {from} → {to}"
+      },
+      "form": {
+        "reason": "Reason",
+        "note": "Note (at least 20 characters)",
+        "noteCounter": "{count} / 20 minimum",
+        "duration": "Duration (days)",
+        "durationHint": "Up to {maxDays} days for your role",
+        "severity": "New severity",
+        "submit": "Confirm",
+        "submitting": "Saving…",
+        "cancel": "Cancel",
+        "errorGeneric": "Couldn't save the action. Try again."
+      }
+    },
+    "audit": {
+      "title": "Audit log",
+      "readOnly": "Read-only. Entries can't be edited or deleted.",
+      "filter": {
+        "from": "From",
+        "to": "To",
+        "action": "Action",
+        "actor": "Performed by (user ID)",
+        "entityType": "Object type",
+        "any": "Any",
+        "apply": "Apply",
+        "reset": "Reset"
+      },
+      "column": {
+        "time": "Time",
+        "actor": "Performed by",
+        "action": "Action",
+        "entity": "Object",
+        "change": "Change",
+        "reason": "Reason"
+      },
+      "system": "System",
+      "empty": "No entries match these filters.",
+      "loadMore": "Load more",
+      "error": {
+        "title": "Couldn't load the audit log"
+      },
+      "action": {
+        "content_hidden": "Content hidden",
+        "content_restored": "Content restored",
+        "event_suspended": "Event suspended",
+        "event_taken_down": "Event taken down",
+        "event_restored": "Event restored",
+        "user_suspended": "Account suspended",
+        "user_unsuspended": "Suspension lifted",
+        "report_dismissed": "Report dismissed",
+        "severity_changed": "Severity changed"
+      },
+      "entityType": {
+        "post": "Post",
+        "comment": "Comment",
+        "event": "Event",
+        "user": "Account",
+        "moderation_ticket": "Ticket"
+      },
+      "severity": {
+        "info": "Info",
+        "notice": "Notice",
+        "warning": "Warning",
+        "critical": "Critical"
+      }
+    }
+  },
+  "safety": {
+    "menu": {
+      "more": "More options"
+    },
+    "report": {
+      "action": "Report",
+      "title": {
+        "event": "Report this event",
+        "post": "Report this post",
+        "comment": "Report this comment",
+        "user": "Report this person"
+      },
+      "reassurance": "Reports are anonymous. The person you report won't know it was you.",
+      "emergency_first": "If someone is in immediate danger, call the police (113) or an ambulance (115) first.",
+      "reasonLabel": "Why are you reporting this?",
+      "reason": {
+        "danger": "Someone is in danger",
+        "harassment": "Harassment or bullying",
+        "sexual": "Unwanted sexual content or contact",
+        "hate": "Hate speech or discrimination",
+        "scam": "Scam or someone asking for money",
+        "ghost_event": "This event isn't real",
+        "impersonation": "Pretending to be someone else",
+        "spam": "Spam or advertising",
+        "privacy": "Shared someone's private information",
+        "illegal": "Illegal activity",
+        "unsafe_setup": "Unsafe event setup",
+        "other": "Something else"
+      },
+      "descriptionLabel": "Tell us more (optional)",
+      "descriptionCounter": "{count} / 2,000",
+      "alsoBlock": "Also block this person",
+      "submit": "Send report",
+      "submitting": "Sending…",
+      "submitted": "Thanks — we've received your report.",
+      "submittedBody": "Our moderators will review it. We never tell anyone who reported.",
+      "close": "Close",
+      "errorGeneric": "We couldn't send your report. Please try again.",
+      "errorOffline": "You seem to be offline. Check your connection and try again."
+    },
+    "block": {
+      "action": "Block this person",
+      "actionAuthor": "Block author",
+      "actionOrganizer": "Block organizer",
+      "confirmTitle": "Block this person?",
+      "confirmBody": "You won't see each other's events, posts, comments or profile, and neither of you can message the other. They won't be notified.",
+      "confirm": "Block",
+      "cancel": "Cancel",
+      "working": "Blocking…",
+      "blocked": "Blocked",
+      "unblock": "Unblock",
+      "error": "We couldn't update this block. Please try again.",
+      "list": {
+        "title": "Blocked people",
+        "empty": "You haven't blocked anyone.",
+        "blockedAt": "Blocked {time}"
+      }
+    },
+    "label": {
+      "contentHidden": "Hidden for breaking the Community Guidelines",
+      "eventSuspended": "Temporarily removed for review",
+      "eventTakenDown": "Removed for breaking the Community Guidelines",
+      "eventUnavailable": "This event is no longer available"
     }
   }
 }

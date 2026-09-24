@@ -18,7 +18,7 @@ export class ReactionService {
     input: ReactionSetRequestT,
     viewer: CurrentUserContext,
   ): Promise<ReactionResponseT> {
-    await this.assertTarget(target);
+    await this.assertTarget(target, viewer);
     try {
       return toReactionResponse(target, await this.reactions.set(target, viewer.id, input.kind));
     } catch (error) {
@@ -34,7 +34,7 @@ export class ReactionService {
    * would only make a double tap look like a failure.
    */
   async remove(target: ReactionTargetRef, viewer: CurrentUserContext): Promise<void> {
-    await this.assertTarget(target);
+    await this.assertTarget(target, viewer);
     await this.reactions.remove(target, viewer.id);
   }
 
@@ -42,15 +42,18 @@ export class ReactionService {
     target: ReactionTargetRef,
     viewer: CurrentUserContext | null,
   ): Promise<ReactionSummaryResponseT> {
-    await this.assertTarget(target);
+    await this.assertTarget(target, viewer);
     return toReactionSummaryResponse(
       target,
       await this.reactions.summary(target, viewer?.id ?? null),
     );
   }
 
-  private async assertTarget(target: ReactionTargetRef): Promise<void> {
-    if (!(await this.reactions.targetExists(target))) {
+  private async assertTarget(
+    target: ReactionTargetRef,
+    viewer: CurrentUserContext | null,
+  ): Promise<void> {
+    if (!(await this.reactions.targetExists(target, viewer?.id ?? null))) {
       throw new NotFoundException({
         code: 'REACTION_TARGET_NOT_FOUND',
         messageKey: `errors.${target.type}.notFound`,

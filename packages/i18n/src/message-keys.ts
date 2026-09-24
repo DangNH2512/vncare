@@ -5,6 +5,44 @@ export type MessageKey =
   | 'a11y.openMenu'
   | 'a11y.switchLanguage'
   | 'a11y.toggleTheme'
+  | 'admin.audit.action.content_hidden'
+  | 'admin.audit.action.content_restored'
+  | 'admin.audit.action.event_restored'
+  | 'admin.audit.action.event_suspended'
+  | 'admin.audit.action.event_taken_down'
+  | 'admin.audit.action.report_dismissed'
+  | 'admin.audit.action.severity_changed'
+  | 'admin.audit.action.user_suspended'
+  | 'admin.audit.action.user_unsuspended'
+  | 'admin.audit.column.action'
+  | 'admin.audit.column.actor'
+  | 'admin.audit.column.change'
+  | 'admin.audit.column.entity'
+  | 'admin.audit.column.reason'
+  | 'admin.audit.column.time'
+  | 'admin.audit.empty'
+  | 'admin.audit.entityType.comment'
+  | 'admin.audit.entityType.event'
+  | 'admin.audit.entityType.moderation_ticket'
+  | 'admin.audit.entityType.post'
+  | 'admin.audit.entityType.user'
+  | 'admin.audit.error.title'
+  | 'admin.audit.filter.action'
+  | 'admin.audit.filter.actor'
+  | 'admin.audit.filter.any'
+  | 'admin.audit.filter.apply'
+  | 'admin.audit.filter.entityType'
+  | 'admin.audit.filter.from'
+  | 'admin.audit.filter.reset'
+  | 'admin.audit.filter.to'
+  | 'admin.audit.loadMore'
+  | 'admin.audit.readOnly'
+  | 'admin.audit.severity.critical'
+  | 'admin.audit.severity.info'
+  | 'admin.audit.severity.notice'
+  | 'admin.audit.severity.warning'
+  | 'admin.audit.system'
+  | 'admin.audit.title'
   | 'admin.header.signedInAs'
   | 'admin.health.checkedAt'
   | 'admin.health.dependency.database'
@@ -24,6 +62,83 @@ export type MessageKey =
   | 'admin.login.body'
   | 'admin.login.rejected'
   | 'admin.login.title'
+  | 'admin.moderation.action.changeSeverity'
+  | 'admin.moderation.action.dismiss'
+  | 'admin.moderation.action.hide_content'
+  | 'admin.moderation.action.restore_content'
+  | 'admin.moderation.action.restore_event'
+  | 'admin.moderation.action.suspend_event'
+  | 'admin.moderation.action.suspend_user'
+  | 'admin.moderation.action.take_down_event'
+  | 'admin.moderation.action.unsuspend_user'
+  | 'admin.moderation.actionType.content_hidden'
+  | 'admin.moderation.actionType.content_restored'
+  | 'admin.moderation.actionType.event_restored'
+  | 'admin.moderation.actionType.event_suspended'
+  | 'admin.moderation.actionType.event_taken_down'
+  | 'admin.moderation.actionType.no_action'
+  | 'admin.moderation.actionType.severity_changed'
+  | 'admin.moderation.actionType.user_suspended'
+  | 'admin.moderation.actionType.user_unsuspended'
+  | 'admin.moderation.form.cancel'
+  | 'admin.moderation.form.duration'
+  | 'admin.moderation.form.durationHint'
+  | 'admin.moderation.form.errorGeneric'
+  | 'admin.moderation.form.note'
+  | 'admin.moderation.form.noteCounter'
+  | 'admin.moderation.form.reason'
+  | 'admin.moderation.form.severity'
+  | 'admin.moderation.form.submit'
+  | 'admin.moderation.form.submitting'
+  | 'admin.moderation.queue.column.closedAt'
+  | 'admin.moderation.queue.column.firstReported'
+  | 'admin.moderation.queue.column.outcome'
+  | 'admin.moderation.queue.column.reasons'
+  | 'admin.moderation.queue.column.reports'
+  | 'admin.moderation.queue.column.severity'
+  | 'admin.moderation.queue.column.sla'
+  | 'admin.moderation.queue.column.target'
+  | 'admin.moderation.queue.empty.closed'
+  | 'admin.moderation.queue.empty.open'
+  | 'admin.moderation.queue.error.body'
+  | 'admin.moderation.queue.error.title'
+  | 'admin.moderation.queue.filter.allSeverities'
+  | 'admin.moderation.queue.filter.closed'
+  | 'admin.moderation.queue.filter.open'
+  | 'admin.moderation.queue.loadMore'
+  | 'admin.moderation.queue.title'
+  | 'admin.moderation.severity.critical'
+  | 'admin.moderation.severity.high'
+  | 'admin.moderation.severity.low'
+  | 'admin.moderation.severity.normal'
+  | 'admin.moderation.sla.dueSoon'
+  | 'admin.moderation.sla.normal'
+  | 'admin.moderation.sla.overdue'
+  | 'admin.moderation.sla.stopped'
+  | 'admin.moderation.targetType.comment'
+  | 'admin.moderation.targetType.event'
+  | 'admin.moderation.targetType.post'
+  | 'admin.moderation.targetType.user'
+  | 'admin.moderation.ticket.actorSystem'
+  | 'admin.moderation.ticket.addAction'
+  | 'admin.moderation.ticket.back'
+  | 'admin.moderation.ticket.currentStatus'
+  | 'admin.moderation.ticket.error.title'
+  | 'admin.moderation.ticket.historyEmpty'
+  | 'admin.moderation.ticket.historyTitle'
+  | 'admin.moderation.ticket.noDescription'
+  | 'admin.moderation.ticket.owner'
+  | 'admin.moderation.ticket.reporter'
+  | 'admin.moderation.ticket.reporterDeleted'
+  | 'admin.moderation.ticket.reportsTitle'
+  | 'admin.moderation.ticket.snapshotTitle'
+  | 'admin.moderation.ticket.suspendedUntil'
+  | 'admin.moderation.ticket.targetDeleted'
+  | 'admin.moderation.ticketStatus.dismissed'
+  | 'admin.moderation.ticketStatus.open'
+  | 'admin.moderation.ticketStatus.resolved'
+  | 'admin.nav.auditLog'
+  | 'admin.nav.moderationQueue'
   | 'admin.nav.overview'
   | 'admin.nav.systemHealth'
   | 'admin.overview.body'
@@ -104,6 +219,8 @@ export type MessageKey =
   | 'discover.view.label'
   | 'discover.view.list'
   | 'discover.view.map'
+  | 'errors.area.notFound'
+  | 'errors.area.outsideCoverage'
   | 'errors.auth.accountSuspended'
   | 'errors.auth.accountUnavailable'
   | 'errors.auth.emailTaken'
@@ -115,6 +232,7 @@ export type MessageKey =
   | 'errors.auth.roleNotAllowed'
   | 'errors.auth.trustLevelTooLow'
   | 'errors.auth.unauthenticated'
+  | 'errors.block.selfNotAllowed'
   | 'errors.chat.cannotMessageSelf'
   | 'errors.chat.conversationClosed'
   | 'errors.chat.conversationNotFound'
@@ -130,8 +248,10 @@ export type MessageKey =
   | 'errors.comment.parentNotFound'
   | 'errors.common.constraintViolated'
   | 'errors.common.duplicate'
+  | 'errors.common.idempotencyKeyRequired'
   | 'errors.common.referenceNotFound'
   | 'errors.common.retryLater'
+  | 'errors.content.underModeration'
   | 'errors.event.notFound'
   | 'errors.event.notOrganizer'
   | 'errors.event.radiusRequiresCoordinates'
@@ -140,11 +260,27 @@ export type MessageKey =
   | 'errors.media.notUploaded'
   | 'errors.media.tooLarge'
   | 'errors.media.typeNotAllowed'
+  | 'errors.moderation.conflictOfInterest'
+  | 'errors.moderation.invalidState'
+  | 'errors.moderation.noteTooLong'
+  | 'errors.moderation.noteTooShort'
+  | 'errors.moderation.reasonRequired'
+  | 'errors.moderation.selfNotAllowed'
+  | 'errors.moderation.suspensionTooLong'
+  | 'errors.moderation.targetNotFound'
+  | 'errors.moderation.targetNotInTicket'
+  | 'errors.moderation.targetProtected'
+  | 'errors.moderation.ticketAlreadyClosed'
+  | 'errors.moderation.ticketNotFound'
   | 'errors.post.notFound'
   | 'errors.post.notOwner'
   | 'errors.profile.notFound'
   | 'errors.profile.phoneInvalid'
   | 'errors.profile.phoneTaken'
+  | 'errors.report.descriptionTooLong'
+  | 'errors.report.rateLimited'
+  | 'errors.report.selfNotAllowed'
+  | 'errors.report.targetNotFound'
   | 'event.card.almostFull'
   | 'event.card.attendees'
   | 'event.card.details'
@@ -359,6 +495,55 @@ export type MessageKey =
   | 'rsvp.error.occurrenceNotFound'
   | 'rsvp.error.suspended'
   | 'rsvp.error.trustTooLow'
+  | 'safety.block.action'
+  | 'safety.block.actionAuthor'
+  | 'safety.block.actionOrganizer'
+  | 'safety.block.blocked'
+  | 'safety.block.cancel'
+  | 'safety.block.confirm'
+  | 'safety.block.confirmBody'
+  | 'safety.block.confirmTitle'
+  | 'safety.block.error'
+  | 'safety.block.list.blockedAt'
+  | 'safety.block.list.empty'
+  | 'safety.block.list.title'
+  | 'safety.block.unblock'
+  | 'safety.block.working'
+  | 'safety.label.contentHidden'
+  | 'safety.label.eventSuspended'
+  | 'safety.label.eventTakenDown'
+  | 'safety.label.eventUnavailable'
+  | 'safety.menu.more'
+  | 'safety.report.action'
+  | 'safety.report.alsoBlock'
+  | 'safety.report.close'
+  | 'safety.report.descriptionCounter'
+  | 'safety.report.descriptionLabel'
+  | 'safety.report.emergency_first'
+  | 'safety.report.errorGeneric'
+  | 'safety.report.errorOffline'
+  | 'safety.report.reason.danger'
+  | 'safety.report.reason.ghost_event'
+  | 'safety.report.reason.harassment'
+  | 'safety.report.reason.hate'
+  | 'safety.report.reason.illegal'
+  | 'safety.report.reason.impersonation'
+  | 'safety.report.reason.other'
+  | 'safety.report.reason.privacy'
+  | 'safety.report.reason.scam'
+  | 'safety.report.reason.sexual'
+  | 'safety.report.reason.spam'
+  | 'safety.report.reason.unsafe_setup'
+  | 'safety.report.reasonLabel'
+  | 'safety.report.reassurance'
+  | 'safety.report.submit'
+  | 'safety.report.submitted'
+  | 'safety.report.submittedBody'
+  | 'safety.report.submitting'
+  | 'safety.report.title.comment'
+  | 'safety.report.title.event'
+  | 'safety.report.title.post'
+  | 'safety.report.title.user'
   | 'shell.a11y.bottomNav'
   | 'shell.a11y.create'
   | 'shell.a11y.primaryNav'
@@ -399,6 +584,44 @@ export const MESSAGE_KEYS = [
   'a11y.openMenu',
   'a11y.switchLanguage',
   'a11y.toggleTheme',
+  'admin.audit.action.content_hidden',
+  'admin.audit.action.content_restored',
+  'admin.audit.action.event_restored',
+  'admin.audit.action.event_suspended',
+  'admin.audit.action.event_taken_down',
+  'admin.audit.action.report_dismissed',
+  'admin.audit.action.severity_changed',
+  'admin.audit.action.user_suspended',
+  'admin.audit.action.user_unsuspended',
+  'admin.audit.column.action',
+  'admin.audit.column.actor',
+  'admin.audit.column.change',
+  'admin.audit.column.entity',
+  'admin.audit.column.reason',
+  'admin.audit.column.time',
+  'admin.audit.empty',
+  'admin.audit.entityType.comment',
+  'admin.audit.entityType.event',
+  'admin.audit.entityType.moderation_ticket',
+  'admin.audit.entityType.post',
+  'admin.audit.entityType.user',
+  'admin.audit.error.title',
+  'admin.audit.filter.action',
+  'admin.audit.filter.actor',
+  'admin.audit.filter.any',
+  'admin.audit.filter.apply',
+  'admin.audit.filter.entityType',
+  'admin.audit.filter.from',
+  'admin.audit.filter.reset',
+  'admin.audit.filter.to',
+  'admin.audit.loadMore',
+  'admin.audit.readOnly',
+  'admin.audit.severity.critical',
+  'admin.audit.severity.info',
+  'admin.audit.severity.notice',
+  'admin.audit.severity.warning',
+  'admin.audit.system',
+  'admin.audit.title',
   'admin.header.signedInAs',
   'admin.health.checkedAt',
   'admin.health.dependency.database',
@@ -418,6 +641,83 @@ export const MESSAGE_KEYS = [
   'admin.login.body',
   'admin.login.rejected',
   'admin.login.title',
+  'admin.moderation.action.changeSeverity',
+  'admin.moderation.action.dismiss',
+  'admin.moderation.action.hide_content',
+  'admin.moderation.action.restore_content',
+  'admin.moderation.action.restore_event',
+  'admin.moderation.action.suspend_event',
+  'admin.moderation.action.suspend_user',
+  'admin.moderation.action.take_down_event',
+  'admin.moderation.action.unsuspend_user',
+  'admin.moderation.actionType.content_hidden',
+  'admin.moderation.actionType.content_restored',
+  'admin.moderation.actionType.event_restored',
+  'admin.moderation.actionType.event_suspended',
+  'admin.moderation.actionType.event_taken_down',
+  'admin.moderation.actionType.no_action',
+  'admin.moderation.actionType.severity_changed',
+  'admin.moderation.actionType.user_suspended',
+  'admin.moderation.actionType.user_unsuspended',
+  'admin.moderation.form.cancel',
+  'admin.moderation.form.duration',
+  'admin.moderation.form.durationHint',
+  'admin.moderation.form.errorGeneric',
+  'admin.moderation.form.note',
+  'admin.moderation.form.noteCounter',
+  'admin.moderation.form.reason',
+  'admin.moderation.form.severity',
+  'admin.moderation.form.submit',
+  'admin.moderation.form.submitting',
+  'admin.moderation.queue.column.closedAt',
+  'admin.moderation.queue.column.firstReported',
+  'admin.moderation.queue.column.outcome',
+  'admin.moderation.queue.column.reasons',
+  'admin.moderation.queue.column.reports',
+  'admin.moderation.queue.column.severity',
+  'admin.moderation.queue.column.sla',
+  'admin.moderation.queue.column.target',
+  'admin.moderation.queue.empty.closed',
+  'admin.moderation.queue.empty.open',
+  'admin.moderation.queue.error.body',
+  'admin.moderation.queue.error.title',
+  'admin.moderation.queue.filter.allSeverities',
+  'admin.moderation.queue.filter.closed',
+  'admin.moderation.queue.filter.open',
+  'admin.moderation.queue.loadMore',
+  'admin.moderation.queue.title',
+  'admin.moderation.severity.critical',
+  'admin.moderation.severity.high',
+  'admin.moderation.severity.low',
+  'admin.moderation.severity.normal',
+  'admin.moderation.sla.dueSoon',
+  'admin.moderation.sla.normal',
+  'admin.moderation.sla.overdue',
+  'admin.moderation.sla.stopped',
+  'admin.moderation.targetType.comment',
+  'admin.moderation.targetType.event',
+  'admin.moderation.targetType.post',
+  'admin.moderation.targetType.user',
+  'admin.moderation.ticket.actorSystem',
+  'admin.moderation.ticket.addAction',
+  'admin.moderation.ticket.back',
+  'admin.moderation.ticket.currentStatus',
+  'admin.moderation.ticket.error.title',
+  'admin.moderation.ticket.historyEmpty',
+  'admin.moderation.ticket.historyTitle',
+  'admin.moderation.ticket.noDescription',
+  'admin.moderation.ticket.owner',
+  'admin.moderation.ticket.reporter',
+  'admin.moderation.ticket.reporterDeleted',
+  'admin.moderation.ticket.reportsTitle',
+  'admin.moderation.ticket.snapshotTitle',
+  'admin.moderation.ticket.suspendedUntil',
+  'admin.moderation.ticket.targetDeleted',
+  'admin.moderation.ticketStatus.dismissed',
+  'admin.moderation.ticketStatus.open',
+  'admin.moderation.ticketStatus.resolved',
+  'admin.nav.auditLog',
+  'admin.nav.moderationQueue',
   'admin.nav.overview',
   'admin.nav.systemHealth',
   'admin.overview.body',
@@ -498,6 +798,8 @@ export const MESSAGE_KEYS = [
   'discover.view.label',
   'discover.view.list',
   'discover.view.map',
+  'errors.area.notFound',
+  'errors.area.outsideCoverage',
   'errors.auth.accountSuspended',
   'errors.auth.accountUnavailable',
   'errors.auth.emailTaken',
@@ -509,6 +811,7 @@ export const MESSAGE_KEYS = [
   'errors.auth.roleNotAllowed',
   'errors.auth.trustLevelTooLow',
   'errors.auth.unauthenticated',
+  'errors.block.selfNotAllowed',
   'errors.chat.cannotMessageSelf',
   'errors.chat.conversationClosed',
   'errors.chat.conversationNotFound',
@@ -524,8 +827,10 @@ export const MESSAGE_KEYS = [
   'errors.comment.parentNotFound',
   'errors.common.constraintViolated',
   'errors.common.duplicate',
+  'errors.common.idempotencyKeyRequired',
   'errors.common.referenceNotFound',
   'errors.common.retryLater',
+  'errors.content.underModeration',
   'errors.event.notFound',
   'errors.event.notOrganizer',
   'errors.event.radiusRequiresCoordinates',
@@ -534,11 +839,27 @@ export const MESSAGE_KEYS = [
   'errors.media.notUploaded',
   'errors.media.tooLarge',
   'errors.media.typeNotAllowed',
+  'errors.moderation.conflictOfInterest',
+  'errors.moderation.invalidState',
+  'errors.moderation.noteTooLong',
+  'errors.moderation.noteTooShort',
+  'errors.moderation.reasonRequired',
+  'errors.moderation.selfNotAllowed',
+  'errors.moderation.suspensionTooLong',
+  'errors.moderation.targetNotFound',
+  'errors.moderation.targetNotInTicket',
+  'errors.moderation.targetProtected',
+  'errors.moderation.ticketAlreadyClosed',
+  'errors.moderation.ticketNotFound',
   'errors.post.notFound',
   'errors.post.notOwner',
   'errors.profile.notFound',
   'errors.profile.phoneInvalid',
   'errors.profile.phoneTaken',
+  'errors.report.descriptionTooLong',
+  'errors.report.rateLimited',
+  'errors.report.selfNotAllowed',
+  'errors.report.targetNotFound',
   'event.card.almostFull',
   'event.card.attendees',
   'event.card.details',
@@ -753,6 +1074,55 @@ export const MESSAGE_KEYS = [
   'rsvp.error.occurrenceNotFound',
   'rsvp.error.suspended',
   'rsvp.error.trustTooLow',
+  'safety.block.action',
+  'safety.block.actionAuthor',
+  'safety.block.actionOrganizer',
+  'safety.block.blocked',
+  'safety.block.cancel',
+  'safety.block.confirm',
+  'safety.block.confirmBody',
+  'safety.block.confirmTitle',
+  'safety.block.error',
+  'safety.block.list.blockedAt',
+  'safety.block.list.empty',
+  'safety.block.list.title',
+  'safety.block.unblock',
+  'safety.block.working',
+  'safety.label.contentHidden',
+  'safety.label.eventSuspended',
+  'safety.label.eventTakenDown',
+  'safety.label.eventUnavailable',
+  'safety.menu.more',
+  'safety.report.action',
+  'safety.report.alsoBlock',
+  'safety.report.close',
+  'safety.report.descriptionCounter',
+  'safety.report.descriptionLabel',
+  'safety.report.emergency_first',
+  'safety.report.errorGeneric',
+  'safety.report.errorOffline',
+  'safety.report.reason.danger',
+  'safety.report.reason.ghost_event',
+  'safety.report.reason.harassment',
+  'safety.report.reason.hate',
+  'safety.report.reason.illegal',
+  'safety.report.reason.impersonation',
+  'safety.report.reason.other',
+  'safety.report.reason.privacy',
+  'safety.report.reason.scam',
+  'safety.report.reason.sexual',
+  'safety.report.reason.spam',
+  'safety.report.reason.unsafe_setup',
+  'safety.report.reasonLabel',
+  'safety.report.reassurance',
+  'safety.report.submit',
+  'safety.report.submitted',
+  'safety.report.submittedBody',
+  'safety.report.submitting',
+  'safety.report.title.comment',
+  'safety.report.title.event',
+  'safety.report.title.post',
+  'safety.report.title.user',
   'shell.a11y.bottomNav',
   'shell.a11y.create',
   'shell.a11y.primaryNav',

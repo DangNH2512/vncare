@@ -160,8 +160,7 @@ export class AuthService implements OnModuleInit {
         messageKey: 'errors.auth.invalidCredentials',
       });
     }
-    this.assertUsable(row);
-    return this.issue(row, context);
+    return this.issue(await this.assertUsable(row), context);
   }
 
   /**
@@ -175,6 +174,17 @@ export class AuthService implements OnModuleInit {
   async refresh(refreshToken: string, context: SessionContext): Promise<RefreshResult> {
     const session = await this.users.findSessionByHash(hashToken(refreshToken));
     if (!session) throw this.invalidRefresh();
+
+    if (session.revoked_at !== null && session.revoked_reason === 'account_suspended') {
+      // Revoked by a moderator suspending the account, not spent by the
+      // client: a replay of it is not theft, so the family is left alone.
+      // While the suspension holds, say so (AC-33); once it has ended, the
+      // session is still gone and the member signs in again.
+      const owner = await this.users.findById(session.user_id);
+      if (!owner) throw this.invalidRefresh();
+      await this.assertUsable(owner);
+      throw this.invalidRefresh();
+    }
 
     if (session.revoked_at !== null) {
       const rotatedRecently =
@@ -190,9 +200,9 @@ export class AuthService implements OnModuleInit {
     }
     if (session.expires_at.getTime() <= Date.now()) throw this.invalidRefresh();
 
-    const row = await this.users.findById(session.user_id);
-    if (!row) throw this.invalidRefresh();
-    this.assertUsable(row);
+    const found = await this.users.findById(session.user_id);
+    if (!found) throw this.invalidRefresh();
+    const row = await this.assertUsable(found);
 
     // Already revoked means this was the tolerated race; revoking again would
     // overwrite the reason and lose why it was spent.
@@ -240,11 +250,31 @@ export class AuthService implements OnModuleInit {
     return this.users.touchLastActive(userId);
   }
 
-  private assertUsable(row: UserRow): void {
-    if (row.status === 'active') return;
+  /**
+   * Refuses an account that may not hold a session, and returns the row to
+   * issue one from.
+   *
+   * A suspension whose `suspended_until` has passed is lifted here, lazily, at
+   * the moment the member next signs in or refreshes (task board D4) — there
+   * is no sweeper job. The row is then read again, because the lift changed
+   * it. A suspension with no end date keeps the old behaviour: refused.
+   */
+  private async assertUsable(row: UserRow): Promise<UserRow> {
+    let current = row;
+    if (
+      current.status === 'suspended' &&
+      current.suspended_until !== null &&
+      current.suspended_until.getTime() <= Date.now()
+    ) {
+      // Re-read even when this call did not do the lift: a concurrent sign-in
+      // may have, and the database clock is the one that decides.
+      await this.users.liftExpiredSuspension(current.id);
+      current = (await this.users.findById(current.id)) ?? current;
+    }
+    if (current.status === 'active') return current;
     throw new ForbiddenException({
       code: 'ACCOUNT_NOT_ACTIVE',
-      messageKey: `errors.auth.account${row.status === 'suspended' ? 'Suspended' : 'Unavailable'}`,
+      messageKey: `errors.auth.account${current.status === 'suspended' ? 'Suspended' : 'Unavailable'}`,
     });
   }
 
