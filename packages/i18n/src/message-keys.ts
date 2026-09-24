@@ -5,6 +5,29 @@ export type MessageKey =
   | 'a11y.openMenu'
   | 'a11y.switchLanguage'
   | 'a11y.toggleTheme'
+  | 'admin.header.signedInAs'
+  | 'admin.health.checkedAt'
+  | 'admin.health.dependency.database'
+  | 'admin.health.dependency.redisCache'
+  | 'admin.health.dependency.redisQueue'
+  | 'admin.health.dependencyStatus.down'
+  | 'admin.health.dependencyStatus.up'
+  | 'admin.health.environmentLabel'
+  | 'admin.health.state.allUp.body'
+  | 'admin.health.state.allUp.title'
+  | 'admin.health.state.degraded.body'
+  | 'admin.health.state.degraded.title'
+  | 'admin.health.state.unreachable.body'
+  | 'admin.health.state.unreachable.title'
+  | 'admin.health.title'
+  | 'admin.health.uptimeLabel'
+  | 'admin.login.body'
+  | 'admin.login.rejected'
+  | 'admin.login.title'
+  | 'admin.nav.overview'
+  | 'admin.nav.systemHealth'
+  | 'admin.overview.body'
+  | 'admin.overview.title'
   | 'area.all'
   | 'area.eventCount'
   | 'area.label'
@@ -89,6 +112,7 @@ export type MessageKey =
   | 'errors.auth.invalidCredentials'
   | 'errors.auth.invalidRefresh'
   | 'errors.auth.invalidToken'
+  | 'errors.auth.roleNotAllowed'
   | 'errors.auth.trustLevelTooLow'
   | 'errors.auth.unauthenticated'
   | 'errors.chat.cannotMessageSelf'
@@ -322,6 +346,10 @@ export type MessageKey =
   | 'profile.visibilityHint.members_only'
   | 'profile.visibilityHint.private'
   | 'profile.visibilityHint.public'
+  | 'role.admin.label'
+  | 'role.curator.label'
+  | 'role.moderator.label'
+  | 'role.superAdmin.label'
   | 'rsvp.action.working'
   | 'rsvp.error.alreadyRsvped'
   | 'rsvp.error.generic'
@@ -371,6 +399,29 @@ export const MESSAGE_KEYS = [
   'a11y.openMenu',
   'a11y.switchLanguage',
   'a11y.toggleTheme',
+  'admin.header.signedInAs',
+  'admin.health.checkedAt',
+  'admin.health.dependency.database',
+  'admin.health.dependency.redisCache',
+  'admin.health.dependency.redisQueue',
+  'admin.health.dependencyStatus.down',
+  'admin.health.dependencyStatus.up',
+  'admin.health.environmentLabel',
+  'admin.health.state.allUp.body',
+  'admin.health.state.allUp.title',
+  'admin.health.state.degraded.body',
+  'admin.health.state.degraded.title',
+  'admin.health.state.unreachable.body',
+  'admin.health.state.unreachable.title',
+  'admin.health.title',
+  'admin.health.uptimeLabel',
+  'admin.login.body',
+  'admin.login.rejected',
+  'admin.login.title',
+  'admin.nav.overview',
+  'admin.nav.systemHealth',
+  'admin.overview.body',
+  'admin.overview.title',
   'area.all',
   'area.eventCount',
   'area.label',
@@ -455,6 +506,7 @@ export const MESSAGE_KEYS = [
   'errors.auth.invalidCredentials',
   'errors.auth.invalidRefresh',
   'errors.auth.invalidToken',
+  'errors.auth.roleNotAllowed',
   'errors.auth.trustLevelTooLow',
   'errors.auth.unauthenticated',
   'errors.chat.cannotMessageSelf',
@@ -688,6 +740,10 @@ export const MESSAGE_KEYS = [
   'profile.visibilityHint.members_only',
   'profile.visibilityHint.private',
   'profile.visibilityHint.public',
+  'role.admin.label',
+  'role.curator.label',
+  'role.moderator.label',
+  'role.superAdmin.label',
   'rsvp.action.working',
   'rsvp.error.alreadyRsvped',
   'rsvp.error.generic',

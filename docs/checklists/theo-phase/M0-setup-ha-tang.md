@@ -37,9 +37,9 @@
 
 ## 2. M0 · Setup hạ tầng — chốt 18/09/2026
 
-**Sprint:** L0 · **Tổng:** 35 mục · ✅ 8 · 🟡 6 · ⬜ 10 · ⛔ 0 · ❓ 1 · ⚪ 5 · ✂️ 5 · **Tỷ lệ xong:** 27%
+**Sprint:** L0 · **Tổng:** 35 mục · ✅ 9 · 🟡 5 · ⬜ 10 · ⛔ 0 · ❓ 1 · ⚪ 5 · ✂️ 5 · **Tỷ lệ xong:** 30%
 
-**SP theo người (còn lại / trong phạm vi):** TV1 19 / 34 · TV2 0 / 3 · TV3 0 / 0
+**SP theo người (còn lại / trong phạm vi):** TV1 14 / 34 · TV2 0 / 3 · TV3 0 / 0
 
 **Mục tiêu:**
 
@@ -61,7 +61,7 @@
 |:-:|---|---|---|---|---|
 | ☑ | E1-S1 | Monorepo + chuẩn code thống nhất (5 SP) · MUST | TV1 | <span class="nw">✅ Xong</span> | Monorepo pnpm + Turborepo + oxlint chạy được. |
 | ☑ | E1-S2 | `docker compose up` = Postgres 16 + PostGIS 3.4 + Redis (5 SP) · MUST | TV1 | <span class="nw">✅ Xong</span> | PostgreSQL 18 + PostGIS 3.6 + Redis 7.4 (nâng phiên bản đã quyết, khác số ghi trong doc 08). |
-| ☐ | E1-S3 | Khung NestJS 11 + config theo môi trường + `GET /health` (5 SP) · MUST | TV1 | <span class="nw">🟡 Một phần</span> | Có /health; thiếu readiness kiểm tra DB và Redis. |
+| ☑ | E1-S3 | Khung NestJS 11 + config theo môi trường + `GET /health` (5 SP) · MUST | TV1 | <span class="nw">✅ Xong</span> | Có /health; thiếu readiness kiểm tra DB và Redis. Xong 24/09/2026: thêm GET /api/v1/health/ready kiểm PostgreSQL + Redis cache + Redis queue, trả 200 hoặc 503 kèm tên dịch vụ đang hỏng (e2e health.e2e.spec.ts; chạy thật: tắt Redis cache → 503, bật lại → 200). |
 | ☐ | E1-S4 | TypeORM migration + seed data (5 SP) · MUST | TV1 | <span class="nw">❓ Cần chốt</span> | Không dùng TypeORM: schema là file SQL nạp qua initdb, không tự áp cho DB đang chạy. Chốt cơ chế migration (T-04) trước bảng mới đầu tiên. Tinh gọn: Không nằm trong 28 SP của L0; phải chốt cơ chế migration trước khi TV1 tạo users.role và trust_signals ở L1 |
 | ☑ | E1-S5 | Khung Next.js 15 App Router + Tailwind + design token (5 SP) · MUST | TV1 | <span class="nw">✅ Xong</span> | Next.js 16 App Router + Tailwind 4 + token từ @dnc/tokens. Tinh gọn: @dnc/tokens chưa khớp doc 10 §12 (primary #0EA5E9, doc 10 dùng teal-500 #0E7C74); Designer thuê ngoài giao design token trong gói 4 tuần (TG-M0-1), TV1 thay vào @dnc/tokens |
 | ☐ | E1-S6 | Khung Expo 54 + RN 0.81 + điều hướng + dev build máy thật (8 SP) · MUST | Founder | <span class="nw">✂️ Cắt / hoãn</span> | apps/mobile-client-side chỉ có README. Chặn cứng 18 SP mobile của Sprint 1 (E2-S3, E2-S4, E2-S9). Tinh gọn: Hoãn nhánh native sang sau ra mắt, không có repo mobile trong 7 tháng đầu; thay bằng PWA (manifest, service worker, add-to-home) do TV2 làm (TG-M5-1, TG-M5-2) |

@@ -1,0 +1,10 @@
+{
+  "//": "Not referenced by the app's own tsconfig.json (see its exclude list) and not run by `typecheck`: this is for editor type-checking of the Playwright suite only. Playwright Test compiles specs itself at run time and does not need this file.",
+  "extends": "@dnc/config/tsconfig/lib.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": ["node", "@playwright/test"],
+    "noEmit": true
+  },
+  "include": ["**/*.ts", "../playwright.config.ts"]
+}

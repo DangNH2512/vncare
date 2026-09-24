@@ -11,3 +11,12 @@ export {
   type TrustRequirement,
   type TrustSignals,
 } from './trust';
+export {
+  allowedRolesFor,
+  isStaffRole,
+  PERMISSION_MATRIX,
+  STAFF_ROLES,
+  SYSTEM_HEALTH_ROLES,
+  type PermissionKey,
+  type PermissionRule,
+} from './permission-matrix';

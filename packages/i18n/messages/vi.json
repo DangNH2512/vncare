@@ -295,6 +295,7 @@
     "auth": {
       "unauthenticated": "Vui lòng đăng nhập để tiếp tục.",
       "trustLevelTooLow": "Tài khoản của bạn cần mức độ tin cậy cao hơn để làm việc này.",
+      "roleNotAllowed": "Bạn không có quyền thực hiện việc này.",
       "invalidCredentials": "Thông tin đăng nhập không khớp với tài khoản nào.",
       "invalidToken": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
       "invalidRefresh": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
@@ -533,6 +534,59 @@
     "createEvent": {
       "title": "Tạo sự kiện chưa sẵn sàng",
       "body": "Biểu mẫu đang được dựng. Trong lúc chờ, bạn có thể đăng lên bảng tin cộng đồng và hẹn nhau ở đó."
+    }
+  },
+  "role": {
+    "curator": { "label": "Người phụ trách nội dung" },
+    "moderator": { "label": "Kiểm duyệt viên" },
+    "admin": { "label": "Quản trị viên" },
+    "superAdmin": { "label": "Quản trị viên cấp cao" }
+  },
+  "admin": {
+    "login": {
+      "title": "Đăng nhập nhân sự",
+      "body": "Đăng nhập bằng tài khoản nhân sự của Da Nang Connect.",
+      "rejected": "Tài khoản này không có quyền truy cập bảng điều khiển vận hành."
+    },
+    "nav": {
+      "overview": "Tổng quan",
+      "systemHealth": "Tình trạng hệ thống"
+    },
+    "overview": {
+      "title": "Tổng quan",
+      "body": "Bảng điều khiển vận hành của Da Nang Connect."
+    },
+    "header": {
+      "signedInAs": "Đang đăng nhập: {name}"
+    },
+    "health": {
+      "title": "Tình trạng hệ thống",
+      "checkedAt": "Kiểm tra lúc {time}",
+      "environmentLabel": "Môi trường",
+      "uptimeLabel": "Thời gian hoạt động",
+      "dependency": {
+        "database": "Cơ sở dữ liệu",
+        "redisCache": "Bộ nhớ đệm",
+        "redisQueue": "Hàng đợi tác vụ"
+      },
+      "dependencyStatus": {
+        "up": "Hoạt động",
+        "down": "Không phản hồi"
+      },
+      "state": {
+        "allUp": {
+          "title": "Mọi hệ thống hoạt động bình thường",
+          "body": "Cơ sở dữ liệu và cả hai Redis đều phản hồi tốt."
+        },
+        "degraded": {
+          "title": "Đang suy giảm",
+          "body": "{dependency} không phản hồi. Các phần khác vẫn bình thường."
+        },
+        "unreachable": {
+          "title": "Không kết nối được API",
+          "body": "Kiểm tra kết nối mạng và thử lại."
+        }
+      }
     }
   }
 }

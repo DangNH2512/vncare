@@ -39,14 +39,14 @@
 
 | Phase | Tên | Ngày chốt | Sprint | Tổng | ✅ Xong | 🟡 Một phần | ⬜ Chưa làm | ⛔ Bị chặn | ❓ Cần chốt | ⚪ Chưa xác nhận | ✂️ Cắt / hoãn | Tỷ lệ xong |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| **M0** | Setup hạ tầng | <span class="nw">18/09/2026</span> | L0 | 35 | 8 | 6 | 10 | 0 | 1 | 5 | 5 | 27% |
-| **M1** | API nền + Auth | <span class="nw">02/10/2026</span> | L1 | 49 | 3 | 8 | 23 | 2 | 8 | 2 | 3 | 7% |
+| **M0** | Setup hạ tầng | <span class="nw">18/09/2026</span> | L0 | 35 | 9 | 5 | 10 | 0 | 1 | 5 | 5 | 30% |
+| **M1** | API nền + Auth | <span class="nw">02/10/2026</span> | L1 | 49 | 11 | 7 | 18 | 2 | 6 | 2 | 3 | 24% |
 | **M2** | Tạo & khám phá sự kiện | <span class="nw">13/11/2026</span> | L2, L3, L4 | 72 | 0 | 11 | 45 | 0 | 5 | 1 | 10 | 0% |
 | **M3** | RSVP + Waitlist + Thông báo | <span class="nw">11/12/2026</span> | L5, L6 | 40 | 0 | 4 | 33 | 0 | 1 | 0 | 2 | 0% |
 | **M4** | Trust & Safety tối thiểu | <span class="nw">25/12/2026</span> | L7 | 40 | 0 | 0 | 35 | 0 | 2 | 0 | 3 | 0% |
 | **M5** | Beta kín 60 user | <span class="nw">26/02/2027</span> | L8, L9, L10 | 64 | 0 | 0 | 58 | 0 | 0 | 0 | 6 | 0% |
 | **M6** | Ra mắt công khai | <span class="nw">01/04/2027</span> | L11, L12 | 54 | 0 | 0 | 36 | 0 | 0 | 0 | 18 | 0% |
-| **Tổng** | | | | **354** | **11** | **29** | **240** | **2** | **17** | **8** | **47** | **4%** |
+| **Tổng** | | | | **354** | **20** | **27** | **235** | **2** | **15** | **8** | **47** | **7%** |
 
 ### 2.1. Phân công 60-20-20 theo chức năng
 
@@ -57,7 +57,7 @@ Chia theo chức năng dọc (QĐ-78, 23/09/2026): mỗi thành viên sở hữu
 | **TV1** (dùng AI) | 198 | 60% | 213 | 161 | 12 | Nền tảng và Tech Lead (hạ tầng, CI/CD, deploy, Sentry, migration, design token) · Phân quyền RBAC và trust · Sự kiện · Khám phá · RSVP và waitlist · Thông báo · Đo lường sản phẩm |
 | **TV2** | 67 | 20% | 78 | 46 | 3 | Tài khoản (đăng ký, xác minh email, đăng nhập, phiên, Google, đặt lại mật khẩu, rate limit) · Hồ sơ và onboarding, ảnh/CDN, OTP · Ngôn ngữ và i18n, tuỳ chọn thông báo, xuất/xoá dữ liệu · PWA và SEO toàn site |
 | **TV3** | 65 | 20% | 65 | 31 | 3 | Khu vực (polygon 6 khu vực MVP) · Kiểm duyệt (báo cáo, chặn, hàng đợi, xử lý, chống spam, Community Guidelines) · Admin Console (curate, nhận quyền, người dùng/khu vực/loại hình, bảng điều khiển) · Tin tức do đội vận hành đăng · Phễu phân tích |
-| **Tổng** | **330** | **100%** | **356** | **238** | **18** |  |
+| **Tổng** | **330** | **100%** | **356** | **354** | **20** | **27** | **235** | **2** | **15** | **8** | **47** | **7%** |
 
 - **SP trong phạm vi** gồm cả SP đã xong: TV1 đã xong E1-S1, E1-S2, E1-S5 (15 SP); TV2 đã xong E2-S2, E10-S1 (11 SP). 1 SP còn lại (E10-S2) thuộc Thuê ngoài: Dịch giả.
 - **Mục đứng đầu** là số dòng thành viên đứng tên đầu ở cột Phụ trách, gồm cả DoD, nghiệm thu và demo của chức năng mình.
@@ -110,9 +110,9 @@ SP còn lại theo cột Sprint **hiện tại** (chưa dời lịch). Lịch L0
 
 ## 3. M0 · Setup hạ tầng — chốt 18/09/2026
 
-**Sprint:** L0 · **Tổng:** 35 mục · ✅ 8 · 🟡 6 · ⬜ 10 · ⛔ 0 · ❓ 1 · ⚪ 5 · ✂️ 5 · **Tỷ lệ xong:** 27%
+**Sprint:** L0 · **Tổng:** 35 mục · ✅ 9 · 🟡 5 · ⬜ 10 · ⛔ 0 · ❓ 1 · ⚪ 5 · ✂️ 5 · **Tỷ lệ xong:** 30%
 
-**SP theo người (còn lại / trong phạm vi):** TV1 19 / 34 · TV2 0 / 3 · TV3 0 / 0
+**SP theo người (còn lại / trong phạm vi):** TV1 14 / 34 · TV2 0 / 3 · TV3 0 / 0
 
 **Mục tiêu:**
 
@@ -134,7 +134,7 @@ SP còn lại theo cột Sprint **hiện tại** (chưa dời lịch). Lịch L0
 |:-:|---|---|---|---|---|
 | ☑ | E1-S1 | Monorepo + chuẩn code thống nhất (5 SP) · MUST | TV1 | <span class="nw">✅ Xong</span> | Monorepo pnpm + Turborepo + oxlint chạy được. |
 | ☑ | E1-S2 | `docker compose up` = Postgres 16 + PostGIS 3.4 + Redis (5 SP) · MUST | TV1 | <span class="nw">✅ Xong</span> | PostgreSQL 18 + PostGIS 3.6 + Redis 7.4 (nâng phiên bản đã quyết, khác số ghi trong doc 08). |
-| ☐ | E1-S3 | Khung NestJS 11 + config theo môi trường + `GET /health` (5 SP) · MUST | TV1 | <span class="nw">🟡 Một phần</span> | Có /health; thiếu readiness kiểm tra DB và Redis. |
+| ☑ | E1-S3 | Khung NestJS 11 + config theo môi trường + `GET /health` (5 SP) · MUST | TV1 | <span class="nw">✅ Xong</span> | Có /health; thiếu readiness kiểm tra DB và Redis. Xong 24/09/2026: thêm GET /api/v1/health/ready kiểm PostgreSQL + Redis cache + Redis queue, trả 200 hoặc 503 kèm tên dịch vụ đang hỏng (e2e health.e2e.spec.ts; chạy thật: tắt Redis cache → 503, bật lại → 200). |
 | ☐ | E1-S4 | TypeORM migration + seed data (5 SP) · MUST | TV1 | <span class="nw">❓ Cần chốt</span> | Không dùng TypeORM: schema là file SQL nạp qua initdb, không tự áp cho DB đang chạy. Chốt cơ chế migration (T-04) trước bảng mới đầu tiên. Tinh gọn: Không nằm trong 28 SP của L0; phải chốt cơ chế migration trước khi TV1 tạo users.role và trust_signals ở L1 |
 | ☑ | E1-S5 | Khung Next.js 15 App Router + Tailwind + design token (5 SP) · MUST | TV1 | <span class="nw">✅ Xong</span> | Next.js 16 App Router + Tailwind 4 + token từ @dnc/tokens. Tinh gọn: @dnc/tokens chưa khớp doc 10 §12 (primary #0EA5E9, doc 10 dùng teal-500 #0E7C74); Designer thuê ngoài giao design token trong gói 4 tuần (TG-M0-1), TV1 thay vào @dnc/tokens |
 | ☐ | E1-S6 | Khung Expo 54 + RN 0.81 + điều hướng + dev build máy thật (8 SP) · MUST | Founder | <span class="nw">✂️ Cắt / hoãn</span> | apps/mobile-client-side chỉ có README. Chặn cứng 18 SP mobile của Sprint 1 (E2-S3, E2-S4, E2-S9). Tinh gọn: Hoãn nhánh native sang sau ra mắt, không có repo mobile trong 7 tháng đầu; thay bằng PWA (manifest, service worker, add-to-home) do TV2 làm (TG-M5-1, TG-M5-2) |
@@ -195,9 +195,9 @@ SP còn lại theo cột Sprint **hiện tại** (chưa dời lịch). Lịch L0
 
 ## 4. M1 · API nền + Auth — chốt 02/10/2026
 
-**Sprint:** L1 · **Tổng:** 49 mục · ✅ 3 · 🟡 8 · ⬜ 23 · ⛔ 2 · ❓ 8 · ⚪ 2 · ✂️ 3 · **Tỷ lệ xong:** 7%
+**Sprint:** L1 · **Tổng:** 49 mục · ✅ 11 · 🟡 7 · ⬜ 18 · ⛔ 2 · ❓ 6 · ⚪ 2 · ✂️ 3 · **Tỷ lệ xong:** 24%
 
-**SP theo người (còn lại / trong phạm vi):** TV1 8 / 8 · TV2 24 / 32 · TV3 0 / 0
+**SP theo người (còn lại / trong phạm vi):** TV1 3 / 8 · TV2 24 / 32 · TV3 0 / 0
 
 **Mục tiêu:**
 
@@ -210,16 +210,16 @@ SP còn lại theo cột Sprint **hiện tại** (chưa dời lịch). Lịch L0
 | ☐ | Mã | Nội dung | Phụ trách | Trạng thái | Ghi chú / bằng chứng |
 |:-:|---|---|---|---|---|
 | ☐ | CH-01 | Nghĩa vụ xác thực SĐT Việt Nam theo NĐ 147/2024: mọi tài khoản hay chỉ tài khoản đăng nội dung công khai. | Founder + Luật sư | <span class="nw">❓ Cần chốt</span> | Hạn 21/09. Code đang ngầm chọn "không bắt buộc". Tinh gọn: Nếu bắt buộc cho mọi tài khoản thì dùng OTP của nhà cung cấp có sẵn (E3-S6 chỉ còn 2 SP, nhóm B) |
-| ☐ | MT-17 | Chốt tên guard/decorator trust và RBAC (code: TrustLevelGuard/@MinTrustLevel; doc: TrustTierGuard/@MinTrust). | TV1 | <span class="nw">❓ Cần chốt</span> | Hạn 21/09; chặn E2-S7. |
+| ☑ | MT-17 | Chốt tên guard/decorator trust và RBAC (code: TrustLevelGuard/@MinTrustLevel; doc: TrustTierGuard/@MinTrust). | TV1 | <span class="nw">✅ Xong</span> | Hạn 21/09; chặn E2-S7. Chốt 24/09/2026: giữ tên code TrustLevelGuard/@MinTrustLevel; guard mới là RolesGuard/@Roles, thứ tự JwtAuthGuard → RolesGuard → TrustLevelGuard (D-07: role trước trust). Kế hoạch và nghiệm thu: .agent/specs/_changes/rbac-admin-shell/. |
 | ☐ | MT-16 | user_status_enum 5 hay 8 giá trị (enum Postgres không xoá được giá trị). | TV2 | <span class="nw">❓ Cần chốt</span> | Hạn 02/10. |
-| ☐ | PERM-MATRIX | Vị trí PERMISSION_MATRIX máy đọc được (doc 00: packages/shared-types; doc 01: apps/api/…/authz/) + test describe.each T-1→T-5. | TV1 | <span class="nw">❓ Cần chốt</span> | Hạn 21/09. |
+| ☑ | PERM-MATRIX | Vị trí PERMISSION_MATRIX máy đọc được (doc 00: packages/shared-types; doc 01: apps/api/…/authz/) + test describe.each T-1→T-5. | TV1 | <span class="nw">✅ Xong</span> | Hạn 21/09. Chốt 24/09/2026: packages/domain/src/permission-matrix.ts (STAFF_ROLES, SYSTEM_HEALTH_ROLES, PERMISSION_MATRIX), dùng chung cho RolesGuard ở API và menu/chặn route ở web admin; có unit test. |
 | ☐ | ADR-C9 | Có tách schema identity_secret cho bảng xác thực mới không (ADR-0000 mục C9). | Founder + TV1 | <span class="nw">❓ Cần chốt</span> | Hạn ký 07/09 đã qua. Tinh gọn: Founder ký ADR; TV1 đề xuất phương án và viết migration nếu chốt tách schema |
 | ☐ | TOKEN-MOBILE | Một cơ chế trả refresh token dùng chung cho web (cookie), mobile (SecureStore) và social login; đổi hợp đồng packages/contracts. | TV2 | <span class="nw">❓ Cần chốt</span> | Chặn E2-S3, E2-S4, E2-S9. Cổng phê duyệt: đổi packages dùng chung. Tinh gọn: Nhánh mobile (SecureStore) hoãn cùng E2-S9; chỉ cần chốt cookie cho web/PWA + Google, để hợp đồng mở sẵn cho bản native sau này |
 | ☐ | BR-30 | Nội dung Điều khoản / Chính sách quyền riêng tư và cơ chế consent_records (NĐ 13/2023 + Luật 91/2025). | Founder + Luật sư | <span class="nw">❓ Cần chốt</span> | Cần luật sư xác nhận. Tinh gọn: Founder soạn bản thảo mẫu, luật sư chỉ rà soát và ký xác nhận (gói pháp lý 55 triệu); vẫn phải theo Luật 91/2025 |
 | ☐ | ACC-APPLE-GOOGLE | Xác nhận tài khoản Apple Developer tổ chức / D-U-N-S; tạo Google OAuth client (3 ID: web, iOS, Android). | Founder + TV2 | <span class="nw">⚪ Chưa xác nhận</span> | Tinh gọn: Chỉ cần Google OAuth client cho web/PWA; không mua Apple Developer, D-U-N-S và 2 client iOS/Android thôi chặn vì E2-S4 bị cắt, bản native hoãn |
 | ☐ | OWNERS | Gán người phụ trách cho T-10, T-11, T-12, T-14 trong ACTIVE_TASKS. | TV1 | <span class="nw">⬜ Chưa làm</span> | Cột người phụ trách đang trống. Tinh gọn: Gán theo đội tinh gọn: T-10, T-11, T-12 cho TV2; T-14 cho TV1; T-11 chỉ còn Google |
-| ☐ | INFRA-MAIL | Nối mail client (SMTP → Mailpit) dùng chung cho E2-S1 và E2-S6. | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
-| ☐ | INFRA-REDIS | Nối Redis client (ioredis / BullMQ) cho rate limit E2-S10 và job trust:recompute (T-13). | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
+| ☑ | INFRA-MAIL | Nối mail client (SMTP → Mailpit) dùng chung cho E2-S1 và E2-S6. | TV1 | <span class="nw">✅ Xong</span> | Xong 24/09/2026: MailModule gửi qua SMTP (mặc định Mailpit), chặn người nhận theo MAIL_ALLOWED_DOMAINS cho staging, không ghi địa chỉ email vào log (e2e mail.e2e.spec.ts gửi thật và đọc lại từ Mailpit). |
+| ☑ | INFRA-REDIS | Nối Redis client (ioredis / BullMQ) cho rate limit E2-S10 và job trust:recompute (T-13). | TV1 | <span class="nw">✅ Xong</span> | Xong 24/09/2026: RedisModule có hai client (cache 6381, queue 6380 cấu hình sẵn cho BullMQ), kết nối lười, log khi mất và khi khôi phục kết nối, đóng sạch khi tắt app (enableShutdownHooks). Hàng đợi BullMQ tạo cùng E7-S1. |
 | ☐ | SEC-JWT-LOG | Vá lỗi ghi khoá riêng JWT ra log debug khi thiếu JWT_PRIVATE_KEY (auth.service.ts:107), trước khi bật log tập trung. | TV2 | <span class="nw">⬜ Chưa làm</span> | Lỗi bảo mật. |
 | ☐ | T-14 | Dựng Playwright ở apps/web-client-side/e2e/, chạy cả WebKit. | TV1 | <span class="nw">⬜ Chưa làm</span> | Ba bug chỉ-có-ở-client đã lọt lưới. Tinh gọn: Không có QA thường trực: TV1 dựng khung, mỗi thành viên viết E2E cho chức năng của mình; QA thuê ngoài chỉ chạy 2 đợt trước beta và trước ra mắt |
 
@@ -232,7 +232,7 @@ SP còn lại theo cột Sprint **hiện tại** (chưa dời lịch). Lịch L0
 | ☐ | E2-S3 | Đăng nhập Google (5 SP) · MUST | TV2 | <span class="nw">⛔ Bị chặn</span> | Chờ khung Expo (E1-S6), bảng social_accounts, endpoint /auth/social, Google OAuth client. Tinh gọn: Chỉ làm Google trên web/PWA, không còn chờ khung Expo (E1-S6 hoãn); vẫn chờ bảng social_accounts, endpoint /auth/social và OAuth client web |
 | ☐ | E2-S4 | Đăng nhập Apple (Guideline 4.8) (5 SP) · MUST | Founder | <span class="nw">✂️ Cắt / hoãn</span> | Như E2-S3, thêm tài khoản Apple Developer tổ chức / D-U-N-S. Tinh gọn: Cắt theo nhóm A: Guideline 4.8 chỉ áp dụng cho app trên App Store; giữ Google + email |
 | ☐ | E2-S6 | Đặt lại mật khẩu qua email (3 SP) · MUST | TV2 | <span class="nw">⬜ Chưa làm</span> | Chưa có luồng quên / đặt lại mật khẩu. Tinh gọn: Màn quên/đặt lại mật khẩu trên web do TV2 làm (MK-AUTH-03); là việc dời đầu tiên nếu L1 quá tải |
-| ☐ | E2-S7 | Enum role toàn cục 5 giá trị + guard RBAC (5 SP) · MUST | TV1 | <span class="nw">🟡 Một phần</span> | Enum 5 role đã đúng; chưa có RolesGuard/@Roles, chỉ có TrustLevelGuard. Tinh gọn: Thuộc danh sách không bao giờ cắt |
+| ☑ | E2-S7 | Enum role toàn cục 5 giá trị + guard RBAC (5 SP) · MUST | TV1 | <span class="nw">✅ Xong</span> | Enum 5 role đã đúng; chưa có RolesGuard/@Roles, chỉ có TrustLevelGuard. Tinh gọn: Thuộc danh sách không bao giờ cắt Xong 24/09/2026: thêm RolesGuard/@Roles và endpoint staff GET /api/v1/admin/system/health; 9 ca e2e admin-system-health.e2e.spec.ts. Kế hoạch và nghiệm thu: .agent/specs/_changes/rbac-admin-shell/. |
 | ☐ | E2-S8 | Màn đăng nhập/đăng ký web, trạng thái lỗi rõ ràng (5 SP) · MUST | TV2 | <span class="nw">🟡 Một phần</span> | Màn đăng nhập/đăng ký web có; thiếu nhánh lỗi 429, locale đang viết cứng "en" (auth-form.tsx:85). Tinh gọn: Là màn đăng nhập duy nhất trên điện thoại (PWA thay app native), phải dùng tốt ở khổ màn hình mobile |
 | ☐ | E2-S9 | Giữ phiên trên mobile, token trong secure storage (8 SP) · MUST | Founder | <span class="nw">✂️ Cắt / hoãn</span> | Refresh token chỉ trả qua cookie httpOnly; phải chốt cơ chế cho mobile trước khi code. Tinh gọn: Hoãn theo nhóm A, 7 tháng đầu không có repo mobile; phiên trên web/PWA giữ bằng cookie httpOnly + refresh 30 ngày (E2-S2) |
 | ☐ | E2-S10 | Rate limit endpoint xác thực, chặn dò mật khẩu (3 SP) · MUST | TV2 | <span class="nw">⬜ Chưa làm</span> | Chưa có rate limit; Redis đã chạy trong compose nhưng chưa nối client. |
@@ -246,7 +246,7 @@ SP còn lại theo cột Sprint **hiện tại** (chưa dời lịch). Lịch L0
 | ☐ | S1-DoD-2 | Migration tạo cột `users.trust_level` kiểu `smallint`, `CHECK (trust_level BETWEEN 0 AND 5)`, mặc định `0` | TV1 | <span class="nw">🟡 Một phần</span> | Cột có; đăng ký đang cấp thẳng T1 (TRUST_LEVEL_ON_REGISTER), phải về 0 khi có xác minh email. |
 | ☐ | S1-DoD-3 | Bảng `trust_signals` đã tạo (append-only), có `REVOKE UPDATE, DELETE` cho vai trò ứng dụng | TV1 | <span class="nw">⬜ Chưa làm</span> | DDL đầy đủ đã có ở doc 03 §4.5, chỉ còn viết migration. |
 | ☑ | S1-DoD-4 | Test e2e luồng tái sử dụng refresh token: dùng lại token đã xoay → toàn bộ họ token của thiết bị đó bị thu hồi, trả 401 | TV2 | <span class="nw">✅ Xong</span> | auth.e2e.spec.ts:323. |
-| ☐ | S1-DoD-5 | Test guard: `member` gọi endpoint chỉ dành cho `moderator` → 403, không phải 404 và không phải 500 | TV1 | <span class="nw">⬜ Chưa làm</span> | Chưa có RolesGuard. |
+| ☑ | S1-DoD-5 | Test guard: `member` gọi endpoint chỉ dành cho `moderator` → 403, không phải 404 và không phải 500 | TV1 | <span class="nw">✅ Xong</span> | Chưa có RolesGuard. Xong 24/09/2026: member gọi endpoint chỉ dành cho admin → 403 ROLE_NOT_ALLOWED (không 404/500), body không liệt kê role hợp lệ (e2e ca #2). Chưa có endpoint chỉ dành cho moderator nên test dùng endpoint admin. |
 | ☐ | S1-DoD-6 | Đăng nhập Apple chạy thật trên thiết bị iOS thật, không phải simulator | Founder | <span class="nw">✂️ Cắt / hoãn</span> | Chờ khung Expo + tài khoản Apple Developer. Tinh gọn: Chỉ dùng để kiểm Apple trên iOS native, mà E2-S4 đã bị cắt |
 | ☐ | S1-DoD-7 | Rate limit: 10 lần đăng nhập sai/IP/15 phút → 429 có header `Retry-After` | TV2 | <span class="nw">⬜ Chưa làm</span> | — |
 | ☐ | S1-DoD-8 | Sổ đăng ký xử lý dữ liệu cá nhân đã có 3 dòng đầu: email, mật khẩu băm, định danh nhà cung cấp social | Founder + TV2 | <span class="nw">⬜ Chưa làm</span> | Phụ thuộc DoD S0 sổ đăng ký. Tinh gọn: Dòng định danh nhà cung cấp social chỉ còn Google (Apple, Facebook đã cắt); TV2 cung cấp danh sách trường dữ liệu |
@@ -259,7 +259,7 @@ SP còn lại theo cột Sprint **hiện tại** (chưa dời lịch). Lịch L0
 | ☐ | M1-2 | Đăng nhập Google và Apple chạy trên thiết bị thật, không phải simulator | TV2 | <span class="nw">⛔ Bị chặn</span> | Bằng chứng: Video thiết bị. Tinh gọn: Chỉ còn Google trên Android và iPhone thật qua trình duyệt/PWA; phần Apple bị cắt theo E2-S4 |
 | ☑ | M1-3 | Refresh token rotation có test e2e, gồm ca tái sử dụng token đã xoay → thu hồi cả họ | TV2 | <span class="nw">✅ Xong</span> | Bằng chứng: Báo cáo test |
 | ☐ | M1-4 | `users.role` là enum đúng 5 giá trị `member`/`curator`/`moderator`/`admin`/`super_admin`; không có `guest`, `organizer`, `verified_member`, `support` | TV1 | <span class="nw">🟡 Một phần</span> | Thiếu test pg_enum. Bằng chứng: Test đọc `pg_enum` |
-| ☐ | M1-5 | Guard RBAC chặn đúng: `member` gọi endpoint `moderator` → 403 | TV1 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Test e2e |
+| ☑ | M1-5 | Guard RBAC chặn đúng: `member` gọi endpoint `moderator` → 403 | TV1 | <span class="nw">✅ Xong</span> | Bằng chứng: Test e2e Đạt 24/09/2026: curator/moderator/member → 403, admin/super_admin → 200 (e2e ca #2–6). |
 | ☐ | M1-6 | `users.trust_level` `smallint` 0–5 đã có, mặc định 0; bảng `trust_signals` append-only đã có | TV1 | <span class="nw">🟡 Một phần</span> | trust_signals chưa có. Bằng chứng: Migration + kiểm tra quyền |
 | ☐ | M1-7 | Rate limit endpoint xác thực hoạt động, trả 429 có `Retry-After` | TV2 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Kịch bản test |
 | ☐ | M1-8 | Sổ đăng ký hoạt động xử lý dữ liệu cá nhân đã mở, có ≥ 3 mục | Founder + TV2 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: File sổ đăng ký |
@@ -272,7 +272,7 @@ SP còn lại theo cột Sprint **hiện tại** (chưa dời lịch). Lịch L0
 | ☐ | S1-Demo-2 | Trên iPhone thật: đăng nhập bằng Apple ID → đóng app hoàn toàn → mở lại sau 10 phút → vẫn đăng nhập | TV2 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Bỏ phần Apple ID vì E2-S4 đã cắt; vẫn demo trên iPhone thật qua Safari: đăng nhập email/Google → đóng hẳn trình duyệt → mở lại sau 10 phút → vẫn đăng nhập (cookie httpOnly + refresh 30 ngày của E2-S2, TV2 cấu hình cookie); bản thêm vào màn hình chính kiểm lại ở L9 |
 | ☐ | S1-Demo-3 | Trên Android thật: đăng nhập Google một chạm | TV2 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Demo qua Chrome/PWA trên Android thật (Google một chạm trên web), không cần app native |
 | ☐ | S1-Demo-4 | Demo bảo mật: lấy refresh token cũ trong Postman gọi lại → cả họ token bị thu hồi, thiết bị bị đá ra | TV2 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Bước 'thiết bị bị đá ra' minh hoạ bằng phiên trình duyệt/PWA |
-| ☐ | S1-Demo-5 | Demo RBAC: đổi `role` của tài khoản demo trong DB từ `member` sang `moderator` → endpoint kiểm duyệt mở ra ngay lần gọi kế tiếp | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
+| ☑ | S1-Demo-5 | Demo RBAC: đổi `role` của tài khoản demo trong DB từ `member` sang `moderator` → endpoint kiểm duyệt mở ra ngay lần gọi kế tiếp | TV1 | <span class="nw">✅ Xong</span> | Đạt 24/09/2026, cách demo đúng: đổi role trong DB → gọi bằng token cũ vẫn 403 (role nằm trong JWT) → refresh hoặc đăng nhập lại → 200. Dùng cặp member → admin qua GET /api/v1/admin/system/health (e2e ca #7–8). |
 
 ### 4.6. Việc ngoài SP
 
