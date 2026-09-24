@@ -20,10 +20,10 @@
 2. [Tác nhân & role](#2-tác-nhân--role) — *role enum 5 giá trị · ma trận RBAC · trust T0–T5, đã chốt*
 3. [Use case MVP theo MoSCoW](#3-use-case-mvp-theo-moscow) — *45 Must (waitlist đã lên Must) · L1→L7 điều kiện ra mắt*
 4. [Kiến trúc & tech stack đã chốt](#4-kiến-trúc--tech-stack-đã-chốt)
-5. [Roadmap & milestone](#5-roadmap--milestone) — *13 sprint lập lịch, 11 trước M6 · kịch bản tinh gọn 2 dev (đã chọn, QĐ-77)*
+5. [Roadmap & milestone](#5-roadmap--milestone) — *13 sprint lập lịch, 11 trước M6 · kịch bản tinh gọn (đã chọn, QĐ-77) · đội code 3 thành viên chia 60-20-20 (QĐ-78)*
 6. [Top 10 rủi ro và cách xử lý](#6-top-10-rủi-ro-và-cách-xử-lý)
 7. [Mảng pháp lý — tạm gác, chưa xong](#7-mảng-pháp-lý--tạm-gác-chưa-xong) — *hoãn sang giai đoạn sau; phải làm xong trước khi ra mắt công khai*
-8. [Decision log](#8-decision-log) — *QĐ-01 → QĐ-77, trong đó QĐ-54 → QĐ-76 chốt ngày 31/08/2026, QĐ-77 chốt ngày 19/09/2026*
+8. [Decision log](#8-decision-log) — *QĐ-01 → QĐ-78, trong đó QĐ-54 → QĐ-76 chốt ngày 31/08/2026, QĐ-77 chốt ngày 19/09/2026, QĐ-78 chốt ngày 23/09/2026*
 9. [Câu hỏi còn mở cần chủ dự án trả lời](#9-câu-hỏi-còn-mở-cần-chủ-dự-án-trả-lời) — *9/16 đã có câu trả lời chốt*
 10. [Việc cần làm ngay: 01/09 → 14/09/2026](#10-việc-cần-làm-ngay-0109--14092026)
 11. [Mục lục liên kết tới 9 tài liệu chi tiết](#11-mục-lục-liên-kết-tới-9-tài-liệu-chi-tiết)
@@ -495,6 +495,8 @@ Khả dụng 99,5%/tháng · p95 API đọc < 300 ms · p95 tạo RSVP < 500 ms 
 ### 5.6 Kịch bản tinh gọn — nếu chỉ có 2 lập trình viên
 
 > ✅ **Đã chốt ngày 19/09/2026 (QĐ-77):** chạy kịch bản tinh gọn 2 dev + Founder, **cắt nhóm A + B**, M6 dời sang **01/04/2027**. Checklist `docs/checklists/` đã phân việc lại theo Founder / Dev 1 / Dev 2 và lịch L0 → L12.
+>
+> 🔄 **Cập nhật 23/09/2026 (QĐ-78):** đội code đổi thành **3 thành viên chia khối lượng 60-20-20 theo chức năng** (TV1 dùng AI ~60%, TV2 ~20%, TV3 ~20%); Founder vẫn không viết code. Checklist đã phân việc lại theo Founder / TV1 / TV2 / TV3; phạm vi cắt và lịch L0 → L12 giữ nguyên.
 
 `08` §10 nay có bảng cắt scope chi tiết theo ba nhóm A/B/C. Đây là **lời giải bằng số** cho [CH-06], không còn là lời hứa suông.
 
@@ -696,6 +698,7 @@ Danh sách quyết định **đã chốt** qua 9 tài liệu phân tích. Một 
 | # | Quyết định | Giải | Nguồn |
 |---|---|---|---|
 | **QĐ-77** | **Chạy kịch bản tinh gọn: 2 lập trình viên + Founder, cắt nhóm A + B.** Vai trò: **Founder** (PO, Community Manager, curate, kiểm duyệt, pháp lý; không viết code) · **Dev 1** (Backend & Platform, kiêm Tech Lead) · **Dev 2** (Product & Web) · thuê ngoài Designer, QA hai đợt, dịch giả. Ra mắt bằng **PWA**, hoãn app native và phát hành cửa hàng. Lịch hiệu lực là **13 sprint L0 → L12** ở 28 SP/sprint; mốc mới: M2 **13/11/2026** · M3 **11/12/2026** · M4 **25/12/2026** · M5 **26/02/2027** (beta kín **60 user**) · M6 **01/04/2027**. Gate M6 giữ nguyên tiêu chí dòng chảy (QĐ-69). **Thay cho QĐ-71.** Việc còn lại: Founder ký bảng "Những gì mất đi khi cắt" ở `08` §10.5 | **CH-06** | `08` §9.2, §10.2 – §10.5 |
+| **QĐ-78** | **Đội code là 3 thành viên, chia khối lượng 60-20-20 theo chức năng dọc.** Mỗi người làm trọn use case, API, dữ liệu, màn hình và E2E của chức năng mình. **TV1** (dùng AI, ~60%): nền tảng kiêm Tech Lead, phân quyền và trust, sự kiện, khám phá, RSVP và waitlist, thông báo, đo lường · **TV2** (~20%): tài khoản, hồ sơ và onboarding, ảnh/CDN, OTP, i18n, tuỳ chọn thông báo, xuất/xoá dữ liệu, PWA, SEO toàn site · **TV3** (~20%): khu vực, kiểm duyệt và chống spam, Admin Console, curate và nhận quyền, tin tức, phễu phân tích. Trên 330 SP còn lại: TV1 198 · TV2 67 · TV3 65. Founder giữ việc không code; thuê ngoài giữ nguyên. Phạm vi cắt nhóm A + B, mốc M2–M6 và lịch L0 → L12 giữ nguyên; mức 28 SP/sprint đo lại sau L1. **Thay phần vai trò Dev 1 / Dev 2 của QĐ-77.** | **CH-06** | `docs/checklists/checklist-milestone-M0-M6.md` §2.1 – §2.2 |
 
 ---
 
@@ -710,7 +713,7 @@ Mỗi câu ghi rõ **ảnh hưởng nếu trả lời khác nhau** và **deadlin
 > | **CH-02** | *(A)* Enum 5 giá trị `member`/`curator`/`moderator`/`admin`/`super_admin`; organizer là ngữ cảnh | QĐ-54, QĐ-55 |
 > | **CH-03** | Không chọn A cũng không chọn B — chốt **thang T0–T5 duy nhất** với điều kiện đạt bậc bằng bằng chứng, `trust_signals` append-only + job `trust:recompute` | QĐ-58, QĐ-59 |
 > | **CH-04** | *(A)* **Occurrence.** Endpoint chính theo `occurrenceId`; đường tắt theo `eventId` trả 409 `AMBIGUOUS_OCCURRENCE` | QĐ-60, QĐ-61 |
-> | **CH-06** | *(B)* **Tinh gọn 2 dev + Founder**, cắt nhóm A + B, M6 ~01/04/2027 | QĐ-77 |
+> | **CH-06** | *(B)* **Tinh gọn**, cắt nhóm A + B, M6 ~01/04/2027; đội code 3 thành viên chia 60-20-20 + Founder | QĐ-77, QĐ-78 |
 > | **CH-07** | *(A)* **Waitlist là `Must`** | QĐ-62 |
 > | **CH-09** | *(B)* **SLA `critical` = 2 giờ** — cam kết công khai ở `05` đã sửa theo | QĐ-67 |
 > | **CH-10** | **T‑2h** (cùng T‑24h) | QĐ-66 |

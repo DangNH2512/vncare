@@ -400,3 +400,27 @@ cho thấy lịch §10.4 vượt sức chứa ở L0, L1, L2, L4, L5, L7 và Dev
 tổng SP — cần Founder + Dev 1 cân lại trước L1. Bus factor = 1 (RK-09 đỏ đậm).
 
 **Thay thế cho:** QĐ-71 (11 sprint S0 → S10 và Backend hợp đồng 10 tuần).
+
+## [2026-09-23] Đội code 3 thành viên, chia khối lượng 60-20-20 theo chức năng (QĐ-78)
+
+**Bối cảnh:** Ngày 13/09 chủ dự án chốt hướng chia việc cho 3 thành viên theo chức năng
+dọc, trong đó một phần chiếm 60% vì thành viên đó dùng AI. Ngày 19/09 checklist lại được
+phân theo vai Founder / Dev 1 / Dev 2 của `docs/analysis/08` §9.2 (Dev 1 gánh khoảng 65%,
+Founder không code), lệch với hướng trên.
+
+**Lựa chọn:** Cả 3 thành viên đều code, chia theo chức năng dọc; mỗi người làm trọn use
+case, API, dữ liệu, màn hình và E2E của chức năng mình. TV1 (dùng AI, ~60%): nền tảng
+kiêm Tech Lead, RBAC và trust, sự kiện, khám phá, RSVP và waitlist, thông báo, đo lường.
+TV2 (~20%): tài khoản, hồ sơ và onboarding, ảnh/CDN, OTP, i18n, tuỳ chọn thông báo,
+xuất/xoá dữ liệu, PWA, SEO toàn site. TV3 (~20%): khu vực, kiểm duyệt và chống spam,
+Admin Console, curate và nhận quyền, tin tức, phễu phân tích. Founder giữ việc không
+code; thuê ngoài giữ nguyên. Ghi ở `docs/analysis/00` QĐ-78.
+
+**Hệ quả:** Checklist phân lại 275 dòng. Trên 330 SP còn lại: TV1 198 (60%) · TV2 67
+(20%) · TV3 65 (20%); sheet "Phân công" trong xlsx tự tính lại. Tải theo sprint lệch vì
+lịch L0 → L12 xếp theo milestone: L1 dồn 24 SP auth cho TV2, L3–L6 chỉ TV1 có story,
+L7–L8 dồn 49 SP cho TV3. TV2 và TV3 phải làm sớm việc của mình (checklist §2.2). 18 mục
+mockup chưa có SP, 12 trong số đó thuộc TV1.
+
+**Thay thế cho:** phần vai trò Dev 1 / Dev 2 của QĐ-77; phạm vi cắt và lịch của QĐ-77
+giữ nguyên.
