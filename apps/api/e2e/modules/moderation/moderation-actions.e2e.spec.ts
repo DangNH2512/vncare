@@ -878,14 +878,16 @@ describe('moderation actions', () => {
         targetId: post,
         note: emojiNote,
       }).expect(400);
-      expect(hide.body.messageKey).toBe('errors.moderation.noteTooShort');
+      // The contract counts code points now (TR-3), so the request is refused
+      // by schema validation — the same body shape as the 19-character case.
+      expect(JSON.stringify(hide.body)).toContain('errors.moderation.noteTooShort');
       for (const path of [`${ticketPath(ticketId)}/dismiss`, `${ticketPath(ticketId)}/severity`]) {
         const res = await http(app)
           .post(path)
           .set(moderator.headers)
           .send({ severity: 'high', reasonCode: 'spam', note: emojiNote })
           .expect(400);
-        expect(res.body.messageKey).toBe('errors.moderation.noteTooShort');
+        expect(JSON.stringify(res.body)).toContain('errors.moderation.noteTooShort');
       }
       expect(await actionRows(ticketId)).toHaveLength(0);
       // Twenty real characters, emoji or not, are accepted.

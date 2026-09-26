@@ -221,8 +221,8 @@ describe('blocking', () => {
       for (const status of ['suspended', 'deactivated', 'pending'] as const) {
         const target = await actor();
         await pool.query(
-          `UPDATE users SET status = $2,
-                  suspended_until = CASE WHEN $2 = 'suspended' THEN now() + interval '7 days' END
+          `UPDATE users SET status = $2::user_status_enum,
+                  suspended_until = CASE WHEN $2::text = 'suspended' THEN now() + interval '7 days' END
             WHERE id = $1`,
           [target.id, status],
         );
