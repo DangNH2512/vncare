@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { UserRole, UserStatus } from './auth';
+import { codePointLength } from './common';
 import { ContentStatus, CursorQuery } from './content';
 import { EventStatus } from './event';
 import { PostKind } from './post';
@@ -40,8 +41,8 @@ export type UserRefT = z.infer<typeof UserRef>;
 export const ModerationNote = z
   .string({ error: 'errors.moderation.noteTooShort' })
   .trim()
-  .min(20, { error: 'errors.moderation.noteTooShort' })
-  .max(2000, { error: 'errors.moderation.noteTooLong' });
+  .refine((s) => codePointLength(s) >= 20, { error: 'errors.moderation.noteTooShort' })
+  .refine((s) => codePointLength(s) <= 2000, { error: 'errors.moderation.noteTooLong' });
 
 export const ModerationReasonCode = z.enum(ReportReason.options, {
   error: 'errors.moderation.reasonRequired',

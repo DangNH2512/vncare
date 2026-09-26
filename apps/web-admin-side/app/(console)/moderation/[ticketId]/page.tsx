@@ -16,11 +16,14 @@ import { ActionDialog } from '../../../_components/moderation/action-dialog';
 import {
   actionTypeLabel,
   apiErrorMessage,
-  EVENT_STATUS_LABEL_KEY,
   FORM_KIND_LABEL_KEY,
+  isUuid,
   REASON_LABEL_KEY,
+  ROLE_LABEL_KEY,
+  statusLabelKey,
   TARGET_TYPE_LABEL_KEY,
   TICKET_STATUS_LABEL_KEY,
+  USER_STATUS_LABEL_KEY,
 } from '../../../_components/moderation/labels';
 import { SeverityBadge } from '../../../_components/moderation/severity-badge';
 import { SlaCountdown } from '../../../_components/moderation/sla-countdown';
@@ -37,7 +40,6 @@ import { Badge, Button, Card, EmptyState, SkeletonText } from '../../../_compone
 import { ApiError, getModerationTicket } from '../../../_lib/api';
 import { formatDateTime } from '../../../_lib/datetime';
 import type { Translate } from '../../../_lib/i18n';
-import { roleLabelKey } from '../../../_lib/roles';
 import { createServerClock, useServerNow, type ServerClock } from '../../../_lib/server-clock';
 
 type TicketState =
@@ -55,8 +57,39 @@ type Notice = { tone: 'success' | 'warning'; message: string };
 export default function ModerationTicketPage() {
   return (
     <RequireRole allowedRoles={allowedRolesFor('moderation.queue.view')}>
-      <TicketContent />
+      <TicketRoute />
     </RequireRole>
+  );
+}
+
+/** A malformed id in the URL is answered here, without a request that could only 400. */
+function TicketRoute() {
+  const t = useTranslate();
+  const params = useParams<{ ticketId: string }>();
+  const ticketId = typeof params.ticketId === 'string' ? params.ticketId : '';
+
+  if (!isUuid(ticketId)) {
+    return (
+      <div className="flex flex-col gap-6">
+        <BackLink t={t} />
+        <Card>
+          <EmptyState
+            icon={<span className="text-2xl">⚠</span>}
+            title={t('admin.moderation.ticket.error.title')}
+            description={t('errors.common.invalidId')}
+          />
+        </Card>
+      </div>
+    );
+  }
+  return <TicketContent ticketId={ticketId} />;
+}
+
+function BackLink({ t }: { t: Translate }) {
+  return (
+    <Link href="/moderation" className="w-fit text-sm font-medium text-accent-text hover:underline">
+      ← {t('admin.moderation.ticket.back')}
+    </Link>
   );
 }
 
@@ -65,11 +98,9 @@ function isFinal(error: unknown): boolean {
   return error instanceof ApiError && (error.status === 403 || error.status === 404);
 }
 
-function TicketContent() {
+function TicketContent({ ticketId }: { ticketId: string }) {
   const t = useTranslate();
   const { user } = useAuth();
-  const params = useParams<{ ticketId: string }>();
-  const ticketId = params.ticketId;
 
   const [state, setState] = useState<TicketState>({ kind: 'loading' });
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -137,12 +168,7 @@ function TicketContent() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link
-        href="/moderation"
-        className="w-fit text-sm font-medium text-accent-text hover:underline"
-      >
-        ← {t('admin.moderation.ticket.back')}
-      </Link>
+      <BackLink t={t} />
 
       {state.kind === 'loading' && (
         <Card aria-busy="true">
@@ -270,25 +296,17 @@ function TicketHeader({
   );
 }
 
-/** Live state of the target now, in words; null when the catalog has no label for it. */
+/** Live state of the target now, in words, read in the vocabulary of its own type. */
 function currentStatusLabel(ticket: ModerationTicketDetailResponseT, t: Translate): string | null {
-  const { status } = ticket.currentTarget;
   if (ticket.currentTarget.deleted) return t('admin.moderation.ticket.targetDeleted');
-  if (ticket.targetType === 'event') {
-    const key = Object.entries(EVENT_STATUS_LABEL_KEY).find(([value]) => value === status)?.[1];
-    return key === undefined ? null : t(key);
-  }
-  if ((ticket.targetType === 'post' || ticket.targetType === 'comment') && status === 'hidden') {
-    return t('safety.label.contentHidden');
-  }
-  return null;
+  const key = statusLabelKey(ticket.targetType, ticket.currentTarget.status);
+  return key === undefined ? null : t(key);
 }
 
 function EvidenceSection({ ticket, t }: { ticket: ModerationTicketDetailResponseT; t: Translate }) {
   const first = ticket.reports[0];
   const status = currentStatusLabel(ticket, t);
   const owner = ticket.targetOwner;
-  const ownerRoleKey = owner === null ? undefined : roleLabelKey(owner.role);
 
   return (
     <Card as="section" className="flex flex-col gap-4" aria-labelledby="ticket-snapshot">
@@ -312,7 +330,10 @@ function EvidenceSection({ ticket, t }: { ticket: ModerationTicketDetailResponse
             <span className="text-fg">
               {owner.displayName} <span className="text-fg-muted">@{owner.handle}</span>
             </span>
-            {ownerRoleKey !== undefined && <Badge tone="accent">{t(ownerRoleKey)}</Badge>}
+            <Badge tone="accent">{t(ROLE_LABEL_KEY[owner.role])}</Badge>
+            <Badge tone={owner.status === 'active' ? 'success' : 'warning'}>
+              {t(USER_STATUS_LABEL_KEY[owner.status])}
+            </Badge>
           </div>
           {owner.status === 'suspended' && owner.suspendedUntil !== null && (
             <Badge tone="warning" className="w-fit">

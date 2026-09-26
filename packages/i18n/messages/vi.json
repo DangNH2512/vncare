@@ -291,7 +291,8 @@
       "referenceNotFound": "Đối tượng được tham chiếu không còn tồn tại.",
       "constraintViolated": "Yêu cầu này vi phạm một ràng buộc dữ liệu.",
       "retryLater": "Hệ thống đang bận. Vui lòng thử lại sau giây lát.",
-      "idempotencyKeyRequired": "Yêu cầu thiếu khoá chống gửi trùng. Vui lòng thử lại."
+      "idempotencyKeyRequired": "Yêu cầu thiếu khoá chống gửi trùng. Vui lòng thử lại.",
+      "invalidId": "Mã định danh (ID) không hợp lệ."
     },
     "auth": {
       "unauthenticated": "Vui lòng đăng nhập để tiếp tục.",
@@ -568,6 +569,7 @@
     }
   },
   "role": {
+    "member": { "label": "Thành viên" },
     "curator": { "label": "Người phụ trách nội dung" },
     "moderator": { "label": "Kiểm duyệt viên" },
     "admin": { "label": "Quản trị viên" },
@@ -842,6 +844,23 @@
       "eventSuspended": "Tạm gỡ để xem xét",
       "eventTakenDown": "Đã bị gỡ do vi phạm Quy tắc cộng đồng",
       "eventUnavailable": "Sự kiện này không còn khả dụng"
+    }
+  },
+  "content": {
+    "status": {
+      "visible": "Đang hiển thị",
+      "pending_review": "Chờ duyệt",
+      "hidden": "Đã ẩn",
+      "removed": "Đã gỡ"
+    }
+  },
+  "user": {
+    "status": {
+      "pending": "Chờ kích hoạt",
+      "active": "Đang hoạt động",
+      "suspended": "Đang bị khoá",
+      "deactivated": "Đã vô hiệu hoá",
+      "deleted": "Đã xoá"
     }
   }
 }

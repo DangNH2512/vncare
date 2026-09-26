@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { codePointLength } from './common';
 import { CursorQuery } from './content';
 
 /** What a member can report in v1. Chat messages, reviews and media are out of scope. */
@@ -38,7 +39,7 @@ export const ReportCreateRequest = z.object({
   description: z
     .string()
     .trim()
-    .max(2000, { error: 'errors.report.descriptionTooLong' })
+    .refine((s) => codePointLength(s) <= 2000, { error: 'errors.report.descriptionTooLong' })
     .optional(),
   alsoBlock: z.boolean().default(false),
 });

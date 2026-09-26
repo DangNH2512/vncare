@@ -18,6 +18,9 @@ docker exec -i vncare-postgres-1 psql -U dnc -d dnc -v ON_ERROR_STOP=1 --single-
   < apps/api/src/database/sql/0009_moderation_core.sql
 ```
 
+Sau 0009, áp tiếp **0010** (FU-4: đổi `uq_reports_open_per_reporter` sang khoá có thêm `severity`) bằng cùng lệnh,
+thay tên file bằng `apps/api/src/database/sql/0010_report_escalation.sql`. Volume mới thì Postgres tự chạy theo thứ tự.
+
 File theo đúng phong cách 0000–0008 (không `IF NOT EXISTS`); chạy lần hai sẽ lỗi ở `CREATE TYPE`
 và `--single-transaction` rollback sạch → an toàn. Skill `database-migrations` mô tả TypeORM — lệch
 code, đã có ACTIVE_TASKS T-04; task này **theo as-is**, không chuyển ORM. Chưa có pipeline
@@ -1342,6 +1345,41 @@ Dùng lại: `common.retry`, `common.loading`, `event.status.*`.
 Key audit action = hậu tố sau `moderation.` (UI: `t(\`admin.audit.action.${action.split('.')[1]}\`)`).
 Lý do trong console dùng lại `safety.report.reason.*`; tên role dùng lại `role.*.label`.
 
+### 5.4 Bổ sung theo yêu cầu lane ADM (25/09/2026, T-CONTRACT)
+
+Nhãn trạng thái đặt ở namespace dùng chung theo mẫu `event.status.*`, **không** đặt dưới `admin.*`, vì
+web client cũng sẽ cần. Hậu tố là **giá trị enum nguyên dạng** (snake_case) để gọi được thẳng
+`t(\`content.status.${status}\`)`, giống cách trang sự kiện đang gọi `event.status.${status}`. Giá trị enum
+lấy từ `ContentStatus` (`contracts/src/content.ts`) và `UserStatus` (`contracts/src/auth.ts`); nếu enum đổi
+thì phải thêm key tương ứng.
+
+| key | en | vi |
+|---|---|---|
+| `content.status.visible` | Visible | Đang hiển thị |
+| `content.status.pending_review` | Pending review | Chờ duyệt |
+| `content.status.hidden` | Hidden | Đã ẩn |
+| `content.status.removed` | Removed | Đã gỡ |
+| `user.status.pending` | Pending activation | Chờ kích hoạt |
+| `user.status.active` | Active | Đang hoạt động |
+| `user.status.suspended` | Suspended | Đang bị khoá |
+| `user.status.deactivated` | Deactivated | Đã vô hiệu hoá |
+| `user.status.deleted` | Deleted | Đã xoá |
+| `role.member.label` | Member | Thành viên |
+| `errors.common.invalidId` | That ID isn't valid. | Mã định danh (ID) không hợp lệ. |
+
+Ghi chú:
+- `errors.common.invalidId` hiện chỉ để web admin kiểm ID ở client (ô lọc `actorUserId`, `ticketId` trên URL)
+  trước khi gọi API. API chưa trả key này: param uuid sai vẫn ra 400 Zod mặc định. Nếu BE muốn dùng thì
+  thêm `z.uuid({ error: 'errors.common.invalidId' })`, nhưng đó là thay đổi ở lane BE, ngoài T-CONTRACT.
+- Trạng thái `EventStatus` trong `currentTarget.status` dùng lại `event.status.<giá trị enum>` (đã có key
+  `pending_review` và `taken_down`).
+
+### 5.5 Theo dõi các phát hiện review cần BA quyết
+
+| ID | Nội dung (xem `code-review.md`) | Trạng thái |
+|---|---|---|
+| CR-7 | `POST /conversations` phân biệt được "bị chặn" (403) với "bị từ chối" (201): AC-13 mâu thuẫn AC-17. Phương án (a): mở hội thoại luôn thành công, chỉ chặn ở bước gửi. Phương án (b): cặp declined cũng 403 ở bước mở | **awaiting BA** — BE-2 giữ hành vi hiện tại tới khi BA chọn |
+
 ---
 
 ## 6. Task cards
@@ -1436,6 +1474,13 @@ Definition of Done:
 Risk: rate limit race (đã khoá advisory); snapshot chứa PII của bên thứ ba — chỉ staff đọc
 ```
 
+**Trạng thái T-API-1: `needs_test`** (BE-1, 25/09/2026). Đã có `modules/report/*`, đăng ký trong `app.module.ts`, cleanup ở
+`harness.ts` và `clean-test-data.sh`. Spec: `e2e/modules/report/report.e2e.spec.ts`. Typecheck sạch, chỉ còn 5 lỗi TS2307 đã có.
+Chưa chạy e2e vì máy không có Docker/pnpm.
+- Lệch board: 429 trả thêm `details.retryAfterSeconds` (cùng giá trị với header). `Retry-After` vẫn là nguồn chính.
+- Mỗi comment chỉ báo cáo được khi post hoặc event cha của nó còn hiển thị.
+- `harness.ts` xoá thêm `blocks` một cách tường minh. Không cần cũng được, vì bảng này đã CASCADE.
+
 ### T-API-2 — Hàng đợi + chi tiết ticket (Backend #1)
 ```md
 ID: T-API-2
@@ -1459,6 +1504,13 @@ Definition of Done:
   - e2e: thứ tự AC-22 (chỉnh `first_reported_at` bằng SQL), lọc P0; closed tab; A chặn M → M vẫn xem được ticket + snapshot (AC-18); M là reporter → không thấy + 403
 Risk: rò danh tính reporter nếu dùng chung mapper cho member — mapper riêng, chỉ ở module moderation
 ```
+
+**Trạng thái T-API-2: `needs_test`** (BE-1, 25/09/2026). Đã có `modules/moderation/*`. Spec:
+`e2e/modules/moderation/moderation-queue.e2e.spec.ts`, dùng helper chung `moderation-fixtures.ts`.
+- Lệch board, cả hai đều có chủ đích:
+  - `outcome` bỏ qua `severity_changed`, vì hành động này không bao giờ đóng ticket.
+  - Cursor lấy mốc thời gian dạng text micro giây (`to_char … .US`). Nếu dùng ISO mili giây của JS, dòng cuối trang bị lặp lại.
+- Ticket dính xung đột lợi ích bị ẩn ở cả tab mở lẫn tab đã xử lý.
 
 ### T-API-3 — Hành động + audit (Backend #1)
 ```md
@@ -1496,6 +1548,16 @@ Definition of Done:
 Risk: quên điều kiện trạng thái nguồn → mất bất biến; ghi chéo bảng module khác (D13, có docblock)
 ```
 
+**Trạng thái T-API-3: `needs_test`** (BE-1, 25/09/2026). Đã có `modules/audit/*` (export `AuditService.record(tx)` và
+`resolveRequestId`). Hành động nằm trong `modules/moderation/*`. Spec: `moderation-actions.e2e.spec.ts` và
+`e2e/modules/audit/audit-log.e2e.spec.ts`.
+- Lệch board:
+  - `unsuspend_user` gắn ticket được cả khi target là chủ của đối tượng (card chỉ ghi `suspend_user`).
+  - Moderator khôi phục sự kiện `taken_down` nhận 403 `ROLE_NOT_ALLOWED`.
+  - `before`/`after` được lọc tự động, chỉ giữ trường thực sự đổi.
+- Role của actor lấy từ JWT. Rủi ro cửa sổ 15 phút giống §8-2.
+- Spec AC-40 chạy UPDATE/DELETE/TRUNCATE trong transaction luôn rollback, để nếu trigger hỏng thì không xoá dữ liệu.
+
 ### T-API-4 — Hết hạn khoá trong auth (Backend #1)
 ```md
 ID: T-API-4
@@ -1519,6 +1581,11 @@ Definition of Done:
     mở khoá sớm → login 200 ngay; `suspended` + `suspended_until NULL` → vẫn 403 (không hồi quy)
 Risk: chạm luồng đăng nhập — regression auth bắt buộc
 ```
+
+**Trạng thái T-API-4: `needs_test`** (BE-1, 25/09/2026). `assertUsable` giờ là async và trả lại row đã đọc lại sau khi
+mở khoá. `refresh()` xử lý `account_suspended` trước nhánh phát hiện tái sử dụng: còn khoá thì 403, đã mở thì 401, và không
+gọi `revokeFamily`. Spec: `e2e/modules/moderation/suspension.e2e.spec.ts`, có thêm ca hai lần đăng nhập đua nhau vẫn chỉ ra
+một lần mở khoá. Không sửa `auth.e2e.spec.ts`. Cần chạy lại để xác nhận không hồi quy.
 
 ### T-API-5 — Block CRUD + bộ lọc chung (Backend #2, song song BE-1)
 ```md
@@ -1552,6 +1619,9 @@ TS2307 nodemailer/ioredis đã có từ trước. Chưa chạy e2e vì máy khô
 - E2/E3/E4 nằm trong `ProfileController`. `block` là một câu `WITH target … INSERT … ON CONFLICT DO NOTHING`.
   404 `PROFILE_NOT_FOUND` khi target không `active`/đã xoá. `@Roles(allowedRolesFor('block.manage'))`.
 - `findByHandle(handle, viewerId)` lọc chặn ngay trong SQL, nên vẫn là đúng `notFound()` cũ.
+- **CR-3 — đổi dòng E2, orchestrator đã duyệt 25/09:** chặn không còn đòi target `active`. Vị từ nay giống hồ sơ
+  công khai (`deleted_at IS NULL AND status <> 'deleted'`): target `suspended`/`deactivated`/`pending` → 204.
+  Chỉ id không tồn tại hoặc đã xoá mới 404 `PROFILE_NOT_FOUND`. e2e: hai ca `CR-3` trong `block.e2e.spec.ts`.
 
 ### T-API-6 — Áp bộ lọc chặn lên bề mặt hiện có + 409 sửa nội dung bị ẩn (Backend #2)
 ```md
@@ -1598,6 +1668,32 @@ chạy hai chiều cho từng dòng §4, so body 404 với id không tồn tại
 - Hệ quả cần PO/BA biết: khi đang chặn, organizer không thấy được bình luận cũ của bên kia trên trang của mình,
   nên cũng không xoá hay ghim được (`findById` bị lọc). Kênh báo cáo vẫn dùng được. Tương tự, `DELETE` reaction cũ
   lên đồ của bên kia trả 404, theo đúng board.
+- **CR-2 / CR-8 (sau code review, orchestrator đã quyết):**
+  - Đưa quy tắc hiển thị sự kiện về một chỗ: `common/db/event-visibility.ts`. `eventVisibleTo` là đúng điều kiện
+    cũ của `findById`: không xoá, `published` hoặc viewer là organizer, không có chặn. `commentThreadVisibleTo`
+    áp nó cho luồng event; luồng post chỉ thêm luật chặn trên tác giả bài.
+  - Nơi dùng:
+    - event: `findById`, `list`
+    - comment: `targetExists`, `findById`
+    - reaction: `EXISTS_SQL.event`, `EXISTS_SQL.comment`
+    - rsvp: `occurrenceVisible` mới, gọi từ `attendees`
+  - Đổi hợp đồng nhỏ: `GET /occurrences/:id/rsvps` với id không tồn tại nay trả 404 `OCCURRENCE_NOT_FOUND`
+    (trước là 200 `[]`). Cần vậy để sự kiện bị ẩn/chặn giống hệt id không tồn tại.
+  - **Xung đột với e2e cũ, chưa sửa vì ngoài phạm vi và cấm sửa assertion cũ:** `e2e/modules/reaction/reaction.e2e.spec.ts:190-215`
+    ("records `going`…") react lên sự kiện chưa publish (draft của người khác) → nay 404. Đề xuất: thêm
+    `PUT /events/:id/status {published}` vào `beforeAll` của spec đó. Chỉ đổi setup, không đổi assertion. Cần Coordinator giao.
+- **FU-1 / FU-2 / FU-5 (sau nghiệm thu BA, `acceptance.md` Q-A1, Q-A2, Q-A5a) — BE-2, 26/09, `needs_test`:**
+  - FU-1: `openDirect` dùng `directOpeningState`. Recipient không tồn tại hoặc đã xoá → 404 cố định
+    `PROFILE_NOT_FOUND`/`errors.profile.notFound`; trước là 400 FK, còn user đã xoá mềm thì vẫn mở được hội thoại.
+    Có chặn + đã có hội thoại → 201 trả hội thoại cũ. Có chặn + chưa có → đúng 404 đó, không ghi dòng nào.
+  - FU-2: `ChatRepository.join` chỉ chèn khi phòng là `event_group` có sự kiện qua `eventVisibleTo`; ngược lại 404
+    `CONVERSATION_NOT_FOUND`. Nhờ vậy cũng đóng lỗ join vào hội thoại direct của người khác, và id lạ không còn
+    ra 500 FK. Gửi tin vào phòng có sự kiện không `published` (`eventRoomOpen`) → 403 `CONVERSATION_CLOSED` với
+    mọi người. Lịch sử vẫn đọc được.
+  - FU-5: thêm `postVisibleTo` (luật của `GET /posts/:id`). `post.findById` và nhánh post của
+    `commentThreadVisibleTo` cùng dùng nó.
+  - **Xung đột e2e cũ, chưa sửa:** `e2e/modules/chat/chat.e2e.spec.ts:263-309` join rồi gửi vào phòng của sự kiện
+    draft → nay 404/403. Sửa setup: publish sự kiện trước khi tạo phòng.
 
 ### T-ADM-1 — Sidebar + API client admin (Web Admin)
 ```md
@@ -1618,6 +1714,20 @@ Test lane: screen + typecheck/lint
 Definition of Done: mục "Moderation queue" và "Audit log" chỉ hiện với MODERATION_ROLES; `pnpm --filter @dnc/web-admin typecheck` + lint xanh
 ```
 
+**Trạng thái T-ADM-1: `needs_test`** (25/09/2026). Code xong, đã commit ở 37f9216.
+- `api.ts` có đủ 6 hàm theo card. `ApiError` giữ thêm `details`, để hiện được `{maxDays}` của lỗi SUSPENSION_TOO_LONG.
+  Mọi POST kiểm duyệt đều gửi header `Idempotency-Key`: key sinh một lần khi mở form, giữ nguyên khi retry lúc
+  offline/5xx, đổi key mới sau khi API trả 4xx.
+- `sidebar.tsx`: mục menu lấy từ `allowedRolesFor('moderation.queue.view' | 'audit_log.view')`, nên curator không
+  thấy. Mục menu vẫn sáng khi đang ở route con.
+- `server-clock.ts` tính giờ theo D15: `serverTime + (performance.now() − mốc nhận)`. `useServerNow` trả `null` khi
+  không có clock, và khi đó UI hiện "Stopped".
+- `datetime.ts` thêm `formatDateTime`, `formatDuration` (đơn vị lấy từ Intl, en/vi), và mốc ngày Asia/Ho_Chi_Minh
+  cho bộ lọc audit.
+- **Sửa lỗi có sẵn:** `hour12: false` làm nửa đêm hiện thành "24:30", nên đã đổi sang `hourCycle: 'h23'`. Ngoài ra
+  `2026-02-30` không còn được chấp nhận là ngày hợp lệ.
+- `ui/`: thêm `Select`, `Textarea`, `Dialog` (dùng `<dialog>` + `showModal` native) và `Table` (cuộn ngang trong khung riêng).
+
 ### T-ADM-2 — Trang hàng đợi (Web Admin)
 ```md
 ID: T-ADM-2
@@ -1635,6 +1745,14 @@ Definition of Done:
   - Mỗi trạng thái SLA có nhãn chữ, không chỉ màu; giờ hiển thị Asia/Ho_Chi_Minh
 Risk: tính hạn từ giờ máy — cấm, chỉ từ `slaDueAt` + `serverTime`
 ```
+
+**Trạng thái T-ADM-2: `needs_test`** (25/09/2026). Tab mở/đã xử lý và lọc mức nằm trong URL (`?status=closed&severity=`).
+- Thứ tự dòng giữ đúng như API trả về, client không tự sắp xếp.
+- Hàng đợi tự tải lại mỗi 60 s, `limit` nới tới số dòng đang hiển thị (tối đa 50). Tải thêm theo cursor.
+- Tải lỗi mà chưa có dữ liệu thì hiện EmptyState kèm nút Thử lại. Nếu lỗi xảy ra khi đã có dữ liệu thì giữ các dòng
+  cũ, hiện banner `queue.error.*` và dừng mọi countdown ("Stopped"), đúng AC-28.
+- Nhãn và màu lấy từ `slaState` của domain; mỗi trạng thái có câu chữ riêng. Tab đã xử lý hiện kết quả và thời điểm
+  đóng (AC-29).
 
 ### T-ADM-3 — Chi tiết ticket + hành động + audit log (Web Admin)
 ```md
@@ -1656,6 +1774,35 @@ Definition of Done:
   - Audit: lọc from/to/action/actor/entityType, mới nhất trước, "Tải thêm", không có nút sửa/xoá
 Risk: hiển thị ghi chú moderator cho người không phải staff — chỉ console
 ```
+
+**Trạng thái T-ADM-3: `needs_test`** (25/09/2026).
+- Tách thêm `_components/moderation/ticket-actions.ts`: logic thuần qua domain, quyết định nút nào hiện.
+  `labels.ts` gom bảng enum→key i18n và lỗi API→câu hiển thị.
+- Đã chạy runtime trên Node 18 và cho kết quả đúng:
+  - M không khôi phục được sự kiện `taken_down`, AD thì được, nút nằm trên dòng lịch sử (AC-32).
+  - M không hành động được lên nội dung của moderator (AC-35).
+  - Chủ nội dung không thấy nút nào.
+  - Khôi phục/mở khoá được gắn vào dòng lịch sử mới nhất mà nó đảo ngược.
+- 403/404 (kể cả CONFLICT_OF_INTEREST) cho EmptyState không có nút thử lại. 409 TICKET_ALREADY_CLOSED đóng form, hiện
+  thông báo rồi tải lại. Ticket đã đóng thì phải bấm "Add another action" mới hiện các nút, và request gửi
+  `followUp: true`.
+- Audit: bộ lọc nằm trong URL. from/to hiểu là ngày Đà Nẵng, tính 00:00–23:59:59.999 +07. Ticket trong audit có link
+  sang chi tiết. Trang chỉ đọc, không có nút sửa hay xoá.
+- **Lệch/nợ:**
+  - ~~Thiếu key status/role/invalidId~~ → **đã nối** sau khi Tech Lead bổ sung key:
+    - `statusLabelKey`: dùng từ vựng riêng cho sự kiện/nội dung/tài khoản; cả trong dòng "Current status", snapshot
+      và giá trị `status` trong diff audit.
+    - `ROLE_LABEL_KEY`: có cả `member`, kèm badge `user.status` của chủ nội dung.
+    - `errors.common.invalidId`: ticketId sai dạng → không gọi API. Actor sai → ô báo lỗi, nút Áp dụng bị khoá; URL
+      có actor sai → không gọi API.
+    - Diff audit hiểu được cả dạng giờ `+07:00` (CR-12).
+  - CR-9 vẫn còn: typecheck qua tsconfig map chưa thay thế được `pnpm install` + `tsc` + `next build` trên máy có pnpm.
+  - Ghi chú của dòng `system` là câu tiếng Anh cố định do hàm DB ghi, nên đang ẩn, chỉ hiện nhãn i18n.
+  - Chưa có e2e Playwright; card để screen-test-agent làm.
+  - Chưa chạy lint, build, dev server hay trình duyệt, vì máy không có `node_modules` của app, pnpm và API.
+- Typecheck:
+  - Dùng tsconfig tạm trong scratchpad, map `@dnc/*` sang `packages/*/src`, strict như base: 0 lỗi.
+  - Dùng tsconfig của app: chỉ còn các lỗi TS2307/TS6053/TS2304 do thiếu dependency.
 
 ### T-WEB-1 — Sheet báo cáo + nút (Web Client)
 ```md

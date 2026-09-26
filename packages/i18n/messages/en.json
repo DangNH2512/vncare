@@ -291,7 +291,8 @@
       "referenceNotFound": "Something this refers to no longer exists.",
       "constraintViolated": "That request breaks a rule of this data.",
       "retryLater": "The service is busy. Please try again in a moment.",
-      "idempotencyKeyRequired": "This request is missing its retry key. Please try again."
+      "idempotencyKeyRequired": "This request is missing its retry key. Please try again.",
+      "invalidId": "That ID isn't valid."
     },
     "auth": {
       "unauthenticated": "Please sign in to continue.",
@@ -568,6 +569,7 @@
     }
   },
   "role": {
+    "member": { "label": "Member" },
     "curator": { "label": "Curator" },
     "moderator": { "label": "Moderator" },
     "admin": { "label": "Admin" },
@@ -842,6 +844,23 @@
       "eventSuspended": "Temporarily removed for review",
       "eventTakenDown": "Removed for breaking the Community Guidelines",
       "eventUnavailable": "This event is no longer available"
+    }
+  },
+  "content": {
+    "status": {
+      "visible": "Visible",
+      "pending_review": "Pending review",
+      "hidden": "Hidden",
+      "removed": "Removed"
+    }
+  },
+  "user": {
+    "status": {
+      "pending": "Pending activation",
+      "active": "Active",
+      "suspended": "Suspended",
+      "deactivated": "Deactivated",
+      "deleted": "Deleted"
     }
   }
 }

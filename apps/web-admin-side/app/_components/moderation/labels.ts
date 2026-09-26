@@ -3,6 +3,7 @@ import type {
   AuditActionT,
   AuditEntityTypeT,
   AuditSeverityT,
+  ContentStatusT,
   EventStatusT,
   ModerationActionKindT,
   ModerationActionTypeT,
@@ -10,6 +11,8 @@ import type {
   ReportReasonT,
   ReportTargetTypeT,
   TicketStatusT,
+  UserRoleT,
+  UserStatusT,
 } from '@dnc/contracts';
 
 import type { ApiError } from '../../_lib/api';
@@ -125,6 +128,76 @@ export const EVENT_STATUS_LABEL_KEY: Readonly<Record<EventStatusT, MessageKey>> 
   taken_down: 'event.status.taken_down',
   cancelled: 'event.status.cancelled',
 };
+
+export const CONTENT_STATUS_LABEL_KEY: Readonly<Record<ContentStatusT, MessageKey>> = {
+  visible: 'content.status.visible',
+  pending_review: 'content.status.pending_review',
+  hidden: 'content.status.hidden',
+  removed: 'content.status.removed',
+};
+
+export const USER_STATUS_LABEL_KEY: Readonly<Record<UserStatusT, MessageKey>> = {
+  pending: 'user.status.pending',
+  active: 'user.status.active',
+  suspended: 'user.status.suspended',
+  deactivated: 'user.status.deactivated',
+  deleted: 'user.status.deleted',
+};
+
+/**
+ * Every role, `member` included: unlike the header (which only ever shows a
+ * staff member), moderation screens show the role of the person reported.
+ */
+export const ROLE_LABEL_KEY: Readonly<Record<UserRoleT, MessageKey>> = {
+  member: 'role.member.label',
+  curator: 'role.curator.label',
+  moderator: 'role.moderator.label',
+  admin: 'role.admin.label',
+  super_admin: 'role.superAdmin.label',
+};
+
+function lookupIn<K extends string>(
+  table: Readonly<Record<K, MessageKey>>,
+  value: unknown,
+): MessageKey | undefined {
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(table, value)
+    ? table[value as K]
+    : undefined;
+}
+
+/**
+ * Label key for a `status` value of the given kind of object, or undefined
+ * when the value is not one the catalog knows (then the caller shows it raw).
+ * Events, content and accounts have separate vocabularies (`suspended` means
+ * different things on an event and on an account).
+ */
+export function statusLabelKey(
+  objectType: ReportTargetTypeT | AuditEntityTypeT,
+  status: unknown,
+): MessageKey | undefined {
+  switch (objectType) {
+    case 'event':
+      return lookupIn(EVENT_STATUS_LABEL_KEY, status);
+    case 'post':
+    case 'comment':
+      return lookupIn(CONTENT_STATUS_LABEL_KEY, status);
+    case 'user':
+      return lookupIn(USER_STATUS_LABEL_KEY, status);
+    case 'moderation_ticket':
+      return lookupIn(TICKET_STATUS_LABEL_KEY, status);
+  }
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Client-side shape check for ids typed or pasted by an operator (URL
+ * segment, audit actor filter), so a typo shows `errors.common.invalidId`
+ * instead of a round trip ending in the API's generic 400.
+ */
+export function isUuid(value: string): boolean {
+  return UUID.test(value);
+}
 
 export const AUDIT_ACTIONS: readonly AuditActionT[] = [
   'moderation.content_hidden',

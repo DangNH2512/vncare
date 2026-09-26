@@ -4,6 +4,7 @@ import type { RsvpStatusT } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
 import { withTransaction } from '../../common/db/transaction.js';
 import { blockedBetween, notBlockedBetween } from '../../common/db/block-filter.js';
+import { eventVisibleTo } from '../../common/db/event-visibility.js';
 
 export interface RsvpRow {
   id: string;
@@ -254,6 +255,22 @@ export class RsvpRepository {
       [id],
     );
     return rows[0] ?? null;
+  }
+
+  /**
+   * Whether the viewer may see the event this occurrence belongs to — the
+   * GET /events/:id rule (CR-2, CR-8). Gates the attendee list, which would
+   * otherwise stay readable for an event that is taken down or on the other
+   * side of a block.
+   */
+  async occurrenceVisible(occurrenceId: string, viewerUserId: string): Promise<boolean> {
+    const { rowCount } = await this.pool.query(
+      `SELECT 1 FROM event_occurrences o
+         JOIN events e ON e.id = o.event_id
+        WHERE o.id = $1 AND o.deleted_at IS NULL AND ${eventVisibleTo('$2', 'e')}`,
+      [occurrenceId, viewerUserId],
+    );
+    return (rowCount ?? 0) > 0;
   }
 
   /**

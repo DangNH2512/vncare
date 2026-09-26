@@ -3,6 +3,7 @@ import type { Pool } from 'pg';
 import type { ReactionKindT, ReactionTargetT } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
 import { notBlockedBetween } from '../../common/db/block-filter.js';
+import { commentThreadVisibleTo, eventVisibleTo } from '../../common/db/event-visibility.js';
 
 export interface ReactionTargetRef {
   type: ReactionTargetT;
@@ -29,10 +30,12 @@ export interface ReactionSummaryRow {
 const EXISTS_SQL: Readonly<Record<ReactionTargetT, string>> = {
   post: `SELECT 1 FROM posts WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'
            AND ${notBlockedBetween('$2', 'author_user_id')}`,
-  comment: `SELECT 1 FROM comments WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'
-              AND ${notBlockedBetween('$2', 'user_id')}`,
-  event: `SELECT 1 FROM events WHERE id = $1 AND deleted_at IS NULL
-            AND ${notBlockedBetween('$2', 'organizer_id')}`,
+  comment: `SELECT 1 FROM comments c
+              WHERE c.id = $1 AND c.deleted_at IS NULL AND c.status = 'visible'
+                AND ${notBlockedBetween('$2', 'c.user_id')}
+                AND ${commentThreadVisibleTo('$2', 'c')}`,
+  // Same rule as GET /events/:id: no reacting to a suspended or taken-down event (CR-2).
+  event: `SELECT 1 FROM events e WHERE e.id = $1 AND ${eventVisibleTo('$2', 'e')}`,
 };
 
 /**

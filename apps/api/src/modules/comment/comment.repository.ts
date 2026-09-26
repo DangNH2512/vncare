@@ -10,6 +10,7 @@ import type {
 import { PG_POOL } from '../../database/database.module.js';
 import { decodeCursor, encodeCursor } from '../../common/pagination.js';
 import { notBlockedBetween } from '../../common/db/block-filter.js';
+import { commentThreadVisibleTo, eventVisibleTo } from '../../common/db/event-visibility.js';
 
 export interface CommentRow {
   id: string;
@@ -91,7 +92,9 @@ export class CommentRepository {
    * nothing about which id was wrong.
    *
    * A target owned by someone the viewer has a block with, either way, is
-   * not readable: its thread 404s for reading and for writing (brief §6).
+   * not readable: its thread 404s for reading and for writing (brief §6). An
+   * event thread follows the event's own visibility, so a suspended or
+   * taken-down event has no open thread either (CR-2).
    */
   async targetExists(target: CommentTargetRef, viewerUserId: string | null): Promise<boolean> {
     const sql =
@@ -99,9 +102,7 @@ export class CommentRepository {
         ? `SELECT 1 FROM posts
             WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'
               AND ${notBlockedBetween('$2', 'author_user_id')}`
-        : `SELECT 1 FROM events
-            WHERE id = $1 AND deleted_at IS NULL
-              AND ${notBlockedBetween('$2', 'organizer_id')}`;
+        : `SELECT 1 FROM events e WHERE e.id = $1 AND ${eventVisibleTo('$2', 'e')}`;
     const { rowCount } = await this.pool.query(sql, [target.id, viewerUserId]);
     return (rowCount ?? 0) > 0;
   }
@@ -156,7 +157,12 @@ export class CommentRepository {
     return rows[0] as CommentRow;
   }
 
-  /** A comment by someone the viewer has a block with, either way, reads as absent. */
+  /**
+   * A comment by someone the viewer has a block with, either way, reads as
+   * absent — and so does any comment in a thread the viewer cannot read: on a
+   * post by the other side of a block, or on an event the viewer could not
+   * open (CR-2, CR-8). Otherwise the comment would confirm its thread exists.
+   */
   async findById(id: string, viewerUserId: string | null): Promise<CommentRow | null> {
     const { rows } = await this.pool.query<CommentRow>(
       `SELECT ${SELECT_COLUMNS}
@@ -165,7 +171,8 @@ export class CommentRepository {
         WHERE c.id = $1
           AND c.deleted_at IS NULL
           AND (c.status = 'visible' OR c.user_id = $2)
-          AND ${notBlockedBetween('$2', 'c.user_id')}`,
+          AND ${notBlockedBetween('$2', 'c.user_id')}
+          AND ${commentThreadVisibleTo('$2', 'c')}`,
       [id, viewerUserId],
     );
     return rows[0] ?? null;

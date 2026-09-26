@@ -3,10 +3,9 @@
 import type { ModerationActionResponseT } from '@dnc/contracts';
 
 import { formatDateTime } from '../../_lib/datetime';
-import { roleLabelKey } from '../../_lib/roles';
 import { useTranslate } from '../locale-provider';
 import { Badge, Button } from '../ui';
-import { actionTypeLabel, FORM_KIND_LABEL_KEY, REASON_LABEL_KEY } from './labels';
+import { actionTypeLabel, FORM_KIND_LABEL_KEY, REASON_LABEL_KEY, ROLE_LABEL_KEY } from './labels';
 import type { ActionPlan } from './ticket-actions';
 
 /**
@@ -38,7 +37,7 @@ export function TicketHistory({
     <ol className="flex flex-col gap-3">
       {actions.map((action) => {
         const reversal = reversals.get(action.id);
-        const roleKey = action.actor.role === null ? undefined : roleLabelKey(action.actor.role);
+        const roleKey = action.actor.role === null ? undefined : ROLE_LABEL_KEY[action.actor.role];
         return (
           <li
             key={action.id}

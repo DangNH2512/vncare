@@ -6,10 +6,11 @@ import { AuditEntityType, AuditSeverity } from '../src/audit.js';
 import {
   ModerationActionType,
   ModerationActorType,
+  ModerationNote,
   ModerationSeverity,
   TicketStatus,
 } from '../src/moderation.js';
-import { ReportReason, ReportTargetType } from '../src/safety.js';
+import { ReportCreateRequest, ReportReason, ReportTargetType } from '../src/safety.js';
 
 const SQL_PATH = resolve(
   dirname(fileURLToPath(import.meta.url)),
@@ -48,5 +49,24 @@ describe('moderation vocabulary <-> 0009 SQL', () => {
 
   it('severity is declared lowest first so the database can rank it', () => {
     expect(enumValues('moderation_severity_enum')).toEqual(['low', 'normal', 'high', 'critical']);
+  });
+});
+
+/**
+ * The CHECK constraints count code points (PostgreSQL `length()`); the schemas
+ * must count the same unit, or an emoji-only note passes Zod and fails as a 500.
+ */
+describe('note and description length count code points', () => {
+  const emoji = (n: number) => '😀'.repeat(n);
+
+  it('rejects a note of 10 emoji and accepts 20', () => {
+    expect(ModerationNote.safeParse(emoji(10)).success).toBe(false);
+    expect(ModerationNote.safeParse(emoji(20)).success).toBe(true);
+  });
+
+  it('accepts a description of 2000 emoji and rejects 2001', () => {
+    const base = { targetType: 'post', targetId: '0190a0f0-0000-7000-8000-000000000000', reason: 'spam' };
+    expect(ReportCreateRequest.safeParse({ ...base, description: emoji(2000) }).success).toBe(true);
+    expect(ReportCreateRequest.safeParse({ ...base, description: emoji(2001) }).success).toBe(false);
   });
 });

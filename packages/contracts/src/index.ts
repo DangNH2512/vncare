@@ -1,5 +1,6 @@
 export {
   ApiError,
+  codePointLength,
   cursorPage,
   envelope,
   type ApiErrorT,

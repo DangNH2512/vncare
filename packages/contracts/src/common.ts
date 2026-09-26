@@ -28,3 +28,12 @@ export const ApiError = z.object({
   }),
 });
 export type ApiErrorT = z.infer<typeof ApiError>;
+
+/**
+ * Length in code points, the unit PostgreSQL's `length()` counts in CHECK
+ * constraints. Zod's `.min()`/`.max()` count UTF-16 units, which lets ten
+ * emoji pass a 20-character floor and then fail the CHECK as a 500.
+ */
+export function codePointLength(value: string): number {
+  return [...value].length;
+}

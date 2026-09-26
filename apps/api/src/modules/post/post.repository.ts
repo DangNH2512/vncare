@@ -10,6 +10,7 @@ import type {
 import { PG_POOL } from '../../database/database.module.js';
 import { decodeCursor, encodeCursor } from '../../common/pagination.js';
 import { notBlockedBetween } from '../../common/db/block-filter.js';
+import { postVisibleTo } from '../../common/db/event-visibility.js';
 
 /**
  * One `posts` row joined with the viewer's own reaction.
@@ -119,9 +120,7 @@ export class PostRepository {
          FROM posts p
          LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = $2
         WHERE p.id = $1
-          AND p.deleted_at IS NULL
-          AND (p.status = 'visible' OR p.author_user_id = $2)
-          AND ${notBlockedBetween('$2', 'p.author_user_id')}`,
+          AND ${postVisibleTo('$2', 'p')}`,
       [id, viewerUserId],
     );
     return rows[0] ?? null;

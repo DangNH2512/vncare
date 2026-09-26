@@ -35,6 +35,7 @@ describe('report module', () => {
   let reporter: Actor; // A
   let owner: Actor; // B
   let other: Actor;
+  let staff: Actor; // reads the ticket detail
 
   let eventId: string;
   let postId: string;
@@ -66,7 +67,8 @@ describe('report module', () => {
     // T3 (20 a day): this file files more than the T1 allowance through A.
     reporter = await createActor(app, { trustLevel: 3 });
     owner = await createActor(app);
-    other = await createActor(app);
+    other = await createActor(app, { trustLevel: 3 });
+    staff = await createActor(app, { role: 'moderator' });
     ({ eventId } = await publishEvent(app, owner, areaId, 'Crypto meetup with guaranteed returns'));
     postId = await createPost(app, owner, areaId, 'Selling a scooter, message me for price.');
     commentId = await createEventComment(app, owner, eventId);
@@ -193,7 +195,7 @@ describe('report module', () => {
       const again = await postReport(app, other, {
         targetType: 'post',
         targetId: post,
-        reason: 'hate',
+        reason: 'other',
       }).expect(201);
 
       expect(replay.body.data.id).toBe(first.body.data.id);
@@ -201,8 +203,70 @@ describe('report module', () => {
       expect(await countRows(db, 'reports WHERE target_id = $1', [post])).toBe(1);
       const ticket = await ticketOf(first.body.data.id);
       expect(ticket?.report_count).toBe(1);
-      // The duplicate did not raise the ticket either.
+      // A milder duplicate changes nothing on the ticket.
       expect(ticket?.severity).toBe('normal');
+    });
+
+    it('a strictly graver reason from the same reporter files a second report in the same ticket (FU-4)', async () => {
+      const post = await createPost(app, owner, areaId, 'Seems like spam at first sight.');
+      const first = await postReport(app, other, { targetType: 'post', targetId: post, reason: 'spam' })
+        .expect(201);
+      const opened = await ticketOf(first.body.data.id);
+      expect(opened?.severity).toBe('normal');
+
+      // The spam report came at T, an hour ago.
+      await db.query(
+        `UPDATE moderation_tickets
+            SET first_reported_at = first_reported_at - interval '1 hour',
+                last_reported_at  = last_reported_at  - interval '1 hour',
+                sla_due_at        = sla_due_at        - interval '1 hour'
+          WHERE id = $1`,
+        [opened?.ticket_id],
+      );
+
+      const graver = await postReport(app, other, {
+        targetType: 'post',
+        targetId: post,
+        reason: 'danger',
+        description: 'He said he would wait for me outside.',
+      }).expect(201);
+      expect(graver.body.data.id).not.toBe(first.body.data.id);
+
+      // Two rows, each with its own reason and description, in one ticket.
+      const { rows } = await db.query<{ reason: string; description: string | null; ticket_id: string }>(
+        `SELECT reason::text, description, ticket_id FROM reports WHERE target_id = $1 ORDER BY created_at`,
+        [post],
+      );
+      expect(rows.map((r) => r.reason)).toEqual(['spam', 'danger']);
+      expect(rows[1]?.description).toBe('He said he would wait for me outside.');
+      expect(new Set(rows.map((r) => r.ticket_id))).toEqual(new Set([opened?.ticket_id]));
+
+      // P0, due T+3h, and still one person.
+      const after = await ticketOf(graver.body.data.id);
+      expect(after?.severity).toBe('critical');
+      expect(after?.report_count).toBe(1);
+      const expected = (after?.first_reported_at.getTime() ?? 0) + 3 * 60 * 60 * 1000;
+      expect(Math.abs((after?.sla_due_at.getTime() ?? 0) - expected)).toBeLessThan(5_000);
+
+      // The console shows both reasons; the same reporter on both reports.
+      const detail = await http(app)
+        .get(`/api/v1/admin/moderation/tickets/${opened?.ticket_id}`)
+        .set(staff.headers)
+        .expect(200);
+      expect(detail.body.data.reasons).toEqual(['danger', 'spam']);
+      expect(detail.body.data.reportCount).toBe(1);
+      expect(detail.body.data.reports).toHaveLength(2);
+      expect(
+        new Set(detail.body.data.reports.map((r: { reporter: { userId: string } }) => r.reporter.userId)),
+      ).toEqual(new Set([other.id]));
+
+      // Equal or milder from here on is a duplicate of the gravest report (AC-5).
+      for (const reason of ['danger', 'scam', 'spam'] as const) {
+        const again = await postReport(app, other, { targetType: 'post', targetId: post, reason }).expect(201);
+        expect(again.body.data.id).toBe(graver.body.data.id);
+      }
+      expect(await countRows(db, 'reports WHERE target_id = $1', [post])).toBe(2);
+      expect((await ticketOf(first.body.data.id))?.severity).toBe('critical');
     });
   });
 
@@ -305,6 +369,82 @@ describe('report module', () => {
     });
   });
 
+  describe('blocked by the owner (CR-1)', () => {
+    it('a target whose owner blocked the reporter answers the same 404 as an unknown id', async () => {
+      const blocker = await createActor(app);
+      const blocked = await createActor(app);
+      const { eventId: blockerEvent } = await publishEvent(app, blocker, areaId, 'Blocker’s event');
+      const blockerPost = await createPost(app, blocker, areaId, 'Blocker’s own post.');
+      const blockerComment = await createEventComment(app, blocker, blockerEvent, 'Blocker comment.');
+      // Someone else's comment in the blocker's thread is out of sight too.
+      const thirdComment = await createEventComment(app, other, blockerEvent, 'Third-party comment.');
+      await db.query(`INSERT INTO blocks (blocker_user_id, blocked_user_id) VALUES ($1, $2)`, [
+        blocker.id,
+        blocked.id,
+      ]);
+
+      const unknown = await postReport(app, blocked, {
+        targetType: 'post',
+        targetId: unknownId(),
+        reason: 'spam',
+      }).expect(404);
+
+      for (const [targetType, targetId] of [
+        ['event', blockerEvent],
+        ['post', blockerPost],
+        ['comment', blockerComment],
+        ['comment', thirdComment],
+        ['user', blocker.id],
+      ] as const) {
+        const res = await postReport(app, blocked, { targetType, targetId, reason: 'spam' }).expect(404);
+        expect(res.body).toEqual(unknown.body);
+      }
+      expect(await countRows(db, 'reports WHERE reporter_user_id = $1', [blocked.id])).toBe(0);
+
+      // The other direction is untouched: the blocker still reports (AC-7).
+      await postReport(app, blocker, { targetType: 'user', targetId: blocked.id, reason: 'harassment' })
+        .expect(201);
+    });
+  });
+
+  describe('accounts that are not active (CR-3)', () => {
+    it('a suspended account and its content are reported like any other, with the usual receipt', async () => {
+      const suspended = await createActor(app);
+      const post = await createPost(app, suspended, areaId, 'Post by someone later suspended.');
+      await db.query(
+        `UPDATE users SET status = 'suspended', suspended_until = now() + interval '7 days'
+          WHERE id = $1`,
+        [suspended.id],
+      );
+
+      const first = await postReport(app, reporter, {
+        targetType: 'user',
+        targetId: suspended.id,
+        reason: 'harassment',
+      }).expect(201);
+      expect(Object.keys(first.body.data).sort()).toEqual(['createdAt', 'id', 'status']);
+      expect(JSON.stringify(first.body)).not.toMatch(/suspend|active/i);
+
+      // A second voice merges into the same ticket.
+      const second = await postReport(app, other, {
+        targetType: 'user',
+        targetId: suspended.id,
+        reason: 'impersonation',
+      }).expect(201);
+      const ticket = await ticketOf(second.body.data.id);
+      expect(ticket?.ticket_id).toBe((await ticketOf(first.body.data.id))?.ticket_id);
+      expect(ticket?.report_count).toBe(2);
+
+      await postReport(app, reporter, { targetType: 'post', targetId: post, reason: 'spam' }).expect(201);
+    });
+
+    it('a deleted account is still not found', async () => {
+      const gone = await createActor(app);
+      await db.query(`UPDATE users SET status = 'deleted', deleted_at = now() WHERE id = $1`, [gone.id]);
+      await postReport(app, reporter, { targetType: 'user', targetId: gone.id, reason: 'spam' }).expect(404);
+    });
+  });
+
   describe('rate limit (AC-9)', () => {
     /**
      * Pre-fills the sliding window with `n` reports filed "just now" against
@@ -357,6 +497,21 @@ describe('report module', () => {
       expect(retryAfter).toBeLessThanOrEqual(24 * 60 * 60);
       expect(res.body.details.retryAfterSeconds).toBe(retryAfter);
       expect(await countRows(db, 'reports WHERE target_id = $1', [over])).toBe(0);
+    });
+
+    it('an escalation report counts against the allowance (FU-4)', async () => {
+      const member = await createActor(app);
+      await prefill(member.id, 4);
+      const post = await createPost(app, owner, areaId, 'Looks like spam, turns out worse.');
+      await postReport(app, member, { targetType: 'post', targetId: post, reason: 'spam' }).expect(201);
+      // Sixth report of the day, even though it is an escalation of the fifth.
+      const res = await postReport(app, member, {
+        targetType: 'post',
+        targetId: post,
+        reason: 'danger',
+      }).expect(429);
+      expect(res.body.code).toBe('RATE_LIMITED');
+      expect(await countRows(db, 'reports WHERE target_id = $1', [post])).toBe(1);
     });
 
     it('T0 gets the T1 allowance', async () => {

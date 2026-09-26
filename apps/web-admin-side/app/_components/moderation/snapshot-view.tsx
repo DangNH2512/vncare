@@ -1,11 +1,12 @@
 'use client';
 
-import type { ReportSnapshotT } from '@dnc/contracts';
+import type { ContentStatusT, ReportSnapshotT } from '@dnc/contracts';
 
 import { formatDateTime } from '../../_lib/datetime';
 import { useTranslate } from '../locale-provider';
 import { Badge } from '../ui';
-import { EVENT_STATUS_LABEL_KEY } from './labels';
+import type { Translate } from '../../_lib/i18n';
+import { CONTENT_STATUS_LABEL_KEY, EVENT_STATUS_LABEL_KEY } from './labels';
 
 /**
  * What the reported item looked like when the report was filed (AC-27).
@@ -39,18 +40,14 @@ export function SnapshotView({ snapshot }: { snapshot: ReportSnapshotT }) {
       return (
         <div className="flex flex-col gap-2">
           <UserText text={snapshot.body} />
-          {snapshot.status === 'hidden' && (
-            <Badge tone="warning">{t('safety.label.contentHidden')}</Badge>
-          )}
+          <ContentStatusBadge status={snapshot.status} t={t} />
         </div>
       );
     case 'comment':
       return (
         <div className="flex flex-col gap-2">
           <UserText text={snapshot.body} />
-          {snapshot.status === 'hidden' && (
-            <Badge tone="warning">{t('safety.label.contentHidden')}</Badge>
-          )}
+          <ContentStatusBadge status={snapshot.status} t={t} />
         </div>
       );
     case 'user':
@@ -67,6 +64,15 @@ export function SnapshotView({ snapshot }: { snapshot: ReportSnapshotT }) {
         </div>
       );
   }
+}
+
+/** Status of a post or comment when it was reported; only a non-visible one draws attention. */
+function ContentStatusBadge({ status, t }: { status: ContentStatusT; t: Translate }) {
+  return (
+    <Badge tone={status === 'visible' ? 'neutral' : 'warning'} className="w-fit">
+      {t(CONTENT_STATUS_LABEL_KEY[status])}
+    </Badge>
+  );
 }
 
 function UserText({ text }: { text: string }) {

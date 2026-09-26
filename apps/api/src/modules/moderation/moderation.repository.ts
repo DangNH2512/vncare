@@ -298,6 +298,33 @@ export class ModerationRepository {
     return (rowCount ?? 0) > 0;
   }
 
+  /**
+   * Conflict of interest for a decision taken without a ticket (a reversal
+   * from the history, review CR-4): the viewer is conflicted if they would be
+   * on any ticket — open or closed — about this target, or on any ticket an
+   * earlier action on this target was taken from. Same three tests as the
+   * queue (reporter, owner, related organizer).
+   */
+  async conflictedOnTarget(
+    tx: PoolClient,
+    targetType: ReportTargetTypeT,
+    targetId: string,
+    viewerUserId: string,
+  ): Promise<boolean> {
+    const { rows } = await tx.query<{ conflicted: boolean }>(
+      `SELECT EXISTS (
+         SELECT 1 FROM moderation_tickets t
+          WHERE ((t.target_type = $1::report_target_type_enum AND t.target_id = $2)
+                 OR t.id IN (SELECT a.ticket_id FROM moderation_actions a
+                              WHERE a.target_type = $1::report_target_type_enum
+                                AND a.target_id = $2 AND a.ticket_id IS NOT NULL))
+            AND NOT ${noConflict('$3')}
+       ) AS conflicted`,
+      [targetType, targetId, viewerUserId],
+    );
+    return rows[0]?.conflicted === true;
+  }
+
   async findOwner(userId: string): Promise<TicketOwnerRow | null> {
     const { rows } = await this.pool.query<TicketOwnerRow>(
       `SELECT u.id AS user_id, p.handle::text AS handle, p.display_name,
@@ -435,6 +462,20 @@ export class ModerationRepository {
       [userId, durationDays, reason],
     );
     return rows[0]?.suspended_until ?? null;
+  }
+
+  /**
+   * Lifts an expired suspension on this transaction through the 0009 function,
+   * which writes the system's `user_unsuspended` action and audit entry. The
+   * user row is already locked by `lockTarget`, so the function's own lock is
+   * re-entrant here. True only when a suspension was actually lifted.
+   */
+  async liftExpiredSuspension(tx: PoolClient, userId: string): Promise<boolean> {
+    const { rows } = await tx.query<{ lifted: boolean }>(
+      `SELECT lift_expired_suspension($1) AS lifted`,
+      [userId],
+    );
+    return rows[0]?.lifted === true;
   }
 
   /**

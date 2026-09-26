@@ -122,8 +122,17 @@ export function planTicketActions(
       targetId: owner.userId,
       destructive,
     });
-    if (owner.status === 'active') plans.enforcement.push(onOwner('suspend_user', true));
-    if (owner.status === 'suspended') plans.reversal.push(onOwner('unsuspend_user', false));
+    // A suspension whose end has passed is only lifted lazily, at the owner's
+    // next sign-in. The API lifts it as `system` before a new suspension, so
+    // the console offers Suspend directly rather than a false manual unsuspend.
+    const lapsed =
+      owner.status === 'suspended' &&
+      owner.suspendedUntil !== null &&
+      Date.parse(owner.suspendedUntil) <= Date.parse(ticket.serverTime);
+    if (owner.status === 'active' || lapsed) plans.enforcement.push(onOwner('suspend_user', true));
+    if (owner.status === 'suspended' && !lapsed) {
+      plans.reversal.push(onOwner('unsuspend_user', false));
+    }
   }
 
   if (ticket.status === 'open') {
@@ -186,8 +195,12 @@ export interface ActionFormValues {
   durationDays: string;
 }
 
+/**
+ * Counted in code points, as PostgreSQL's `length()` and the contract count:
+ * `.length` counts UTF-16 units, so ten emoji would read as twenty.
+ */
 export function noteLength(note: string): number {
-  return note.trim().length;
+  return [...note.trim()].length;
 }
 
 export function isNoteValid(note: string): boolean {

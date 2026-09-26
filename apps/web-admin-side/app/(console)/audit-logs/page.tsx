@@ -19,7 +19,10 @@ import {
   AUDIT_ENTITY_TYPES,
   AUDIT_SEVERITY_LABEL_KEY,
   isReportReason,
+  isUuid,
   REASON_LABEL_KEY,
+  ROLE_LABEL_KEY,
+  statusLabelKey,
 } from '../../_components/moderation/labels';
 import { RequireRole } from '../../_components/require-role';
 import {
@@ -45,7 +48,6 @@ import {
   startOfAppDayIso,
 } from '../../_lib/datetime';
 import type { Translate } from '../../_lib/i18n';
-import { roleLabelKey } from '../../_lib/roles';
 
 const PAGE_SIZE = 20;
 
@@ -94,6 +96,8 @@ function toQuery(filters: AuditFilters): Partial<AuditLogQueryT> {
 
 type LogState =
   | { kind: 'loading' }
+  /** The actor id in the URL is not an id: nothing is fetched (the API could only 400). */
+  | { kind: 'invalid' }
   | { kind: 'error' }
   | {
       kind: 'ready';
@@ -144,6 +148,11 @@ function AuditLogContent() {
 
   const load = useCallback(() => {
     const seq = ++generation.current;
+    const applied = readFilters(new URLSearchParams(searchKey));
+    if (applied.actor !== '' && !isUuid(applied.actor)) {
+      setState({ kind: 'invalid' });
+      return;
+    }
     setState({ kind: 'loading' });
     listAuditLogs({ ...toQuery(readFilters(new URLSearchParams(searchKey))), limit: PAGE_SIZE })
       .then((page) => {
@@ -198,7 +207,10 @@ function AuditLogContent() {
       });
   };
 
+  const actorInvalid = draft.actor.trim() !== '' && !isUuid(draft.actor.trim());
+
   const apply = (filters: AuditFilters) => {
+    if (filters.actor.trim() !== '' && !isUuid(filters.actor.trim())) return;
     const next = new URLSearchParams();
     if (filters.from !== '') next.set('from', filters.from);
     if (filters.to !== '') next.set('to', filters.to);
@@ -256,6 +268,7 @@ function AuditLogContent() {
           <Input
             label={t('admin.audit.filter.actor')}
             value={draft.actor}
+            {...(actorInvalid ? { error: t('errors.common.invalidId') } : {})}
             spellCheck={false}
             autoComplete="off"
             className="font-mono text-sm"
@@ -277,7 +290,7 @@ function AuditLogContent() {
             }
           />
           <div className="flex gap-2">
-            <Button type="submit" size="sm">
+            <Button type="submit" size="sm" disabled={actorInvalid}>
               {t('admin.audit.filter.apply')}
             </Button>
             <Button
@@ -297,6 +310,16 @@ function AuditLogContent() {
       {state.kind === 'loading' && (
         <Card aria-busy="true">
           <SkeletonText lines={6} />
+        </Card>
+      )}
+
+      {state.kind === 'invalid' && (
+        <Card>
+          <EmptyState
+            icon={<span className="text-2xl">⚠</span>}
+            title={t('admin.audit.error.title')}
+            description={t('errors.common.invalidId')}
+          />
         </Card>
       )}
 
@@ -387,7 +410,7 @@ function AuditTable({ items, t }: { items: readonly AuditLogResponseT[]; t: Tran
               </div>
             </Td>
             <Td>
-              <ChangeList before={entry.before} after={entry.after} />
+              <ChangeList entry={entry} t={t} />
             </Td>
             <Td>
               <div className="flex flex-col gap-1">
@@ -417,7 +440,7 @@ function ActorCell({ entry, t }: { entry: AuditLogResponseT; t: Translate }) {
   if (entry.actorType === 'system') {
     return <span className="text-fg-muted">{t('admin.audit.system')}</span>;
   }
-  const roleKey = entry.actorRole === null ? undefined : roleLabelKey(entry.actorRole);
+  const roleKey = entry.actorRole === null ? undefined : ROLE_LABEL_KEY[entry.actorRole];
   return (
     <div className="flex flex-col items-start gap-1">
       {entry.actor !== null && (
@@ -431,9 +454,23 @@ function ActorCell({ entry, t }: { entry: AuditLogResponseT; t: Translate }) {
   );
 }
 
-/** Timestamps inside before/after (`suspendedUntil`, `slaDueAt`) read in Da Nang time too. */
-function formatValue(value: unknown): string {
+/**
+ * One side of a changed field. A `status` value is translated in the
+ * vocabulary of the entry's object type; timestamps (`suspendedUntil`,
+ * `slaDueAt`) read in Da Nang time — whether the row wrote them as `…Z` or,
+ * like the database's automatic lift, with a `+07:00` offset (CR-12).
+ */
+function formatValue(
+  key: string,
+  value: unknown,
+  entityType: AuditLogResponseT['entityType'],
+  t: Translate,
+): string {
   if (value === null || value === undefined) return '—';
+  if (key === 'status') {
+    const labelKey = statusLabelKey(entityType, value);
+    if (labelKey !== undefined) return t(labelKey);
+  }
   if (typeof value === 'string') {
     return /^\d{4}-\d{2}-\d{2}T/.test(value) && !Number.isNaN(Date.parse(value))
       ? formatDateTime(value)
@@ -446,24 +483,19 @@ function formatValue(value: unknown): string {
 /**
  * Field-by-field diff. The API stores only the fields that changed and never
  * contact details or content bodies (AC-42), so this renders every key it
- * receives: field names and values are data (`status: visible → hidden`),
- * shown in monospace rather than translated.
+ * receives. Field names are data and stay in monospace; a `status` value is
+ * shown with its translated label, anything else as written.
  */
-function ChangeList({
-  before,
-  after,
-}: {
-  before: Readonly<Record<string, unknown>>;
-  after: Readonly<Record<string, unknown>>;
-}) {
+function ChangeList({ entry, t }: { entry: AuditLogResponseT; t: Translate }) {
+  const { before, after, entityType } = entry;
   const keys = [...new Set([...Object.keys(before), ...Object.keys(after)])];
   if (keys.length === 0) return <span className="text-fg-subtle">—</span>;
   return (
     <ul className="flex flex-col gap-1 font-mono text-xs">
       {keys.map((key) => (
         <li key={key} className="break-words">
-          <span className="text-fg-muted">{key}:</span> {formatValue(before[key])} →{' '}
-          {formatValue(after[key])}
+          <span className="text-fg-muted">{key}:</span> {formatValue(key, before[key], entityType, t)} →{' '}
+          {formatValue(key, after[key], entityType, t)}
         </li>
       ))}
     </ul>

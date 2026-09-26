@@ -3,7 +3,7 @@ import type { Pool } from 'pg';
 import type { EventStatusT, EventUpdateRequestT, ListEventQueryT } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
 import { withTransaction } from '../../common/db/transaction.js';
-import { notBlockedBetween } from '../../common/db/block-filter.js';
+import { eventVisibleTo } from '../../common/db/event-visibility.js';
 import { decodeCursor, encodeCursor } from '../../common/pagination.js';
 
 export interface EventRow {
@@ -155,9 +155,7 @@ export class EventRepository {
       `SELECT ${SELECT_COLUMNS}
          FROM events e ${OCCURRENCE_JOIN} ${VIEWER_RSVP_JOIN.replace('$VIEWER', '$2')}
         WHERE e.id = $1
-          AND e.deleted_at IS NULL
-          AND (e.status = 'published' OR e.organizer_id = $2)
-          AND ${notBlockedBetween('$2', 'e.organizer_id')}`,
+          AND ${eventVisibleTo('$2', 'e')}`,
       [id, viewerUserId],
     );
     return rows[0] ?? null;
@@ -189,9 +187,7 @@ export class EventRepository {
     const { rows } = await this.pool.query<EventRow>(
       `SELECT ${SELECT_COLUMNS}
          FROM events e ${OCCURRENCE_JOIN} ${VIEWER_RSVP_JOIN.replace('$VIEWER', '$1')}
-        WHERE e.deleted_at IS NULL
-          AND (e.status = 'published' OR e.organizer_id = $1)
-          AND ${notBlockedBetween('$1', 'e.organizer_id')}
+        WHERE ${eventVisibleTo('$1', 'e')}
           AND ($2::uuid IS NULL OR e.area_id = $2)
           AND ($3::event_status_enum IS NULL OR e.status = $3)
           AND ($4::uuid IS NULL OR e.organizer_id = $4)

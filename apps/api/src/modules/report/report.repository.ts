@@ -14,6 +14,11 @@ export interface ReportRow {
   created_at: Date;
 }
 
+export interface OpenReportRow extends ReportRow {
+  ticket_id: string;
+  severity: ModerationSeverityT;
+}
+
 /**
  * A reportable target as it is right now, resolved for a member.
  *
@@ -91,13 +96,25 @@ interface UserTargetRow {
 }
 
 /**
+ * One-way block test against the reporter bound at `$2`: true when the person
+ * in `ownerColumn` has NOT blocked the reporter. `ownerColumn` is always a
+ * constant column reference written in this file, never request data.
+ */
+function ownerHasNotBlocked(ownerColumn: string): string {
+  return `NOT EXISTS (SELECT 1 FROM blocks ob
+                       WHERE ob.blocker_user_id = ${ownerColumn}
+                         AND ob.blocked_user_id = $2::uuid)`;
+}
+
+/**
  * Reports and the tickets they merge into.
  *
- * Target resolution deliberately ignores blocks: a member who blocked someone
- * must still be able to report them (AC-7) — blocking is a personal filter,
- * reporting is the safety channel, and the second must never depend on the
- * first. It does apply the ordinary public-visibility rules, so nothing can be
- * reported that the reporter could not have seen.
+ * Target resolution honours a block in one direction only: a member who
+ * blocked someone must still be able to report them (AC-7) — reporting is the
+ * safety channel and never depends on the reporter's own block list — while a
+ * target whose owner blocked the reporter is invisible to them here exactly as
+ * everywhere else (review CR-1). It applies the ordinary public-visibility
+ * rules, so nothing can be reported that the reporter could not have seen.
  */
 @Injectable()
 export class ReportRepository {
@@ -133,19 +150,25 @@ export class ReportRepository {
     return rows[0] ?? null;
   }
 
-  /** The reporter's own still-open report on this target, if any (AC-5). */
+  /**
+   * The reporter's gravest still-open report on this target, if any. Since
+   * 0010 a person may hold one open report per severity level on a target
+   * (escalation, FU-4); the gravest decides whether a new one is a duplicate.
+   */
   async findOpenForTarget(
     tx: PoolClient,
     reporterUserId: string,
     targetType: ReportTargetTypeT,
     targetId: string,
-  ): Promise<ReportRow | null> {
-    const { rows } = await tx.query<ReportRow>(
-      `SELECT id, created_at FROM reports
+  ): Promise<OpenReportRow | null> {
+    const { rows } = await tx.query<OpenReportRow>(
+      `SELECT id, created_at, ticket_id, severity FROM reports
         WHERE reporter_user_id = $1
           AND target_type = $2::report_target_type_enum
           AND target_id = $3
-          AND status = 'open'`,
+          AND status = 'open'
+        ORDER BY severity DESC
+        LIMIT 1`,
       [reporterUserId, targetType, targetId],
     );
     return rows[0] ?? null;
@@ -155,12 +178,24 @@ export class ReportRepository {
    * Resolves a target a member could see and takes its evidence snapshot.
    *
    * Visible means: event `published`, post and comment `visible` (a comment
-   * also needs its post or event visible), account `active` with a profile;
-   * never soft deleted. Anything else answers null, which the caller turns
-   * into the same 404 as a target that never existed.
+   * also needs its post or event visible), account not deleted with a
+   * profile — the same rule as the public profile page, so a suspended or
+   * deactivated account is reportable and a 404 never reveals its status
+   * (review CR-3). Never soft deleted.
+   *
+   * Blocks count in one direction only (review CR-1): when the owner has
+   * blocked the reporter, the target is as invisible here as everywhere else,
+   * so this endpoint cannot be used to detect the block. The reporter having
+   * blocked the owner changes nothing (AC-7). The shared helpers in
+   * common/db/block-filter.ts test both directions at once, which is exactly
+   * what AC-7 forbids here, hence the one-way predicate below.
+   *
+   * Anything else answers null, which the caller turns into the same 404 as a
+   * target that never existed.
    */
   async resolveTarget(
     tx: PoolClient,
+    reporterUserId: string,
     targetType: ReportTargetTypeT,
     targetId: string,
   ): Promise<ReportTarget | null> {
@@ -171,8 +206,9 @@ export class ReportRepository {
                   (SELECT min(o.starts_at) FROM event_occurrences o
                     WHERE o.event_id = e.id AND o.deleted_at IS NULL) AS starts_at
              FROM events e
-            WHERE e.id = $1 AND e.deleted_at IS NULL AND e.status = 'published'`,
-          [targetId],
+            WHERE e.id = $1 AND e.deleted_at IS NULL AND e.status = 'published'
+              AND ${ownerHasNotBlocked('e.organizer_id')}`,
+          [targetId, reporterUserId],
         );
         const row = rows[0];
         if (!row) return null;
@@ -192,8 +228,9 @@ export class ReportRepository {
           `SELECT p.author_user_id AS owner_user_id, p.body, p.kind::text AS kind,
                   p.media_ids::text[] AS media_ids, p.status::text AS status
              FROM posts p
-            WHERE p.id = $1 AND p.deleted_at IS NULL AND p.status = 'visible'`,
-          [targetId],
+            WHERE p.id = $1 AND p.deleted_at IS NULL AND p.status = 'visible'
+              AND ${ownerHasNotBlocked('p.author_user_id')}`,
+          [targetId, reporterUserId],
         );
         const row = rows[0];
         if (!row) return null;
@@ -213,8 +250,13 @@ export class ReportRepository {
             WHERE c.id = $1
               AND c.deleted_at IS NULL AND c.status = 'visible'
               AND (c.post_id IS NULL OR (p.deleted_at IS NULL AND p.status = 'visible'))
-              AND (c.event_id IS NULL OR (ev.deleted_at IS NULL AND ev.status = 'published'))`,
-          [targetId],
+              AND (c.event_id IS NULL OR (ev.deleted_at IS NULL AND ev.status = 'published'))
+              -- The thread owner counts too: a comment on a post or event of
+              -- someone who blocked the reporter is not visible to them.
+              AND ${ownerHasNotBlocked('c.user_id')}
+              AND ${ownerHasNotBlocked('p.author_user_id')}
+              AND ${ownerHasNotBlocked('ev.organizer_id')}`,
+          [targetId, reporterUserId],
         );
         const row = rows[0];
         if (!row) return null;
@@ -235,8 +277,9 @@ export class ReportRepository {
                   p.headline, p.bio
              FROM users u
              JOIN profiles p ON p.user_id = u.id
-            WHERE u.id = $1 AND u.deleted_at IS NULL AND u.status = 'active'`,
-          [targetId],
+            WHERE u.id = $1 AND u.deleted_at IS NULL AND u.status <> 'deleted'
+              AND ${ownerHasNotBlocked('u.id')}`,
+          [targetId, reporterUserId],
         );
         const row = rows[0];
         if (!row) return null;
@@ -280,6 +323,29 @@ export class ReportRepository {
       count: row?.count ?? 0,
       retryAfterSeconds: Math.max(1, row?.retry_after_seconds ?? 1),
     };
+  }
+
+  /**
+   * Folds an escalation report (FU-4) into its open ticket: the same merge
+   * rule as the upsert — severity only ever up, deadline only ever earlier —
+   * but `report_count` stays, because it counts people and this is the same
+   * person reporting again.
+   */
+  async raiseTicket(
+    tx: PoolClient,
+    ticketId: string,
+    severity: ModerationSeverityT,
+    slaHours: number,
+  ): Promise<void> {
+    await tx.query(
+      `UPDATE moderation_tickets SET
+         severity         = GREATEST(severity, $2::moderation_severity_enum),
+         sla_due_at       = LEAST(sla_due_at, now() + make_interval(hours => $3)),
+         last_reported_at = now(),
+         updated_at       = now()
+       WHERE id = $1 AND status = 'open'`,
+      [ticketId, severity, slaHours],
+    );
   }
 
   /**

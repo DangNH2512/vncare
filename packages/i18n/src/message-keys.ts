@@ -187,6 +187,10 @@ export type MessageKey =
   | 'common.retry'
   | 'common.seeAll'
   | 'common.skipToContent'
+  | 'content.status.hidden'
+  | 'content.status.pending_review'
+  | 'content.status.removed'
+  | 'content.status.visible'
   | 'datetime.timeZoneNote'
   | 'datetime.today'
   | 'datetime.tomorrow'
@@ -249,6 +253,7 @@ export type MessageKey =
   | 'errors.common.constraintViolated'
   | 'errors.common.duplicate'
   | 'errors.common.idempotencyKeyRequired'
+  | 'errors.common.invalidId'
   | 'errors.common.referenceNotFound'
   | 'errors.common.retryLater'
   | 'errors.content.underModeration'
@@ -484,6 +489,7 @@ export type MessageKey =
   | 'profile.visibilityHint.public'
   | 'role.admin.label'
   | 'role.curator.label'
+  | 'role.member.label'
   | 'role.moderator.label'
   | 'role.superAdmin.label'
   | 'rsvp.action.working'
@@ -576,7 +582,12 @@ export type MessageKey =
   | 'trust.requirement.host5Events'
   | 'trust.requirement.hostFirstEvent'
   | 'trust.requirement.resolveReports'
-  | 'trust.requirement.verifyContact';
+  | 'trust.requirement.verifyContact'
+  | 'user.status.active'
+  | 'user.status.deactivated'
+  | 'user.status.deleted'
+  | 'user.status.pending'
+  | 'user.status.suspended';
 
 export const MESSAGE_KEYS = [
   'a11y.clearFilter',
@@ -766,6 +777,10 @@ export const MESSAGE_KEYS = [
   'common.retry',
   'common.seeAll',
   'common.skipToContent',
+  'content.status.hidden',
+  'content.status.pending_review',
+  'content.status.removed',
+  'content.status.visible',
   'datetime.timeZoneNote',
   'datetime.today',
   'datetime.tomorrow',
@@ -828,6 +843,7 @@ export const MESSAGE_KEYS = [
   'errors.common.constraintViolated',
   'errors.common.duplicate',
   'errors.common.idempotencyKeyRequired',
+  'errors.common.invalidId',
   'errors.common.referenceNotFound',
   'errors.common.retryLater',
   'errors.content.underModeration',
@@ -1063,6 +1079,7 @@ export const MESSAGE_KEYS = [
   'profile.visibilityHint.public',
   'role.admin.label',
   'role.curator.label',
+  'role.member.label',
   'role.moderator.label',
   'role.superAdmin.label',
   'rsvp.action.working',
@@ -1156,4 +1173,9 @@ export const MESSAGE_KEYS = [
   'trust.requirement.hostFirstEvent',
   'trust.requirement.resolveReports',
   'trust.requirement.verifyContact',
+  'user.status.active',
+  'user.status.deactivated',
+  'user.status.deleted',
+  'user.status.pending',
+  'user.status.suspended',
 ] as const;

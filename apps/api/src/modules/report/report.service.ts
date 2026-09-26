@@ -9,6 +9,7 @@ import {
   REPORT_RATE_WINDOW_HOURS,
   REPORT_REASON_SEVERITY,
   reportDailyLimit,
+  SEVERITY_RANK,
   SLA_HOURS,
 } from '@dnc/domain';
 import type { ReportCreateRequestT, ReportResponseT } from '@dnc/contracts';
@@ -52,9 +53,21 @@ export class ReportService {
         input.targetType,
         input.targetId,
       );
-      if (open) return toReportResponse(open);
+      const severity = REPORT_REASON_SEVERITY[input.reason];
+      // Same or milder reason than the reporter's gravest open report: a
+      // duplicate, answered with that report (AC-5). A strictly graver one is
+      // new information and gets a report of its own in the same ticket
+      // (acceptance FU-4), filed through the normal checks below.
+      if (open && SEVERITY_RANK[severity] <= SEVERITY_RANK[open.severity]) {
+        return toReportResponse(open);
+      }
 
-      const target = await this.reports.resolveTarget(tx, input.targetType, input.targetId);
+      const target = await this.reports.resolveTarget(
+        tx,
+        viewer.id,
+        input.targetType,
+        input.targetId,
+      );
       if (!target) {
         throw new NotFoundException({
           code: 'REPORT_TARGET_NOT_FOUND',
@@ -89,15 +102,22 @@ export class ReportService {
         );
       }
 
-      const severity = REPORT_REASON_SEVERITY[input.reason];
-      const ticketId = await this.reports.upsertTicket(tx, {
-        targetType: input.targetType,
-        targetId: input.targetId,
-        ownerUserId: target.ownerUserId,
-        relatedEventOrganizerId: target.relatedEventOrganizerId,
-        severity,
-        slaHours: SLA_HOURS[severity],
-      });
+      let ticketId: string;
+      if (open) {
+        // Escalation: the same person, so the ticket's report_count (people)
+        // stays; only severity rises and the deadline comes in (§7).
+        ticketId = open.ticket_id;
+        await this.reports.raiseTicket(tx, ticketId, severity, SLA_HOURS[severity]);
+      } else {
+        ticketId = await this.reports.upsertTicket(tx, {
+          targetType: input.targetType,
+          targetId: input.targetId,
+          ownerUserId: target.ownerUserId,
+          relatedEventOrganizerId: target.relatedEventOrganizerId,
+          severity,
+          slaHours: SLA_HOURS[severity],
+        });
+      }
 
       // Empty after trimming is "no description": the column's CHECK wants 1–2000.
       const description = input.description ? input.description : null;

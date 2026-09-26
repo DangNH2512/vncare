@@ -142,6 +142,9 @@ export class RsvpService {
     occurrenceId: string,
     viewer: CurrentUserContext,
   ): Promise<AttendeeResponseT[]> {
+    // An occurrence of an event the viewer cannot open answers like one that
+    // does not exist — which, since CR-2, is also a 404 rather than [].
+    if (!(await this.rsvps.occurrenceVisible(occurrenceId, viewer.id))) throw this.notFound();
     const rows = await this.rsvps.listAttendees(occurrenceId, viewer.id);
     const avatarIds = [...new Set(rows.map((r) => r.avatar_media_id).filter((v): v is string => v !== null))];
     const avatars = new Map(

@@ -11,6 +11,7 @@ import type {
 import { PG_POOL } from '../../database/database.module.js';
 import { withTransaction } from '../../common/db/transaction.js';
 import { blockedBetween } from '../../common/db/block-filter.js';
+import { eventRoomOpen, eventVisibleTo } from '../../common/db/event-visibility.js';
 import { decodeCursor, encodeCursor } from '../../common/pagination.js';
 
 /**
@@ -211,15 +212,67 @@ export class ChatRepository {
     }
   }
 
-  /** Joins a member to an existing room, or revives a membership they left. */
-  async join(conversationId: string, userId: string): Promise<void> {
-    await this.pool.query(
+  /**
+   * Joins a member to an event room, or revives a membership they left.
+   *
+   * One statement, gated on the room being an event group whose event the
+   * member could open (eventVisibleTo, FU-2): a room of a suspended, taken-down
+   * or someone else's draft event — and any direct thread — joins nobody.
+   * Returns false then, and the caller answers the unknown-room 404.
+   */
+  async join(conversationId: string, userId: string): Promise<boolean> {
+    const { rowCount } = await this.pool.query(
       `INSERT INTO conversation_participants (conversation_id, user_id, role)
-       VALUES ($1, $2, 'member')
+       SELECT c.id, $2, 'member'
+         FROM conversations c
+         JOIN events e ON e.id = c.event_id
+        WHERE c.id = $1
+          AND c.type = 'event_group'
+          AND c.deleted_at IS NULL
+          AND ${eventVisibleTo('$2', 'e')}
        ON CONFLICT (conversation_id, user_id)
        DO UPDATE SET left_at = NULL`,
       [conversationId, userId],
     );
+    return (rowCount ?? 0) > 0;
+  }
+
+  /** Whether an event room accepts new messages: its event is live and published (FU-2). */
+  async eventRoomAcceptsMessages(conversationId: string): Promise<boolean> {
+    const { rowCount } = await this.pool.query(
+      `SELECT 1 FROM conversations c
+         JOIN events e ON e.id = c.event_id
+        WHERE c.id = $1 AND ${eventRoomOpen('e')}`,
+      [conversationId],
+    );
+    return (rowCount ?? 0) > 0;
+  }
+
+  /**
+   * Everything opening a direct thread needs to decide, in one round trip:
+   * whether the recipient is a live account, whether a block stands between
+   * the pair, and the pair's existing thread if there is one (FU-1).
+   */
+  async directOpeningState(
+    initiatorId: string,
+    recipientId: string,
+  ): Promise<{ recipient_exists: boolean; blocked: boolean; existing_id: string | null }> {
+    const { rows } = await this.pool.query<{
+      recipient_exists: boolean;
+      blocked: boolean;
+      existing_id: string | null;
+    }>(
+      `SELECT
+         EXISTS (SELECT 1 FROM users
+                  WHERE id = $2 AND deleted_at IS NULL AND status <> 'deleted') AS recipient_exists,
+         ${blockedBetween('$1', '$2::uuid')} AS blocked,
+         (SELECT id FROM conversations
+           WHERE type = 'direct' AND deleted_at IS NULL
+             AND user_a_id = LEAST($1::uuid, $2::uuid)
+             AND user_b_id = GREATEST($1::uuid, $2::uuid)) AS existing_id`,
+      [initiatorId, recipientId],
+    );
+    return rows[0] ?? { recipient_exists: false, blocked: false, existing_id: null };
   }
 
   /**

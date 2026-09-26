@@ -161,14 +161,20 @@ export class ProfileRepository {
    *
    * One statement: the target is resolved and the row inserted together, so a
    * second block of the same person is a no-op on the primary key rather than
-   * a read-then-write. Returns false when the target is not an active,
-   * undeleted account — the caller answers 404 then, as for an unknown id.
+   * a read-then-write. Returns false only for an id that does not exist or is
+   * deleted — the caller answers 404 then, as for an unknown id.
+   *
+   * The account's status is otherwise ignored (CR-3): the same predicate as
+   * the public profile, so a suspended or deactivated account whose profile
+   * still shows can be blocked like any other. Refusing it would tell the
+   * blocker the account is under moderation, and would stop a victim from
+   * blocking someone before their suspension ends.
    */
   async block(blockerId: string, blockedId: string): Promise<boolean> {
     const { rows } = await this.pool.query<{ found: boolean }>(
       `WITH target AS (
          SELECT id FROM users
-          WHERE id = $2 AND status = 'active' AND deleted_at IS NULL
+          WHERE id = $2 AND deleted_at IS NULL AND status <> 'deleted'
        ), inserted AS (
          INSERT INTO blocks (blocker_user_id, blocked_user_id)
          SELECT $1, id FROM target

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -14,6 +15,7 @@ import {
   canSeeOtherModerators,
   canSuspendRole,
   maxSuspensionDays,
+  MODERATION_NOTE_MIN_LENGTH,
   SLA_HOURS,
 } from '@dnc/domain';
 import {
@@ -174,6 +176,7 @@ export class ModerationService {
   ): Promise<ModerationActionResponseT> {
     const role = viewer.role as UserRoleT;
     const requestId = resolveRequestId(requestIdHeader);
+    assertNoteLength(body.note);
 
     return this.moderation.transaction(async (tx) => {
       let ticket: TicketRow | null = null;
@@ -188,6 +191,11 @@ export class ModerationService {
             messageKey: 'errors.moderation.targetNotInTicket',
           });
         }
+      } else if (
+        await this.moderation.conflictedOnTarget(tx, body.targetType, body.targetId, viewer.id)
+      ) {
+        // Leaving out the ticket must not be a way round INV-4 (review CR-4).
+        throw conflictOfInterest();
       }
 
       const target = await this.moderation.lockTarget(tx, body.targetType, body.targetId);
@@ -249,6 +257,7 @@ export class ModerationService {
   ): Promise<ModerationActionResponseT> {
     const role = viewer.role as UserRoleT;
     const requestId = resolveRequestId(requestIdHeader);
+    assertNoteLength(body.note);
 
     return this.moderation.transaction(async (tx) => {
       const ticket = await this.lockOpenTicket(tx, ticketId, viewer.id);
@@ -301,6 +310,7 @@ export class ModerationService {
   ): Promise<ModerationActionResponseT> {
     const role = viewer.role as UserRoleT;
     const requestId = resolveRequestId(requestIdHeader);
+    assertNoteLength(body.note);
 
     return this.moderation.transaction(async (tx) => {
       const ticket = await this.lockOpenTicket(tx, ticketId, viewer.id);
@@ -429,6 +439,17 @@ export class ModerationService {
             details: { maxDays },
           });
         }
+        // A suspension whose end has passed but that nobody has signed in to
+        // lift yet is over in fact. Lift it here, as the system — the same
+        // function and the same trail as the lazy lift at sign-in — so the new
+        // suspension applies without a moderator recording an "unsuspend" that
+        // never happened (review CR-5). A suspension still running stays and
+        // the update below matches nothing: 409 as before.
+        let before = { status: target.status, suspendedUntil: isoOrNull(target.suspended_until) };
+        if (target.status === 'suspended') {
+          const lifted = await this.moderation.liftExpiredSuspension(tx, body.targetId);
+          if (lifted) before = { status: 'active', suspendedUntil: null };
+        }
         const until = await this.moderation.suspendUser(
           tx,
           body.targetId,
@@ -439,7 +460,7 @@ export class ModerationService {
         await this.moderation.revokeSessions(tx, body.targetId);
         return {
           ...changedOnly(
-            { status: target.status, suspendedUntil: isoOrNull(target.suspended_until) },
+            before,
             { status: 'suspended', suspendedUntil: until.toISOString() },
           ),
           suspendedUntil: until,
@@ -517,12 +538,7 @@ export class ModerationService {
       ticket.target_owner_user_id === viewerId ||
       ticket.related_event_organizer_id === viewerId ||
       (await this.moderation.isReporter(ticket.id, viewerId, tx));
-    if (conflicted) {
-      throw new ForbiddenException({
-        code: 'CONFLICT_OF_INTEREST',
-        messageKey: 'errors.moderation.conflictOfInterest',
-      });
-    }
+    if (conflicted) throw conflictOfInterest();
   }
 
   private async actionResponse(
@@ -580,6 +596,29 @@ function parseQueueCursor(raw: string | undefined): QueueCursor | null {
     return null;
   }
   return { severity: severity.data, at: cursor.at, id: cursor.id };
+}
+
+/**
+ * The contract counts the note in UTF-16 units; the database CHECK counts
+ * characters. Twenty emoji pass the first and fail the second, which would
+ * surface as a 500 (review CR-10). Counting code points here closes the gap
+ * with the same 400 and key the contract uses. The upper bound needs no twin:
+ * code points never outnumber UTF-16 units, so the contract's max is stricter.
+ */
+function assertNoteLength(note: string): void {
+  if ([...note].length < MODERATION_NOTE_MIN_LENGTH) {
+    throw new BadRequestException({
+      code: 'VALIDATION_FAILED',
+      messageKey: 'errors.moderation.noteTooShort',
+    });
+  }
+}
+
+function conflictOfInterest(): ForbiddenException {
+  return new ForbiddenException({
+    code: 'CONFLICT_OF_INTEREST',
+    messageKey: 'errors.moderation.conflictOfInterest',
+  });
 }
 
 function ticketNotFound(): NotFoundException {

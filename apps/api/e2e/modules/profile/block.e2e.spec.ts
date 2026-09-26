@@ -87,6 +87,18 @@ describe('blocking', () => {
     return res.body.data.id as string;
   };
 
+  const eventComment = async (author: Actor, eventId: string): Promise<string> => {
+    const res = await http()
+      .post(`/api/v1/events/${eventId}/comments`)
+      .set(author.headers)
+      .send({ body: `Block probe event comment ${randomUUID().slice(0, 8)}` })
+      .expect(201);
+    return res.body.data.id as string;
+  };
+
+  const attendeeList = (occurrenceId: string, who: Actor) =>
+    http().get(`/api/v1/occurrences/${occurrenceId}/rsvps`).set(who.headers);
+
   const join = (occurrenceId: string, who: Actor) =>
     http()
       .post(`/api/v1/occurrences/${occurrenceId}/rsvps`)
@@ -117,6 +129,7 @@ describe('blocking', () => {
     postThread: unknown;
     eventThread: unknown;
     reaction: unknown;
+    attendees: unknown;
   };
 
   const blockCount = async (blocker: string, blocked: string): Promise<number> => {
@@ -149,6 +162,7 @@ describe('blocking', () => {
       reaction: await notFound(
         http().put(`/api/v1/posts/${unknownId()}/reactions`).set(probe.headers).send({ kind: 'like' }),
       ),
+      attendees: await notFound(attendeeList(unknownId(), probe)),
     };
   });
 
@@ -196,11 +210,48 @@ describe('blocking', () => {
       await block(a, 'not-a-uuid').expect(400);
     });
 
-    it('AC-16: 404 for an account that is not active', async () => {
-      const [a, gone] = [await actor(), await actor()];
-      await pool.query(`UPDATE users SET status = 'deactivated' WHERE id = $1`, [gone.id]);
-      await block(a, gone.id).expect(404);
-      await pool.query(`UPDATE users SET status = 'active' WHERE id = $1`, [gone.id]);
+    /**
+     * CR-3 (task board E2 amended): an account that is not `active` but still
+     * has a visible profile is blocked like any other — a 404 here would tell
+     * the blocker the account is under moderation, and would keep a victim
+     * from blocking someone who is only suspended for a week.
+     */
+    it('CR-3: blocks a suspended or deactivated account with 204, like an active one', async () => {
+      const a = await actor();
+      for (const status of ['suspended', 'deactivated', 'pending'] as const) {
+        const target = await actor();
+        await pool.query(
+          `UPDATE users SET status = $2,
+                  suspended_until = CASE WHEN $2 = 'suspended' THEN now() + interval '7 days' END
+            WHERE id = $1`,
+          [target.id, status],
+        );
+        const res = await block(a, target.id).expect(204);
+        expect(res.body).toEqual({});
+        expect(await blockCount(a.id, target.id)).toBe(1);
+        await pool.query(
+          `UPDATE users SET status = 'active', suspended_until = NULL WHERE id = $1`,
+          [target.id],
+        );
+      }
+    });
+
+    it('CR-3: only a deleted account answers 404, the same 404 as an unknown id', async () => {
+      const a = await actor();
+      const unknownBody = (await block(a, unknownId()).expect(404)).body as unknown;
+
+      const byStatus = await actor();
+      await pool.query(`UPDATE users SET status = 'deleted' WHERE id = $1`, [byStatus.id]);
+      expect((await block(a, byStatus.id).expect(404)).body).toEqual(unknownBody);
+      await pool.query(`UPDATE users SET status = 'active' WHERE id = $1`, [byStatus.id]);
+
+      const byColumn = await actor();
+      await pool.query(`UPDATE users SET deleted_at = now() WHERE id = $1`, [byColumn.id]);
+      expect((await block(a, byColumn.id).expect(404)).body).toEqual(unknownBody);
+      await pool.query(`UPDATE users SET deleted_at = NULL WHERE id = $1`, [byColumn.id]);
+
+      expect(await blockCount(a.id, byStatus.id)).toBe(0);
+      expect(await blockCount(a.id, byColumn.id)).toBe(0);
     });
 
     it('AC-16: blocking twice answers 204 both times and keeps one row', async () => {
@@ -290,6 +341,9 @@ describe('blocking', () => {
       post: string;
       commentOnThird: string;
       replyOnThird: string;
+      /** C's comments inside the owner's threads (CR-8). */
+      thirdOnPost: string;
+      thirdOnEvent: string;
     }> = {};
     let thirdPost: string;
     let thirdRoot: string;
@@ -304,11 +358,15 @@ describe('blocking', () => {
       thirdEvent = await publishEvent(c);
 
       for (const who of [a, b]) {
+        const event = await publishEvent(who);
+        const post = await createPost(who);
         things[who.id] = {
-          event: await publishEvent(who),
-          post: await createPost(who),
+          event,
+          post,
           commentOnThird: await comment(who, thirdPost),
           replyOnThird: await comment(who, thirdPost, { parentId: thirdRoot }),
+          thirdOnPost: await comment(c, post),
+          thirdOnEvent: await eventComment(c, event.id),
         };
         await join(thirdEvent.occurrenceId, who).expect(201);
       }
@@ -487,6 +545,27 @@ describe('blocking', () => {
           expect(post.body).toEqual(unknown.reaction);
         });
 
+        it('CR-8: a third person’s comment inside the other side’s thread is a 404', async () => {
+          const [viewer, owner] = [viewerOf(), ownerOf()];
+          const theirs = things[owner.id]!;
+          for (const id of [theirs.thirdOnPost, theirs.thirdOnEvent]) {
+            const res = await http().get(`/api/v1/comments/${id}`).set(viewer.headers).expect(404);
+            expect(res.body).toEqual(unknown.comment);
+            const reacted = await http()
+              .put(`/api/v1/comments/${id}/reactions`)
+              .set(viewer.headers)
+              .send({ kind: 'like' })
+              .expect(404);
+            expect(reacted.body.code).toBe('REACTION_TARGET_NOT_FOUND');
+          }
+        });
+
+        it('CR-8: the attendee list of the other side’s event is a 404 like an unknown occurrence', async () => {
+          const [viewer, owner] = [viewerOf(), ownerOf()];
+          const res = await attendeeList(things[owner.id]!.event.occurrenceId, viewer).expect(404);
+          expect(res.body).toEqual(unknown.attendees);
+        });
+
         it('profile: 404 identical to a handle nobody holds', async () => {
           const [viewer, owner] = [viewerOf(), ownerOf()];
           const res = await http().get(`/api/v1/profiles/${owner.handle}`).set(viewer.headers).expect(404);
@@ -495,12 +574,17 @@ describe('blocking', () => {
           await http().get(`/api/v1/profiles/${viewer.handle}`).set(viewer.headers).expect(200);
         });
 
-        it('direct messages: no new thread, no new message, history still readable', async () => {
+        /**
+         * AC-13 as amended by acceptance Q-A1: a pair that already has a thread
+         * gets it back (201, like a declined pair), and sending is refused both
+         * ways. The no-thread case is the FU-1 test further down.
+         */
+        it('direct messages: the old thread comes back, sending is refused, history readable', async () => {
           const [viewer, owner] = [viewerOf(), ownerOf()];
           const refused = { code: 'CONVERSATION_REQUEST_REFUSED', messageKey: 'errors.chat.requestRefused' };
 
-          const opened = await openDirect(viewer, owner).expect(403);
-          expect(opened.body).toEqual(refused);
+          const opened = await openDirect(viewer, owner).expect(201);
+          expect(opened.body.data.id).toBe(directId);
 
           const sent = await send(directId, viewer).expect(403);
           expect(sent.body).toEqual(refused);
@@ -553,6 +637,9 @@ describe('blocking', () => {
       );
 
       for (const who of [a, b]) {
+        await http().get(`/api/v1/comments/${things[who.id]!.thirdOnPost}`).set(c.headers).expect(200);
+        await http().get(`/api/v1/comments/${things[who.id]!.thirdOnEvent}`).set(c.headers).expect(200);
+        await attendeeList(things[who.id]!.event.occurrenceId, c).expect(200);
         await http().get(`/api/v1/events/${things[who.id]!.event.id}`).set(c.headers).expect(200);
         await http().get(`/api/v1/posts/${things[who.id]!.post}`).set(c.headers).expect(200);
         await http().get(`/api/v1/profiles/${who.handle}`).set(c.headers).expect(200);
@@ -590,6 +677,10 @@ describe('blocking', () => {
           .expect(200);
         expect((attendees.body.data as Array<{ userId: string }>).map((p) => p.userId)).toContain(owner.id);
 
+        await http().get(`/api/v1/comments/${theirs.thirdOnPost}`).set(viewer.headers).expect(200);
+        await http().get(`/api/v1/comments/${theirs.thirdOnEvent}`).set(viewer.headers).expect(200);
+        await attendeeList(theirs.event.occurrenceId, viewer).expect(200);
+
         await send(directId, viewer).expect(201);
       }
 
@@ -612,6 +703,153 @@ describe('blocking', () => {
   });
 
   /* --------------------------------------- chat "blocked" answer (D5) */
+
+  /* ---------------- FU-1 (Q-A1): opening a direct thread across a block */
+
+  it('FU-1: a blocked pair with no thread gets the unknown-user answer, and nothing is written', async () => {
+    const [blocker, blocked] = [await actor(), await actor()];
+    const probe = await actor();
+    const unknownRecipient = (await openDirect(probe, { ...probe, id: unknownId() }).expect(404))
+      .body as unknown;
+    expect(unknownRecipient).toEqual({
+      code: 'PROFILE_NOT_FOUND',
+      messageKey: 'errors.profile.notFound',
+    });
+
+    await block(blocker, blocked.id).expect(204);
+
+    for (const [from, to] of [[blocked, blocker], [blocker, blocked]] as const) {
+      const res = await openDirect(from, to).expect(404);
+      expect(res.body).toEqual(unknownRecipient);
+    }
+
+    const { rows } = await pool.query<{ n: number }>(
+      `SELECT count(*)::int AS n FROM conversations
+        WHERE type = 'direct'
+          AND user_a_id = LEAST($1::uuid, $2::uuid) AND user_b_id = GREATEST($1::uuid, $2::uuid)`,
+      [blocker.id, blocked.id],
+    );
+    expect(rows[0]?.n).toBe(0);
+    // No invitation reaches the blocker's inbox.
+    const inbox = await http().get('/api/v1/conversations').set(blocker.headers).expect(200);
+    expect(inbox.body.data.items).toEqual([]);
+
+    // Once unblocked, the pair can open a thread as normal.
+    await unblock(blocker, blocked.id).expect(204);
+    await openDirect(blocked, blocker).expect(201);
+  });
+
+  it('FU-1: a deleted recipient gets the same fixed 404', async () => {
+    const [from, gone] = [await actor(), await actor()];
+    await pool.query(`UPDATE users SET deleted_at = now() WHERE id = $1`, [gone.id]);
+    const res = await openDirect(from, gone).expect(404);
+    expect(res.body).toEqual({ code: 'PROFILE_NOT_FOUND', messageKey: 'errors.profile.notFound' });
+    await pool.query(`UPDATE users SET deleted_at = NULL WHERE id = $1`, [gone.id]);
+  });
+
+  /* ------------ FU-2 (TR-6): an event's group room follows the event */
+
+  describe('FU-2: event group room of an event that is not published', () => {
+    let organizer: Actor;
+    let member: Actor;
+    let event: { id: string; occurrenceId: string };
+    let roomId: string;
+    let unknownRoom: unknown;
+    const closed = { code: 'CONVERSATION_CLOSED', messageKey: 'errors.chat.conversationClosed' };
+
+    const joinRoom = (id: string, who: Actor) =>
+      http().post(`/api/v1/conversations/${id}/participants`).set(who.headers);
+    const setStatus = (status: string) =>
+      pool.query(`UPDATE events SET status = $2 WHERE id = $1`, [event.id, status]);
+
+    beforeAll(async () => {
+      [organizer, member] = [await actor(), await actor()];
+      event = await publishEvent(organizer);
+      const room = await http()
+        .post('/api/v1/conversations')
+        .set(organizer.headers)
+        .send({ type: 'event_group', eventId: event.id })
+        .expect(201);
+      roomId = room.body.data.id;
+      await joinRoom(roomId, member).expect(201);
+      await send(roomId, member).expect(201);
+      await send(roomId, organizer).expect(201);
+      unknownRoom = (await joinRoom(unknownId(), member).expect(404)).body as unknown;
+      expect(unknownRoom).toEqual({
+        code: 'CONVERSATION_NOT_FOUND',
+        messageKey: 'errors.chat.conversationNotFound',
+      });
+    });
+
+    for (const status of ['suspended', 'taken_down'] as const) {
+      it(`${status}: joining 404s, sending is refused for everyone, history stays readable`, async () => {
+        await setStatus(status);
+        try {
+          const newcomer = await actor();
+          const joined = await joinRoom(roomId, newcomer).expect(404);
+          expect(joined.body).toEqual(unknownRoom);
+
+          for (const who of [member, organizer]) {
+            const sent = await send(roomId, who).expect(403);
+            expect(sent.body).toEqual(closed);
+            const history = await http()
+              .get(`/api/v1/conversations/${roomId}/messages`)
+              .set(who.headers)
+              .expect(200);
+            expect(history.body.data.items.length).toBeGreaterThanOrEqual(2);
+          }
+        } finally {
+          await setStatus('published');
+        }
+      });
+    }
+
+    it('reopens when the event is restored', async () => {
+      await setStatus('taken_down');
+      await setStatus('published');
+      await send(roomId, member).expect(201);
+      await send(roomId, organizer).expect(201);
+      await joinRoom(roomId, await actor()).expect(201);
+    });
+
+    it('a direct thread cannot be joined as if it were a room', async () => {
+      const [x, y, outsider] = [await actor(), await actor(), await actor()];
+      const opened = await openDirect(x, y).expect(201);
+      const res = await joinRoom(opened.body.data.id, outsider).expect(404);
+      expect(res.body).toEqual(unknownRoom);
+    });
+  });
+
+  /* --------------- FU-5 (Q-A5a): comments under a hidden or removed post */
+
+  it('FU-5: a comment under a hidden or removed post is a 404 to everyone but the post author', async () => {
+    const [author, commenter, third] = [await actor(), await actor(), await actor()];
+    const post = await createPost(author);
+    const id = await comment(commenter, post);
+
+    for (const status of ['hidden', 'removed'] as const) {
+      await pool.query(`UPDATE posts SET status = $2 WHERE id = $1`, [post, status]);
+      try {
+        for (const who of [third, commenter]) {
+          const detail = await http().get(`/api/v1/comments/${id}`).set(who.headers).expect(404);
+          expect(detail.body).toEqual(unknown.comment);
+          const list = await http().get(`/api/v1/posts/${post}/comments`).set(who.headers).expect(404);
+          expect(list.body).toEqual(unknown.postThread);
+          await http().put(`/api/v1/comments/${id}/reactions`).set(who.headers).send({ kind: 'like' }).expect(404);
+        }
+        const guest = await http().get(`/api/v1/comments/${id}`).expect(404);
+        expect(guest.body).toEqual(unknown.comment);
+        // The post author keeps the access the post rule gives them.
+        await http().get(`/api/v1/comments/${id}`).set(author.headers).expect(200);
+      } finally {
+        await pool.query(`UPDATE posts SET status = 'visible' WHERE id = $1`, [post]);
+      }
+    }
+
+    // Visible again: exactly as before, for members and guests.
+    await http().get(`/api/v1/comments/${id}`).set(third.headers).expect(200);
+    await http().get(`/api/v1/comments/${id}`).expect(200);
+  });
 
   it('answering a request with "blocked" also blocks the requester globally', async () => {
     const [requester, recipient] = [await actor(), await actor()];
@@ -699,6 +937,126 @@ describe('blocking', () => {
       await http().patch(`/api/v1/posts/${post}`).set(author.headers).send({ body: 'An honest edit' }).expect(200);
       const id = await comment(author, post);
       await http().patch(`/api/v1/comments/${id}`).set(author.headers).send({ body: 'An honest edit' }).expect(200);
+    });
+  });
+
+  /* ---------- CR-2: an event's thread, reactions and attendees follow the event */
+
+  /**
+   * Everything hanging off an event obeys the GET /events/:id rule: when the
+   * event is suspended, taken down, or a draft that is not yours, its comment
+   * thread, comment detail, reactions and attendee list answer the
+   * unknown-id 404 — for members and guests alike. The organizer keeps
+   * access, as they do to the event itself.
+   */
+  describe('CR-2: surfaces follow the event’s visibility', () => {
+    let organizer: Actor;
+    let member: Actor;
+    let event: { id: string; occurrenceId: string };
+    let eventCommentId: string;
+
+    beforeAll(async () => {
+      [organizer, member] = [await actor(), await actor()];
+      event = await publishEvent(organizer);
+      eventCommentId = await eventComment(member, event.id);
+      await join(event.occurrenceId, member).expect(201);
+    });
+
+    const setStatus = (status: string) =>
+      pool.query(`UPDATE events SET status = $2 WHERE id = $1`, [event.id, status]);
+
+    /** Every event-bound read and write, as `who` (null = guest). */
+    const expectAllHidden = async (who: Actor | null) => {
+      const as = (req: request.Test) => (who ? req.set(who.headers) : req);
+
+      const thread = await as(http().get(`/api/v1/events/${event.id}/comments`)).expect(404);
+      expect(thread.body).toEqual(unknown.eventThread);
+      const detail = await as(http().get(`/api/v1/comments/${eventCommentId}`)).expect(404);
+      expect(detail.body).toEqual(unknown.comment);
+      await as(http().get(`/api/v1/events/${event.id}/reactions`)).expect(404);
+      await as(http().get(`/api/v1/comments/${eventCommentId}/reactions`)).expect(404);
+
+      if (who) {
+        await http()
+          .post(`/api/v1/events/${event.id}/comments`)
+          .set(who.headers)
+          .send({ body: 'Should not land' })
+          .expect(404);
+        await http().put(`/api/v1/events/${event.id}/reactions`).set(who.headers).send({ kind: 'like' }).expect(404);
+        await http().delete(`/api/v1/events/${event.id}/reactions`).set(who.headers).expect(404);
+        await http()
+          .put(`/api/v1/comments/${eventCommentId}/reactions`)
+          .set(who.headers)
+          .send({ kind: 'like' })
+          .expect(404);
+        const list = await attendeeList(event.occurrenceId, who).expect(404);
+        expect(list.body).toEqual(unknown.attendees);
+      }
+    };
+
+    const expectOrganizerKeepsAccess = async () => {
+      await http().get(`/api/v1/events/${event.id}/comments`).set(organizer.headers).expect(200);
+      await http().get(`/api/v1/comments/${eventCommentId}`).set(organizer.headers).expect(200);
+      await http().get(`/api/v1/events/${event.id}/reactions`).set(organizer.headers).expect(200);
+      await attendeeList(event.occurrenceId, organizer).expect(200);
+    };
+
+    it('leaves a published event exactly as before, for members and guests', async () => {
+      const list = await http().get(`/api/v1/events/${event.id}/comments`).expect(200);
+      expect(ids(list)).toContain(eventCommentId);
+      await http().get(`/api/v1/comments/${eventCommentId}`).expect(200);
+      await http().get(`/api/v1/events/${event.id}/reactions`).expect(200);
+      await http().put(`/api/v1/events/${event.id}/reactions`).set(member.headers).send({ kind: 'like' }).expect(200);
+      await http().delete(`/api/v1/events/${event.id}/reactions`).set(member.headers).expect(204);
+      const people = await attendeeList(event.occurrenceId, member).expect(200);
+      expect((people.body.data as Array<{ userId: string }>).map((p) => p.userId)).toContain(member.id);
+    });
+
+    for (const status of ['suspended', 'taken_down'] as const) {
+      it(`closes everything on a ${status} event except for its organizer`, async () => {
+        await setStatus(status);
+        try {
+          await http().get(`/api/v1/events/${event.id}`).set(member.headers).expect(404);
+          await expectAllHidden(member);
+          await expectAllHidden(null);
+          await expectOrganizerKeepsAccess();
+        } finally {
+          await setStatus('published');
+        }
+      });
+    }
+
+    it('treats a draft that is not yours the same way', async () => {
+      const draft = await http()
+        .post('/api/v1/events')
+        .set(organizer.headers)
+        .send({
+          title: `Draft probe ${randomUUID().slice(0, 8)}`,
+          areaId,
+          lat: 16.06,
+          lng: 108.247,
+          startsAt: new Date(Date.now() + 7 * 86_400_000).toISOString(),
+          capacity: 5,
+        })
+        .expect(201);
+      const id: string = draft.body.data.id;
+
+      const thread = await http().get(`/api/v1/events/${id}/comments`).set(member.headers).expect(404);
+      expect(thread.body).toEqual(unknown.eventThread);
+      await http().put(`/api/v1/events/${id}/reactions`).set(member.headers).send({ kind: 'like' }).expect(404);
+      await attendeeList(draft.body.data.occurrenceId, member).expect(404);
+
+      // The organizer works on their own draft as before.
+      await eventComment(organizer, id);
+      await http().put(`/api/v1/events/${id}/reactions`).set(organizer.headers).send({ kind: 'like' }).expect(200);
+    });
+
+    it('opens everything again once the event is restored', async () => {
+      await setStatus('taken_down');
+      await setStatus('published');
+      await http().get(`/api/v1/events/${event.id}/comments`).set(member.headers).expect(200);
+      await http().get(`/api/v1/comments/${eventCommentId}`).expect(200);
+      await attendeeList(event.occurrenceId, member).expect(200);
     });
   });
 });
