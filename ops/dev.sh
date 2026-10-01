@@ -35,8 +35,14 @@ else
   exit 1
 fi
 
+# Fail before touching anything: with the daemon down, `docker compose` errors
+# mid-script and the dev servers would otherwise start against no database.
+docker info >/dev/null 2>&1 || { echo "Docker daemon is not running" >&2; exit 1; }
+
 echo "==> containers"
-docker compose -f docker-compose.local.yml up -d postgres minio
+# Redis (cache + queue) and Mailpit are required too: without them the API
+# health check reports degraded and verification mail has nowhere to go.
+docker compose -f docker-compose.local.yml up -d postgres redis-cache redis-queue mailpit minio
 
 echo "==> waiting for postgres"
 for _ in $(seq 1 60); do
@@ -87,6 +93,7 @@ cat <<BANNER
   Admin http://localhost:${ADMIN_PORT}
   API   http://localhost:3101      (docs: /api/docs)
   MinIO http://localhost:9003      (console)
+  Mail  http://localhost:8025      (Mailpit)
 
   Ctrl+C stops the app; containers keep running.
 
