@@ -5,7 +5,132 @@ export type MessageKey =
   | 'a11y.openMenu'
   | 'a11y.switchLanguage'
   | 'a11y.toggleTheme'
+  | 'admin.action.changeRole'
+  | 'admin.action.failed'
+  | 'admin.action.irreversible'
+  | 'admin.action.reason.counter'
+  | 'admin.action.reason.hint'
+  | 'admin.action.reason.label'
+  | 'admin.action.restoreEvent'
+  | 'admin.action.review.cancel'
+  | 'admin.action.review.confirm'
+  | 'admin.action.review.title'
+  | 'admin.action.suspendEvent'
+  | 'admin.action.suspendUser'
+  | 'admin.action.suspendUserEffect'
+  | 'admin.action.takeDownEvent'
+  | 'admin.action.typeToConfirm'
+  | 'admin.action.unsuspendUser'
+  | 'admin.audit.action.event.restored'
+  | 'admin.audit.action.event.suspended'
+  | 'admin.audit.action.event.taken_down'
+  | 'admin.audit.action.user.role_changed'
+  | 'admin.audit.action.user.suspended'
+  | 'admin.audit.action.user.unsuspended'
+  | 'admin.audit.col.action'
+  | 'admin.audit.col.actor'
+  | 'admin.audit.col.reason'
+  | 'admin.audit.col.severity'
+  | 'admin.audit.col.target'
+  | 'admin.audit.col.time'
+  | 'admin.audit.empty.title'
+  | 'admin.audit.scope.noSuperAdmin'
+  | 'admin.audit.scope.own'
+  | 'admin.audit.severity.critical'
+  | 'admin.audit.severity.info'
+  | 'admin.audit.severity.notice'
+  | 'admin.audit.severity.warning'
+  | 'admin.audit.title'
+  | 'admin.common.dateRange.invalid'
+  | 'admin.common.dateRange.order'
+  | 'admin.common.select.keyboardHint'
+  | 'admin.events.col.area'
+  | 'admin.events.col.created'
+  | 'admin.events.col.host'
+  | 'admin.events.col.seats'
+  | 'admin.events.col.starts'
+  | 'admin.events.col.status'
+  | 'admin.events.col.title'
+  | 'admin.events.col.waitlist'
+  | 'admin.events.cursorReset'
+  | 'admin.events.detail.attendeesNote'
+  | 'admin.events.detail.back'
+  | 'admin.events.detail.capacity'
+  | 'admin.events.detail.counts.attended'
+  | 'admin.events.detail.counts.cancelled'
+  | 'admin.events.detail.counts.confirmed'
+  | 'admin.events.detail.counts.held'
+  | 'admin.events.detail.counts.noShow'
+  | 'admin.events.detail.counts.waitlisted'
+  | 'admin.events.detail.draftHidden'
+  | 'admin.events.detail.error.title'
+  | 'admin.events.detail.field.area'
+  | 'admin.events.detail.field.comments'
+  | 'admin.events.detail.field.coordinates'
+  | 'admin.events.detail.field.createdAt'
+  | 'admin.events.detail.field.featured'
+  | 'admin.events.detail.field.hostHandle'
+  | 'admin.events.detail.field.hostName'
+  | 'admin.events.detail.field.hostRole'
+  | 'admin.events.detail.field.hostStatus'
+  | 'admin.events.detail.field.hostTrust'
+  | 'admin.events.detail.field.id'
+  | 'admin.events.detail.field.requiredTrust'
+  | 'admin.events.detail.field.slug'
+  | 'admin.events.detail.field.updatedAt'
+  | 'admin.events.detail.no'
+  | 'admin.events.detail.noOccurrences'
+  | 'admin.events.detail.notFound'
+  | 'admin.events.detail.occurrence'
+  | 'admin.events.detail.occurrenceEnds'
+  | 'admin.events.detail.occurrenceStarts'
+  | 'admin.events.detail.occurrences'
+  | 'admin.events.detail.occurrencesLabel'
+  | 'admin.events.detail.openPublic'
+  | 'admin.events.detail.seatsTaken'
+  | 'admin.events.detail.seatsTakenHint'
+  | 'admin.events.detail.section.description'
+  | 'admin.events.detail.section.host'
+  | 'admin.events.detail.section.overview'
+  | 'admin.events.detail.waitlistWaiting'
+  | 'admin.events.detail.yes'
+  | 'admin.events.empty.title'
+  | 'admin.events.error.body'
+  | 'admin.events.error.title'
+  | 'admin.events.filter.allAreas'
+  | 'admin.events.filter.allStatuses'
+  | 'admin.events.filter.area'
+  | 'admin.events.filter.clear'
+  | 'admin.events.filter.clearSelection'
+  | 'admin.events.filter.createdFrom'
+  | 'admin.events.filter.createdTo'
+  | 'admin.events.filter.hostHandle'
+  | 'admin.events.filter.selected'
+  | 'admin.events.filter.startsFrom'
+  | 'admin.events.filter.startsTo'
+  | 'admin.events.filter.status'
+  | 'admin.events.filter.timing'
+  | 'admin.events.full'
+  | 'admin.events.inProgress'
+  | 'admin.events.next'
+  | 'admin.events.previous'
+  | 'admin.events.search.clear'
+  | 'admin.events.search.hint'
+  | 'admin.events.search.hintLabel'
+  | 'admin.events.search.label'
+  | 'admin.events.search.placeholder'
+  | 'admin.events.status.draft'
+  | 'admin.events.table.caption'
+  | 'admin.events.table.filterLabel'
+  | 'admin.events.table.open'
+  | 'admin.events.table.pagesLabel'
+  | 'admin.events.table.shown'
+  | 'admin.events.timing.all'
+  | 'admin.events.timing.past'
+  | 'admin.events.timing.upcoming'
+  | 'admin.events.title'
   | 'admin.header.signedInAs'
+  | 'admin.header.timeZone'
   | 'admin.health.checkedAt'
   | 'admin.health.dependency.database'
   | 'admin.health.dependency.redisCache'
@@ -24,8 +149,77 @@ export type MessageKey =
   | 'admin.login.body'
   | 'admin.login.rejected'
   | 'admin.login.title'
+  | 'admin.moderation.assign'
+  | 'admin.moderation.assignedToYou'
+  | 'admin.moderation.autoHidden'
+  | 'admin.moderation.col.assignee'
+  | 'admin.moderation.col.case'
+  | 'admin.moderation.col.reports'
+  | 'admin.moderation.col.severity'
+  | 'admin.moderation.col.sla'
+  | 'admin.moderation.col.target'
+  | 'admin.moderation.decision.dismiss'
+  | 'admin.moderation.decision.hide'
+  | 'admin.moderation.decision.remove'
+  | 'admin.moderation.decision.suspend'
+  | 'admin.moderation.decision.warn'
+  | 'admin.moderation.detail.current'
+  | 'admin.moderation.detail.history'
+  | 'admin.moderation.detail.reports'
+  | 'admin.moderation.detail.snapshot'
+  | 'admin.moderation.detail.strikes'
+  | 'admin.moderation.empty.title'
+  | 'admin.moderation.error.title'
+  | 'admin.moderation.kpi.critical'
+  | 'admin.moderation.kpi.criticalHint'
+  | 'admin.moderation.kpi.open'
+  | 'admin.moderation.kpi.openHint'
+  | 'admin.moderation.kpi.overdue'
+  | 'admin.moderation.kpi.overdueHint'
+  | 'admin.moderation.reason.ban_evasion'
+  | 'admin.moderation.reason.cross_post_spam'
+  | 'admin.moderation.reason.curation_attribution_error'
+  | 'admin.moderation.reason.curation_takedown_request'
+  | 'admin.moderation.reason.doxxing'
+  | 'admin.moderation.reason.event_clone'
+  | 'admin.moderation.reason.fake_job_or_fee'
+  | 'admin.moderation.reason.financial_scam'
+  | 'admin.moderation.reason.ghost_event'
+  | 'admin.moderation.reason.harassment'
+  | 'admin.moderation.reason.hate_speech'
+  | 'admin.moderation.reason.illegal_substance'
+  | 'admin.moderation.reason.impersonation'
+  | 'admin.moderation.reason.investment_pitch'
+  | 'admin.moderation.reason.malicious_report'
+  | 'admin.moderation.reason.minor_safety'
+  | 'admin.moderation.reason.no_show_abuse'
+  | 'admin.moderation.reason.nsfw_content'
+  | 'admin.moderation.reason.off_topic_or_miscategorized'
+  | 'admin.moderation.reason.other'
+  | 'admin.moderation.reason.physical_threat'
+  | 'admin.moderation.reason.political_or_state_sensitive'
+  | 'admin.moderation.reason.private_residence_unverified'
+  | 'admin.moderation.reason.sexual_assault_report'
+  | 'admin.moderation.reason.sexual_harassment'
+  | 'admin.moderation.reason.sexual_services'
+  | 'admin.moderation.reason.spam_advertising'
+  | 'admin.moderation.reason.stalking'
+  | 'admin.moderation.reason.unauthorized_religious_activity'
+  | 'admin.moderation.reason.unsafe_activity_setup'
+  | 'admin.moderation.severity.critical'
+  | 'admin.moderation.severity.high'
+  | 'admin.moderation.severity.low'
+  | 'admin.moderation.severity.normal'
+  | 'admin.moderation.sla.dueSoon'
+  | 'admin.moderation.sla.left'
+  | 'admin.moderation.sla.overdue'
+  | 'admin.moderation.title'
+  | 'admin.nav.auditLog'
+  | 'admin.nav.events'
+  | 'admin.nav.moderation'
   | 'admin.nav.overview'
   | 'admin.nav.systemHealth'
+  | 'admin.nav.users'
   | 'admin.overview.body'
   | 'admin.overview.events.col.area'
   | 'admin.overview.events.col.host'
@@ -60,6 +254,151 @@ export type MessageKey =
   | 'admin.overview.system.open'
   | 'admin.overview.system.unavailable'
   | 'admin.overview.title'
+  | 'admin.users.col.email'
+  | 'admin.users.col.handle'
+  | 'admin.users.col.joined'
+  | 'admin.users.col.lastActive'
+  | 'admin.users.col.name'
+  | 'admin.users.col.phone'
+  | 'admin.users.col.role'
+  | 'admin.users.col.status'
+  | 'admin.users.col.trust'
+  | 'admin.users.cursorReset'
+  | 'admin.users.detail.activity.empty'
+  | 'admin.users.detail.back'
+  | 'admin.users.detail.contactMasked'
+  | 'admin.users.detail.empty'
+  | 'admin.users.detail.error.title'
+  | 'admin.users.detail.expat.business_owner'
+  | 'admin.users.detail.expat.digital_nomad'
+  | 'admin.users.detail.expat.local_host'
+  | 'admin.users.detail.expat.long_term_resident'
+  | 'admin.users.detail.expat.short_stay'
+  | 'admin.users.detail.expat.student'
+  | 'admin.users.detail.expat.teacher'
+  | 'admin.users.detail.field.anonymisedAt'
+  | 'admin.users.detail.field.bio'
+  | 'admin.users.detail.field.createdAt'
+  | 'admin.users.detail.field.deletedAt'
+  | 'admin.users.detail.field.deletionRequestedAt'
+  | 'admin.users.detail.field.email'
+  | 'admin.users.detail.field.expatType'
+  | 'admin.users.detail.field.handle'
+  | 'admin.users.detail.field.headline'
+  | 'admin.users.detail.field.homeArea'
+  | 'admin.users.detail.field.inDaNangSince'
+  | 'admin.users.detail.field.lastActive'
+  | 'admin.users.detail.field.legalHoldUntil'
+  | 'admin.users.detail.field.locale'
+  | 'admin.users.detail.field.nationality'
+  | 'admin.users.detail.field.phone'
+  | 'admin.users.detail.field.role'
+  | 'admin.users.detail.field.status'
+  | 'admin.users.detail.field.suspendedUntil'
+  | 'admin.users.detail.field.suspensionReason'
+  | 'admin.users.detail.field.trustChangedAt'
+  | 'admin.users.detail.field.trustLevel'
+  | 'admin.users.detail.field.visibility'
+  | 'admin.users.detail.notFound'
+  | 'admin.users.detail.platform.android'
+  | 'admin.users.detail.platform.ios'
+  | 'admin.users.detail.platform.web'
+  | 'admin.users.detail.postStatus.hidden'
+  | 'admin.users.detail.postStatus.pending_review'
+  | 'admin.users.detail.postStatus.removed'
+  | 'admin.users.detail.postStatus.visible'
+  | 'admin.users.detail.profile.empty'
+  | 'admin.users.detail.section.account'
+  | 'admin.users.detail.section.hosted'
+  | 'admin.users.detail.section.posts'
+  | 'admin.users.detail.section.profile'
+  | 'admin.users.detail.section.rsvps'
+  | 'admin.users.detail.section.sessions'
+  | 'admin.users.detail.section.trust'
+  | 'admin.users.detail.session.col.platform'
+  | 'admin.users.detail.session.col.revoked'
+  | 'admin.users.detail.session.col.started'
+  | 'admin.users.detail.session.none'
+  | 'admin.users.detail.session.revoked.logout'
+  | 'admin.users.detail.session.revoked.role_changed'
+  | 'admin.users.detail.session.revoked.rotation'
+  | 'admin.users.detail.session.revoked.rotation_reuse'
+  | 'admin.users.detail.session.revoked.suspended'
+  | 'admin.users.detail.sessions.active'
+  | 'admin.users.detail.sessions.activeHint'
+  | 'admin.users.detail.signal.col.revoked'
+  | 'admin.users.detail.signal.col.status'
+  | 'admin.users.detail.signal.col.type'
+  | 'admin.users.detail.signal.col.verified'
+  | 'admin.users.detail.signal.col.weight'
+  | 'admin.users.detail.signal.status.expired'
+  | 'admin.users.detail.signal.status.pending'
+  | 'admin.users.detail.signal.status.rejected'
+  | 'admin.users.detail.signal.status.revoked'
+  | 'admin.users.detail.signal.status.verified'
+  | 'admin.users.detail.signal.type.attended_event'
+  | 'admin.users.detail.signal.type.community_vouch'
+  | 'admin.users.detail.signal.type.email_verified'
+  | 'admin.users.detail.signal.type.hosted_event_completed'
+  | 'admin.users.detail.signal.type.id_document'
+  | 'admin.users.detail.signal.type.penalty_no_show'
+  | 'admin.users.detail.signal.type.penalty_report_upheld'
+  | 'admin.users.detail.signal.type.phone_verified'
+  | 'admin.users.detail.signal.type.positive_review'
+  | 'admin.users.detail.signal.type.profile_completed'
+  | 'admin.users.detail.signal.type.social_apple'
+  | 'admin.users.detail.signal.type.social_facebook'
+  | 'admin.users.detail.signal.type.social_google'
+  | 'admin.users.detail.signal.type.staff_endorsement'
+  | 'admin.users.detail.total'
+  | 'admin.users.detail.totalHint'
+  | 'admin.users.detail.trust.attendedCount'
+  | 'admin.users.detail.trust.attendedCountHint'
+  | 'admin.users.detail.trust.hint'
+  | 'admin.users.detail.trust.hostedCount'
+  | 'admin.users.detail.trust.hostedCountHint'
+  | 'admin.users.detail.trust.noShowCount'
+  | 'admin.users.detail.trust.noShowCountHint'
+  | 'admin.users.detail.trust.signals'
+  | 'admin.users.empty.title'
+  | 'admin.users.error.body'
+  | 'admin.users.error.title'
+  | 'admin.users.filter.allRoles'
+  | 'admin.users.filter.allStatuses'
+  | 'admin.users.filter.any'
+  | 'admin.users.filter.clear'
+  | 'admin.users.filter.clearSelection'
+  | 'admin.users.filter.includeDeleted'
+  | 'admin.users.filter.joinedFrom'
+  | 'admin.users.filter.joinedTo'
+  | 'admin.users.filter.role'
+  | 'admin.users.filter.selected'
+  | 'admin.users.filter.status'
+  | 'admin.users.filter.trustMax'
+  | 'admin.users.filter.trustMin'
+  | 'admin.users.never'
+  | 'admin.users.next'
+  | 'admin.users.noEmail'
+  | 'admin.users.noPhone'
+  | 'admin.users.previous'
+  | 'admin.users.search.clear'
+  | 'admin.users.search.hint'
+  | 'admin.users.search.hintLabel'
+  | 'admin.users.search.label'
+  | 'admin.users.search.placeholder'
+  | 'admin.users.status.active'
+  | 'admin.users.status.deactivated'
+  | 'admin.users.status.deleted'
+  | 'admin.users.status.pending'
+  | 'admin.users.status.suspended'
+  | 'admin.users.table.caption'
+  | 'admin.users.table.filterLabel'
+  | 'admin.users.table.open'
+  | 'admin.users.table.pagesLabel'
+  | 'admin.users.table.shown'
+  | 'admin.users.title'
+  | 'admin.users.unverified'
+  | 'admin.users.verified'
   | 'area.all'
   | 'area.eventCount'
   | 'area.label'
@@ -247,6 +586,7 @@ export type MessageKey =
   | 'discover.swipe.storage.unavailable'
   | 'discover.swipe.summary.backToDeck'
   | 'discover.swipe.summary.clash'
+  | 'discover.swipe.summary.clashBadge'
   | 'discover.swipe.summary.clashJoined'
   | 'discover.swipe.summary.deviceNote'
   | 'discover.swipe.summary.empty'
@@ -272,6 +612,19 @@ export type MessageKey =
   | 'discover.when.upcoming'
   | 'discover.when.week'
   | 'discover.when.weekend'
+  | 'errors.admin.confirmationRequired'
+  | 'errors.admin.conflictOfInterest'
+  | 'errors.admin.cursorInvalid'
+  | 'errors.admin.durationTooLong'
+  | 'errors.admin.eventNotFound'
+  | 'errors.admin.invalidTransition'
+  | 'errors.admin.lastSuperAdmin'
+  | 'errors.admin.queryInvalid'
+  | 'errors.admin.reasonRequired'
+  | 'errors.admin.selfAction'
+  | 'errors.admin.targetRoleProtected'
+  | 'errors.admin.trustTooLow'
+  | 'errors.admin.userNotFound'
   | 'errors.auth.accountSuspended'
   | 'errors.auth.accountUnavailable'
   | 'errors.auth.emailTaken'
@@ -321,6 +674,10 @@ export type MessageKey =
   | 'errors.profile.phoneInvalid'
   | 'errors.profile.phoneTaken'
   | 'errors.rateLimit.exceeded'
+  | 'errors.report.alreadyReported'
+  | 'errors.report.idempotencyRequired'
+  | 'errors.report.ownContent'
+  | 'errors.report.targetUnavailable'
   | 'event.card.almostFull'
   | 'event.card.attendees'
   | 'event.card.details'
@@ -553,6 +910,7 @@ export type MessageKey =
   | 'reaction.target.post'
   | 'role.admin.label'
   | 'role.curator.label'
+  | 'role.member.label'
   | 'role.moderator.label'
   | 'role.superAdmin.label'
   | 'rsvp.action.working'
@@ -564,6 +922,32 @@ export type MessageKey =
   | 'rsvp.error.occurrenceNotFound'
   | 'rsvp.error.suspended'
   | 'rsvp.error.trustTooLow'
+  | 'safety.myReports.status.actionTaken'
+  | 'safety.myReports.status.noAction'
+  | 'safety.myReports.status.received'
+  | 'safety.myReports.status.reviewing'
+  | 'safety.myReports.title'
+  | 'safety.report.alreadyReported'
+  | 'safety.report.anonymity_notice'
+  | 'safety.report.description_label'
+  | 'safety.report.emergency_first'
+  | 'safety.report.limitReached'
+  | 'safety.report.reason.danger'
+  | 'safety.report.reason.ghost_event'
+  | 'safety.report.reason.harassment'
+  | 'safety.report.reason.hate'
+  | 'safety.report.reason.illegal'
+  | 'safety.report.reason.impersonation'
+  | 'safety.report.reason.other'
+  | 'safety.report.reason.privacy'
+  | 'safety.report.reason.scam'
+  | 'safety.report.reason.sexual'
+  | 'safety.report.reason.spam'
+  | 'safety.report.reason.unsafe_setup'
+  | 'safety.report.sendFailed'
+  | 'safety.report.submit'
+  | 'safety.report.submitted'
+  | 'safety.report.title'
   | 'shell.a11y.bottomNav'
   | 'shell.a11y.create'
   | 'shell.a11y.primaryNav'
@@ -605,7 +989,132 @@ export const MESSAGE_KEYS = [
   'a11y.openMenu',
   'a11y.switchLanguage',
   'a11y.toggleTheme',
+  'admin.action.changeRole',
+  'admin.action.failed',
+  'admin.action.irreversible',
+  'admin.action.reason.counter',
+  'admin.action.reason.hint',
+  'admin.action.reason.label',
+  'admin.action.restoreEvent',
+  'admin.action.review.cancel',
+  'admin.action.review.confirm',
+  'admin.action.review.title',
+  'admin.action.suspendEvent',
+  'admin.action.suspendUser',
+  'admin.action.suspendUserEffect',
+  'admin.action.takeDownEvent',
+  'admin.action.typeToConfirm',
+  'admin.action.unsuspendUser',
+  'admin.audit.action.event.restored',
+  'admin.audit.action.event.suspended',
+  'admin.audit.action.event.taken_down',
+  'admin.audit.action.user.role_changed',
+  'admin.audit.action.user.suspended',
+  'admin.audit.action.user.unsuspended',
+  'admin.audit.col.action',
+  'admin.audit.col.actor',
+  'admin.audit.col.reason',
+  'admin.audit.col.severity',
+  'admin.audit.col.target',
+  'admin.audit.col.time',
+  'admin.audit.empty.title',
+  'admin.audit.scope.noSuperAdmin',
+  'admin.audit.scope.own',
+  'admin.audit.severity.critical',
+  'admin.audit.severity.info',
+  'admin.audit.severity.notice',
+  'admin.audit.severity.warning',
+  'admin.audit.title',
+  'admin.common.dateRange.invalid',
+  'admin.common.dateRange.order',
+  'admin.common.select.keyboardHint',
+  'admin.events.col.area',
+  'admin.events.col.created',
+  'admin.events.col.host',
+  'admin.events.col.seats',
+  'admin.events.col.starts',
+  'admin.events.col.status',
+  'admin.events.col.title',
+  'admin.events.col.waitlist',
+  'admin.events.cursorReset',
+  'admin.events.detail.attendeesNote',
+  'admin.events.detail.back',
+  'admin.events.detail.capacity',
+  'admin.events.detail.counts.attended',
+  'admin.events.detail.counts.cancelled',
+  'admin.events.detail.counts.confirmed',
+  'admin.events.detail.counts.held',
+  'admin.events.detail.counts.noShow',
+  'admin.events.detail.counts.waitlisted',
+  'admin.events.detail.draftHidden',
+  'admin.events.detail.error.title',
+  'admin.events.detail.field.area',
+  'admin.events.detail.field.comments',
+  'admin.events.detail.field.coordinates',
+  'admin.events.detail.field.createdAt',
+  'admin.events.detail.field.featured',
+  'admin.events.detail.field.hostHandle',
+  'admin.events.detail.field.hostName',
+  'admin.events.detail.field.hostRole',
+  'admin.events.detail.field.hostStatus',
+  'admin.events.detail.field.hostTrust',
+  'admin.events.detail.field.id',
+  'admin.events.detail.field.requiredTrust',
+  'admin.events.detail.field.slug',
+  'admin.events.detail.field.updatedAt',
+  'admin.events.detail.no',
+  'admin.events.detail.noOccurrences',
+  'admin.events.detail.notFound',
+  'admin.events.detail.occurrence',
+  'admin.events.detail.occurrenceEnds',
+  'admin.events.detail.occurrenceStarts',
+  'admin.events.detail.occurrences',
+  'admin.events.detail.occurrencesLabel',
+  'admin.events.detail.openPublic',
+  'admin.events.detail.seatsTaken',
+  'admin.events.detail.seatsTakenHint',
+  'admin.events.detail.section.description',
+  'admin.events.detail.section.host',
+  'admin.events.detail.section.overview',
+  'admin.events.detail.waitlistWaiting',
+  'admin.events.detail.yes',
+  'admin.events.empty.title',
+  'admin.events.error.body',
+  'admin.events.error.title',
+  'admin.events.filter.allAreas',
+  'admin.events.filter.allStatuses',
+  'admin.events.filter.area',
+  'admin.events.filter.clear',
+  'admin.events.filter.clearSelection',
+  'admin.events.filter.createdFrom',
+  'admin.events.filter.createdTo',
+  'admin.events.filter.hostHandle',
+  'admin.events.filter.selected',
+  'admin.events.filter.startsFrom',
+  'admin.events.filter.startsTo',
+  'admin.events.filter.status',
+  'admin.events.filter.timing',
+  'admin.events.full',
+  'admin.events.inProgress',
+  'admin.events.next',
+  'admin.events.previous',
+  'admin.events.search.clear',
+  'admin.events.search.hint',
+  'admin.events.search.hintLabel',
+  'admin.events.search.label',
+  'admin.events.search.placeholder',
+  'admin.events.status.draft',
+  'admin.events.table.caption',
+  'admin.events.table.filterLabel',
+  'admin.events.table.open',
+  'admin.events.table.pagesLabel',
+  'admin.events.table.shown',
+  'admin.events.timing.all',
+  'admin.events.timing.past',
+  'admin.events.timing.upcoming',
+  'admin.events.title',
   'admin.header.signedInAs',
+  'admin.header.timeZone',
   'admin.health.checkedAt',
   'admin.health.dependency.database',
   'admin.health.dependency.redisCache',
@@ -624,8 +1133,77 @@ export const MESSAGE_KEYS = [
   'admin.login.body',
   'admin.login.rejected',
   'admin.login.title',
+  'admin.moderation.assign',
+  'admin.moderation.assignedToYou',
+  'admin.moderation.autoHidden',
+  'admin.moderation.col.assignee',
+  'admin.moderation.col.case',
+  'admin.moderation.col.reports',
+  'admin.moderation.col.severity',
+  'admin.moderation.col.sla',
+  'admin.moderation.col.target',
+  'admin.moderation.decision.dismiss',
+  'admin.moderation.decision.hide',
+  'admin.moderation.decision.remove',
+  'admin.moderation.decision.suspend',
+  'admin.moderation.decision.warn',
+  'admin.moderation.detail.current',
+  'admin.moderation.detail.history',
+  'admin.moderation.detail.reports',
+  'admin.moderation.detail.snapshot',
+  'admin.moderation.detail.strikes',
+  'admin.moderation.empty.title',
+  'admin.moderation.error.title',
+  'admin.moderation.kpi.critical',
+  'admin.moderation.kpi.criticalHint',
+  'admin.moderation.kpi.open',
+  'admin.moderation.kpi.openHint',
+  'admin.moderation.kpi.overdue',
+  'admin.moderation.kpi.overdueHint',
+  'admin.moderation.reason.ban_evasion',
+  'admin.moderation.reason.cross_post_spam',
+  'admin.moderation.reason.curation_attribution_error',
+  'admin.moderation.reason.curation_takedown_request',
+  'admin.moderation.reason.doxxing',
+  'admin.moderation.reason.event_clone',
+  'admin.moderation.reason.fake_job_or_fee',
+  'admin.moderation.reason.financial_scam',
+  'admin.moderation.reason.ghost_event',
+  'admin.moderation.reason.harassment',
+  'admin.moderation.reason.hate_speech',
+  'admin.moderation.reason.illegal_substance',
+  'admin.moderation.reason.impersonation',
+  'admin.moderation.reason.investment_pitch',
+  'admin.moderation.reason.malicious_report',
+  'admin.moderation.reason.minor_safety',
+  'admin.moderation.reason.no_show_abuse',
+  'admin.moderation.reason.nsfw_content',
+  'admin.moderation.reason.off_topic_or_miscategorized',
+  'admin.moderation.reason.other',
+  'admin.moderation.reason.physical_threat',
+  'admin.moderation.reason.political_or_state_sensitive',
+  'admin.moderation.reason.private_residence_unverified',
+  'admin.moderation.reason.sexual_assault_report',
+  'admin.moderation.reason.sexual_harassment',
+  'admin.moderation.reason.sexual_services',
+  'admin.moderation.reason.spam_advertising',
+  'admin.moderation.reason.stalking',
+  'admin.moderation.reason.unauthorized_religious_activity',
+  'admin.moderation.reason.unsafe_activity_setup',
+  'admin.moderation.severity.critical',
+  'admin.moderation.severity.high',
+  'admin.moderation.severity.low',
+  'admin.moderation.severity.normal',
+  'admin.moderation.sla.dueSoon',
+  'admin.moderation.sla.left',
+  'admin.moderation.sla.overdue',
+  'admin.moderation.title',
+  'admin.nav.auditLog',
+  'admin.nav.events',
+  'admin.nav.moderation',
   'admin.nav.overview',
   'admin.nav.systemHealth',
+  'admin.nav.users',
   'admin.overview.body',
   'admin.overview.events.col.area',
   'admin.overview.events.col.host',
@@ -660,6 +1238,151 @@ export const MESSAGE_KEYS = [
   'admin.overview.system.open',
   'admin.overview.system.unavailable',
   'admin.overview.title',
+  'admin.users.col.email',
+  'admin.users.col.handle',
+  'admin.users.col.joined',
+  'admin.users.col.lastActive',
+  'admin.users.col.name',
+  'admin.users.col.phone',
+  'admin.users.col.role',
+  'admin.users.col.status',
+  'admin.users.col.trust',
+  'admin.users.cursorReset',
+  'admin.users.detail.activity.empty',
+  'admin.users.detail.back',
+  'admin.users.detail.contactMasked',
+  'admin.users.detail.empty',
+  'admin.users.detail.error.title',
+  'admin.users.detail.expat.business_owner',
+  'admin.users.detail.expat.digital_nomad',
+  'admin.users.detail.expat.local_host',
+  'admin.users.detail.expat.long_term_resident',
+  'admin.users.detail.expat.short_stay',
+  'admin.users.detail.expat.student',
+  'admin.users.detail.expat.teacher',
+  'admin.users.detail.field.anonymisedAt',
+  'admin.users.detail.field.bio',
+  'admin.users.detail.field.createdAt',
+  'admin.users.detail.field.deletedAt',
+  'admin.users.detail.field.deletionRequestedAt',
+  'admin.users.detail.field.email',
+  'admin.users.detail.field.expatType',
+  'admin.users.detail.field.handle',
+  'admin.users.detail.field.headline',
+  'admin.users.detail.field.homeArea',
+  'admin.users.detail.field.inDaNangSince',
+  'admin.users.detail.field.lastActive',
+  'admin.users.detail.field.legalHoldUntil',
+  'admin.users.detail.field.locale',
+  'admin.users.detail.field.nationality',
+  'admin.users.detail.field.phone',
+  'admin.users.detail.field.role',
+  'admin.users.detail.field.status',
+  'admin.users.detail.field.suspendedUntil',
+  'admin.users.detail.field.suspensionReason',
+  'admin.users.detail.field.trustChangedAt',
+  'admin.users.detail.field.trustLevel',
+  'admin.users.detail.field.visibility',
+  'admin.users.detail.notFound',
+  'admin.users.detail.platform.android',
+  'admin.users.detail.platform.ios',
+  'admin.users.detail.platform.web',
+  'admin.users.detail.postStatus.hidden',
+  'admin.users.detail.postStatus.pending_review',
+  'admin.users.detail.postStatus.removed',
+  'admin.users.detail.postStatus.visible',
+  'admin.users.detail.profile.empty',
+  'admin.users.detail.section.account',
+  'admin.users.detail.section.hosted',
+  'admin.users.detail.section.posts',
+  'admin.users.detail.section.profile',
+  'admin.users.detail.section.rsvps',
+  'admin.users.detail.section.sessions',
+  'admin.users.detail.section.trust',
+  'admin.users.detail.session.col.platform',
+  'admin.users.detail.session.col.revoked',
+  'admin.users.detail.session.col.started',
+  'admin.users.detail.session.none',
+  'admin.users.detail.session.revoked.logout',
+  'admin.users.detail.session.revoked.role_changed',
+  'admin.users.detail.session.revoked.rotation',
+  'admin.users.detail.session.revoked.rotation_reuse',
+  'admin.users.detail.session.revoked.suspended',
+  'admin.users.detail.sessions.active',
+  'admin.users.detail.sessions.activeHint',
+  'admin.users.detail.signal.col.revoked',
+  'admin.users.detail.signal.col.status',
+  'admin.users.detail.signal.col.type',
+  'admin.users.detail.signal.col.verified',
+  'admin.users.detail.signal.col.weight',
+  'admin.users.detail.signal.status.expired',
+  'admin.users.detail.signal.status.pending',
+  'admin.users.detail.signal.status.rejected',
+  'admin.users.detail.signal.status.revoked',
+  'admin.users.detail.signal.status.verified',
+  'admin.users.detail.signal.type.attended_event',
+  'admin.users.detail.signal.type.community_vouch',
+  'admin.users.detail.signal.type.email_verified',
+  'admin.users.detail.signal.type.hosted_event_completed',
+  'admin.users.detail.signal.type.id_document',
+  'admin.users.detail.signal.type.penalty_no_show',
+  'admin.users.detail.signal.type.penalty_report_upheld',
+  'admin.users.detail.signal.type.phone_verified',
+  'admin.users.detail.signal.type.positive_review',
+  'admin.users.detail.signal.type.profile_completed',
+  'admin.users.detail.signal.type.social_apple',
+  'admin.users.detail.signal.type.social_facebook',
+  'admin.users.detail.signal.type.social_google',
+  'admin.users.detail.signal.type.staff_endorsement',
+  'admin.users.detail.total',
+  'admin.users.detail.totalHint',
+  'admin.users.detail.trust.attendedCount',
+  'admin.users.detail.trust.attendedCountHint',
+  'admin.users.detail.trust.hint',
+  'admin.users.detail.trust.hostedCount',
+  'admin.users.detail.trust.hostedCountHint',
+  'admin.users.detail.trust.noShowCount',
+  'admin.users.detail.trust.noShowCountHint',
+  'admin.users.detail.trust.signals',
+  'admin.users.empty.title',
+  'admin.users.error.body',
+  'admin.users.error.title',
+  'admin.users.filter.allRoles',
+  'admin.users.filter.allStatuses',
+  'admin.users.filter.any',
+  'admin.users.filter.clear',
+  'admin.users.filter.clearSelection',
+  'admin.users.filter.includeDeleted',
+  'admin.users.filter.joinedFrom',
+  'admin.users.filter.joinedTo',
+  'admin.users.filter.role',
+  'admin.users.filter.selected',
+  'admin.users.filter.status',
+  'admin.users.filter.trustMax',
+  'admin.users.filter.trustMin',
+  'admin.users.never',
+  'admin.users.next',
+  'admin.users.noEmail',
+  'admin.users.noPhone',
+  'admin.users.previous',
+  'admin.users.search.clear',
+  'admin.users.search.hint',
+  'admin.users.search.hintLabel',
+  'admin.users.search.label',
+  'admin.users.search.placeholder',
+  'admin.users.status.active',
+  'admin.users.status.deactivated',
+  'admin.users.status.deleted',
+  'admin.users.status.pending',
+  'admin.users.status.suspended',
+  'admin.users.table.caption',
+  'admin.users.table.filterLabel',
+  'admin.users.table.open',
+  'admin.users.table.pagesLabel',
+  'admin.users.table.shown',
+  'admin.users.title',
+  'admin.users.unverified',
+  'admin.users.verified',
   'area.all',
   'area.eventCount',
   'area.label',
@@ -847,6 +1570,7 @@ export const MESSAGE_KEYS = [
   'discover.swipe.storage.unavailable',
   'discover.swipe.summary.backToDeck',
   'discover.swipe.summary.clash',
+  'discover.swipe.summary.clashBadge',
   'discover.swipe.summary.clashJoined',
   'discover.swipe.summary.deviceNote',
   'discover.swipe.summary.empty',
@@ -872,6 +1596,19 @@ export const MESSAGE_KEYS = [
   'discover.when.upcoming',
   'discover.when.week',
   'discover.when.weekend',
+  'errors.admin.confirmationRequired',
+  'errors.admin.conflictOfInterest',
+  'errors.admin.cursorInvalid',
+  'errors.admin.durationTooLong',
+  'errors.admin.eventNotFound',
+  'errors.admin.invalidTransition',
+  'errors.admin.lastSuperAdmin',
+  'errors.admin.queryInvalid',
+  'errors.admin.reasonRequired',
+  'errors.admin.selfAction',
+  'errors.admin.targetRoleProtected',
+  'errors.admin.trustTooLow',
+  'errors.admin.userNotFound',
   'errors.auth.accountSuspended',
   'errors.auth.accountUnavailable',
   'errors.auth.emailTaken',
@@ -921,6 +1658,10 @@ export const MESSAGE_KEYS = [
   'errors.profile.phoneInvalid',
   'errors.profile.phoneTaken',
   'errors.rateLimit.exceeded',
+  'errors.report.alreadyReported',
+  'errors.report.idempotencyRequired',
+  'errors.report.ownContent',
+  'errors.report.targetUnavailable',
   'event.card.almostFull',
   'event.card.attendees',
   'event.card.details',
@@ -1153,6 +1894,7 @@ export const MESSAGE_KEYS = [
   'reaction.target.post',
   'role.admin.label',
   'role.curator.label',
+  'role.member.label',
   'role.moderator.label',
   'role.superAdmin.label',
   'rsvp.action.working',
@@ -1164,6 +1906,32 @@ export const MESSAGE_KEYS = [
   'rsvp.error.occurrenceNotFound',
   'rsvp.error.suspended',
   'rsvp.error.trustTooLow',
+  'safety.myReports.status.actionTaken',
+  'safety.myReports.status.noAction',
+  'safety.myReports.status.received',
+  'safety.myReports.status.reviewing',
+  'safety.myReports.title',
+  'safety.report.alreadyReported',
+  'safety.report.anonymity_notice',
+  'safety.report.description_label',
+  'safety.report.emergency_first',
+  'safety.report.limitReached',
+  'safety.report.reason.danger',
+  'safety.report.reason.ghost_event',
+  'safety.report.reason.harassment',
+  'safety.report.reason.hate',
+  'safety.report.reason.illegal',
+  'safety.report.reason.impersonation',
+  'safety.report.reason.other',
+  'safety.report.reason.privacy',
+  'safety.report.reason.scam',
+  'safety.report.reason.sexual',
+  'safety.report.reason.spam',
+  'safety.report.reason.unsafe_setup',
+  'safety.report.sendFailed',
+  'safety.report.submit',
+  'safety.report.submitted',
+  'safety.report.title',
   'shell.a11y.bottomNav',
   'shell.a11y.create',
   'shell.a11y.primaryNav',

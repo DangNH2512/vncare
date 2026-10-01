@@ -377,6 +377,7 @@
         "backToDeck": "Back to cards",
         "clash": "Time clash on {day}: {a} overlaps {b}.",
         "clashJoined": "Time clash: {a} overlaps {b}, an event you joined.",
+        "clashBadge": "Time clash",
         "endAssumed": "No end time set, so we assumed {hours} hours.",
         "unavailable": "This event is no longer available.",
         "deviceNote": "Saved on this device only. Signing out removes the list."
@@ -461,6 +462,27 @@
     "follow": {
       "cannotFollowSelf": "You cannot follow yourself.",
       "limitReached": "You are following the maximum number of people. Unfollow someone to follow more."
+    },
+    "admin": {
+      "cursorInvalid": "The page position is no longer valid.",
+      "queryInvalid": "One of the filters is not valid.",
+      "eventNotFound": "Event not found.",
+      "userNotFound": "User not found.",
+      "reasonRequired": "Enter a reason of 20 to 255 characters.",
+      "confirmationRequired": "Confirm the action to continue.",
+      "selfAction": "You cannot do this to your own account.",
+      "targetRoleProtected": "Your role cannot do this to that account.",
+      "lastSuperAdmin": "At least two active super admins must remain.",
+      "trustTooLow": "The account needs trust level 3 or higher for this role.",
+      "invalidTransition": "This is no longer possible in the current state. Refresh and try again.",
+      "conflictOfInterest": "You cannot act on your own event.",
+      "durationTooLong": "Your role can suspend for at most 30 days."
+    },
+    "report": {
+      "ownContent": "You cannot report your own content.",
+      "targetUnavailable": "This content is already under review.",
+      "alreadyReported": "You already reported this.",
+      "idempotencyRequired": "Missing request key."
     }
   },
   "post": {
@@ -665,10 +687,21 @@
     }
   },
   "role": {
-    "curator": { "label": "Curator" },
-    "moderator": { "label": "Moderator" },
-    "admin": { "label": "Admin" },
-    "superAdmin": { "label": "Super admin" }
+    "member": {
+      "label": "Member"
+    },
+    "curator": {
+      "label": "Curator"
+    },
+    "moderator": {
+      "label": "Moderator"
+    },
+    "admin": {
+      "label": "Admin"
+    },
+    "superAdmin": {
+      "label": "Super admin"
+    }
   },
   "admin": {
     "login": {
@@ -678,7 +711,11 @@
     },
     "nav": {
       "overview": "Overview",
-      "systemHealth": "System health"
+      "systemHealth": "System health",
+      "users": "Users",
+      "events": "Events",
+      "auditLog": "Audit log",
+      "moderation": "Moderation"
     },
     "overview": {
       "title": "Overview",
@@ -733,7 +770,8 @@
       }
     },
     "header": {
-      "signedInAs": "Signed in as {name}"
+      "signedInAs": "Signed in as {name}",
+      "timeZone": "GMT+7"
     },
     "health": {
       "title": "System health",
@@ -762,6 +800,468 @@
           "title": "Cannot reach the API",
           "body": "Check your connection and try again."
         }
+      }
+    },
+    "users": {
+      "title": "Users",
+      "search": {
+        "label": "Search users",
+        "placeholder": "Name, username, email, phone",
+        "hint": "Email and phone only match in full.",
+        "clear": "Clear search",
+        "hintLabel": "Search tips"
+      },
+      "filter": {
+        "role": "Role",
+        "status": "Status",
+        "includeDeleted": "Include deleted accounts",
+        "allRoles": "All roles",
+        "allStatuses": "All statuses",
+        "any": "Any",
+        "selected": "{count} selected",
+        "trustMin": "Trust from",
+        "trustMax": "Trust to",
+        "joinedFrom": "Joined from",
+        "joinedTo": "Joined to",
+        "clearSelection": "Clear selection",
+        "clear": "Clear filters"
+      },
+      "col": {
+        "name": "Name",
+        "handle": "Username",
+        "role": "Role",
+        "status": "Status",
+        "trust": "Trust",
+        "email": "Email",
+        "phone": "Phone",
+        "joined": "Joined",
+        "lastActive": "Last active"
+      },
+      "status": {
+        "pending": "Pending",
+        "active": "Active",
+        "suspended": "Suspended",
+        "deactivated": "Deactivated",
+        "deleted": "Deleted"
+      },
+      "verified": "Verified",
+      "unverified": "Not verified",
+      "noPhone": "No phone",
+      "noEmail": "No email",
+      "never": "Never",
+      "table": {
+        "caption": "Users",
+        "filterLabel": "Filter users",
+        "pagesLabel": "Users pages",
+        "shown": "{count} shown",
+        "open": "Open user {name}"
+      },
+      "next": "Next page",
+      "previous": "Previous page",
+      "cursorReset": "The list changed. Showing the first page.",
+      "empty": {
+        "title": "No users match your filters"
+      },
+      "error": {
+        "title": "Could not load users",
+        "body": "Check your connection and try again."
+      },
+      "detail": {
+        "error": {
+          "title": "Could not load this user"
+        },
+        "notFound": "This user could not be found",
+        "back": "Back to users",
+        "section": {
+          "profile": "Profile",
+          "account": "Account",
+          "trust": "Trust",
+          "hosted": "Events hosted",
+          "rsvps": "RSVPs",
+          "posts": "Posts",
+          "sessions": "Sessions"
+        },
+        "sessions": {
+          "active": "Active sessions: {count}",
+          "activeHint": "Counts sign-in sessions of this account that are neither revoked nor expired right now. It is a live count at the time the page loaded, not a history. One person on a phone and a laptop shows 2. Only the 5 most recent sessions are listed below, so the list can be shorter than this number."
+        },
+        "contactMasked": "Contact details are partly hidden.",
+        "empty": "None yet",
+        "field": {
+          "handle": "Username",
+          "headline": "Headline",
+          "bio": "About",
+          "nationality": "Nationality",
+          "expatType": "Type",
+          "homeArea": "Home area",
+          "inDaNangSince": "In Da Nang since",
+          "visibility": "Profile visibility",
+          "createdAt": "Joined",
+          "lastActive": "Last active",
+          "role": "Role",
+          "status": "Status",
+          "suspendedUntil": "Suspended until",
+          "suspensionReason": "Suspension reason",
+          "email": "Email",
+          "phone": "Phone",
+          "locale": "Language",
+          "deletionRequestedAt": "Deletion requested",
+          "anonymisedAt": "Anonymised",
+          "deletedAt": "Deleted",
+          "legalHoldUntil": "Legal hold until",
+          "trustLevel": "Trust level",
+          "trustChangedAt": "Level changed"
+        },
+        "signal": {
+          "col": {
+            "type": "Signal",
+            "status": "Status",
+            "weight": "Weight",
+            "verified": "Verified",
+            "revoked": "Revoked"
+          },
+          "type": {
+            "email_verified": "Email verified",
+            "phone_verified": "Phone verified",
+            "social_google": "Google account",
+            "social_facebook": "Facebook account",
+            "social_apple": "Apple account",
+            "id_document": "ID document",
+            "profile_completed": "Profile completed",
+            "attended_event": "Attended an event",
+            "hosted_event_completed": "Hosted an event",
+            "positive_review": "Positive review",
+            "community_vouch": "Community vouch",
+            "staff_endorsement": "Staff endorsement",
+            "penalty_no_show": "Penalty: no-show",
+            "penalty_report_upheld": "Penalty: report upheld"
+          },
+          "status": {
+            "pending": "Pending",
+            "verified": "Verified",
+            "rejected": "Rejected",
+            "expired": "Expired",
+            "revoked": "Revoked"
+          }
+        },
+        "expat": {
+          "digital_nomad": "Digital nomad",
+          "long_term_resident": "Long-term resident",
+          "student": "Student",
+          "teacher": "Teacher",
+          "business_owner": "Business owner",
+          "short_stay": "Short stay",
+          "local_host": "Local host"
+        },
+        "postStatus": {
+          "visible": "Visible",
+          "pending_review": "Pending review",
+          "hidden": "Hidden",
+          "removed": "Removed"
+        },
+        "platform": {
+          "ios": "iOS",
+          "android": "Android",
+          "web": "Web"
+        },
+        "session": {
+          "col": {
+            "platform": "Platform",
+            "started": "Started",
+            "revoked": "Revoked"
+          },
+          "none": "No sessions",
+          "revoked": {
+            "rotation": "Replaced",
+            "rotation_reuse": "Token reuse",
+            "logout": "Signed out",
+            "suspended": "Suspended",
+            "role_changed": "Role changed"
+          }
+        },
+        "trust": {
+          "signals": "Trust signals",
+          "hint": "The level is recomputed from signals by a scheduled job; it is not edited by hand.",
+          "hostedCount": "Events hosted",
+          "hostedCountHint": "Counts every event this person organised and has not deleted, over the whole life of the account. Drafts are counted here, so it can be higher than the total of the Events hosted list below.",
+          "attendedCount": "Events attended",
+          "attendedCountHint": "Counts RSVPs of this person that an organizer marked as attended. Events with no check-in are not counted, so it can understate real attendance.",
+          "noShowCount": "No-shows",
+          "noShowCountHint": "Counts RSVPs of this person that an organizer marked as no-show. It only covers events where the organizer marked attendance, and a mark by the organizer is a judgement, not proof."
+        },
+        "total": "Latest {shown} of {total}",
+        "totalHint": "The list shows the 10 most recent items. The total counts all items of this kind that you are allowed to see. Drafts and other people's private items are not counted.",
+        "profile": {
+          "empty": "Not set yet"
+        },
+        "activity": {
+          "empty": "No activity yet"
+        }
+      }
+    },
+    "events": {
+      "title": "Events",
+      "search": {
+        "placeholder": "Title, link name, ID",
+        "label": "Search events",
+        "hint": "Matches the title, the link name or the exact ID.",
+        "clear": "Clear search",
+        "hintLabel": "Search tips"
+      },
+      "filter": {
+        "status": "Status",
+        "area": "Area",
+        "timing": "When",
+        "allStatuses": "All statuses",
+        "allAreas": "All areas",
+        "selected": "{count} selected",
+        "clearSelection": "Clear selection",
+        "clear": "Clear filters",
+        "startsFrom": "Starts from",
+        "startsTo": "Starts to",
+        "createdFrom": "Created from",
+        "createdTo": "Created to",
+        "hostHandle": "Host username"
+      },
+      "timing": {
+        "all": "All",
+        "upcoming": "Upcoming",
+        "past": "Past"
+      },
+      "inProgress": "In progress",
+      "full": "Full",
+      "col": {
+        "title": "Event",
+        "status": "Status",
+        "area": "Area",
+        "starts": "Starts",
+        "host": "Host",
+        "seats": "Seats",
+        "waitlist": "Waitlist",
+        "created": "Created"
+      },
+      "empty": {
+        "title": "No events match your filters"
+      },
+      "error": {
+        "title": "Could not load events",
+        "body": "Check your connection and try again."
+      },
+      "detail": {
+        "error": {
+          "title": "Could not load this event"
+        },
+        "notFound": "This event could not be found",
+        "draftHidden": "This is a draft. Its content is private to the organizer.",
+        "occurrences": "Occurrences",
+        "counts": {
+          "confirmed": "Confirmed",
+          "held": "Held",
+          "waitlisted": "Waitlisted",
+          "cancelled": "Cancelled",
+          "attended": "Attended",
+          "noShow": "No-show"
+        },
+        "seatsTaken": "Seats taken",
+        "seatsTakenHint": "Counts RSVPs of this occurrence that are confirmed, held, attended or no-show and not deleted. Waitlisted and cancelled RSVPs are not counted. It is a display figure read at page load; it is not used to decide whether a new RSVP is accepted, so it can be briefly out of date while people RSVP.",
+        "attendeesNote": "Attendee names are not shown here.",
+        "openPublic": "Open public page",
+        "back": "Back to events",
+        "section": {
+          "overview": "Overview",
+          "host": "Host",
+          "description": "Description"
+        },
+        "field": {
+          "id": "ID",
+          "slug": "Link name",
+          "area": "Area",
+          "coordinates": "Coordinates",
+          "featured": "Featured",
+          "requiredTrust": "Trust level to join",
+          "createdAt": "Created",
+          "updatedAt": "Last updated",
+          "comments": "Comments",
+          "hostName": "Name",
+          "hostHandle": "Username",
+          "hostTrust": "Trust level",
+          "hostRole": "Role",
+          "hostStatus": "Account status"
+        },
+        "yes": "Yes",
+        "no": "No",
+        "occurrence": "Occurrence {index}",
+        "occurrenceStarts": "Starts",
+        "occurrenceEnds": "Ends",
+        "capacity": "Capacity",
+        "waitlistWaiting": "Waiting on the waitlist",
+        "noOccurrences": "No occurrences yet.",
+        "occurrencesLabel": "Occurrences of this event"
+      },
+      "table": {
+        "caption": "Events",
+        "filterLabel": "Filter events",
+        "pagesLabel": "Events pages",
+        "shown": "{count} shown",
+        "open": "Open event {title}"
+      },
+      "next": "Next page",
+      "previous": "Previous page",
+      "cursorReset": "The list changed. Showing the first page.",
+      "status": {
+        "draft": "Draft"
+      }
+    },
+    "action": {
+      "suspendUser": "Suspend account",
+      "unsuspendUser": "Restore account",
+      "changeRole": "Change role",
+      "suspendEvent": "Suspend event",
+      "restoreEvent": "Restore event",
+      "takeDownEvent": "Take down event",
+      "reason": {
+        "label": "Reason",
+        "hint": "At least 20 characters. Recorded in the audit log.",
+        "counter": "{count}/255"
+      },
+      "review": {
+        "title": "Review before you confirm",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+      },
+      "typeToConfirm": "Type {value} to confirm",
+      "irreversible": "This cannot be undone.",
+      "suspendUserEffect": "The person is signed out everywhere and cannot sign in. Their events and posts stay as they are.",
+      "failed": "Could not complete this action. Nothing was changed."
+    },
+    "audit": {
+      "title": "Audit log",
+      "col": {
+        "time": "Time",
+        "actor": "Actor",
+        "action": "Action",
+        "target": "Target",
+        "severity": "Severity",
+        "reason": "Reason"
+      },
+      "action": {
+        "user": {
+          "suspended": "Account suspended",
+          "unsuspended": "Account restored",
+          "role_changed": "Role changed"
+        },
+        "event": {
+          "suspended": "Event suspended",
+          "restored": "Event restored",
+          "taken_down": "Event taken down"
+        }
+      },
+      "severity": {
+        "info": "Info",
+        "notice": "Notice",
+        "warning": "Warning",
+        "critical": "Critical"
+      },
+      "scope": {
+        "own": "Showing your own actions only.",
+        "noSuperAdmin": "Super admin actions are not shown."
+      },
+      "empty": {
+        "title": "No audit entries match your filters"
+      }
+    },
+    "moderation": {
+      "title": "Moderation queue",
+      "kpi": {
+        "open": "Open cases",
+        "openHint": "Counts moderation cases that are open or in review. Merged and closed cases are not counted, and several reports on the same content count as one case. It is a live count at the time the page loaded.",
+        "overdue": "Overdue",
+        "overdueHint": "Counts open or in-review cases whose response deadline has already passed, compared with the current time. The deadline runs on the real clock, 24 hours a day and 7 days a week, not office hours. There are no notifications yet, so nobody is alerted when a case becomes overdue.",
+        "critical": "Critical open",
+        "criticalHint": "Counts open or in-review cases at the highest severity, which have a 2-hour response deadline. The severity is the current one, so a case a moderator raised or lowered is counted by its new level. There are no notifications yet, so this number is only seen when someone opens the queue."
+      },
+      "col": {
+        "case": "Case",
+        "target": "Content",
+        "severity": "Severity",
+        "sla": "Time left",
+        "reports": "Reports",
+        "assignee": "Assigned to"
+      },
+      "severity": {
+        "critical": "Critical",
+        "high": "High",
+        "normal": "Normal",
+        "low": "Low"
+      },
+      "sla": {
+        "left": "{time} left",
+        "overdue": "Overdue by {time}",
+        "dueSoon": "Due soon, {time} left"
+      },
+      "autoHidden": "Hidden automatically",
+      "assign": "Take this case",
+      "assignedToYou": "Assigned to you",
+      "decision": {
+        "dismiss": "Dismiss",
+        "hide": "Hide",
+        "remove": "Remove",
+        "warn": "Warn",
+        "suspend": "Suspend account"
+      },
+      "detail": {
+        "snapshot": "Content when reported",
+        "current": "Content now",
+        "reports": "Reports",
+        "history": "History",
+        "strikes": "Active strikes"
+      },
+      "empty": {
+        "title": "The queue is clear"
+      },
+      "error": {
+        "title": "Could not load the moderation queue"
+      },
+      "reason": {
+        "physical_threat": "Physical threat",
+        "sexual_harassment": "Sexual harassment",
+        "sexual_assault_report": "Report of sexual assault",
+        "stalking": "Stalking",
+        "minor_safety": "Safety of a minor",
+        "illegal_substance": "Illegal substances",
+        "political_or_state_sensitive": "Politically or state-sensitive content",
+        "unauthorized_religious_activity": "Unauthorised religious activity",
+        "financial_scam": "Financial scam",
+        "fake_job_or_fee": "Fake job or advance fee",
+        "investment_pitch": "Investment pitch",
+        "impersonation": "Impersonation",
+        "ghost_event": "Event that does not exist",
+        "event_clone": "Copied event",
+        "sexual_services": "Sexual services",
+        "nsfw_content": "Sexually explicit content",
+        "hate_speech": "Hate speech",
+        "harassment": "Harassment or bullying",
+        "doxxing": "Sharing private information",
+        "spam_advertising": "Spam or advertising",
+        "cross_post_spam": "Cross-posting spam",
+        "off_topic_or_miscategorized": "Off-topic or wrong category",
+        "unsafe_activity_setup": "Unsafe event setup",
+        "private_residence_unverified": "Unverified private residence",
+        "no_show_abuse": "Abuse of no-show marks",
+        "malicious_report": "Malicious report",
+        "ban_evasion": "Ban evasion",
+        "curation_attribution_error": "Curation attribution error",
+        "curation_takedown_request": "Takedown request for curated listing",
+        "other": "Other"
+      }
+    },
+    "common": {
+      "dateRange": {
+        "order": "End date is before the start date.",
+        "invalid": "Enter a valid date."
+      },
+      "select": {
+        "keyboardHint": "Backspace clears the selection."
       }
     }
   },
@@ -828,7 +1328,7 @@
     "like": "Like",
     "liked": "Liked",
     "count": "{count} likes",
-      "countOne": "1 like",
+    "countOne": "1 like",
     "aria": "Like this {target}",
     "error": "Could not save your reaction. Try again.",
     "target": {
@@ -903,6 +1403,42 @@
     },
     "error": {
       "generic": "Could not update. Check your connection and try again."
+    }
+  },
+  "safety": {
+    "report": {
+      "title": "Report this",
+      "anonymity_notice": "Your report is anonymous. The person you report is never told who reported them.",
+      "reason": {
+        "danger": "Someone is in danger",
+        "harassment": "Harassment or bullying",
+        "sexual": "Unwanted sexual content or contact",
+        "hate": "Hate speech or discrimination",
+        "scam": "Scam or someone asking for money",
+        "ghost_event": "This event isn't real",
+        "impersonation": "Pretending to be someone else",
+        "spam": "Spam or advertising",
+        "privacy": "Shared someone's private information",
+        "illegal": "Illegal activity",
+        "unsafe_setup": "Unsafe event setup",
+        "other": "Something else"
+      },
+      "description_label": "Tell us what happened (optional, but it helps a lot)",
+      "emergency_first": "If someone is in immediate danger, call 113 (police) or 115 (ambulance) first. Then tell us.",
+      "submit": "Submit report",
+      "submitted": "Thanks. We review every report. Reports involving safety are reviewed within 4 hours. We'll let you know the outcome.",
+      "alreadyReported": "You already reported this. We are reviewing it.",
+      "limitReached": "You have reached today's report limit. Try again tomorrow.",
+      "sendFailed": "We could not send your report. Try again."
+    },
+    "myReports": {
+      "title": "My reports",
+      "status": {
+        "received": "Received",
+        "reviewing": "Under review",
+        "actionTaken": "Closed - action taken",
+        "noAction": "Closed - no action needed"
+      }
     }
   }
 }

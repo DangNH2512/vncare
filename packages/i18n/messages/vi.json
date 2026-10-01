@@ -377,6 +377,7 @@
         "backToDeck": "Quay lại thẻ",
         "clash": "Trùng giờ ngày {day}: {a} trùng với {b}.",
         "clashJoined": "Trùng giờ: {a} trùng với {b}, sự kiện bạn đã tham gia.",
+        "clashBadge": "Trùng giờ",
         "endAssumed": "Chưa có giờ kết thúc nên tạm tính {hours} giờ.",
         "unavailable": "Sự kiện này không còn khả dụng.",
         "deviceNote": "Chỉ lưu trên thiết bị này. Đăng xuất sẽ xoá danh sách."
@@ -461,6 +462,27 @@
     "follow": {
       "cannotFollowSelf": "Bạn không thể tự theo dõi chính mình.",
       "limitReached": "Bạn đã theo dõi số người tối đa. Hãy bỏ theo dõi bớt để theo dõi thêm."
+    },
+    "admin": {
+      "cursorInvalid": "Vị trí trang không còn hợp lệ.",
+      "queryInvalid": "Một bộ lọc không hợp lệ.",
+      "eventNotFound": "Không tìm thấy sự kiện.",
+      "userNotFound": "Không tìm thấy người dùng.",
+      "reasonRequired": "Nhập lý do từ 20 đến 255 ký tự.",
+      "confirmationRequired": "Hãy xác nhận thao tác để tiếp tục.",
+      "selfAction": "Bạn không thể làm điều này với chính tài khoản của mình.",
+      "targetRoleProtected": "Vai trò của bạn không thể làm điều này với tài khoản đó.",
+      "lastSuperAdmin": "Phải còn ít nhất hai super admin đang hoạt động.",
+      "trustTooLow": "Tài khoản cần cấp tin cậy 3 trở lên để nhận vai trò này.",
+      "invalidTransition": "Hiện không thể thực hiện ở trạng thái này. Hãy làm mới và thử lại.",
+      "conflictOfInterest": "Bạn không thể xử lý sự kiện của chính mình.",
+      "durationTooLong": "Vai trò của bạn chỉ được khoá tối đa 30 ngày."
+    },
+    "report": {
+      "ownContent": "Bạn không thể báo cáo nội dung của chính mình.",
+      "targetUnavailable": "Nội dung này đang được xem xét.",
+      "alreadyReported": "Bạn đã báo cáo nội dung này.",
+      "idempotencyRequired": "Thiếu khoá yêu cầu."
     }
   },
   "post": {
@@ -665,10 +687,21 @@
     }
   },
   "role": {
-    "curator": { "label": "Người phụ trách nội dung" },
-    "moderator": { "label": "Kiểm duyệt viên" },
-    "admin": { "label": "Quản trị viên" },
-    "superAdmin": { "label": "Quản trị viên cấp cao" }
+    "member": {
+      "label": "Thành viên"
+    },
+    "curator": {
+      "label": "Người phụ trách nội dung"
+    },
+    "moderator": {
+      "label": "Kiểm duyệt viên"
+    },
+    "admin": {
+      "label": "Quản trị viên"
+    },
+    "superAdmin": {
+      "label": "Quản trị viên cấp cao"
+    }
   },
   "admin": {
     "login": {
@@ -678,7 +711,11 @@
     },
     "nav": {
       "overview": "Tổng quan",
-      "systemHealth": "Tình trạng hệ thống"
+      "systemHealth": "Tình trạng hệ thống",
+      "users": "Người dùng",
+      "events": "Sự kiện",
+      "auditLog": "Nhật ký thao tác",
+      "moderation": "Kiểm duyệt"
     },
     "overview": {
       "title": "Tổng quan",
@@ -733,7 +770,8 @@
       }
     },
     "header": {
-      "signedInAs": "Đang đăng nhập: {name}"
+      "signedInAs": "Đang đăng nhập: {name}",
+      "timeZone": "GMT+7"
     },
     "health": {
       "title": "Tình trạng hệ thống",
@@ -762,6 +800,468 @@
           "title": "Không kết nối được API",
           "body": "Kiểm tra kết nối mạng và thử lại."
         }
+      }
+    },
+    "users": {
+      "title": "Người dùng",
+      "search": {
+        "label": "Tìm người dùng",
+        "placeholder": "Tên, username, email, SĐT",
+        "hint": "Email và số điện thoại chỉ khớp khi nhập đầy đủ.",
+        "clear": "Xoá tìm kiếm",
+        "hintLabel": "Mẹo tìm kiếm"
+      },
+      "filter": {
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "includeDeleted": "Gồm tài khoản đã xoá",
+        "allRoles": "Mọi vai trò",
+        "allStatuses": "Mọi trạng thái",
+        "any": "Bất kỳ",
+        "selected": "Đã chọn {count}",
+        "trustMin": "Từ cấp",
+        "trustMax": "Đến cấp",
+        "joinedFrom": "Tham gia từ",
+        "joinedTo": "Tham gia đến",
+        "clearSelection": "Bỏ chọn",
+        "clear": "Xoá bộ lọc"
+      },
+      "col": {
+        "name": "Tên",
+        "handle": "Tên người dùng",
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "trust": "Cấp tin cậy",
+        "email": "Email",
+        "phone": "Số điện thoại",
+        "joined": "Ngày tham gia",
+        "lastActive": "Hoạt động gần nhất"
+      },
+      "status": {
+        "pending": "Chờ xác minh",
+        "active": "Đang hoạt động",
+        "suspended": "Đã tạm khoá",
+        "deactivated": "Đã vô hiệu",
+        "deleted": "Đã xoá"
+      },
+      "verified": "Đã xác minh",
+      "unverified": "Chưa xác minh",
+      "noPhone": "Chưa có số điện thoại",
+      "noEmail": "Chưa có email",
+      "never": "Chưa từng",
+      "table": {
+        "caption": "Người dùng",
+        "filterLabel": "Lọc người dùng",
+        "pagesLabel": "Các trang người dùng",
+        "shown": "Đang hiện {count}",
+        "open": "Mở người dùng {name}"
+      },
+      "next": "Trang sau",
+      "previous": "Trang trước",
+      "cursorReset": "Danh sách đã thay đổi. Đang hiện trang đầu.",
+      "empty": {
+        "title": "Không có người dùng nào khớp bộ lọc"
+      },
+      "error": {
+        "title": "Không tải được danh sách người dùng",
+        "body": "Kiểm tra kết nối rồi thử lại."
+      },
+      "detail": {
+        "error": {
+          "title": "Không tải được người dùng này"
+        },
+        "notFound": "Không tìm thấy người dùng này",
+        "back": "Về danh sách người dùng",
+        "section": {
+          "profile": "Hồ sơ",
+          "account": "Tài khoản",
+          "trust": "Tin cậy",
+          "hosted": "Sự kiện đã tổ chức",
+          "rsvps": "RSVP",
+          "posts": "Bài đăng",
+          "sessions": "Phiên đăng nhập"
+        },
+        "sessions": {
+          "active": "Phiên đang hoạt động: {count}",
+          "activeHint": "Đếm số phiên đăng nhập của tài khoản này chưa bị thu hồi và chưa hết hạn tại thời điểm tải trang; đây là số tức thời, không phải lịch sử. Một người dùng cả điện thoại và máy tính xách tay sẽ hiện 2. Danh sách bên dưới chỉ liệt kê 5 phiên gần nhất nên có thể ngắn hơn con số này."
+        },
+        "contactMasked": "Thông tin liên hệ được che một phần.",
+        "empty": "Chưa có",
+        "field": {
+          "handle": "Tên người dùng",
+          "headline": "Giới thiệu ngắn",
+          "bio": "Giới thiệu",
+          "nationality": "Quốc tịch",
+          "expatType": "Nhóm cư dân",
+          "homeArea": "Khu vực sinh sống",
+          "inDaNangSince": "Ở Đà Nẵng từ",
+          "visibility": "Hiển thị hồ sơ",
+          "createdAt": "Ngày tham gia",
+          "lastActive": "Hoạt động gần nhất",
+          "role": "Vai trò",
+          "status": "Trạng thái",
+          "suspendedUntil": "Tạm khoá đến",
+          "suspensionReason": "Lý do tạm khoá",
+          "email": "Email",
+          "phone": "Số điện thoại",
+          "locale": "Ngôn ngữ",
+          "deletionRequestedAt": "Yêu cầu xoá lúc",
+          "anonymisedAt": "Ẩn danh lúc",
+          "deletedAt": "Xoá lúc",
+          "legalHoldUntil": "Lưu giữ pháp lý đến",
+          "trustLevel": "Cấp tin cậy",
+          "trustChangedAt": "Đổi cấp lúc"
+        },
+        "signal": {
+          "col": {
+            "type": "Tín hiệu",
+            "status": "Trạng thái",
+            "weight": "Trọng số",
+            "verified": "Xác minh lúc",
+            "revoked": "Thu hồi lúc"
+          },
+          "type": {
+            "email_verified": "Đã xác minh email",
+            "phone_verified": "Đã xác minh số điện thoại",
+            "social_google": "Tài khoản Google",
+            "social_facebook": "Tài khoản Facebook",
+            "social_apple": "Tài khoản Apple",
+            "id_document": "Giấy tờ tuỳ thân",
+            "profile_completed": "Hoàn thiện hồ sơ",
+            "attended_event": "Đã tham dự sự kiện",
+            "hosted_event_completed": "Đã tổ chức sự kiện",
+            "positive_review": "Đánh giá tích cực",
+            "community_vouch": "Được cộng đồng bảo chứng",
+            "staff_endorsement": "Được nhân viên xác nhận",
+            "penalty_no_show": "Phạt: vắng mặt",
+            "penalty_report_upheld": "Phạt: báo cáo được xác nhận"
+          },
+          "status": {
+            "pending": "Đang chờ",
+            "verified": "Đã xác minh",
+            "rejected": "Bị từ chối",
+            "expired": "Hết hạn",
+            "revoked": "Đã thu hồi"
+          }
+        },
+        "expat": {
+          "digital_nomad": "Người làm việc từ xa",
+          "long_term_resident": "Cư trú dài hạn",
+          "student": "Sinh viên",
+          "teacher": "Giáo viên",
+          "business_owner": "Chủ doanh nghiệp",
+          "short_stay": "Lưu trú ngắn hạn",
+          "local_host": "Người dẫn dắt địa phương"
+        },
+        "postStatus": {
+          "visible": "Đang hiện",
+          "pending_review": "Chờ duyệt",
+          "hidden": "Đã ẩn",
+          "removed": "Đã gỡ"
+        },
+        "platform": {
+          "ios": "iOS",
+          "android": "Android",
+          "web": "Web"
+        },
+        "session": {
+          "col": {
+            "platform": "Nền tảng",
+            "started": "Bắt đầu",
+            "revoked": "Thu hồi lúc"
+          },
+          "none": "Chưa có phiên nào",
+          "revoked": {
+            "rotation": "Đã đổi phiên",
+            "rotation_reuse": "Dùng lại token",
+            "logout": "Đã đăng xuất",
+            "suspended": "Tạm khoá",
+            "role_changed": "Đổi vai trò"
+          }
+        },
+        "trust": {
+          "signals": "Tín hiệu tin cậy",
+          "hint": "Cấp tin cậy được tính lại từ các tín hiệu bằng tác vụ định kỳ, không sửa tay.",
+          "hostedCount": "Sự kiện đã tổ chức",
+          "hostedCountHint": "Đếm mọi sự kiện do người này tổ chức và chưa xoá, tính trên toàn bộ vòng đời tài khoản. Bản nháp được tính ở đây nên con số có thể cao hơn tổng của danh sách Sự kiện đã tổ chức bên dưới.",
+          "attendedCount": "Sự kiện đã tham dự",
+          "attendedCountHint": "Đếm các RSVP của người này được người tổ chức đánh dấu đã tham dự. Sự kiện không có điểm danh thì không được tính, nên con số có thể thấp hơn thực tế.",
+          "noShowCount": "Lần vắng mặt",
+          "noShowCountHint": "Đếm các RSVP của người này bị người tổ chức đánh dấu vắng mặt. Chỉ tính các sự kiện mà người tổ chức có điểm danh, và dấu đánh dấu của người tổ chức là nhận định chứ không phải bằng chứng."
+        },
+        "total": "{shown} mục gần nhất trong tổng {total}",
+        "totalHint": "Danh sách hiện 10 mục gần nhất. Tổng số đếm mọi mục cùng loại mà bạn được phép xem. Bản nháp và mục riêng tư của người khác không được tính.",
+        "profile": {
+          "empty": "Chưa cập nhật"
+        },
+        "activity": {
+          "empty": "Chưa có hoạt động"
+        }
+      }
+    },
+    "events": {
+      "title": "Sự kiện",
+      "search": {
+        "placeholder": "Tên, đường dẫn, mã",
+        "label": "Tìm sự kiện",
+        "hint": "Khớp với tên, đường dẫn hoặc đúng mã sự kiện.",
+        "clear": "Xoá tìm kiếm",
+        "hintLabel": "Mẹo tìm kiếm"
+      },
+      "filter": {
+        "status": "Trạng thái",
+        "area": "Khu vực",
+        "timing": "Thời điểm",
+        "allStatuses": "Mọi trạng thái",
+        "allAreas": "Mọi khu vực",
+        "selected": "Đã chọn {count}",
+        "clearSelection": "Bỏ chọn",
+        "clear": "Xoá bộ lọc",
+        "startsFrom": "Bắt đầu từ",
+        "startsTo": "Bắt đầu đến",
+        "createdFrom": "Tạo từ",
+        "createdTo": "Tạo đến",
+        "hostHandle": "Tên người dùng của người tổ chức"
+      },
+      "timing": {
+        "all": "Tất cả",
+        "upcoming": "Sắp diễn ra",
+        "past": "Đã qua"
+      },
+      "inProgress": "Đang diễn ra",
+      "full": "Đã đầy",
+      "col": {
+        "title": "Sự kiện",
+        "status": "Trạng thái",
+        "area": "Khu vực",
+        "starts": "Bắt đầu",
+        "host": "Người tổ chức",
+        "seats": "Chỗ",
+        "waitlist": "Hàng chờ",
+        "created": "Ngày tạo"
+      },
+      "empty": {
+        "title": "Không có sự kiện nào khớp bộ lọc"
+      },
+      "error": {
+        "title": "Không tải được danh sách sự kiện",
+        "body": "Kiểm tra kết nối rồi thử lại."
+      },
+      "detail": {
+        "error": {
+          "title": "Không tải được sự kiện này"
+        },
+        "notFound": "Không tìm thấy sự kiện này",
+        "draftHidden": "Đây là bản nháp. Nội dung chỉ người tạo xem được.",
+        "occurrences": "Các buổi diễn ra",
+        "counts": {
+          "confirmed": "Đã xác nhận",
+          "held": "Đang giữ chỗ",
+          "waitlisted": "Đang chờ",
+          "cancelled": "Đã huỷ",
+          "attended": "Đã tham dự",
+          "noShow": "Vắng mặt"
+        },
+        "seatsTaken": "Chỗ đã dùng",
+        "seatsTakenHint": "Đếm các RSVP của buổi này ở trạng thái đã xác nhận, đang giữ chỗ, đã tham dự hoặc vắng mặt và chưa bị xoá. RSVP đang chờ và đã huỷ không được tính. Đây là số để hiển thị, đọc lúc tải trang; hệ thống không dùng nó để quyết định nhận RSVP mới, nên có thể lệch trong thoáng chốc khi có người đang RSVP.",
+        "attendeesNote": "Tên người tham gia không hiển thị ở đây.",
+        "openPublic": "Mở trang công khai",
+        "back": "Về danh sách sự kiện",
+        "section": {
+          "overview": "Tổng quan",
+          "host": "Người tổ chức",
+          "description": "Mô tả"
+        },
+        "field": {
+          "id": "Mã",
+          "slug": "Đường dẫn",
+          "area": "Khu vực",
+          "coordinates": "Toạ độ",
+          "featured": "Nổi bật",
+          "requiredTrust": "Cấp tin cậy để tham gia",
+          "createdAt": "Ngày tạo",
+          "updatedAt": "Cập nhật lần cuối",
+          "comments": "Bình luận",
+          "hostName": "Tên",
+          "hostHandle": "Tên người dùng",
+          "hostTrust": "Cấp tin cậy",
+          "hostRole": "Vai trò",
+          "hostStatus": "Trạng thái tài khoản"
+        },
+        "yes": "Có",
+        "no": "Không",
+        "occurrence": "Buổi {index}",
+        "occurrenceStarts": "Bắt đầu",
+        "occurrenceEnds": "Kết thúc",
+        "capacity": "Sức chứa",
+        "waitlistWaiting": "Đang chờ trong hàng chờ",
+        "noOccurrences": "Chưa có buổi nào.",
+        "occurrencesLabel": "Các buổi của sự kiện này"
+      },
+      "table": {
+        "caption": "Sự kiện",
+        "filterLabel": "Lọc sự kiện",
+        "pagesLabel": "Các trang sự kiện",
+        "shown": "Đang hiện {count}",
+        "open": "Mở sự kiện {title}"
+      },
+      "next": "Trang sau",
+      "previous": "Trang trước",
+      "cursorReset": "Danh sách đã thay đổi. Đang hiện trang đầu.",
+      "status": {
+        "draft": "Bản nháp"
+      }
+    },
+    "action": {
+      "suspendUser": "Tạm khoá tài khoản",
+      "unsuspendUser": "Mở khoá tài khoản",
+      "changeRole": "Đổi vai trò",
+      "suspendEvent": "Ẩn sự kiện",
+      "restoreEvent": "Khôi phục sự kiện",
+      "takeDownEvent": "Gỡ sự kiện",
+      "reason": {
+        "label": "Lý do",
+        "hint": "Tối thiểu 20 ký tự. Được ghi vào nhật ký thao tác.",
+        "counter": "{count}/255"
+      },
+      "review": {
+        "title": "Xem lại trước khi xác nhận",
+        "confirm": "Xác nhận",
+        "cancel": "Huỷ"
+      },
+      "typeToConfirm": "Gõ {value} để xác nhận",
+      "irreversible": "Không thể hoàn tác.",
+      "suspendUserEffect": "Người này bị đăng xuất khỏi mọi thiết bị và không đăng nhập lại được. Sự kiện và bài đăng của họ giữ nguyên.",
+      "failed": "Không thực hiện được thao tác này. Chưa có gì bị thay đổi."
+    },
+    "audit": {
+      "title": "Nhật ký thao tác",
+      "col": {
+        "time": "Thời gian",
+        "actor": "Người thực hiện",
+        "action": "Hành động",
+        "target": "Đối tượng",
+        "severity": "Mức độ",
+        "reason": "Lý do"
+      },
+      "action": {
+        "user": {
+          "suspended": "Đã tạm khoá tài khoản",
+          "unsuspended": "Đã mở khoá tài khoản",
+          "role_changed": "Đã đổi vai trò"
+        },
+        "event": {
+          "suspended": "Đã ẩn sự kiện",
+          "restored": "Đã khôi phục sự kiện",
+          "taken_down": "Đã gỡ sự kiện"
+        }
+      },
+      "severity": {
+        "info": "Thông tin",
+        "notice": "Lưu ý",
+        "warning": "Cảnh báo",
+        "critical": "Nghiêm trọng"
+      },
+      "scope": {
+        "own": "Chỉ hiện thao tác của bạn.",
+        "noSuperAdmin": "Thao tác của super admin không được hiển thị."
+      },
+      "empty": {
+        "title": "Không có bản ghi nào khớp bộ lọc"
+      }
+    },
+    "moderation": {
+      "title": "Hàng đợi kiểm duyệt",
+      "kpi": {
+        "open": "Case đang mở",
+        "openHint": "Đếm các case kiểm duyệt đang mở hoặc đang xem xét. Case đã gộp và đã đóng không được tính, và nhiều báo cáo về cùng một nội dung chỉ tính là một case. Đây là số tức thời tại lúc tải trang.",
+        "overdue": "Quá hạn",
+        "overdueHint": "Đếm các case đang mở hoặc đang xem xét đã quá hạn phản hồi, so với thời điểm hiện tại. Hạn phản hồi chạy theo đồng hồ thật 24 giờ mỗi ngày, 7 ngày mỗi tuần, không theo giờ hành chính. Hiện chưa có thông báo nên không ai được báo chủ động khi case quá hạn.",
+        "critical": "Nghiêm trọng đang mở",
+        "criticalHint": "Đếm các case đang mở hoặc đang xem xét ở mức nghiêm trọng nhất, có hạn phản hồi 2 giờ. Mức độ là mức hiện tại, nên case đã được kiểm duyệt viên nâng hoặc hạ sẽ tính theo mức mới. Hiện chưa có thông báo nên con số này chỉ được thấy khi có người mở hàng đợi."
+      },
+      "col": {
+        "case": "Case",
+        "target": "Nội dung",
+        "severity": "Mức độ",
+        "sla": "Thời gian còn lại",
+        "reports": "Báo cáo",
+        "assignee": "Người xử lý"
+      },
+      "severity": {
+        "critical": "Nghiêm trọng",
+        "high": "Cao",
+        "normal": "Trung bình",
+        "low": "Thấp"
+      },
+      "sla": {
+        "left": "Còn {time}",
+        "overdue": "Quá hạn {time}",
+        "dueSoon": "Sắp đến hạn, còn {time}"
+      },
+      "autoHidden": "Đã tự động ẩn",
+      "assign": "Nhận case này",
+      "assignedToYou": "Đã giao cho bạn",
+      "decision": {
+        "dismiss": "Bỏ qua",
+        "hide": "Ẩn",
+        "remove": "Gỡ",
+        "warn": "Cảnh cáo",
+        "suspend": "Tạm khoá tài khoản"
+      },
+      "detail": {
+        "snapshot": "Nội dung lúc bị báo cáo",
+        "current": "Nội dung hiện tại",
+        "reports": "Báo cáo",
+        "history": "Lịch sử",
+        "strikes": "Lần vi phạm đang hiệu lực"
+      },
+      "empty": {
+        "title": "Hàng đợi đang trống"
+      },
+      "error": {
+        "title": "Không tải được hàng đợi kiểm duyệt"
+      },
+      "reason": {
+        "physical_threat": "Đe doạ bạo lực",
+        "sexual_harassment": "Quấy rối tình dục",
+        "sexual_assault_report": "Tố cáo tấn công tình dục",
+        "stalking": "Theo dõi, bám đuôi",
+        "minor_safety": "An toàn của trẻ vị thành niên",
+        "illegal_substance": "Chất cấm",
+        "political_or_state_sensitive": "Nội dung nhạy cảm về chính trị hoặc nhà nước",
+        "unauthorized_religious_activity": "Hoạt động tôn giáo trái phép",
+        "financial_scam": "Lừa đảo tài chính",
+        "fake_job_or_fee": "Việc làm giả hoặc thu phí trước",
+        "investment_pitch": "Mời góp vốn đầu tư",
+        "impersonation": "Giả mạo danh tính",
+        "ghost_event": "Sự kiện không có thật",
+        "event_clone": "Sự kiện sao chép",
+        "sexual_services": "Dịch vụ tình dục",
+        "nsfw_content": "Nội dung nhạy cảm tình dục",
+        "hate_speech": "Ngôn từ thù ghét",
+        "harassment": "Quấy rối hoặc bắt nạt",
+        "doxxing": "Tiết lộ thông tin riêng tư",
+        "spam_advertising": "Spam hoặc quảng cáo",
+        "cross_post_spam": "Đăng trùng lặp nhiều nơi",
+        "off_topic_or_miscategorized": "Lạc đề hoặc sai danh mục",
+        "unsafe_activity_setup": "Tổ chức sự kiện thiếu an toàn",
+        "private_residence_unverified": "Nhà riêng chưa được xác minh",
+        "no_show_abuse": "Lạm dụng đánh dấu vắng mặt",
+        "malicious_report": "Báo cáo ác ý",
+        "ban_evasion": "Lách lệnh cấm",
+        "curation_attribution_error": "Sai sót ghi nguồn khi curate",
+        "curation_takedown_request": "Yêu cầu gỡ nội dung đã curate",
+        "other": "Khác"
+      }
+    },
+    "common": {
+      "dateRange": {
+        "order": "Ngày kết thúc trước ngày bắt đầu.",
+        "invalid": "Nhập ngày hợp lệ."
+      },
+      "select": {
+        "keyboardHint": "Nhấn Backspace để xoá lựa chọn."
       }
     }
   },
@@ -828,7 +1328,7 @@
     "like": "Thích",
     "liked": "Đã thích",
     "count": "{count} lượt thích",
-      "countOne": "1 lượt thích",
+    "countOne": "1 lượt thích",
     "aria": "Thích {target} này",
     "error": "Chưa lưu được cảm xúc của bạn. Hãy thử lại.",
     "target": {
@@ -903,6 +1403,42 @@
     },
     "error": {
       "generic": "Chưa cập nhật được. Kiểm tra kết nối rồi thử lại."
+    }
+  },
+  "safety": {
+    "report": {
+      "title": "Báo cáo nội dung này",
+      "anonymity_notice": "Báo cáo của bạn được ẩn danh. Người bị báo cáo không bao giờ biết ai đã báo cáo.",
+      "reason": {
+        "danger": "Có người đang gặp nguy hiểm",
+        "harassment": "Quấy rối hoặc bắt nạt",
+        "sexual": "Nội dung hoặc tiếp cận tình dục không mong muốn",
+        "hate": "Ngôn từ thù ghét hoặc phân biệt đối xử",
+        "scam": "Lừa đảo hoặc xin tiền",
+        "ghost_event": "Sự kiện này không có thật",
+        "impersonation": "Giả mạo người khác",
+        "spam": "Spam hoặc quảng cáo",
+        "privacy": "Chia sẻ thông tin riêng tư của người khác",
+        "illegal": "Hoạt động vi phạm pháp luật",
+        "unsafe_setup": "Sự kiện tổ chức thiếu an toàn",
+        "other": "Vấn đề khác"
+      },
+      "description_label": "Kể lại chuyện đã xảy ra (không bắt buộc, nhưng rất hữu ích)",
+      "emergency_first": "Nếu có người đang gặp nguy hiểm ngay lúc này, hãy gọi 113 (công an) hoặc 115 (cấp cứu) trước. Sau đó báo cho chúng tôi.",
+      "submit": "Gửi báo cáo",
+      "submitted": "Cảm ơn bạn. Chúng tôi xem xét mọi báo cáo. Báo cáo liên quan đến an toàn được xem trong vòng 4 giờ. Chúng tôi sẽ báo lại kết quả.",
+      "alreadyReported": "Bạn đã báo cáo nội dung này. Chúng tôi đang xem xét.",
+      "limitReached": "Bạn đã dùng hết số báo cáo hôm nay. Hãy thử lại vào ngày mai.",
+      "sendFailed": "Không gửi được báo cáo. Hãy thử lại."
+    },
+    "myReports": {
+      "title": "Báo cáo của tôi",
+      "status": {
+        "received": "Đã nhận",
+        "reviewing": "Đang xem xét",
+        "actionTaken": "Đã đóng - đã xử lý",
+        "noAction": "Đã đóng - không cần xử lý"
+      }
     }
   }
 }
