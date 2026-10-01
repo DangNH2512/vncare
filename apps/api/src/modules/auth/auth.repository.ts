@@ -200,6 +200,24 @@ export class AuthRepository {
     );
   }
 
+  /** Runs `work` in one transaction on this repository's pool. */
+  transaction<T>(work: (tx: PoolClient) => Promise<T>): Promise<T> {
+    return withTransaction(this.pool, work);
+  }
+
+  /**
+   * Revokes every live session of one user, on the caller's transaction when
+   * given. Already-revoked rows keep their original reason.
+   */
+  async revokeAllForUser(userId: string, reason: string, tx?: PoolClient): Promise<number> {
+    const { rowCount } = await (tx ?? this.pool).query(
+      `UPDATE auth_sessions SET revoked_at = now(), revoked_reason = $2
+        WHERE user_id = $1 AND revoked_at IS NULL`,
+      [userId, reason],
+    );
+    return rowCount ?? 0;
+  }
+
   /**
    * Sets or clears the sign-in phone number.
    *

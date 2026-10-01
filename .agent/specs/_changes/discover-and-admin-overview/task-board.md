@@ -594,3 +594,20 @@ Cần Debate Gate: không. Các lựa chọn (kho localStorage, Pointer Events t
 - Seed đã được DM-1 cập nhật trước khi card này chốt: đã có chặn `NODE_ENV=production` (và `DATABASE_URL` không phải localhost), ca "sắp bắt đầu" (dời 06:00 sáng mai khi chạy sau 21:00 giờ VN), bộ ca trùng giờ A/B/C và không `endsAt`. SW-BE chỉ còn phần `packages/domain` và xác minh seed.
 - Tên package đúng là `@dnc/web-client` / `@dnc/web-admin` (đã sửa trong card).
 - Phân công: SW-BE → backend-agent (W-1); SH-4 → SW-I → SW-UI-2 → web-client-agent W-4; SW-UI-1 → web-client-agent W-2 sau khi xong WC-3.
+
+## 12. Tester SW-T và BA nghiệm thu web-client (01/10/2026)
+
+- **SW-T: GO-with-risks.**
+  - List/Map 204 PASS (Chromium/WebKit × EN/VI × 390/1280).
+  - Swipe: S-AC PASS 4/4 trừ các bug dưới.
+  - LAN qua WebKit iPhone hydrate được.
+  - Bug: B1 (P2, `useFreshSaved` bỏ sót khi effect bị huỷ), B2 (P2, race giữa RSVP chờ sau đăng nhập và reload deck), B3 (P3, viền trùng giờ ở dòng đã lưu), B4 (P3, Esc không trả focus), B5 (P3, nút < 44px ở 1280), B6 (UX, deck dưới màn đầu ở 390×844, coach che thông tin).
+- **BA: chấp nhận có điều kiện.** B1 và B2 phải xong trước commit; B6 nên xong trước commit. Card **SW-F** sửa cả 6 bug, sau đó Tester kiểm lại hẹp (B1, B2, B6, S-AC-21 chạy nhiều lần), rồi commit.
+- **Follow-up có tên:**
+  - FU-S-SEED: chạy seed với `--reset`/`--purge` và `NODE_ENV=production` (S-AC-28/29).
+  - FU-S-DEVICE: cử chỉ và cuộn một ngón trên iPhone thật (S-AC-14, L-S7). Chủ dự án thử theo danh sách 11 bước của BA.
+  - FU-S-12: ca draft và ca đã bắt đầu 1 giờ ở lane integration.
+  - FU-S-AUDIT: xác nhận Lưu/Bỏ qua không ghi AuditLog.
+  - FU-S-NEARME: near-me rỗng riêng cho swipe.
+  - Nếu SW-F chưa sửa thì B4/B5 phải xong trước M6.
+- Câu hỏi mở cho chủ dự án trước M6: Q-S1 (cổng G1/G2), Q-S2 (đăng xuất có xoá danh sách đã lưu không). Không chặn commit.

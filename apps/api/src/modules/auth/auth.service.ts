@@ -8,6 +8,8 @@ import {
   UnauthorizedException,
   type OnModuleInit,
 } from '@nestjs/common';
+import type { PoolClient } from 'pg';
+import type { Redis } from 'ioredis';
 import { hash as argonHash, verify as argonVerify } from '@node-rs/argon2';
 import { normalizePhone } from '@dnc/domain';
 import { SignJWT, generateKeyPair, importPKCS8, importSPKI, jwtVerify } from 'jose';
@@ -28,6 +30,7 @@ import {
   type RateLimitRule,
   type Reservation,
 } from '../../common/rate-limit/index.js';
+import { REDIS_CACHE } from '../../redis/redis.module.js';
 import { MediaService } from '../media/index.js';
 import { AuthRepository, type UserRow } from './auth.repository.js';
 import { toSessionUser } from './auth.mapper.js';
@@ -56,10 +59,51 @@ const TRUST_LEVEL_ON_REGISTER = 1;
  */
 const ROTATION_GRACE_MS = 10_000;
 
+/**
+ * Deny-list key per user. The value is `<epochMs>:<kind>`: access tokens issued
+ * at or before that instant are refused, tokens issued later are not, so a user
+ * who signs in again straight after being unsuspended or re-roled works at once.
+ */
+const REVOKED_KEY_PREFIX = 'auth:revoked:';
+/** Access TTL plus a minute: past this no token the mark could still apply to is valid. */
+const REVOKED_MARK_TTL_SECONDS = ACCESS_TOKEN_TTL_SECONDS + 60;
+/** Ceiling on the one Redis GET each authenticated request pays; beyond it the check fails open. */
+export const REVOCATION_REDIS_TIMEOUT_MS = 300;
+
+/** After a failed deny-list read, the check is skipped this long before trying Redis again. */
+export const REVOCATION_BREAKER_MS = 5_000;
+
+/**
+ * Sets the mark only when it is not older than the stored one, so nodes with
+ * skewed clocks cannot move it backwards. Equal or newer wins and carries the
+ * newer kind. Returns 1 when written.
+ */
+const RAISE_MARK_SCRIPT = `
+local cur = redis.call('GET', KEYS[1])
+if cur then
+  local at = tonumber(string.match(cur, '^(%d+):'))
+  if at and at > tonumber(ARGV[1]) then return 0 end
+end
+redis.call('SET', KEYS[1], ARGV[1] .. ':' .. ARGV[2], 'EX', tonumber(ARGV[3]))
+return 1
+`;
+
+/** Returned by {@link AuthService.revokeSessionsInTx}; `publish` goes after commit. */
+export interface RevocationTicket {
+  revokedSessions: number;
+  /** Writes the deny-list mark. Resolves false when Redis refused it. Safe to call twice. */
+  publish(): Promise<boolean>;
+}
+
+/** Why an account's tokens were cut; picks the HTTP answer for a stale token. */
+export type SessionRevocationReason = 'suspended' | 'role_changed';
+
 export interface AccessTokenClaims {
   sub: string;
   role: string;
   trustLevel: number;
+  /** Issued-at in whole seconds, as signed into the token. */
+  iat: number;
 }
 
 export interface RefreshResult {
@@ -85,7 +129,10 @@ export class AuthService implements OnModuleInit {
     private readonly media: MediaService,
     private readonly rateLimit: RateLimitService,
     @Inject(RATE_LIMIT_CONFIG) private readonly limits: RateLimitConfig,
+    @Inject(REDIS_CACHE) private readonly redis: Redis,
   ) {}
+  private revocationDegraded = false;
+  private revocationRetryAt = 0;
 
   /**
    * Loads the RS256 key pair, generating an ephemeral one when none is
@@ -291,23 +338,188 @@ export class AuthService implements OnModuleInit {
     if (session) await this.users.revokeFamily(session.family_id, 'logout');
   }
 
-  /** Verifies an access token and returns its claims, or throws 401. */
+  /**
+   * Verifies an access token and returns its claims, or throws.
+   *
+   * Besides the signature this consults the revocation mark (one Redis GET), so
+   * a suspension or role change cuts tokens that are still within their 15
+   * minutes. It lives here rather than in the guard so the chat gateway, which
+   * calls this method directly, is covered too. A failed read lets the request
+   * through: the access TTL bounds the exposure, and refresh tokens are revoked
+   * in the database regardless.
+   */
   async verifyAccessToken(token: string): Promise<AccessTokenClaims> {
+    let claims: AccessTokenClaims;
     try {
       const { payload } = await jwtVerify(token, this.publicKey, {
         issuer: ISSUER,
         audience: AUDIENCE,
       });
-      return {
+      claims = {
         sub: payload.sub as string,
         role: payload['role'] as string,
         trustLevel: Number(payload['trustLevel'] ?? 0),
+        iat: typeof payload.iat === 'number' ? payload.iat : 0,
       };
     } catch {
       throw new UnauthorizedException({
         code: 'INVALID_TOKEN',
         messageKey: 'errors.auth.invalidToken',
       });
+    }
+
+    const mark = await this.readRevocationMark(claims.sub);
+    if (mark !== null && claims.iat * 1000 <= mark.at) {
+      if (mark.kind === 'suspended') {
+        throw new ForbiddenException({
+          code: 'ACCOUNT_NOT_ACTIVE',
+          messageKey: 'errors.auth.accountSuspended',
+        });
+      }
+      throw new UnauthorizedException({
+        code: 'UNAUTHENTICATED',
+        messageKey: 'errors.auth.unauthenticated',
+      });
+    }
+    return claims;
+  }
+
+  /**
+   * Revokes every live refresh session of one user and cuts their access
+   * tokens at once. Standalone form: one statement, then the mark.
+   */
+  async revokeAllSessionsForUser(
+    userId: string,
+    reason: SessionRevocationReason,
+  ): Promise<{ revokedSessions: number; markPublished: boolean }> {
+    const revokedSessions = await this.users.revokeAllForUser(userId, reason);
+    return { revokedSessions, markPublished: await this.publishMark(userId, reason) };
+  }
+
+  /**
+   * Revokes sessions on the caller's own transaction and returns a ticket.
+   * The deny-list mark is only written by `ticket.publish()`, which must run
+   * after the transaction commits; a mark written before a rollback would cut
+   * a user for a change that never happened. Prefer {@link withSessionRevocation},
+   * which cannot get that order wrong.
+   */
+  async revokeSessionsInTx(
+    userId: string,
+    reason: SessionRevocationReason,
+    tx: PoolClient,
+  ): Promise<RevocationTicket> {
+    const revokedSessions = await this.users.revokeAllForUser(userId, reason, tx);
+    let published: Promise<boolean> | null = null;
+    return {
+      revokedSessions,
+      // Idempotent: a second call returns the first result instead of writing again.
+      publish: () => (published ??= this.publishMark(userId, reason)),
+    };
+  }
+
+  /**
+   * Runs `work` in a transaction, hands it a `cut` function to revoke users'
+   * sessions, commits, and only then writes every deny-list mark. A rollback
+   * writes none. `markDeferred` is true when Redis refused a mark: the access
+   * token then lives until it expires (at most 15 minutes), and the caller
+   * should surface a `sessionCutDeferred` warning.
+   */
+  async withSessionRevocation<T>(
+    work: (
+      tx: PoolClient,
+      cut: (userId: string, reason: SessionRevocationReason) => Promise<number>,
+    ) => Promise<T>,
+  ): Promise<{ result: T; markDeferred: boolean }> {
+    const tickets: RevocationTicket[] = [];
+    const result = await this.users.transaction((tx) =>
+      work(tx, async (userId, reason) => {
+        const ticket = await this.revokeSessionsInTx(userId, reason, tx);
+        tickets.push(ticket);
+        return ticket.revokedSessions;
+      }),
+    );
+    const outcomes = await Promise.all(tickets.map((ticket) => ticket.publish()));
+    return { result, markDeferred: outcomes.some((ok) => !ok) };
+  }
+
+  /**
+   * Writes the mark. Never throws.
+   *
+   * @returns false when Redis refused it, so the caller can warn that the
+   *   access token outlives the revocation.
+   */
+  private async publishMark(userId: string, reason: SessionRevocationReason): Promise<boolean> {
+    const kind = reason === 'suspended' ? 'suspended' : 'role';
+    // Limit: the mark lives on the cache Redis (allkeys-lru), so memory pressure
+    // may evict it before the access token expires. Accepted for beta; follow-up
+    // is a durable users.tokens_valid_after column.
+    const write = this.redis.eval(
+      RAISE_MARK_SCRIPT,
+      1,
+      REVOKED_KEY_PREFIX + userId,
+      String(Date.now()),
+      kind,
+      String(REVOKED_MARK_TTL_SECONDS),
+    );
+    write.catch(() => undefined);
+    let timer: NodeJS.Timeout | undefined;
+    try {
+      await Promise.race([
+        write,
+        new Promise<never>((_resolve, reject) => {
+          timer = setTimeout(() => reject(new Error('timeout')), REVOCATION_REDIS_TIMEOUT_MS * 3);
+        }),
+      ]);
+      return true;
+    } catch {
+      // No user id or token in the line; the id is in the audit row for whoever investigates.
+      this.logger.error(
+        `revocation mark not written (kind=${kind}); old access tokens live until expiry`,
+      );
+      return false;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  /**
+   * One bounded GET. Null means no mark, or Redis unavailable. After a failure
+   * the check is skipped for {@link REVOCATION_BREAKER_MS} so a dead Redis costs
+   * one timeout, not one per request; entering and leaving that state is logged.
+   */
+  private async readRevocationMark(
+    userId: string,
+  ): Promise<{ at: number; kind: 'suspended' | 'role' } | null> {
+    if (this.revocationDegraded && Date.now() < this.revocationRetryAt) return null;
+
+    const read = this.redis.get(REVOKED_KEY_PREFIX + userId);
+    read.catch(() => undefined);
+    let timer: NodeJS.Timeout | undefined;
+    try {
+      const raw = await Promise.race([
+        read,
+        new Promise<never>((_resolve, reject) => {
+          timer = setTimeout(() => reject(new Error('timeout')), REVOCATION_REDIS_TIMEOUT_MS);
+        }),
+      ]);
+      if (this.revocationDegraded) {
+        this.revocationDegraded = false;
+        this.logger.log('revocation check recovered');
+      }
+      if (raw === null) return null;
+      const [at, kind] = raw.split(':');
+      const epoch = Number(at);
+      if (!Number.isFinite(epoch) || (kind !== 'suspended' && kind !== 'role')) return null;
+      return { at: epoch, kind };
+    } catch {
+      if (!this.revocationDegraded) {
+        this.logger.warn('revocation check unavailable, failing open');
+      }
+      this.revocationDegraded = true;
+      this.revocationRetryAt = Date.now() + REVOCATION_BREAKER_MS;
+      return null;
+    } finally {
+      clearTimeout(timer);
     }
   }
 

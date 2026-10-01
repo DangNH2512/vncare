@@ -538,3 +538,13 @@ Cần Debate Gate: không. Các lựa chọn có đánh đổi (deny-list Redis 
   - n-1: xoá key mồ côi.
   - n-2: nhãn VI `expat.*`, ví dụ `local_host` = "Người dẫn dắt địa phương".
   - n-4: comment lỗi thời.
+- Review AD-7: approved có điều kiện (không blocker). **Quyết định M1:** dấu thu hồi `auth:revoked:{userId}` nằm trên Redis cache `allkeys-lru`, có thể bị evict hoặc mất khi restart. Khi đó token cũ của người vừa bị khoá sống lại tối đa 15 phút, và không có log báo. Beta chấp nhận rủi ro này, giảm thiểu bằng vận hành: chừa dư `maxmemory`, ops-monitor cảnh báo khi `evicted_keys` tăng. Refresh token vẫn bị thu hồi bền trong DB. **Follow-up T-25:** cột `users.tokens_valid_after` để dấu thu hồi bền vững (cần migration, trình chủ dự án khi tới lượt).
+- AD-7b sửa trước AD-8: API thu hồi hai bước ép kiểu (không quên `publish`, không publish trước commit), `publish` trả boolean, circuit breaker cho GET deny-list, validate `requestId`, bổ sung test ranh giới.
+- AD-8 bắt buộc: sau `publish()` thì gọi `server.in(room.user(id)).disconnectSockets(true)` (review m2). Ghi `sessionCutDeferred` khi `publish()` trả false. Rủi ro còn lại: race hẹp giữa refresh và thu hồi (m1, tối đa 15 phút).
+- Teardown e2e audit không dùng `TRUNCATE` như T-7: DB local dùng chung giữa các spec và dữ liệu dev. Thay bằng tắt trigger DELETE trong một transaction, xoá theo id của spec, rồi bật lại. Spec crash thì transaction rollback và trigger tự bật lại.
+- AD-7b xong:
+  - `withSessionRevocation(work)` commit rồi mới ghi mốc; `revokeSessionsInTx` trả ticket có `publish()` idempotent.
+  - `publish` trả boolean; circuit breaker 5 s.
+  - Ghi mốc bằng Lua chỉ khi mốc mới không nhỏ hơn mốc cũ; `requestId` chỉ nhận UUID.
+  - **AD-8 phải dùng `withSessionRevocation`.**
+- Full suite lộ lỗi có sẵn ở RSVP: hai người tranh chỗ cuối cùng, người thứ hai nhận 400 `CONSTRAINT_VIOLATED` thay vì được vào waitlist. Nguyên nhân: subquery đếm ghế đọc snapshot trước khi chờ khoá. Card **R-1** (backend, vùng RSVP) sửa; AD-7 commit sau khi full suite xanh.
