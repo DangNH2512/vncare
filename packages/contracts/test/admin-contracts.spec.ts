@@ -7,6 +7,7 @@ import {
 } from '../src/admin-audit';
 import {
   AdminEventActionResult,
+  AdminRoleActionResult,
   AdminUserActionResult,
   ChangeRoleBody,
   ReasonedActionBody,
@@ -77,6 +78,17 @@ describe('action results', () => {
     expect(AdminUserActionResult.safeParse({ id, status: 'suspended', role: 'member' }).success).toBe(true);
     expect(AdminEventActionResult.safeParse({ id, status: 'taken_down' }).success).toBe(true);
     expect(AdminEventActionResult.safeParse({ id, status: 'archived' }).success).toBe(false);
+  });
+});
+
+describe('sessionCutDeferred', () => {
+  it('is optional on both user action results and must be boolean', () => {
+    const user = { id, status: 'suspended', role: 'member' };
+    expect(AdminUserActionResult.parse(user)).not.toHaveProperty('sessionCutDeferred');
+    expect(AdminUserActionResult.parse({ ...user, sessionCutDeferred: true }).sessionCutDeferred).toBe(true);
+    expect(AdminUserActionResult.safeParse({ ...user, sessionCutDeferred: 'yes' }).success).toBe(false);
+    expect(AdminRoleActionResult.parse({ id, role: 'curator' })).not.toHaveProperty('sessionCutDeferred');
+    expect(AdminRoleActionResult.parse({ id, role: 'curator', sessionCutDeferred: true }).sessionCutDeferred).toBe(true);
   });
 });
 

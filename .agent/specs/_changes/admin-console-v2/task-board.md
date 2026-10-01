@@ -548,3 +548,9 @@ Cần Debate Gate: không. Các lựa chọn có đánh đổi (deny-list Redis 
   - Ghi mốc bằng Lua chỉ khi mốc mới không nhỏ hơn mốc cũ; `requestId` chỉ nhận UUID.
   - **AD-8 phải dùng `withSessionRevocation`.**
 - Full suite lộ lỗi có sẵn ở RSVP: hai người tranh chỗ cuối cùng, người thứ hai nhận 400 `CONSTRAINT_VIOLATED` thay vì được vào waitlist. Nguyên nhân: subquery đếm ghế đọc snapshot trước khi chờ khoá. Card **R-1** (backend, vùng RSVP) sửa; AD-7 commit sau khi full suite xanh.
+- AD-8 xong và đã qua review bảo mật (approved):
+  - Có 3 route `suspend`/`unsuspend`/`role`; mỗi thao tác dùng advisory lock, đọc lại actor từ DB, khoá hàng đích, audit trong cùng transaction và `withSessionRevocation`.
+  - Sau commit thì ngắt socket qua provider mỏng `ChatSocketControl` (không export `ChatGateway`). Gateway verify lại token sau khi join room.
+  - `sessionCutDeferred` optional trong contract kết quả; AD-10/AD-11 phải hiện cảnh báo khi cờ này là `true`.
+  - Rủi ro còn lại: `x-request-id` do client đặt (chỉ nhận UUID, dùng để tra cứu); `req.ip` phụ thuộc cấu hình `TRUST_PROXY` (T-18).
+- C-1 (commit 32fdacd): gửi chat nguyên tử theo hội thoại, `lock_timeout` 2 s → 503. Cách xử lý này đóng cả lỗi vượt quota tin mở đầu lẫn lỗi 403 khi replay đồng thời.

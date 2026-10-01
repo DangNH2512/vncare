@@ -49,7 +49,13 @@ export class ChatGateway implements OnGatewayConnection {
     }
     // The per-user room lets the server reach someone across every device they
     // have open, without knowing which conversations they are watching.
-    void client.join(room.user(userId));
+    await client.join(room.user(userId));
+    // A suspension can commit and call `disconnectUser` between the first
+    // verification and the join above; that call would find no socket in the
+    // room and this connection would then survive. Verifying again after the
+    // join closes the window: either the revocation mark is already visible
+    // here, or the socket is in the room before the disconnect fires.
+    if (!(await this.authenticate(client))) client.disconnect(true);
   }
 
   /**
@@ -131,6 +137,16 @@ export class ChatGateway implements OnGatewayConnection {
           lastMessageAt: message.createdAt,
         });
     }
+  }
+
+  /**
+   * Drops every open socket of one user, on every device. Used when an account
+   * is suspended or its role changes: sockets authenticate once at connect, so
+   * without this a revoked user keeps receiving signals until they reconnect.
+   */
+  disconnectUser(userId: string): void {
+    if (!this.server) return;
+    this.server.in(room.user(userId)).disconnectSockets(true);
   }
 
   /**

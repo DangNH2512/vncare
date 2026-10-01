@@ -31,6 +31,12 @@ export const AdminUserActionResult = z.object({
   id: z.uuid(),
   status: UserStatus,
   role: UserRole,
+  /**
+   * Present, and `true`, only when the deny-list mark could not be written
+   * (Redis down): the target's old access token then lives until it expires,
+   * at most 15 minutes. Omitted otherwise, never sent as `false`.
+   */
+  sessionCutDeferred: z.boolean().optional(),
 });
 export type AdminUserActionResultT = z.infer<typeof AdminUserActionResult>;
 
@@ -38,6 +44,12 @@ export type AdminUserActionResultT = z.infer<typeof AdminUserActionResult>;
 export const AdminRoleActionResult = z.object({
   id: z.uuid(),
   role: UserRole,
+  /**
+   * Present, and `true`, only when the deny-list mark could not be written
+   * (Redis down): the target's old access token then lives until it expires,
+   * at most 15 minutes. Omitted otherwise, never sent as `false`.
+   */
+  sessionCutDeferred: z.boolean().optional(),
 });
 export type AdminRoleActionResultT = z.infer<typeof AdminRoleActionResult>;
 
