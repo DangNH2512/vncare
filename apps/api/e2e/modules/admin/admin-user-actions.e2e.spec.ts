@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { AddressInfo } from 'node:net';
 import type { INestApplication } from '@nestjs/common';
 import type { Redis } from 'ioredis';
@@ -6,7 +7,6 @@ import { io, type Socket } from 'socket.io-client';
 import request from 'supertest';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import type { UserRoleT, UserStatusT } from '@dnc/contracts';
-import { withTransaction } from '../../../src/common/db/transaction.js';
 import { REDIS_CACHE } from '../../../src/redis/redis.module.js';
 import { AdminUserActionsRepository } from '../../../src/modules/admin/admin-user-actions.repository.js';
 import { AuditService } from '../../../src/modules/audit/index.js';
@@ -394,30 +394,42 @@ describe('admin user actions', () => {
 
     it('counts active super_admins with the real query', async () => {
       const repo = app.get(AdminUserActionsRepository);
-      const direct = async () =>
-        Number(
-          (
-            await pool.query<{ n: string }>(
-              `SELECT count(*) AS n FROM users
-                WHERE role = 'super_admin' AND status = 'active'
-                  AND deleted_at IS NULL AND anonymized_at IS NULL`,
-            )
-          ).rows[0]?.n,
+      // One repeatable-read transaction: the snapshot hides super_admins other
+      // spec files create or delete on the shared database, and everything this
+      // test writes is rolled back.
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN ISOLATION LEVEL REPEATABLE READ');
+        const direct = async () =>
+          Number(
+            (
+              await client.query<{ n: string }>(
+                `SELECT count(*) AS n FROM users
+                  WHERE role = 'super_admin' AND status = 'active'
+                    AND deleted_at IS NULL AND anonymized_at IS NULL`,
+              )
+            ).rows[0]?.n,
+          );
+        const before = await repo.countActiveSuperAdmins(client);
+        expect(before).toBe(await direct());
+        const { rows } = await client.query<{ id: string }>(
+          `INSERT INTO users (email, role) VALUES ($1, 'super_admin') RETURNING id`,
+          [`inv3-${randomUUID()}@example.test`],
         );
-      const counted = () => withTransaction(pool, (tx) => repo.countActiveSuperAdmins(tx));
-      const before = await counted();
-      expect(before).toBe(await direct());
-      const extra = await make({ role: 'super_admin' });
-      expect(await counted()).toBe(before + 1);
-      await pool.query(`UPDATE users SET status = 'suspended' WHERE id = $1`, [extra.id]);
-      expect(await counted()).toBe(before);
-      await pool.query(`UPDATE users SET status = 'active', deleted_at = now() WHERE id = $1`, [extra.id]);
-      expect(await counted()).toBe(before);
-      await pool.query(
-        `UPDATE users SET deleted_at = NULL, anonymized_at = now() WHERE id = $1`,
-        [extra.id],
-      );
-      expect(await counted()).toBe(before);
+        const id = rows[0]?.id as string;
+        const delta = async () => (await repo.countActiveSuperAdmins(client)) - before;
+        expect(await delta()).toBe(1);
+        expect(await direct()).toBe(before + 1);
+        await client.query(`UPDATE users SET status = 'suspended' WHERE id = $1`, [id]);
+        expect(await delta()).toBe(0);
+        await client.query(`UPDATE users SET status = 'active', deleted_at = now() WHERE id = $1`, [id]);
+        expect(await delta()).toBe(0);
+        await client.query(`UPDATE users SET deleted_at = NULL, anonymized_at = now() WHERE id = $1`, [id]);
+        expect(await delta()).toBe(0);
+      } finally {
+        await client.query('ROLLBACK').catch(() => undefined);
+        client.release();
+      }
     });
 
     it('INV-3 is serialised: with three active super_admins, two simultaneous suspensions of different targets leave two', async () => {

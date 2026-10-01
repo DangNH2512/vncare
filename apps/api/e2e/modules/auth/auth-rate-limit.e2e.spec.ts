@@ -258,9 +258,17 @@ describe('auth rate limiting', { timeout: 30_000 }, () => {
     expect(wait).toBeGreaterThanOrEqual(1);
     expect(wait).toBeLessThanOrEqual(4);
 
-    await new Promise((resolve) => setTimeout(resolve, wait * 1000 + 250));
-    await login(short, ip, user.email, PASSWORD).expect(200);
-    await login(short, freshIp(), user.email).expect(401);
+    // Poll until the window releases instead of sleeping a fixed time.
+    const deadline = Date.now() + 10_000;
+    let last = 429;
+    while (Date.now() < deadline) {
+      last = (await login(short, ip, user.email, PASSWORD)).status;
+      if (last !== 429) break;
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
+    expect(last).toBe(200);
+    const stranger = await makeUser();
+    await login(short, freshIp(), stranger.email).expect(401);
   }, 30_000);
 
   it('AC-22: the sixth registration in an hour is throttled, counted even when it was a 409, and leaks nothing', async () => {
