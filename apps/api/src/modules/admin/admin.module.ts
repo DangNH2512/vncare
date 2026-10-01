@@ -9,6 +9,9 @@ import { AdminService } from './admin.service.js';
 import { AdminAuditController } from './admin-audit.controller.js';
 import { AdminAuditRepository } from './admin-audit.repository.js';
 import { AdminAuditService } from './admin-audit.service.js';
+import { AdminEventActionsController } from './admin-event-actions.controller.js';
+import { AdminEventActionsRepository } from './admin-event-actions.repository.js';
+import { AdminEventActionsService } from './admin-event-actions.service.js';
 import { AdminEventsController } from './admin-events.controller.js';
 import { AdminEventsRepository } from './admin-events.repository.js';
 import { AdminEventsService } from './admin-events.service.js';
@@ -21,7 +24,7 @@ import { AdminUsersService } from './admin-users.service.js';
 
 @Module({
   imports: [HealthModule, MediaModule, AuditModule, ChatModule],
-  controllers: [AdminController, AdminUsersController, AdminEventsController, AdminAuditController, AdminUserActionsController],
+  controllers: [AdminController, AdminUsersController, AdminEventsController, AdminAuditController, AdminUserActionsController, AdminEventActionsController],
   providers: [
     AdminService,
     AdminRepository,
@@ -33,6 +36,8 @@ import { AdminUsersService } from './admin-users.service.js';
     AdminAuditRepository,
     AdminUserActionsService,
     AdminUserActionsRepository,
+    AdminEventActionsService,
+    AdminEventActionsRepository,
   ],
 })
 export class AdminModule {}

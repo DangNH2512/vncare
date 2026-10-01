@@ -57,4 +57,28 @@ export class AuditRepository {
     );
     return rows[0]?.id as string;
   }
+
+  /**
+   * `before.status` of the newest `event.suspended` line that no later
+   * `event.restored` line has closed, or null. Ordered by `id`: uuidv7 is
+   * generated at INSERT time, which for these actions happens while the event
+   * row lock is held, so id order is lock order; `created_at` (transaction
+   * start) is not.
+   */
+  async lastSuspensionSource(tx: PoolClient, eventId: string): Promise<string | null> {
+    const { rows } = await tx.query<{ status: string | null }>(
+      `SELECT s."before"->>'status' AS status
+         FROM audit_logs s
+        WHERE s.action = 'event.suspended' AND s.entity_type = 'event' AND s.entity_id = $1
+          AND s."after"->>'status' = 'suspended'
+          AND NOT EXISTS (
+            SELECT 1 FROM audit_logs r
+             WHERE r.action = 'event.restored' AND r.entity_type = 'event'
+               AND r.entity_id = $1 AND r.id > s.id)
+        ORDER BY s.id DESC
+        LIMIT 1`,
+      [eventId],
+    );
+    return rows[0]?.status ?? null;
+  }
 }

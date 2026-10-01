@@ -72,6 +72,11 @@ export class AuditService {
     });
   }
 
+  /** Status an event had before its current suspension, per the audit trail; null when unknown. */
+  lastSuspensionSource(tx: PoolClient, eventId: string): Promise<string | null> {
+    return this.repository.lastSuspensionSource(tx, eventId);
+  }
+
   private diff(value: Record<string, unknown> | null | undefined): Record<string, unknown> | null {
     if (value === undefined || value === null) return null;
     const parsed = AuditDiff.safeParse(value);
