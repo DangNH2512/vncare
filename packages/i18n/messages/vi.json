@@ -30,7 +30,8 @@
       "startingSoon": "Sắp bắt đầu",
       "almostFull": "Sắp kín chỗ",
       "yours": "Sự kiện của bạn",
-      "details": "Chi tiết"
+      "details": "Chi tiết",
+      "started": "Đã bắt đầu"
     },
     "status": {
       "draft": "Bản nháp — chỉ mình bạn thấy",
@@ -251,7 +252,8 @@
     "view": {
       "label": "Hiển thị kết quả dạng",
       "list": "Danh sách",
-      "map": "Bản đồ"
+      "map": "Bản đồ",
+      "swipe": "Vuốt"
     },
     "filters": {
       "button": "Bộ lọc",
@@ -271,18 +273,122 @@
       "wellness": "Sức khoẻ"
     },
     "results": {
-      "count": "Tìm thấy {count} sự kiện"
+      "count": "Tìm thấy {count} sự kiện",
+      "countOne": "Tìm thấy 1 sự kiện"
     },
     "map": {
       "title": "Bản đồ khu vực",
-      "aria": "Bản đồ sáu khu vực đầu tiên",
+      "aria": "Bản đồ {count} sự kiện",
       "markerAria": "{area}: {count} sự kiện",
-      "placeholderNote": "Bản đồ tương tác sắp ra mắt"
+      "unavailable": "Không tải được bản đồ. Hãy chuyển sang danh sách để tiếp tục xem.",
+      "empty": "Không có sự kiện nào để hiển thị trên bản đồ",
+      "showList": "Xem danh sách",
+      "popupOpen": "Xem sự kiện"
     },
     "empty": {
       "title": "Không có sự kiện nào khớp bộ lọc",
       "description": "Thử khu vực khác hoặc xoá bộ lọc — hoặc chính bạn tạo một sự kiện mới.",
-      "clear": "Xoá tất cả bộ lọc"
+      "clear": "Xoá tất cả bộ lọc",
+      "noData": {
+        "title": "Chưa có sự kiện sắp diễn ra",
+        "body": "Hãy là người đầu tiên đăng một sự kiện. Chỉ mất hai phút.",
+        "cta": "Tạo sự kiện"
+      },
+      "nearMe": {
+        "title": "Không có sự kiện nào trong {km} km",
+        "body": "Hãy thử bán kính rộng hơn hoặc khu vực khác.",
+        "cta": "Mở rộng tới {km} km"
+      }
+    },
+    "subtitle": "Sự kiện do cộng đồng Đà Nẵng đăng",
+    "when": {
+      "label": "Thời gian",
+      "aria": "Lọc theo ngày",
+      "upcoming": "Sắp diễn ra",
+      "today": "Hôm nay",
+      "weekend": "Cuối tuần",
+      "week": "Tuần này"
+    },
+    "nearMe": {
+      "label": "Gần tôi",
+      "radius": "Trong {km} km",
+      "radiusAria": "Bán kính tìm kiếm",
+      "locating": "Đang xác định vị trí của bạn…",
+      "denied": "Quyền vị trí đang bị chặn. Hãy cho phép trong cài đặt trình duyệt để xem sự kiện gần bạn, hoặc chọn một khu vực.",
+      "unavailable": "Không xác định được vị trí của bạn. Hãy thử lại hoặc chọn một khu vực."
+    },
+    "loadMore": "Xem thêm sự kiện",
+    "loadingMore": "Đang tải thêm sự kiện",
+    "loadMoreError": "Không tải thêm được sự kiện.",
+    "state": {
+      "loading": "Đang tải sự kiện",
+      "error": {
+        "title": "Không tải được sự kiện",
+        "body": "Kiểm tra kết nối rồi thử lại."
+      }
+    },
+    "swipe": {
+      "title": "Vuốt xem sự kiện",
+      "counter": "{i}/{n}",
+      "card": {
+        "aria": "{title}. Bắt đầu {time}. {area}. {seats}. Người tổ chức: {host}."
+      },
+      "action": {
+        "save": "Lưu",
+        "saveAria": "Lưu {title}",
+        "skip": "Bỏ qua",
+        "skipAria": "Bỏ qua {title}",
+        "details": "Chi tiết",
+        "detailsAria": "Mở chi tiết {title}",
+        "undo": "Hoàn tác",
+        "undoAria": "Hoàn tác thao tác vừa rồi"
+      },
+      "savedButton": "Đã lưu ({n})",
+      "savedButtonAria": "Mở danh sách đã lưu, đã lưu {n}",
+      "coach": "Vuốt phải để lưu, trái để bỏ qua, lên để xem chi tiết",
+      "coachOk": "Đã hiểu",
+      "keysHint": "Bàn phím: ← bỏ qua, → lưu, ↑ chi tiết, U hoàn tác",
+      "stack": {
+        "aria": "Chồng thẻ sự kiện, vuốt để chọn"
+      },
+      "announce": {
+        "saved": "Đã lưu {title}. Còn {left} sự kiện.",
+        "skipped": "Đã bỏ qua {title}. Còn {left} sự kiện.",
+        "undone": "Đã hoàn tác. {title} đã quay lại."
+      },
+      "sheet": {
+        "aria": "Chi tiết sự kiện",
+        "close": "Đóng",
+        "openFull": "Mở trang đầy đủ",
+        "saved": "Đã lưu",
+        "rsvpNote": "Lưu không phải là đăng ký. Hãy bấm Tham gia để giữ chỗ."
+      },
+      "summary": {
+        "title": "Kế hoạch của bạn",
+        "round": "Bạn đã xem {n} sự kiện",
+        "savedHeading": "Đã lưu ({n})",
+        "joinedHeading": "Bạn đã tham gia ({n})",
+        "skippedHeading": "Đã bỏ qua ({n})",
+        "empty": "Bạn chưa lưu sự kiện nào.",
+        "showAgain": "Hiện lại",
+        "remove": "Bỏ lưu",
+        "keepSwiping": "Tiếp tục vuốt",
+        "backToDeck": "Quay lại thẻ",
+        "clash": "Trùng giờ ngày {day}: {a} trùng với {b}.",
+        "clashJoined": "Trùng giờ: {a} trùng với {b}, sự kiện bạn đã tham gia.",
+        "endAssumed": "Chưa có giờ kết thúc nên tạm tính {hours} giờ.",
+        "unavailable": "Sự kiện này không còn khả dụng.",
+        "deviceNote": "Chỉ lưu trên thiết bị này. Đăng xuất sẽ xoá danh sách."
+      },
+      "done": {
+        "title": "Bạn đã xem hết rồi",
+        "body": "Mỗi ngày đều có sự kiện mới. Hãy xem các sự kiện đã lưu hoặc hiện lại những sự kiện đã bỏ qua.",
+        "showSkipped": "Hiện lại các sự kiện đã bỏ qua"
+      },
+      "storage": {
+        "unavailable": "Trình duyệt không cho lưu nên danh sách sẽ mất khi bạn đóng tab.",
+        "full": "Danh sách đã lưu đã đầy (50). Hãy bỏ lưu một sự kiện để lưu thêm."
+      }
     }
   },
   "errors": {
@@ -310,7 +416,8 @@
       "notFound": "Sự kiện này không còn tồn tại.",
       "notOrganizer": "Chỉ người tổ chức mới sửa được sự kiện này.",
       "underModeration": "Sự kiện đang bị tạm giữ để kiểm duyệt.",
-      "radiusRequiresCoordinates": "Tìm theo bán kính cần có cả vĩ độ và kinh độ."
+      "radiusRequiresCoordinates": "Tìm theo bán kính cần có cả vĩ độ và kinh độ.",
+      "dateRangeInvalid": "Khoảng ngày không hợp lệ."
     },
     "post": {
       "notFound": "Bài đăng này không còn tồn tại.",
@@ -520,10 +627,6 @@
       "title": "Không có gì ở địa chỉ này",
       "body": "Có thể đường dẫn đã cũ, hoặc trang đã chuyển đi. Bảng tin vẫn ở chỗ cũ."
     },
-    "discover": {
-      "title": "Trang Khám phá đang được dựng",
-      "body": "Duyệt theo khu vực và theo bản đồ là phần tiếp theo. Hiện tại bảng tin đã có đủ sự kiện, và các chip khu vực lọc được chúng."
-    },
     "myEvents": {
       "title": "Sự kiện của bạn sẽ nằm ở đây",
       "body": "Những buổi bạn tổ chức và những buổi bạn đã tham gia, gom về một chỗ. Chưa dựng xong."
@@ -555,7 +658,55 @@
     },
     "overview": {
       "title": "Tổng quan",
-      "body": "Bảng điều khiển vận hành của Da Nang Connect."
+      "body": "Bảng điều khiển vận hành của Da Nang Connect.",
+      "generatedAt": "Cập nhật lúc {time}",
+      "kpi": {
+        "heading": "Số liệu chính",
+        "windowHint": "7 ngày gần nhất",
+        "totalUsers": "Tổng người dùng",
+        "newUsers": "Người dùng mới (7 ngày)",
+        "upcomingEvents": "Sự kiện sắp tới",
+        "rsvps": "Lượt RSVP (7 ngày)",
+        "posts": "Bài đăng (7 ngày)",
+        "totalUsersHint": "Đếm mọi tài khoản chưa bị xoá hoặc ẩn danh, bất kể vai trò hay trạng thái. Có cả tài khoản test (@example.test) nên số ở môi trường local thường lớn. Không dùng cache: đây là ảnh chụp tại lúc tải trang.",
+        "newUsersHint": "Đếm các tài khoản chưa bị xoá hoặc ẩn danh và được tạo trong 7 x 24 giờ gần nhất, tính lùi từ đồng hồ cơ sở dữ liệu (không theo ngày lịch). Có cả tài khoản test (@example.test). Không dùng cache: đây là ảnh chụp tại lúc tải trang.",
+        "upcomingEventsHint": "Đếm sự kiện đã công khai, chưa bị xoá và buổi sớm nhất chưa bắt đầu. Sự kiện đang diễn ra không được tính. Không dùng cache: đây là ảnh chụp tại lúc tải trang.",
+        "rsvpsHint": "Đếm lượt RSVP tạo trong 7 x 24 giờ gần nhất (đồng hồ cơ sở dữ liệu, không theo ngày lịch), trừ lượt đã huỷ hoặc đã xoá. Lượt đang chờ (danh sách chờ, giữ chỗ) vẫn được tính, nên số này có thể lớn hơn số người thực sự có chỗ. Có cả lượt của tài khoản test. Không dùng cache: đây là ảnh chụp tại lúc tải trang.",
+        "postsHint": "Đếm bài đăng tạo trong 7 x 24 giờ gần nhất (đồng hồ cơ sở dữ liệu, không theo ngày lịch), ở trạng thái hiển thị và chưa bị xoá. Bài bị ẩn hoặc gỡ không được tính. Không dùng cache: đây là ảnh chụp tại lúc tải trang."
+      },
+      "system": {
+        "heading": "Tình trạng hệ thống",
+        "open": "Mở trang tình trạng hệ thống",
+        "unavailable": "Hiện không lấy được tình trạng hệ thống."
+      },
+      "members": {
+        "heading": "Thành viên mới nhất",
+        "empty": "Chưa có thành viên nào",
+        "col": {
+          "name": "Tên",
+          "handle": "Tên người dùng",
+          "trust": "Cấp tin cậy",
+          "joined": "Ngày tham gia"
+        }
+      },
+      "events": {
+        "heading": "Sự kiện mới nhất",
+        "empty": "Chưa có sự kiện nào",
+        "col": {
+          "title": "Sự kiện",
+          "area": "Khu vực",
+          "starts": "Bắt đầu",
+          "host": "Người tổ chức",
+          "status": "Trạng thái"
+        }
+      },
+      "state": {
+        "error": {
+          "title": "Không tải được trang tổng quan",
+          "body": "Kiểm tra kết nối rồi thử lại."
+        },
+        "noAccess": "Vai trò của bạn không xem được các số liệu này."
+      }
     },
     "header": {
       "signedInAs": "Đang đăng nhập: {name}"

@@ -27,6 +27,38 @@ export type MessageKey =
   | 'admin.nav.overview'
   | 'admin.nav.systemHealth'
   | 'admin.overview.body'
+  | 'admin.overview.events.col.area'
+  | 'admin.overview.events.col.host'
+  | 'admin.overview.events.col.starts'
+  | 'admin.overview.events.col.status'
+  | 'admin.overview.events.col.title'
+  | 'admin.overview.events.empty'
+  | 'admin.overview.events.heading'
+  | 'admin.overview.generatedAt'
+  | 'admin.overview.kpi.heading'
+  | 'admin.overview.kpi.newUsers'
+  | 'admin.overview.kpi.newUsersHint'
+  | 'admin.overview.kpi.posts'
+  | 'admin.overview.kpi.postsHint'
+  | 'admin.overview.kpi.rsvps'
+  | 'admin.overview.kpi.rsvpsHint'
+  | 'admin.overview.kpi.totalUsers'
+  | 'admin.overview.kpi.totalUsersHint'
+  | 'admin.overview.kpi.upcomingEvents'
+  | 'admin.overview.kpi.upcomingEventsHint'
+  | 'admin.overview.kpi.windowHint'
+  | 'admin.overview.members.col.handle'
+  | 'admin.overview.members.col.joined'
+  | 'admin.overview.members.col.name'
+  | 'admin.overview.members.col.trust'
+  | 'admin.overview.members.empty'
+  | 'admin.overview.members.heading'
+  | 'admin.overview.state.error.body'
+  | 'admin.overview.state.error.title'
+  | 'admin.overview.state.noAccess'
+  | 'admin.overview.system.heading'
+  | 'admin.overview.system.open'
+  | 'admin.overview.system.unavailable'
   | 'admin.overview.title'
   | 'area.all'
   | 'area.eventCount'
@@ -56,8 +88,6 @@ export type MessageKey =
   | 'blank.backHome'
   | 'blank.createEvent.body'
   | 'blank.createEvent.title'
-  | 'blank.discover.body'
-  | 'blank.discover.title'
   | 'blank.myEvents.body'
   | 'blank.myEvents.title'
   | 'blank.notFound.body'
@@ -84,6 +114,12 @@ export type MessageKey =
   | 'discover.category.wellness'
   | 'discover.empty.clear'
   | 'discover.empty.description'
+  | 'discover.empty.nearMe.body'
+  | 'discover.empty.nearMe.cta'
+  | 'discover.empty.nearMe.title'
+  | 'discover.empty.noData.body'
+  | 'discover.empty.noData.cta'
+  | 'discover.empty.noData.title'
   | 'discover.empty.title'
   | 'discover.filters.activeCount'
   | 'discover.filters.button'
@@ -93,17 +129,86 @@ export type MessageKey =
   | 'discover.filters.done'
   | 'discover.filters.freeOnly'
   | 'discover.filters.title'
+  | 'discover.loadMore'
+  | 'discover.loadMoreError'
+  | 'discover.loadingMore'
   | 'discover.map.aria'
+  | 'discover.map.empty'
   | 'discover.map.markerAria'
-  | 'discover.map.placeholderNote'
+  | 'discover.map.popupOpen'
+  | 'discover.map.showList'
   | 'discover.map.title'
+  | 'discover.map.unavailable'
+  | 'discover.nearMe.denied'
+  | 'discover.nearMe.label'
+  | 'discover.nearMe.locating'
+  | 'discover.nearMe.radius'
+  | 'discover.nearMe.radiusAria'
+  | 'discover.nearMe.unavailable'
   | 'discover.results.count'
+  | 'discover.results.countOne'
   | 'discover.search.label'
   | 'discover.search.placeholder'
+  | 'discover.state.error.body'
+  | 'discover.state.error.title'
+  | 'discover.state.loading'
+  | 'discover.subtitle'
+  | 'discover.swipe.action.details'
+  | 'discover.swipe.action.detailsAria'
+  | 'discover.swipe.action.save'
+  | 'discover.swipe.action.saveAria'
+  | 'discover.swipe.action.skip'
+  | 'discover.swipe.action.skipAria'
+  | 'discover.swipe.action.undo'
+  | 'discover.swipe.action.undoAria'
+  | 'discover.swipe.announce.saved'
+  | 'discover.swipe.announce.skipped'
+  | 'discover.swipe.announce.undone'
+  | 'discover.swipe.card.aria'
+  | 'discover.swipe.coach'
+  | 'discover.swipe.coachOk'
+  | 'discover.swipe.counter'
+  | 'discover.swipe.done.body'
+  | 'discover.swipe.done.showSkipped'
+  | 'discover.swipe.done.title'
+  | 'discover.swipe.keysHint'
+  | 'discover.swipe.savedButton'
+  | 'discover.swipe.savedButtonAria'
+  | 'discover.swipe.sheet.aria'
+  | 'discover.swipe.sheet.close'
+  | 'discover.swipe.sheet.openFull'
+  | 'discover.swipe.sheet.rsvpNote'
+  | 'discover.swipe.sheet.saved'
+  | 'discover.swipe.stack.aria'
+  | 'discover.swipe.storage.full'
+  | 'discover.swipe.storage.unavailable'
+  | 'discover.swipe.summary.backToDeck'
+  | 'discover.swipe.summary.clash'
+  | 'discover.swipe.summary.clashJoined'
+  | 'discover.swipe.summary.deviceNote'
+  | 'discover.swipe.summary.empty'
+  | 'discover.swipe.summary.endAssumed'
+  | 'discover.swipe.summary.joinedHeading'
+  | 'discover.swipe.summary.keepSwiping'
+  | 'discover.swipe.summary.remove'
+  | 'discover.swipe.summary.round'
+  | 'discover.swipe.summary.savedHeading'
+  | 'discover.swipe.summary.showAgain'
+  | 'discover.swipe.summary.skippedHeading'
+  | 'discover.swipe.summary.title'
+  | 'discover.swipe.summary.unavailable'
+  | 'discover.swipe.title'
   | 'discover.title'
   | 'discover.view.label'
   | 'discover.view.list'
   | 'discover.view.map'
+  | 'discover.view.swipe'
+  | 'discover.when.aria'
+  | 'discover.when.label'
+  | 'discover.when.today'
+  | 'discover.when.upcoming'
+  | 'discover.when.week'
+  | 'discover.when.weekend'
   | 'errors.auth.accountSuspended'
   | 'errors.auth.accountUnavailable'
   | 'errors.auth.emailTaken'
@@ -133,6 +238,7 @@ export type MessageKey =
   | 'errors.common.duplicate'
   | 'errors.common.referenceNotFound'
   | 'errors.common.retryLater'
+  | 'errors.event.dateRangeInvalid'
   | 'errors.event.notFound'
   | 'errors.event.notOrganizer'
   | 'errors.event.radiusRequiresCoordinates'
@@ -151,6 +257,7 @@ export type MessageKey =
   | 'event.card.details'
   | 'event.card.hostedBy'
   | 'event.card.price'
+  | 'event.card.started'
   | 'event.card.startingSoon'
   | 'event.card.yours'
   | 'event.create.error'
@@ -422,6 +529,38 @@ export const MESSAGE_KEYS = [
   'admin.nav.overview',
   'admin.nav.systemHealth',
   'admin.overview.body',
+  'admin.overview.events.col.area',
+  'admin.overview.events.col.host',
+  'admin.overview.events.col.starts',
+  'admin.overview.events.col.status',
+  'admin.overview.events.col.title',
+  'admin.overview.events.empty',
+  'admin.overview.events.heading',
+  'admin.overview.generatedAt',
+  'admin.overview.kpi.heading',
+  'admin.overview.kpi.newUsers',
+  'admin.overview.kpi.newUsersHint',
+  'admin.overview.kpi.posts',
+  'admin.overview.kpi.postsHint',
+  'admin.overview.kpi.rsvps',
+  'admin.overview.kpi.rsvpsHint',
+  'admin.overview.kpi.totalUsers',
+  'admin.overview.kpi.totalUsersHint',
+  'admin.overview.kpi.upcomingEvents',
+  'admin.overview.kpi.upcomingEventsHint',
+  'admin.overview.kpi.windowHint',
+  'admin.overview.members.col.handle',
+  'admin.overview.members.col.joined',
+  'admin.overview.members.col.name',
+  'admin.overview.members.col.trust',
+  'admin.overview.members.empty',
+  'admin.overview.members.heading',
+  'admin.overview.state.error.body',
+  'admin.overview.state.error.title',
+  'admin.overview.state.noAccess',
+  'admin.overview.system.heading',
+  'admin.overview.system.open',
+  'admin.overview.system.unavailable',
   'admin.overview.title',
   'area.all',
   'area.eventCount',
@@ -451,8 +590,6 @@ export const MESSAGE_KEYS = [
   'blank.backHome',
   'blank.createEvent.body',
   'blank.createEvent.title',
-  'blank.discover.body',
-  'blank.discover.title',
   'blank.myEvents.body',
   'blank.myEvents.title',
   'blank.notFound.body',
@@ -479,6 +616,12 @@ export const MESSAGE_KEYS = [
   'discover.category.wellness',
   'discover.empty.clear',
   'discover.empty.description',
+  'discover.empty.nearMe.body',
+  'discover.empty.nearMe.cta',
+  'discover.empty.nearMe.title',
+  'discover.empty.noData.body',
+  'discover.empty.noData.cta',
+  'discover.empty.noData.title',
   'discover.empty.title',
   'discover.filters.activeCount',
   'discover.filters.button',
@@ -488,17 +631,86 @@ export const MESSAGE_KEYS = [
   'discover.filters.done',
   'discover.filters.freeOnly',
   'discover.filters.title',
+  'discover.loadMore',
+  'discover.loadMoreError',
+  'discover.loadingMore',
   'discover.map.aria',
+  'discover.map.empty',
   'discover.map.markerAria',
-  'discover.map.placeholderNote',
+  'discover.map.popupOpen',
+  'discover.map.showList',
   'discover.map.title',
+  'discover.map.unavailable',
+  'discover.nearMe.denied',
+  'discover.nearMe.label',
+  'discover.nearMe.locating',
+  'discover.nearMe.radius',
+  'discover.nearMe.radiusAria',
+  'discover.nearMe.unavailable',
   'discover.results.count',
+  'discover.results.countOne',
   'discover.search.label',
   'discover.search.placeholder',
+  'discover.state.error.body',
+  'discover.state.error.title',
+  'discover.state.loading',
+  'discover.subtitle',
+  'discover.swipe.action.details',
+  'discover.swipe.action.detailsAria',
+  'discover.swipe.action.save',
+  'discover.swipe.action.saveAria',
+  'discover.swipe.action.skip',
+  'discover.swipe.action.skipAria',
+  'discover.swipe.action.undo',
+  'discover.swipe.action.undoAria',
+  'discover.swipe.announce.saved',
+  'discover.swipe.announce.skipped',
+  'discover.swipe.announce.undone',
+  'discover.swipe.card.aria',
+  'discover.swipe.coach',
+  'discover.swipe.coachOk',
+  'discover.swipe.counter',
+  'discover.swipe.done.body',
+  'discover.swipe.done.showSkipped',
+  'discover.swipe.done.title',
+  'discover.swipe.keysHint',
+  'discover.swipe.savedButton',
+  'discover.swipe.savedButtonAria',
+  'discover.swipe.sheet.aria',
+  'discover.swipe.sheet.close',
+  'discover.swipe.sheet.openFull',
+  'discover.swipe.sheet.rsvpNote',
+  'discover.swipe.sheet.saved',
+  'discover.swipe.stack.aria',
+  'discover.swipe.storage.full',
+  'discover.swipe.storage.unavailable',
+  'discover.swipe.summary.backToDeck',
+  'discover.swipe.summary.clash',
+  'discover.swipe.summary.clashJoined',
+  'discover.swipe.summary.deviceNote',
+  'discover.swipe.summary.empty',
+  'discover.swipe.summary.endAssumed',
+  'discover.swipe.summary.joinedHeading',
+  'discover.swipe.summary.keepSwiping',
+  'discover.swipe.summary.remove',
+  'discover.swipe.summary.round',
+  'discover.swipe.summary.savedHeading',
+  'discover.swipe.summary.showAgain',
+  'discover.swipe.summary.skippedHeading',
+  'discover.swipe.summary.title',
+  'discover.swipe.summary.unavailable',
+  'discover.swipe.title',
   'discover.title',
   'discover.view.label',
   'discover.view.list',
   'discover.view.map',
+  'discover.view.swipe',
+  'discover.when.aria',
+  'discover.when.label',
+  'discover.when.today',
+  'discover.when.upcoming',
+  'discover.when.week',
+  'discover.when.weekend',
   'errors.auth.accountSuspended',
   'errors.auth.accountUnavailable',
   'errors.auth.emailTaken',
@@ -528,6 +740,7 @@ export const MESSAGE_KEYS = [
   'errors.common.duplicate',
   'errors.common.referenceNotFound',
   'errors.common.retryLater',
+  'errors.event.dateRangeInvalid',
   'errors.event.notFound',
   'errors.event.notOrganizer',
   'errors.event.radiusRequiresCoordinates',
@@ -546,6 +759,7 @@ export const MESSAGE_KEYS = [
   'event.card.details',
   'event.card.hostedBy',
   'event.card.price',
+  'event.card.started',
   'event.card.startingSoon',
   'event.card.yours',
   'event.create.error',

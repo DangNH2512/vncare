@@ -30,7 +30,8 @@
       "startingSoon": "Starting soon",
       "almostFull": "Almost full",
       "yours": "Your event",
-      "details": "Details"
+      "details": "Details",
+      "started": "Already started"
     },
     "status": {
       "draft": "Draft — only you can see this",
@@ -251,7 +252,8 @@
     "view": {
       "label": "Show results as",
       "list": "List",
-      "map": "Map"
+      "map": "Map",
+      "swipe": "Swipe"
     },
     "filters": {
       "button": "Filters",
@@ -271,18 +273,122 @@
       "wellness": "Wellness"
     },
     "results": {
-      "count": "{count} events found"
+      "count": "{count} events found",
+      "countOne": "1 event found"
     },
     "map": {
       "title": "Area map",
-      "aria": "Map of the six launch areas",
+      "aria": "Map of {count} events",
       "markerAria": "{area}: {count} events",
-      "placeholderNote": "Interactive map coming soon"
+      "unavailable": "The map could not load. Show the list to keep browsing.",
+      "empty": "No events to show on the map",
+      "showList": "Show list",
+      "popupOpen": "View event"
     },
     "empty": {
       "title": "No events match your filters",
       "description": "Try another area or clear the filters — or be the one who starts something new.",
-      "clear": "Clear all filters"
+      "clear": "Clear all filters",
+      "noData": {
+        "title": "No upcoming events yet",
+        "body": "Be the first to post one. It takes two minutes.",
+        "cta": "Create an event"
+      },
+      "nearMe": {
+        "title": "No events within {km} km",
+        "body": "Try a wider radius or another area.",
+        "cta": "Widen to {km} km"
+      }
+    },
+    "subtitle": "Events posted by people in Da Nang",
+    "when": {
+      "label": "When",
+      "aria": "Filter by date",
+      "upcoming": "Upcoming",
+      "today": "Today",
+      "weekend": "Weekend",
+      "week": "This week"
+    },
+    "nearMe": {
+      "label": "Near me",
+      "radius": "Within {km} km",
+      "radiusAria": "Search radius",
+      "locating": "Finding your location…",
+      "denied": "Location access is blocked. Allow it in your browser settings to see events near you, or pick an area instead.",
+      "unavailable": "We could not find your location. Try again or pick an area instead."
+    },
+    "loadMore": "Show more events",
+    "loadingMore": "Loading more events",
+    "loadMoreError": "Could not load more events.",
+    "state": {
+      "loading": "Loading events",
+      "error": {
+        "title": "We could not load events",
+        "body": "Check your connection and try again."
+      }
+    },
+    "swipe": {
+      "title": "Swipe through events",
+      "counter": "{i} of {n}",
+      "card": {
+        "aria": "{title}. Starts {time}. {area}. {seats}. Hosted by {host}."
+      },
+      "action": {
+        "save": "Save",
+        "saveAria": "Save {title}",
+        "skip": "Skip",
+        "skipAria": "Skip {title}",
+        "details": "Details",
+        "detailsAria": "Open details for {title}",
+        "undo": "Undo",
+        "undoAria": "Undo the last action"
+      },
+      "savedButton": "Saved ({n})",
+      "savedButtonAria": "Open saved events, {n} saved",
+      "coach": "Swipe right to save, left to skip, up for details",
+      "coachOk": "Got it",
+      "keysHint": "Keyboard: ← skip, → save, ↑ details, U undo",
+      "stack": {
+        "aria": "Event cards, swipe to choose"
+      },
+      "announce": {
+        "saved": "Saved {title}. {left} left.",
+        "skipped": "Skipped {title}. {left} left.",
+        "undone": "Undid the last action. {title} is back."
+      },
+      "sheet": {
+        "aria": "Event details",
+        "close": "Close",
+        "openFull": "Open full page",
+        "saved": "Saved",
+        "rsvpNote": "Saving is not signing up. Press Join to reserve a spot."
+      },
+      "summary": {
+        "title": "Your plan",
+        "round": "You have seen {n} events",
+        "savedHeading": "Saved ({n})",
+        "joinedHeading": "You joined ({n})",
+        "skippedHeading": "Skipped ({n})",
+        "empty": "You have not saved any events yet.",
+        "showAgain": "Show again",
+        "remove": "Remove",
+        "keepSwiping": "Keep swiping",
+        "backToDeck": "Back to cards",
+        "clash": "Time clash on {day}: {a} overlaps {b}.",
+        "clashJoined": "Time clash: {a} overlaps {b}, an event you joined.",
+        "endAssumed": "No end time set, so we assumed {hours} hours.",
+        "unavailable": "This event is no longer available.",
+        "deviceNote": "Saved on this device only. Signing out removes the list."
+      },
+      "done": {
+        "title": "You have seen everything for now",
+        "body": "New events appear every day. See your saved events or bring back the ones you skipped.",
+        "showSkipped": "Show skipped events again"
+      },
+      "storage": {
+        "unavailable": "This browser will not let us save, so your list is lost when you close the tab.",
+        "full": "Your saved list is full (50). Remove one to save another."
+      }
     }
   },
   "errors": {
@@ -310,7 +416,8 @@
       "notFound": "This event no longer exists.",
       "notOrganizer": "Only the organizer can change this event.",
       "underModeration": "This event is on hold pending moderation.",
-      "radiusRequiresCoordinates": "A radius search needs a latitude and a longitude."
+      "radiusRequiresCoordinates": "A radius search needs a latitude and a longitude.",
+      "dateRangeInvalid": "The date range is not valid."
     },
     "post": {
       "notFound": "This post no longer exists.",
@@ -520,10 +627,6 @@
       "title": "There is nothing at this address",
       "body": "The link may be old, or the page may have moved. The feed is still where it was."
     },
-    "discover": {
-      "title": "Discover is being built",
-      "body": "Browsing by area and by map is next. For now the feed carries every event, and the area chips filter it."
-    },
     "myEvents": {
       "title": "Your events will collect here",
       "body": "Everything you host and everything you have joined, in one place. Not built yet."
@@ -555,7 +658,55 @@
     },
     "overview": {
       "title": "Overview",
-      "body": "Operations console for Da Nang Connect."
+      "body": "Operations console for Da Nang Connect.",
+      "generatedAt": "Updated {time}",
+      "kpi": {
+        "heading": "Key numbers",
+        "windowHint": "Rolling 7 days",
+        "totalUsers": "Total users",
+        "newUsers": "New users (7 days)",
+        "upcomingEvents": "Upcoming events",
+        "rsvps": "RSVPs (7 days)",
+        "posts": "Posts (7 days)",
+        "totalUsersHint": "Counts every account that is not deleted or anonymised, whatever its role or status. Includes test accounts (@example.test), so local numbers run high. Not cached: a snapshot taken when the page loaded.",
+        "newUsersHint": "Counts accounts that are not deleted or anonymised and were created in the last 7 x 24 hours, measured back from the database clock (not calendar days). Includes test accounts (@example.test). Not cached: a snapshot taken when the page loaded.",
+        "upcomingEventsHint": "Counts published, non-deleted events whose earliest occurrence has not started yet. An event already in progress is not counted. Not cached: a snapshot taken when the page loaded.",
+        "rsvpsHint": "Counts RSVPs created in the last 7 x 24 hours (database clock, not calendar days), excluding cancelled and deleted ones. Waitlisted and held RSVPs are included, so this can be higher than the number of people who actually have a place. Includes RSVPs by test accounts. Not cached: a snapshot taken when the page loaded.",
+        "postsHint": "Counts posts created in the last 7 x 24 hours (database clock, not calendar days) that are visible and not deleted. Hidden and removed posts are excluded. Not cached: a snapshot taken when the page loaded."
+      },
+      "system": {
+        "heading": "System status",
+        "open": "Open system health",
+        "unavailable": "System status is unavailable right now."
+      },
+      "members": {
+        "heading": "Newest members",
+        "empty": "No members yet",
+        "col": {
+          "name": "Name",
+          "handle": "Username",
+          "trust": "Trust level",
+          "joined": "Joined"
+        }
+      },
+      "events": {
+        "heading": "Newest events",
+        "empty": "No events yet",
+        "col": {
+          "title": "Event",
+          "area": "Area",
+          "starts": "Starts",
+          "host": "Host",
+          "status": "Status"
+        }
+      },
+      "state": {
+        "error": {
+          "title": "Could not load the overview",
+          "body": "Check your connection and try again."
+        },
+        "noAccess": "Your role cannot see these numbers."
+      }
     },
     "header": {
       "signedInAs": "Signed in as {name}"
