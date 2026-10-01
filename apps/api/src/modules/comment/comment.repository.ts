@@ -190,14 +190,6 @@ export class CommentRepository {
     return rows[0] ?? null;
   }
 
-  async findAuthor(id: string): Promise<string | null> {
-    const { rows } = await this.pool.query<{ user_id: string }>(
-      `SELECT user_id FROM comments WHERE id = $1 AND deleted_at IS NULL`,
-      [id],
-    );
-    return rows[0]?.user_id ?? null;
-  }
-
   /**
    * Reads one page of a thread.
    *
@@ -277,7 +269,7 @@ export class CommentRepository {
            is_edited          = true,
            edited_at          = now(),
            updated_at         = now()
-         WHERE id = $1 AND deleted_at IS NULL
+         WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'
          RETURNING *
        )
        SELECT ${SELECT_COLUMNS}

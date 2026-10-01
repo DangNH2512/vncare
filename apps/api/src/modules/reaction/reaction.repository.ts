@@ -22,7 +22,16 @@ export interface ReactionSummaryRow {
 /** Existence probe per target: a reaction may only attach to live, visible content. */
 const EXISTS_SQL: Readonly<Record<ReactionTargetT, string>> = {
   post: `SELECT 1 FROM posts WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'`,
-  comment: `SELECT 1 FROM comments WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'`,
+  // A comment is only reachable while its parent is: a hidden post or event hides its thread.
+  comment: `SELECT 1 FROM comments c
+             WHERE c.id = $1 AND c.deleted_at IS NULL AND c.status = 'visible'
+               AND (
+                 EXISTS (SELECT 1 FROM posts p
+                          WHERE p.id = c.post_id AND p.deleted_at IS NULL AND p.status = 'visible')
+                 OR EXISTS (SELECT 1 FROM events e
+                             WHERE e.id = c.event_id AND e.deleted_at IS NULL
+                               AND e.status IN ('published', 'cancelled'))
+               )`,
   // Cancelled events keep their reactions: interest in a called-off event is still a signal.
   event: `SELECT 1 FROM events WHERE id = $1 AND deleted_at IS NULL AND status IN ('published', 'cancelled')`,
 };

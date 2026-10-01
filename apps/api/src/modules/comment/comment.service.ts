@@ -155,14 +155,14 @@ export class CommentService {
     patch: CommentUpdateRequestT,
     viewer: CurrentUserContext,
   ): Promise<CommentResponseT> {
-    const author = await this.comments.findAuthor(id);
-    if (!author) throw this.notFound();
-    if (author !== viewer.id) {
+    const existing = await this.loadOrThrow(id, viewer);
+    if (existing.user_id !== viewer.id) {
       throw new ForbiddenException({
         code: 'NOT_COMMENT_AUTHOR',
         messageKey: 'errors.comment.notAuthor',
       });
     }
+    await this.assertThreadOpen(existing);
 
     try {
       const row = await this.comments.update(id, patch, viewer.id);
@@ -183,8 +183,9 @@ export class CommentService {
    * removeAsOwner below.
    */
   async remove(id: string, viewer: CurrentUserContext): Promise<void> {
-    const row = await this.comments.findById(id, viewer.id);
-    if (!row) throw this.notFound();
+    // Deleting is allowed on a cancelled event's thread (retracting your own
+    // words is not "writing"), but never on a hidden one.
+    const row = await this.loadOrThrow(id, viewer);
 
     if (row.user_id !== viewer.id) {
       const target = this.targetOf(row);
@@ -221,6 +222,7 @@ export class CommentService {
         messageKey: 'errors.comment.notThreadOwner',
       });
     }
+    await this.assertThreadOpen(row);
 
     // Checked before any write: replies have no pinned slot, and rejecting one
     // must leave the existing pin untouched.
@@ -236,13 +238,31 @@ export class CommentService {
     return toCommentResponse(updated);
   }
 
+  /**
+   * Loads a comment the viewer may know exists. A comment under a hidden post
+   * or a non-public event answers 404 like a comment that does not exist, for
+   * reads and writes alike.
+   */
   private async loadOrThrow(
     id: string,
     viewer: CurrentUserContext | null,
   ): Promise<CommentRow> {
     const row = await this.comments.findById(id, viewer?.id ?? null);
     if (!row) throw this.notFound();
+    if ((await this.comments.targetState(this.targetOf(row))) === 'missing') {
+      throw this.notFound();
+    }
     return row;
+  }
+
+  /** Edits and pins need an open thread; a cancelled event is read-only. */
+  private async assertThreadOpen(row: CommentRow): Promise<void> {
+    if ((await this.comments.targetState(this.targetOf(row))) === 'closed') {
+      throw new ForbiddenException({
+        code: 'COMMENTS_CLOSED',
+        messageKey: 'errors.comment.closed',
+      });
+    }
   }
 
   private targetOf(row: CommentRow): CommentTargetRef {
