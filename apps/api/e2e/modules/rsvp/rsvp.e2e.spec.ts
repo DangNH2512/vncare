@@ -255,4 +255,61 @@ describe('rsvp module', () => {
       .expect(200);
     expect(event.body.data.seatsTaken).toBe(1);
   });
+
+  /** More racers than seats: exactly capacity confirmed, the rest queued, never a 4xx/5xx. */
+  it('admits exactly capacity when five people race for two seats', async () => {
+    const { eventId, occurrenceId } = await publishEvent(2);
+    const racers = await Promise.all(Array.from({ length: 5 }, () => createActor(app)));
+
+    const results = await Promise.all(racers.map((actor) => join(occurrenceId, actor)));
+    expect(results.map((r) => r.status)).toEqual([201, 201, 201, 201, 201]);
+
+    const statuses = results.map((r) => r.body.data.status as string);
+    expect(statuses.filter((v) => v === 'confirmed')).toHaveLength(2);
+    expect(statuses.filter((v) => v === 'waitlisted')).toHaveLength(3);
+    const positions = results
+      .filter((r) => r.body.data.status === 'waitlisted')
+      .map((r) => r.body.data.waitlistPosition as number)
+      .toSorted((x, y) => x - y);
+    expect(positions).toEqual([1, 2, 3]);
+
+    const event = await request(app.getHttpServer())
+      .get(`/api/v1/events/${eventId}`)
+      .set(racers[0]!.headers)
+      .expect(200);
+    expect(event.body.data.seatsTaken).toBe(2);
+  });
+
+  /**
+   * The holder of the last seat cancels while a newcomer joins. Whichever
+   * transaction takes the lock first, the newcomer ends up seated and the seat
+   * count stays at one.
+   */
+  it('hands the last seat over when a cancel races a join', async () => {
+    const { eventId, occurrenceId } = await publishEvent(1);
+    const holder = await createActor(app);
+    const newcomer = await createActor(app);
+    await join(occurrenceId, holder).expect(201);
+
+    const [cancelled, joined] = await Promise.all([
+      request(app.getHttpServer())
+        .delete(`/api/v1/occurrences/${occurrenceId}/rsvps`)
+        .set(holder.headers),
+      join(occurrenceId, newcomer),
+    ]);
+    expect(cancelled.status).toBe(204);
+    expect(joined.status).toBe(201);
+
+    const mine = await request(app.getHttpServer())
+      .get(`/api/v1/occurrences/${occurrenceId}/rsvps/me`)
+      .set(newcomer.headers)
+      .expect(200);
+    expect(mine.body.data.status).toBe('confirmed');
+
+    const event = await request(app.getHttpServer())
+      .get(`/api/v1/events/${eventId}`)
+      .set(newcomer.headers)
+      .expect(200);
+    expect(event.body.data.seatsTaken).toBe(1);
+  });
 });

@@ -59,36 +59,58 @@ export class RsvpRepository {
   }
 
   /**
-   * Locks the occurrence row and reads everything the decision needs.
+   * Locks the occurrence row, then reads everything the decision needs.
    *
-   * `FOR UPDATE OF o` serialises admissions per occurrence: two people racing
-   * for the last seat queue here, and the second one sees the first one's row
-   * in the recount. The `assert_capacity` trigger stays as the last line of
-   * defence, but with this lock it should never fire.
+   * Two statements on purpose. Under READ COMMITTED a statement's snapshot is
+   * taken when it starts, before it waits on a row lock. A single
+   * `SELECT ... (subquery count) ... FOR UPDATE` therefore counts seats from
+   * before the lock was granted, so the second racer would still see the seat
+   * the first racer just took and trip `assert_capacity`. The recount below is
+   * a new statement, so it gets a fresh snapshot after the lock is held.
+   *
+   * Lock order (every write path in this module): idempotency key insert ->
+   * event_occurrences row (this method) -> rsvps / waitlist_entries rows. The
+   * `assert_capacity` trigger re-locks the same occurrence row, a no-op for
+   * the holder, so no path takes a lock in the opposite order. It stays as the
+   * last line of defence but should never fire.
    */
   async lockOccurrence(
     tx: PoolClient,
     occurrenceId: string,
     userId: string,
   ): Promise<LockedOccurrence | null> {
-    const { rows } = await tx.query<LockedOccurrence>(
+    const locked = await tx.query<Omit<LockedOccurrence, 'seats_taken' | 'existing_active_status'>>(
       `SELECT o.id, o.event_id, o.starts_at, o.capacity,
-              e.status AS event_status, e.required_trust_level, e.organizer_id,
-              (SELECT count(*)::int FROM rsvps r
-                WHERE r.occurrence_id = o.id
-                  AND r.status IN ('confirmed', 'held', 'attended', 'no_show')
-                  AND r.deleted_at IS NULL) AS seats_taken,
-              (SELECT r.status FROM rsvps r
-                WHERE r.occurrence_id = o.id AND r.user_id = $2
-                  AND r.status IN ('confirmed', 'held', 'waitlisted')
-                  AND r.deleted_at IS NULL) AS existing_active_status
+              e.status AS event_status, e.required_trust_level, e.organizer_id
          FROM event_occurrences o
          JOIN events e ON e.id = o.event_id
         WHERE o.id = $1 AND o.deleted_at IS NULL AND e.deleted_at IS NULL
         FOR UPDATE OF o`,
+      [occurrenceId],
+    );
+    const occurrence = locked.rows[0];
+    if (!occurrence) return null;
+
+    const counts = await tx.query<{
+      seats_taken: number;
+      existing_active_status: RsvpStatusT | null;
+    }>(
+      `SELECT count(*) FILTER (
+                WHERE r.status IN ('confirmed', 'held', 'attended', 'no_show'))::int
+                AS seats_taken,
+              (array_agg(r.status) FILTER (
+                WHERE r.user_id = $2
+                  AND r.status IN ('confirmed', 'held', 'waitlisted')))[1] AS existing_active_status
+         FROM rsvps r
+        WHERE r.occurrence_id = $1 AND r.deleted_at IS NULL`,
       [occurrenceId, userId],
     );
-    return rows[0] ?? null;
+    const row = counts.rows[0];
+    return {
+      ...occurrence,
+      seats_taken: row?.seats_taken ?? 0,
+      existing_active_status: row?.existing_active_status ?? null,
+    };
   }
 
   async insertRsvp(
