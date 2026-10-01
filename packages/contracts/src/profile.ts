@@ -55,6 +55,8 @@ export const PublicProfileResponse = z.object({
   ratingAvg: z.number().nullable(),
   ratingCount: z.number().int().nonnegative(),
   memberSince: z.iso.datetime(),
+  /** Null for guests and for the member's own profile. */
+  viewerIsFollowing: z.boolean().nullable(),
 });
 export type PublicProfileResponseT = z.infer<typeof PublicProfileResponse>;
 

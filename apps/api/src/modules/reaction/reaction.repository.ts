@@ -23,7 +23,8 @@ export interface ReactionSummaryRow {
 const EXISTS_SQL: Readonly<Record<ReactionTargetT, string>> = {
   post: `SELECT 1 FROM posts WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'`,
   comment: `SELECT 1 FROM comments WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'`,
-  event: `SELECT 1 FROM events WHERE id = $1 AND deleted_at IS NULL`,
+  // Cancelled events keep their reactions: interest in a called-off event is still a signal.
+  event: `SELECT 1 FROM events WHERE id = $1 AND deleted_at IS NULL AND status IN ('published', 'cancelled')`,
 };
 
 /**

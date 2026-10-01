@@ -105,7 +105,7 @@ export class RateLimitService {
     action: string,
     scope: string,
     subject: string,
-    window?: 'hour' | 'day',
+    window?: 'minute' | 'hour' | 'day',
   ): string {
     const digest = createHmac('sha256', this.config.hmacSecret)
       .update(`${action}:${scope}:${window ?? ''}:${subject}`)
@@ -176,7 +176,7 @@ export class RateLimitService {
     const first = over[0] as Reservation;
     // Counter kind and count only: no address, identifier or key.
     this.logger.warn(
-      `auth.rate_limited action=${first.action} bucket=${first.bucket} count=${first.count}`,
+      `rate_limited action=${first.action} bucket=${first.bucket} count=${first.count}`,
     );
     return { blocked: true, retryAfterSeconds, reservations };
   }

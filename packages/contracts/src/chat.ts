@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { UserSummary } from './user-summary';
 import { BodyLocale, ContentStatus, CursorQuery } from './content';
 
 export const ConversationType = z.enum(['direct', 'event_group']);
@@ -75,6 +76,8 @@ export const MessageResponse = z.object({
   id: z.uuid(),
   conversationId: z.uuid(),
   senderUserId: z.uuid().nullable(),
+  /** Null for `system` messages and for senders who left. */
+  sender: UserSummary.nullable(),
   type: MessageType,
   body: z.string().nullable(),
   bodyLocale: BodyLocale.nullable(),
@@ -90,6 +93,7 @@ export type MessageResponseT = z.infer<typeof MessageResponse>;
 /** A participant as seen by another participant: identity and role, nothing else. */
 export const ConversationParticipantResponse = z.object({
   userId: z.uuid(),
+  user: UserSummary.nullable(),
   role: z.enum(['owner', 'member']),
   joinedAt: z.iso.datetime(),
   leftAt: z.iso.datetime().nullable(),
@@ -117,6 +121,19 @@ export const ConversationResponse = z.object({
   messageCount: z.number().int().nonnegative(),
   unreadCount: z.number().int().nonnegative(),
   participants: z.array(ConversationParticipantResponse),
+  /** Linked event for `event_group`; null for `direct`. */
+  event: z
+    .object({
+      id: z.uuid(),
+      title: z.string(),
+      startsAt: z.iso.datetime(),
+      endsAt: z.iso.datetime().nullable(),
+    })
+    .nullable(),
+  /** Window in which the room accepts messages; null when not time-boxed. */
+  chatWindow: z
+    .object({ opensAt: z.iso.datetime(), closesAt: z.iso.datetime() })
+    .nullable(),
   createdAt: z.iso.datetime(),
 });
 export type ConversationResponseT = z.infer<typeof ConversationResponse>;

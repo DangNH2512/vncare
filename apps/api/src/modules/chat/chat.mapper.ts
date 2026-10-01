@@ -21,7 +21,9 @@ export function toConversationResponse(row: ConversationRow): ConversationRespon
     lastMessagePreview: row.last_message_preview,
     messageCount: row.message_count,
     unreadCount: row.unread_count,
-    participants: row.participants,
+    participants: row.participants.map((p) => ({ ...p, user: null })),
+    event: null,
+    chatWindow: null,
     createdAt: row.created_at.toISOString(),
   };
 }
@@ -31,6 +33,7 @@ export function toMessageResponse(row: MessageRow): MessageResponseT {
     id: row.id,
     conversationId: row.conversation_id,
     senderUserId: row.sender_user_id,
+    sender: null,
     type: row.type,
     body: row.body,
     bodyLocale: row.body_locale,

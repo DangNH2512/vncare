@@ -56,6 +56,12 @@ describe('reaction module', () => {
       })
       .expect(201);
     eventId = event.body.data.id;
+    // Reactions on an event only attach once it is published or cancelled.
+    await request(app.getHttpServer())
+      .put(`/api/v1/events/${eventId}/status`)
+      .set(author.headers)
+      .send({ status: 'published' })
+      .expect(200);
   });
 
   afterAll(async () => {

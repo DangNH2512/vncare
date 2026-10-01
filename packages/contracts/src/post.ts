@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { UserSummary } from './user-summary';
 import { BodyLocale, ContentStatus, CursorQuery } from './content';
 import { MediaResponse } from './media';
 import { ReactionKind } from './reaction';
@@ -68,6 +69,8 @@ export type PostUpdateRequestT = z.infer<typeof PostUpdateRequest>;
 export const PostResponse = z.object({
   id: z.uuid(),
   authorUserId: z.uuid(),
+  /** Allow-listed author identity; null when the account is gone. */
+  author: UserSummary.nullable(),
   areaId: z.uuid().nullable(),
   kind: PostKind,
   body: z.string(),

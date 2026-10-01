@@ -19,6 +19,22 @@ export interface RateLimitConfig {
   hmacSecret: string;
 }
 
+/**
+ * Social interaction quotas (brief D-S2-7). Product defaults owned by BA, kept
+ * as constants rather than env so a deployment cannot silently disable them.
+ */
+export const COMMENT_DAILY_MAX_BY_TRUST: Readonly<Record<number, number>> = {
+  1: 5,
+  2: 30,
+  3: 100,
+  4: 300,
+};
+/** Trust levels not listed above (T5+) have no daily ceiling, only the minute one. */
+export const COMMENT_MINUTE_MAX = 5;
+export const REACTION_MINUTE_MAX = 60;
+export const COMMENT_DAILY_WINDOW_SECONDS = 86_400;
+export const MINUTE_WINDOW_SECONDS = 60;
+
 type Env = Readonly<Record<string, string | undefined>>;
 
 const MAX_COUNT = 1_000_000;

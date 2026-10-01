@@ -10,6 +10,7 @@ import {
   Put,
   Query,
   SerializeOptions,
+  UseFilters,
 } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -30,6 +31,7 @@ import {
   OptionalUser,
   type CurrentUserContext,
 } from '../../common/decorators/current-user.decorator.js';
+import { RateLimitedExceptionFilter } from '../../common/rate-limit/index.js';
 import { CommentService } from './comment.service.js';
 
 const CommentEnvelope = envelope(CommentResponse);
@@ -44,6 +46,7 @@ const UuidParam = z.uuid();
  * editing, where the target adds nothing the id does not already determine.
  */
 @Controller('api/v1')
+@UseFilters(RateLimitedExceptionFilter)
 export class CommentController {
   constructor(private readonly comments: CommentService) {}
 

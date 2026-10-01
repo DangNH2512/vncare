@@ -33,6 +33,9 @@ export interface PostRow {
   created_at: Date;
   updated_at: Date;
   viewer_reaction: ReactionKindT | null;
+  author_handle: string | null;
+  author_display_name: string | null;
+  author_trust_level: number | null;
   location_lat: number | null;
   location_lng: number | null;
   location_label: string | null;
@@ -55,10 +58,25 @@ interface PostCursor extends Record<string, unknown> {
 }
 
 /** Column list shared by every read, so no query can drift from PostRow. */
+/**
+ * Author identity joined into the same query as the row, so a page of N rows
+ * costs one round trip. An anonymized or deleted account, or one without a
+ * profile, yields NULLs and the mapper turns that into `author: null`. A private
+ * profile still shows its name (D-S2-14); only contact data is withheld, and it
+ * is never selected here.
+ */
+const AUTHOR_JOIN = `
+  LEFT JOIN users au
+    ON au.id = p.author_user_id AND au.anonymized_at IS NULL AND au.deleted_at IS NULL
+  LEFT JOIN profiles ap ON ap.user_id = au.id`;
+
 const SELECT_COLUMNS = `
   p.id, p.author_user_id, p.area_id, p.kind, p.body, p.body_locale,
   p.media_ids, p.related_event_id, p.status, p.comment_count,
   p.reaction_count, p.is_edited, p.created_at, p.updated_at,
+  ap.handle AS author_handle,
+  ap.display_name AS author_display_name,
+  au.trust_level AS author_trust_level,
   r.kind AS viewer_reaction,
   ST_Y(p.location::geometry) AS location_lat,
   ST_X(p.location::geometry) AS location_lng,
@@ -88,7 +106,8 @@ export class PostRepository {
        )
        SELECT ${SELECT_COLUMNS}
          FROM inserted p
-         LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = $1`,
+         LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = $1
+         ${AUTHOR_JOIN}`,
       [
         input.authorUserId,
         input.areaId,
@@ -116,6 +135,7 @@ export class PostRepository {
       `SELECT ${SELECT_COLUMNS}
          FROM posts p
          LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = $2
+         ${AUTHOR_JOIN}
         WHERE p.id = $1
           AND p.deleted_at IS NULL
           AND (p.status = 'visible' OR p.author_user_id = $2)`,
@@ -149,6 +169,7 @@ export class PostRepository {
       `SELECT ${SELECT_COLUMNS}
          FROM posts p
          LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = $1
+         ${AUTHOR_JOIN}
         WHERE p.deleted_at IS NULL
           AND p.status = 'visible'
           AND ($2::uuid IS NULL OR p.area_id = $2)
@@ -201,7 +222,8 @@ export class PostRepository {
        )
        SELECT ${SELECT_COLUMNS}
          FROM updated p
-         LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = $11`,
+         LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = $11
+         ${AUTHOR_JOIN}`,
       [
         id,
         patch.kind ?? null,

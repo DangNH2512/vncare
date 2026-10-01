@@ -1,4 +1,4 @@
-import type { MediaResponseT, PostResponseT } from '@dnc/contracts';
+import type { MediaResponseT, PostResponseT, UserSummaryT } from '@dnc/contracts';
 import type { PostRow } from './post.repository.js';
 
 /**
@@ -19,6 +19,7 @@ export function toPostResponse(
   return {
     id: row.id,
     authorUserId: row.author_user_id,
+    author: toAuthor(row, row.author_user_id),
     areaId: row.area_id,
     kind: row.kind,
     body: row.body,
@@ -37,5 +38,28 @@ export function toPostResponse(
     viewerReaction: row.viewer_reaction,
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
+  };
+}
+
+function toAuthor(
+  row: {
+    author_handle: string | null;
+    author_display_name: string | null;
+    author_trust_level: number | null;
+  },
+  userId: string,
+): UserSummaryT | null {
+  if (
+    row.author_handle === null ||
+    row.author_display_name === null ||
+    row.author_trust_level === null
+  ) {
+    return null;
+  }
+  return {
+    userId,
+    handle: row.author_handle,
+    displayName: row.author_display_name,
+    trustLevel: row.author_trust_level,
   };
 }

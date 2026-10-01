@@ -8,11 +8,14 @@ import { HttpException, HttpStatus } from '@nestjs/common';
  * nothing about which counter tripped.
  */
 export class RateLimitedException extends HttpException {
-  constructor(readonly retryAfterSeconds: number) {
+  constructor(
+    readonly retryAfterSeconds: number,
+    messageKey = 'errors.auth.rateLimited',
+  ) {
     super(
       {
         code: 'RATE_LIMIT_EXCEEDED',
-        messageKey: 'errors.auth.rateLimited',
+        messageKey,
         details: { retryAfterSeconds },
       },
       HttpStatus.TOO_MANY_REQUESTS,

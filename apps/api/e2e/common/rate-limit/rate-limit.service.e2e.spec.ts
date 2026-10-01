@@ -167,7 +167,7 @@ describe('RateLimitService', () => {
     await service.reserve([r]);
     const warnings = lines.filter((line) => line.level === 'warn');
     expect(warnings).toHaveLength(1);
-    expect(warnings[0]?.text).toBe(`auth.rate_limited action=${ACTION} bucket=identifier count=2`);
+    expect(warnings[0]?.text).toBe(`rate_limited action=${ACTION} bucket=identifier count=2`);
     for (const line of lines) {
       expect(line.text).not.toContain('secret-subject-value');
       expect(line.text).not.toContain('rl:');

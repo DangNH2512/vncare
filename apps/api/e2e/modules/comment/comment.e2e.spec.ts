@@ -31,8 +31,9 @@ describe('comment module', () => {
     ({ areaId, cleanup } = await seedArea());
     app = await createTestApp();
     postAuthor = await createActor(app);
-    commenter = await createActor(app);
-    otherCommenter = await createActor(app);
+    // T5 has no daily comment ceiling, so cumulative cases do not trip the quota.
+    commenter = await createActor(app, { trustLevel: 5 });
+    otherCommenter = await createActor(app, { trustLevel: 5 });
     newcomer = await createActor(app, { trustLevel: 0 });
 
     const created = await request(app.getHttpServer())
@@ -130,7 +131,9 @@ describe('comment module', () => {
   });
 
   it('lets the thread owner delete a comment they did not write', async () => {
-    const created = await comment(postId, 'Owner will remove this', commenter).expect(201);
+    // A fresh member per case: the per-minute quota is five comments.
+    const writer = await createActor(app, { trustLevel: 5 });
+    const created = await comment(postId, 'Owner will remove this', writer).expect(201);
     await request(app.getHttpServer())
       .delete(`/api/v1/comments/${created.body.data.id}`)
       .set(postAuthor.headers)
@@ -138,7 +141,9 @@ describe('comment module', () => {
   });
 
   it('refuses deletion by an unrelated member', async () => {
-    const created = await comment(postId, 'Not yours to delete', commenter).expect(201);
+    // A fresh member per case: the per-minute quota is five comments.
+    const writer = await createActor(app, { trustLevel: 5 });
+    const created = await comment(postId, 'Not yours to delete', writer).expect(201);
     await request(app.getHttpServer())
       .delete(`/api/v1/comments/${created.body.data.id}`)
       .set(otherCommenter.headers)
@@ -146,8 +151,10 @@ describe('comment module', () => {
   });
 
   it('pins one comment at a time, owner only, roots only', async () => {
-    const first = await comment(postId, 'Pin me first', commenter).expect(201);
-    const second = await comment(postId, 'Pin me second', commenter).expect(201);
+    // A fresh member per case: the per-minute quota is five comments.
+    const writer = await createActor(app, { trustLevel: 5 });
+    const first = await comment(postId, 'Pin me first', writer).expect(201);
+    const second = await comment(postId, 'Pin me second', writer).expect(201);
 
     await request(app.getHttpServer())
       .put(`/api/v1/comments/${first.body.data.id}/pin`)
@@ -170,7 +177,7 @@ describe('comment module', () => {
       .expect(200);
     expect(previous.body.data.isPinned).toBe(false);
 
-    const reply = await comment(postId, 'A reply cannot be pinned', otherCommenter, {
+    const reply = await comment(postId, 'A reply cannot be pinned', writer, {
       parentId: second.body.data.id,
     }).expect(201);
     await request(app.getHttpServer())
@@ -180,6 +187,8 @@ describe('comment module', () => {
   });
 
   it('lists roots pinned-first and a branch oldest-first', async () => {
+    // A fresh member per case: the per-minute quota is five comments.
+    const writer = await createActor(app, { trustLevel: 5 });
     const { areaId: threadArea, cleanup: cleanupThread } = await seedArea();
     try {
       const post = await request(app.getHttpServer())
@@ -189,9 +198,9 @@ describe('comment module', () => {
         .expect(201);
       const target: string = post.body.data.id;
 
-      const oldest = await comment(target, 'oldest root', commenter).expect(201);
-      await comment(target, 'middle root', commenter).expect(201);
-      await comment(target, 'newest root', commenter).expect(201);
+      const oldest = await comment(target, 'oldest root', writer).expect(201);
+      await comment(target, 'middle root', writer).expect(201);
+      await comment(target, 'newest root', writer).expect(201);
       await request(app.getHttpServer())
         .put(`/api/v1/comments/${oldest.body.data.id}/pin`)
         .set(postAuthor.headers)
@@ -205,8 +214,8 @@ describe('comment module', () => {
       expect(roots.body.data.items).toHaveLength(3);
 
       const parentId: string = roots.body.data.items[1].id;
-      await comment(target, 'reply one', otherCommenter, { parentId }).expect(201);
-      await comment(target, 'reply two', otherCommenter, { parentId }).expect(201);
+      await comment(target, 'reply one', writer, { parentId }).expect(201);
+      await comment(target, 'reply two', writer, { parentId }).expect(201);
 
       const branch = await request(app.getHttpServer())
         .get(`/api/v1/posts/${target}/comments`)

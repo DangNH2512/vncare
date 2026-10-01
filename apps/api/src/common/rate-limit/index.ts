@@ -1,5 +1,14 @@
 export { normalizeClientIp } from './client-ip.js';
-export { loadRateLimitConfig, RATE_LIMIT_CONFIG, type RateLimitConfig } from './rate-limit.config.js';
+export {
+  COMMENT_DAILY_MAX_BY_TRUST,
+  COMMENT_DAILY_WINDOW_SECONDS,
+  COMMENT_MINUTE_MAX,
+  loadRateLimitConfig,
+  MINUTE_WINDOW_SECONDS,
+  RATE_LIMIT_CONFIG,
+  REACTION_MINUTE_MAX,
+  type RateLimitConfig,
+} from './rate-limit.config.js';
 export {
   RateLimitService,
   type RateLimitDecision,

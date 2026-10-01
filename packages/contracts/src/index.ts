@@ -175,3 +175,18 @@ export {
   type MessageResponseT,
   type MessageTypeT,
 } from './chat';
+export {
+  FollowResponse,
+  FollowTargetType,
+  FollowingItem,
+  ListFollowingQuery,
+  SuggestionQuery,
+  SuggestionsResponse,
+  type FollowResponseT,
+  type FollowTargetTypeT,
+  type FollowingItemT,
+  type ListFollowingQueryT,
+  type SuggestionQueryT,
+  type SuggestionsResponseT,
+} from './follow';
+export { UserSummary, type UserSummaryT } from './user-summary';

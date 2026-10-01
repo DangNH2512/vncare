@@ -29,7 +29,13 @@ export interface CommentRow {
   created_at: Date;
   updated_at: Date;
   viewer_reaction: ReactionKindT | null;
+  author_handle: string | null;
+  author_display_name: string | null;
+  author_trust_level: number | null;
 }
+
+/** What a thread target currently allows; see {@link CommentRepository.targetState}. */
+export type CommentTargetState = 'open' | 'closed' | 'missing';
 
 export interface CommentTargetRef {
   type: CommentTargetT;
@@ -58,11 +64,26 @@ interface ReplyCursor extends Record<string, unknown> {
   id: string;
 }
 
+/**
+ * Author identity joined into the same query as the row, so a page of N rows
+ * costs one round trip. An anonymized or deleted account, or one without a
+ * profile, yields NULLs and the mapper turns that into `author: null`. A private
+ * profile still shows its name (D-S2-14); only contact data is withheld, and it
+ * is never selected here.
+ */
+const AUTHOR_JOIN = `
+  LEFT JOIN users au
+    ON au.id = c.user_id AND au.anonymized_at IS NULL AND au.deleted_at IS NULL
+  LEFT JOIN profiles ap ON ap.user_id = au.id`;
+
 const SELECT_COLUMNS = `
   c.id, c.event_id, c.post_id, c.occurrence_id, c.parent_id, c.depth,
   c.user_id, c.body, c.body_locale, c.mentioned_user_ids, c.status,
   c.is_pinned, c.is_edited, c.reply_count, c.reaction_count,
   c.created_at, c.updated_at,
+  ap.handle AS author_handle,
+  ap.display_name AS author_display_name,
+  au.trust_level AS author_trust_level,
   r.kind AS viewer_reaction
 `;
 
@@ -85,17 +106,29 @@ export class CommentRepository {
   constructor(@Inject(PG_POOL) private readonly pool: Pool) {}
 
   /**
-   * Confirms the thread target is real and readable before a comment is
-   * attached, so a bad id answers 404 instead of a foreign-key 400 that says
-   * nothing about which id was wrong.
+   * Resolves what a thread target currently allows.
+   *
+   * `open` accepts reads and writes; `closed` (a cancelled event) accepts reads
+   * only; `missing` covers every state a stranger must not learn about (draft,
+   * pending review, suspended, taken down, deleted), so a bad id and a hidden
+   * event answer identically.
    */
-  async targetExists(target: CommentTargetRef): Promise<boolean> {
-    const sql =
-      target.type === 'post'
-        ? `SELECT 1 FROM posts WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'`
-        : `SELECT 1 FROM events WHERE id = $1 AND deleted_at IS NULL`;
-    const { rowCount } = await this.pool.query(sql, [target.id]);
-    return (rowCount ?? 0) > 0;
+  async targetState(target: CommentTargetRef): Promise<CommentTargetState> {
+    if (target.type === 'post') {
+      const { rowCount } = await this.pool.query(
+        `SELECT 1 FROM posts WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'`,
+        [target.id],
+      );
+      return (rowCount ?? 0) > 0 ? 'open' : 'missing';
+    }
+    const { rows } = await this.pool.query<{ status: string }>(
+      `SELECT status FROM events WHERE id = $1 AND deleted_at IS NULL`,
+      [target.id],
+    );
+    const status = rows[0]?.status;
+    if (status === 'published') return 'open';
+    if (status === 'cancelled') return 'closed';
+    return 'missing';
   }
 
   /** Depth and thread root of a candidate parent, used to flatten level-2 replies. */
@@ -126,7 +159,8 @@ export class CommentRepository {
        )
        SELECT ${SELECT_COLUMNS}
          FROM inserted c
-         LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $6`,
+         LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $6
+         ${AUTHOR_JOIN}`,
       [
         input.target.type === 'post' ? input.target.id : null,
         input.target.type === 'event' ? input.target.id : null,
@@ -147,6 +181,7 @@ export class CommentRepository {
       `SELECT ${SELECT_COLUMNS}
          FROM comments c
          LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $2
+         ${AUTHOR_JOIN}
         WHERE c.id = $1
           AND c.deleted_at IS NULL
           AND (c.status = 'visible' OR c.user_id = $2)`,
@@ -183,6 +218,7 @@ export class CommentRepository {
         `SELECT ${SELECT_COLUMNS}
            FROM comments c
            LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $1
+         ${AUTHOR_JOIN}
           WHERE c.${column} = $2
             AND c.parent_id = $3
             AND c.deleted_at IS NULL
@@ -207,6 +243,7 @@ export class CommentRepository {
       `SELECT ${SELECT_COLUMNS}
          FROM comments c
          LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $1
+         ${AUTHOR_JOIN}
         WHERE c.${column} = $2
           AND c.parent_id IS NULL
           AND c.deleted_at IS NULL
@@ -245,25 +282,51 @@ export class CommentRepository {
        )
        SELECT ${SELECT_COLUMNS}
          FROM updated c
-         LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $4`,
+         LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $4
+         ${AUTHOR_JOIN}`,
       [id, patch.body ?? null, patch.mentionedUserIds ?? null, viewerUserId],
     );
     return rows[0] ?? null;
   }
 
+  /**
+   * Soft-deletes a comment. Deleting a root takes its replies with it in the
+   * same transaction, so a reply can never outlive the comment it answers; the
+   * counter triggers then lower `posts.comment_count` once per deleted row.
+   */
   async softDelete(id: string): Promise<boolean> {
-    const { rowCount } = await this.pool.query(
-      `UPDATE comments SET deleted_at = now(), updated_at = now()
-        WHERE id = $1 AND deleted_at IS NULL`,
-      [id],
-    );
-    return (rowCount ?? 0) > 0;
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      // Serialises with a concurrent delete of the same root, so the reply
+      // sweep below never races a second sweep.
+      await client.query(`SELECT id FROM comments WHERE id = $1 FOR UPDATE`, [id]);
+      const root = await client.query(
+        `UPDATE comments SET deleted_at = now(), updated_at = now()
+          WHERE id = $1 AND deleted_at IS NULL`,
+        [id],
+      );
+      if ((root.rowCount ?? 0) > 0) {
+        await client.query(
+          `UPDATE comments SET deleted_at = now(), updated_at = now()
+            WHERE parent_id = $1 AND deleted_at IS NULL`,
+          [id],
+        );
+      }
+      await client.query('COMMIT');
+      return (root.rowCount ?? 0) > 0;
+    } catch (error) {
+      await client.query('ROLLBACK').catch(() => undefined);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   /**
-   * Pins or unpins a root comment. Only one pin per thread survives, so the
-   * previous pin is cleared in the same statement pair, inside one transaction
-   * held by the caller-visible single round trip below.
+   * Pins or unpins a root comment in a single statement. The `target` CTE
+   * proves the comment is a live root of this thread, and `cleared` only runs
+   * when it matched, so a failed pin can never drop the existing one.
    */
   async setPinned(
     id: string,
@@ -273,18 +336,24 @@ export class CommentRepository {
   ): Promise<CommentRow | null> {
     const column = target.type === 'post' ? 'post_id' : 'event_id';
     const { rows } = await this.pool.query<CommentRow>(
-      `WITH cleared AS (
+      `WITH target AS (
+         SELECT id FROM comments
+          WHERE id = $1 AND ${column} = $2 AND parent_id IS NULL AND deleted_at IS NULL
+       ),
+       cleared AS (
          UPDATE comments SET is_pinned = false, updated_at = now()
           WHERE ${column} = $2 AND is_pinned AND id <> $1 AND $3
+            AND EXISTS (SELECT 1 FROM target)
        ),
        updated AS (
          UPDATE comments SET is_pinned = $3, updated_at = now()
-          WHERE id = $1 AND ${column} = $2 AND parent_id IS NULL AND deleted_at IS NULL
+          WHERE id IN (SELECT id FROM target)
           RETURNING *
        )
        SELECT ${SELECT_COLUMNS}
          FROM updated c
-         LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $4`,
+         LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $4
+         ${AUTHOR_JOIN}`,
       [id, target.id, pinned, viewerUserId],
     );
     return rows[0] ?? null;

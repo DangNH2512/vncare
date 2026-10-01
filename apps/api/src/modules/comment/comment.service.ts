@@ -5,6 +5,16 @@ import type {
   CommentUpdateRequestT,
   ListCommentQueryT,
 } from '@dnc/contracts';
+import {
+  COMMENT_DAILY_MAX_BY_TRUST,
+  COMMENT_DAILY_WINDOW_SECONDS,
+  COMMENT_MINUTE_MAX,
+  MINUTE_WINDOW_SECONDS,
+  RateLimitedException,
+  RateLimitService,
+  type RateLimitRule,
+  type Reservation,
+} from '../../common/rate-limit/index.js';
 import { toPage } from '../../common/pagination.js';
 import { translatePostgresError } from '../../common/db/pg-error.js';
 import type { CurrentUserContext } from '../../common/decorators/current-user.decorator.js';
@@ -19,19 +29,31 @@ import { toCommentResponse } from './comment.mapper.js';
 
 @Injectable()
 export class CommentService {
-  constructor(private readonly comments: CommentRepository) {}
+  constructor(
+    private readonly comments: CommentRepository,
+    private readonly rateLimit: RateLimitService,
+  ) {}
 
   async create(
     target: CommentTargetRef,
     input: CommentCreateRequestT,
     viewer: CurrentUserContext,
   ): Promise<CommentResponseT> {
-    if (!(await this.comments.targetExists(target))) {
-      throw this.targetNotFound(target);
+    const state = await this.comments.targetState(target);
+    if (state === 'missing') throw this.targetNotFound(target);
+    if (state === 'closed') {
+      throw new ForbiddenException({
+        code: 'COMMENTS_CLOSED',
+        messageKey: 'errors.comment.closed',
+      });
     }
 
     const placement = await this.resolvePlacement(target, input.parentId);
 
+    // Reserve-first: the slot is taken before the insert so parallel requests
+    // cannot all slip under the ceiling. Anything that does not produce a
+    // comment hands the slot back.
+    const slots = await this.reserveSlots(viewer);
     try {
       const row = await this.comments.create({
         target,
@@ -45,8 +67,36 @@ export class CommentService {
       });
       return toCommentResponse(row);
     } catch (error) {
+      await this.rateLimit.release(slots);
       throw translatePostgresError(error);
     }
+  }
+
+  private async reserveSlots(viewer: CurrentUserContext): Promise<Reservation[]> {
+    const rules: RateLimitRule[] = [
+      {
+        key: this.rateLimit.keyFor('comment', 'user', viewer.id, 'minute'),
+        max: COMMENT_MINUTE_MAX,
+        windowSeconds: MINUTE_WINDOW_SECONDS,
+        bucket: 'user_minute',
+        action: 'comment',
+      },
+    ];
+    const dailyMax = COMMENT_DAILY_MAX_BY_TRUST[viewer.trustLevel];
+    if (dailyMax !== undefined) {
+      rules.push({
+        key: this.rateLimit.keyFor('comment', 'user', viewer.id, 'day'),
+        max: dailyMax,
+        windowSeconds: COMMENT_DAILY_WINDOW_SECONDS,
+        bucket: 'user_day',
+        action: 'comment',
+      });
+    }
+    const decision = await this.rateLimit.reserve(rules);
+    if (decision.blocked) {
+      throw new RateLimitedException(decision.retryAfterSeconds, 'errors.rateLimit.exceeded');
+    }
+    return decision.reservations;
   }
 
   /**
@@ -88,7 +138,7 @@ export class CommentService {
     query: ListCommentQueryT,
     viewer: CurrentUserContext | null,
   ): Promise<{ items: CommentResponseT[]; nextCursor: string | null }> {
-    if (!(await this.comments.targetExists(target))) {
+    if ((await this.comments.targetState(target)) === 'missing') {
       throw this.targetNotFound(target);
     }
     const { rows, limit, branch } = await this.comments.list(target, query, viewer?.id ?? null);
@@ -172,14 +222,17 @@ export class CommentService {
       });
     }
 
-    const updated = await this.comments.setPinned(id, target, pinned, viewer.id);
-    if (!updated) {
-      // Reachable only for a reply: replies have no pinned slot.
+    // Checked before any write: replies have no pinned slot, and rejecting one
+    // must leave the existing pin untouched.
+    if (row.parent_id !== null) {
       throw new ForbiddenException({
         code: 'CANNOT_PIN_REPLY',
         messageKey: 'errors.comment.cannotPinReply',
       });
     }
+
+    const updated = await this.comments.setPinned(id, target, pinned, viewer.id);
+    if (!updated) throw this.notFound();
     return toCommentResponse(updated);
   }
 

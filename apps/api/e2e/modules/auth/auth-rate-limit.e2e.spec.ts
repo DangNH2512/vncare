@@ -390,12 +390,12 @@ describe('auth rate limiting', { timeout: 30_000 }, () => {
     for (let i = 0; i < 2; i += 1) await register(app, registerIp).expect(429);
     stop();
 
-    const warnings = lines.filter((line) => line.text.includes('auth.rate_limited'));
+    const warnings = lines.filter((line) => line.text.includes('rate_limited'));
     expect(warnings.filter((line) => line.text.includes('action=login'))).toHaveLength(3);
     expect(warnings.filter((line) => line.text.includes('action=register'))).toHaveLength(2);
     for (const warning of warnings) {
       expect(warning.level).toBe('warn');
-      expect(warning.text).toMatch(/^auth\.rate_limited action=(login|register) bucket=[a-z_]+ count=\d+$/);
+      expect(warning.text).toMatch(/^rate_limited action=(login|register) bucket=[a-z_]+ count=\d+$/);
     }
 
     const forbidden = [identifier, ip, registerIp, PASSWORD, WRONG, registrant.email, registrant.handle];

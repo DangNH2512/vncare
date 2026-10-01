@@ -7,6 +7,7 @@ import {
   Param,
   Put,
   SerializeOptions,
+  UseFilters,
 } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -24,6 +25,7 @@ import {
   OptionalUser,
   type CurrentUserContext,
 } from '../../common/decorators/current-user.decorator.js';
+import { RateLimitedExceptionFilter } from '../../common/rate-limit/index.js';
 import { ReactionService } from './reaction.service.js';
 
 const ReactionEnvelope = envelope(ReactionResponse);
@@ -37,6 +39,7 @@ const UuidParam = z.uuid();
  * hold at most one per target, which is exactly the semantics of a replace.
  */
 @Controller('api/v1')
+@UseFilters(RateLimitedExceptionFilter)
 export class ReactionController {
   constructor(private readonly reactions: ReactionService) {}
 

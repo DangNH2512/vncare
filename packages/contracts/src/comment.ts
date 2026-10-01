@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { UserSummary } from './user-summary';
 import { BodyLocale, ContentStatus, CursorQuery } from './content';
 import { ReactionKind } from './reaction';
 
@@ -36,6 +37,8 @@ export const CommentResponse = z.object({
   parentId: z.uuid().nullable(),
   depth: z.number().int().min(0).max(1),
   userId: z.uuid(),
+  /** Allow-listed author identity; null when the account is gone. */
+  author: UserSummary.nullable(),
   body: z.string(),
   bodyLocale: BodyLocale.nullable(),
   mentionedUserIds: z.array(z.uuid()),

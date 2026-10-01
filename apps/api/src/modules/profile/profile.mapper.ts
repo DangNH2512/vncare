@@ -39,6 +39,7 @@ export function toPublicProfile(
         : null,
     ratingCount: row.rating_count,
     memberSince: row.member_since.toISOString(),
+    viewerIsFollowing: null,
   };
 }
 
