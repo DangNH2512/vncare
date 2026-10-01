@@ -22,6 +22,7 @@
 import '../../load-env.js';
 import { Pool, type PoolClient } from 'pg';
 import { hash as argonHash } from '@node-rs/argon2';
+import { MyProfileResponse } from '@dnc/contracts';
 
 const DEMO_DOMAIN = 'demo.danangconnect.test';
 const DEMO_PASSWORD = 'demo-password-long-enough';
@@ -54,17 +55,17 @@ interface Member {
 }
 
 const MEMBERS: Member[] = [
-  { handle: 'demo_anna', name: 'Anna Schmidt', nationality: 'DE', trust: 4, expatType: 'digital_nomad', locale: 'en', headline: 'Product designer, remote', bio: 'Berlin to Da Nang in 2023. I host the weekly coffee and coworking meetups in An Thuong.', languages: [{ code: 'de', level: 'native' }, { code: 'en', level: 'fluent' }, { code: 'vi', level: 'beginner' }], area: 'at', sinceYear: 2023 },
-  { handle: 'demo_minh', name: 'Trần Quang Minh', nationality: 'VN', trust: 5, expatType: 'local_host', locale: 'vi', headline: 'Hướng dẫn viên leo núi Sơn Trà', bio: 'Sinh ra ở Đà Nẵng. Mình dẫn các nhóm chạy bộ và leo núi buổi sáng sớm, mọi trình độ đều được.', languages: [{ code: 'vi', level: 'native' }, { code: 'en', level: 'good' }], area: 'st', sinceYear: 1990 },
-  { handle: 'demo_james', name: "James O'Connor", nationality: 'IE', trust: 3, expatType: 'teacher', locale: 'en', headline: 'English teacher and beach volleyball addict', bio: 'Teaching in Hai Chau, playing volleyball at My Khe every weekend. Come join, we always need one more.', languages: [{ code: 'en', level: 'native' }, { code: 'vi', level: 'intermediate' }], area: 'mk', sinceYear: 2021 },
+  { handle: 'demo_anna', name: 'Anna Schmidt', nationality: 'DE', trust: 4, expatType: 'digital_nomad', locale: 'en', headline: 'Product designer, remote', bio: 'Berlin to Da Nang in 2023. I host the weekly coffee and coworking meetups in An Thuong.', languages: [{ code: 'de', level: 'native' }, { code: 'en', level: 'fluent' }, { code: 'vi', level: 'basic' }], area: 'at', sinceYear: 2023 },
+  { handle: 'demo_minh', name: 'Trần Quang Minh', nationality: 'VN', trust: 5, expatType: 'local_host', locale: 'vi', headline: 'Hướng dẫn viên leo núi Sơn Trà', bio: 'Sinh ra ở Đà Nẵng. Mình dẫn các nhóm chạy bộ và leo núi buổi sáng sớm, mọi trình độ đều được.', languages: [{ code: 'vi', level: 'native' }, { code: 'en', level: 'conversational' }], area: 'st', sinceYear: 1990 },
+  { handle: 'demo_james', name: "James O'Connor", nationality: 'IE', trust: 3, expatType: 'teacher', locale: 'en', headline: 'English teacher and beach volleyball addict', bio: 'Teaching in Hai Chau, playing volleyball at My Khe every weekend. Come join, we always need one more.', languages: [{ code: 'en', level: 'native' }, { code: 'vi', level: 'conversational' }], area: 'mk', sinceYear: 2021 },
   { handle: 'demo_linh', name: 'Nguyễn Thùy Linh', nationality: 'VN', trust: 4, expatType: 'local_host', locale: 'vi', headline: 'Tổ chức giao lưu ngôn ngữ Anh - Việt', bio: 'Mình tổ chức language exchange ở Hải Châu mỗi tuần để bạn bè quốc tế và người Đà Nẵng làm quen.', languages: [{ code: 'vi', level: 'native' }, { code: 'en', level: 'fluent' }], area: 'hc', sinceYear: 1995 },
-  { handle: 'demo_sofia', name: 'Sofia Marchetti', nationality: 'IT', trust: 2, expatType: 'long_term_resident', locale: 'en', headline: 'Yoga teacher', bio: 'Teaching rooftop and beach yoga around An Thuong. Italian cooking on request.', languages: [{ code: 'it', level: 'native' }, { code: 'en', level: 'fluent' }], area: 'at', sinceYear: 2020 },
-  { handle: 'demo_kenji', name: 'Kenji Tanaka', nationality: 'JP', trust: 3, expatType: 'business_owner', locale: 'en', headline: 'Runs a small cafe in My An', bio: 'Pickleball organiser and amateur photographer. Cafe in My An, ask me for the secret menu.', languages: [{ code: 'ja', level: 'native' }, { code: 'en', level: 'good' }, { code: 'vi', level: 'intermediate' }], area: 'ma', sinceYear: 2019 },
-  { handle: 'demo_huong', name: 'Lê Thị Hương', nationality: 'VN', trust: 3, expatType: 'local_host', locale: 'vi', headline: 'Dạy nấu ăn món Việt', bio: 'Mình dẫn tour chợ Hàn và dạy nấu các món miền Trung cho khách quốc tế, nhóm nhỏ cho vui.', languages: [{ code: 'vi', level: 'native' }, { code: 'en', level: 'good' }], area: 'hc', sinceYear: 1988 },
-  { handle: 'demo_mateo', name: 'Mateo García', nationality: 'ES', trust: 1, expatType: 'short_stay', locale: 'en', headline: 'Here for three months', bio: 'Salsa dancer and surfer. Looking for people to dance with and a good surf buddy.', languages: [{ code: 'es', level: 'native' }, { code: 'en', level: 'good' }], area: 'ma', sinceYear: 2026 },
+  { handle: 'demo_sofia', name: 'Sofia Marchetti', nationality: 'IT', trust: 2, expatType: 'long_term_resident', locale: 'en', headline: 'Yoga teacher', bio: 'Teaching rooftop and beach yoga around An Thuong. Italian cooking on request.', languages: [{ code: 'other', level: 'native' }, { code: 'en', level: 'fluent' }], area: 'at', sinceYear: 2020 },
+  { handle: 'demo_kenji', name: 'Kenji Tanaka', nationality: 'JP', trust: 3, expatType: 'business_owner', locale: 'en', headline: 'Runs a small cafe in My An', bio: 'Pickleball organiser and amateur photographer. Cafe in My An, ask me for the secret menu.', languages: [{ code: 'ja', level: 'native' }, { code: 'en', level: 'conversational' }, { code: 'vi', level: 'conversational' }], area: 'ma', sinceYear: 2019 },
+  { handle: 'demo_huong', name: 'Lê Thị Hương', nationality: 'VN', trust: 3, expatType: 'local_host', locale: 'vi', headline: 'Dạy nấu ăn món Việt', bio: 'Mình dẫn tour chợ Hàn và dạy nấu các món miền Trung cho khách quốc tế, nhóm nhỏ cho vui.', languages: [{ code: 'vi', level: 'native' }, { code: 'en', level: 'conversational' }], area: 'hc', sinceYear: 1988 },
+  { handle: 'demo_mateo', name: 'Mateo García', nationality: 'ES', trust: 1, expatType: 'short_stay', locale: 'en', headline: 'Here for three months', bio: 'Salsa dancer and surfer. Looking for people to dance with and a good surf buddy.', languages: [{ code: 'es', level: 'native' }, { code: 'en', level: 'conversational' }], area: 'ma', sinceYear: 2026 },
   { handle: 'demo_emma', name: 'Emma Johnson', nationality: 'GB', trust: 2, expatType: 'digital_nomad', locale: 'en', headline: 'Writer and brunch enthusiast', bio: 'Freelance copywriter. I plan the weekend brunch crawls and full moon bonfires.', languages: [{ code: 'en', level: 'native' }], area: 'mk', sinceYear: 2024 },
-  { handle: 'demo_duc', name: 'Phạm Anh Đức', nationality: 'VN', trust: 2, expatType: 'local_host', locale: 'vi', headline: 'Giáo viên tiếng Việt, mê cầu lông', bio: 'Dạy tiếng Việt cho người nước ngoài và chơi cầu lông, bóng đá tối cuối tuần ở Mỹ An.', languages: [{ code: 'vi', level: 'native' }, { code: 'en', level: 'good' }], area: 'ma', sinceYear: 1993 },
-  { handle: 'demo_olivia', name: 'Olivia Chen', nationality: 'AU', trust: 0, expatType: 'student', locale: 'en', headline: 'Exchange student, new in town', bio: 'Just arrived. Keen to meet people and see the city beyond the tourist spots.', languages: [{ code: 'en', level: 'native' }, { code: 'zh', level: 'good' }], area: 'hc', sinceYear: 2026 },
+  { handle: 'demo_duc', name: 'Phạm Anh Đức', nationality: 'VN', trust: 2, expatType: 'local_host', locale: 'vi', headline: 'Giáo viên tiếng Việt, mê cầu lông', bio: 'Dạy tiếng Việt cho người nước ngoài và chơi cầu lông, bóng đá tối cuối tuần ở Mỹ An.', languages: [{ code: 'vi', level: 'native' }, { code: 'en', level: 'conversational' }], area: 'ma', sinceYear: 1993 },
+  { handle: 'demo_olivia', name: 'Olivia Chen', nationality: 'AU', trust: 0, expatType: 'student', locale: 'en', headline: 'Exchange student, new in town', bio: 'Just arrived. Keen to meet people and see the city beyond the tourist spots.', languages: [{ code: 'en', level: 'native' }, { code: 'zh', level: 'conversational' }], area: 'hc', sinceYear: 2026 },
   { handle: 'demo_lucas', name: 'Lucas Dubois', nationality: 'FR', trust: 1, expatType: 'digital_nomad', locale: 'en', headline: 'Backend dev, trail runner', bio: 'Remote developer, runs most mornings. Always happy to pace a slower group.', languages: [{ code: 'fr', level: 'native' }, { code: 'en', level: 'fluent' }], area: 'nh', sinceYear: 2025 },
 ];
 
@@ -426,6 +427,37 @@ async function main(): Promise<void> {
         [userIds[p.author], p.area ? areaId.get(AREA[p.area]) : null, p.kind, p.body, p.locale, p.minsAgo],
       );
     }
+
+    // Self-check: every demo profile must satisfy the contract the API serialises
+    // with, otherwise /me/profile answers 500. Fails the whole seed (ROLLBACK).
+    const check = MyProfileResponse.pick({
+      spokenLanguages: true, expatType: true, nationalityCode: true, homeAreaId: true,
+      trustLevel: true, email: true, locale: true,
+    });
+    const stored = await db.query<{
+      handle: string; email: string; locale: string; trust_level: number; nationality_code: string | null;
+      spoken_languages: unknown; expat_type: string | null; home_area_id: string | null; bio_locale: string | null;
+    }>(
+      `SELECT p.handle, u.email, u.locale, u.trust_level, p.nationality_code, p.spoken_languages,
+              p.expat_type, p.home_area_id, p.bio_locale
+         FROM profiles p JOIN users u ON u.id = p.user_id WHERE u.email LIKE $1`,
+      [`%@${DEMO_DOMAIN}`],
+    );
+    const problems: string[] = [];
+    for (const r of stored.rows) {
+      const res = check.safeParse({
+        spokenLanguages: r.spoken_languages, expatType: r.expat_type, nationalityCode: r.nationality_code,
+        homeAreaId: r.home_area_id, trustLevel: r.trust_level, email: r.email, locale: r.locale,
+      });
+      if (!res.success) {
+        for (const issue of res.error.issues) problems.push(`${r.handle}: ${issue.path.join('.')}: ${issue.message}`);
+      }
+      if (r.bio_locale !== null && !['en', 'vi'].includes(r.bio_locale)) {
+        problems.push(`${r.handle}: bio_locale: ${r.bio_locale}`);
+      }
+    }
+    if (stored.rows.length !== MEMBERS.length) problems.push(`expected ${MEMBERS.length} demo profiles, found ${stored.rows.length}`);
+    if (problems.length > 0) throw new Error(`demo profiles violate the API contract:\n  ${problems.join('\n  ')}`);
 
     await db.query('COMMIT');
 
