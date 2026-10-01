@@ -116,6 +116,10 @@ export function messageCursorOf(row: MessageRow): string {
   return encodeCursor({ id: row.id });
 }
 
+export type OpenEventGroupResult =
+  | { outcome: 'ok'; conversationId: string }
+  | { outcome: 'event_not_found' | 'occurrence_mismatch' | 'not_eligible' };
+
 @Injectable()
 export class ChatRepository {
   constructor(@Inject(PG_POOL) private readonly pool: Pool) {}
@@ -170,28 +174,113 @@ export class ChatRepository {
   }
 
   /**
-   * Opens the room for an event or one of its occurrences. A group room needs
-   * no request flow, so it starts accepted; membership is what gates it.
+   * Opens, or returns, the group room of an event occurrence.
+   *
+   * Everything that decides the outcome runs in one transaction, serialised per
+   * occurrence by an advisory lock: two simultaneous first requests converge on
+   * one room instead of racing past the check-then-insert gap. The caller must
+   * be the event's organizer or hold a confirmed/attended RSVP on the occurrence;
+   * the organizer is always seated as `owner`, so a room never starts ownerless.
    */
-  async createEventGroup(
-    eventId: string,
-    occurrenceId: string | null,
-    createdBy: string,
-    minTrustLevelToJoin: number,
-  ): Promise<string> {
+  async openEventGroup(input: {
+    eventId: string;
+    occurrenceId: string | null;
+    viewerId: string;
+    viewerTrustLevel: number;
+    minTrustLevelToJoin: number;
+  }): Promise<OpenEventGroupResult> {
     return withTransaction(this.pool, async (tx) => {
+      const event = (
+        await tx.query<{ organizer_id: string }>(
+          `SELECT organizer_id FROM events
+            WHERE id = $1 AND status = 'published' AND deleted_at IS NULL`,
+          [input.eventId],
+        )
+      ).rows[0];
+      if (!event) return { outcome: 'event_not_found' };
+
+      const occurrence = (
+        await tx.query<{ id: string }>(
+          `SELECT id FROM event_occurrences
+            WHERE event_id = $1 AND deleted_at IS NULL
+              AND ($2::uuid IS NULL OR id = $2)
+            ORDER BY starts_at, id
+            LIMIT 1`,
+          [input.eventId, input.occurrenceId],
+        )
+      ).rows[0];
+      if (!occurrence) {
+        if (!input.occurrenceId) return { outcome: 'event_not_found' };
+        // A stranger must get the same 404 as everyone else; the 400 is only for
+        // someone who could otherwise open this event's room.
+        const related =
+          event.organizer_id === input.viewerId ||
+          (
+            await tx.query(
+              `SELECT 1 FROM rsvps r
+                 JOIN event_occurrences o ON o.id = r.occurrence_id
+                WHERE o.event_id = $1 AND r.user_id = $2
+                  AND r.status IN ('confirmed', 'attended') AND r.deleted_at IS NULL`,
+              [input.eventId, input.viewerId],
+            )
+          ).rowCount! > 0;
+        return { outcome: related ? 'occurrence_mismatch' : 'not_eligible' };
+      }
+
+      const isOrganizer = event.organizer_id === input.viewerId;
+      if (!isOrganizer) {
+        const attending = await tx.query(
+          `SELECT 1 FROM rsvps
+            WHERE occurrence_id = $1 AND user_id = $2
+              AND status IN ('confirmed', 'attended') AND deleted_at IS NULL`,
+          [occurrence.id, input.viewerId],
+        );
+        if (attending.rowCount === 0) return { outcome: 'not_eligible' };
+      }
+
+      await tx.query(`SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`, [
+        `chat_room:${occurrence.id}`,
+      ]);
+
+      // A room created before occurrence ids were recorded has none; it still
+      // counts as this event's room rather than being duplicated.
+      const existing = (
+        await tx.query<{ id: string; status: string; min_trust_level_to_join: number }>(
+          `SELECT id, status, min_trust_level_to_join FROM conversations
+            WHERE type = 'event_group' AND event_id = $1 AND deleted_at IS NULL
+              AND (occurrence_id = $2 OR occurrence_id IS NULL)
+            ORDER BY (occurrence_id IS NULL), created_at
+            LIMIT 1`,
+          [input.eventId, occurrence.id],
+        )
+      ).rows[0];
+
+      if (existing) {
+        const admitted =
+          isOrganizer ||
+          (existing.status === 'active' &&
+            input.viewerTrustLevel >= existing.min_trust_level_to_join);
+        if (!admitted) return { outcome: 'not_eligible' };
+        await this.upsertMember(tx, existing.id, input.viewerId);
+        return { outcome: 'ok', conversationId: existing.id };
+      }
+
+      // Only the organizer sets the floor; an attendee opening the room first
+      // must not be able to lock the host out of their own audience.
+      const floor = isOrganizer ? input.minTrustLevelToJoin : 0;
       const { rows } = await tx.query<{ id: string }>(
         `INSERT INTO conversations
            (type, event_id, occurrence_id, created_by_user_id, request_status, min_trust_level_to_join)
          VALUES ('event_group', $1, $2, $3, 'accepted', $4)
          RETURNING id`,
-        [eventId, occurrenceId, createdBy, minTrustLevelToJoin],
+        [input.eventId, occurrence.id, event.organizer_id, floor],
       );
       const conversationId = rows[0]?.id as string;
       await this.addParticipants(tx, conversationId, [
-        { userId: createdBy, role: 'owner' },
+        { userId: event.organizer_id, role: 'owner' },
       ]);
-      return conversationId;
+      if (!isOrganizer) await this.upsertMember(tx, conversationId, input.viewerId);
+      return { outcome: 'ok', conversationId };
     });
   }
 
@@ -210,15 +299,70 @@ export class ChatRepository {
     }
   }
 
-  /** Joins a member to an existing room, or revives a membership they left. */
-  async join(conversationId: string, userId: string): Promise<void> {
-    await this.pool.query(
+  private async upsertMember(
+    tx: PoolClient,
+    conversationId: string,
+    userId: string,
+  ): Promise<void> {
+    await tx.query(
       `INSERT INTO conversation_participants (conversation_id, user_id, role)
        VALUES ($1, $2, 'member')
        ON CONFLICT (conversation_id, user_id)
        DO UPDATE SET left_at = NULL`,
       [conversationId, userId],
     );
+  }
+
+  /**
+   * Seats a caller in an event room, or reports that they may not enter.
+   *
+   * The eligibility read and the insert share one transaction, with the room row
+   * locked `FOR SHARE`, so a room archived or deleted between the two cannot
+   * still admit someone. The event, its RSVPs and the caller's trust are checked
+   * as of the read and are not locked: an event unpublished or an RSVP cancelled
+   * in that instant can still admit once, and is caught by the per-request
+   * membership re-check planned in S3-1. Returns false for every refusal (a direct thread, a
+   * missing, archived or deleted room, an unpublished event, too little trust,
+   * no confirmed RSVP) so the caller can answer one indistinguishable 404.
+   */
+  async joinEventGroup(
+    conversationId: string,
+    userId: string,
+    trustLevel: number,
+  ): Promise<boolean> {
+    return withTransaction(this.pool, async (tx) => {
+      const { rowCount } = await tx.query(
+        `SELECT 1
+           FROM conversations c
+           JOIN events e ON e.id = c.event_id
+          WHERE c.id = $1
+            AND c.type = 'event_group'
+            AND c.status = 'active'
+            AND c.deleted_at IS NULL
+            AND e.status = 'published'
+            AND e.deleted_at IS NULL
+            AND (
+              e.organizer_id = $2
+              OR (
+                c.min_trust_level_to_join <= $3
+                AND EXISTS (
+                  SELECT 1 FROM rsvps r
+                    JOIN event_occurrences o ON o.id = r.occurrence_id
+                   WHERE o.event_id = e.id
+                     AND (c.occurrence_id IS NULL OR o.id = c.occurrence_id)
+                     AND r.user_id = $2
+                     AND r.status IN ('confirmed', 'attended')
+                     AND r.deleted_at IS NULL
+                )
+              )
+            )
+          FOR SHARE OF c`,
+        [conversationId, userId, trustLevel],
+      );
+      if (rowCount === 0) return false;
+      await this.upsertMember(tx, conversationId, userId);
+      return true;
+    });
   }
 
   /**

@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import type {
   ConversationCreateRequestT,
   ConversationRespondRequestT,
@@ -37,14 +37,44 @@ export class ChatService {
     const conversationId =
       input.type === 'direct'
         ? await this.openDirect(input.recipientUserId, viewer)
-        : await this.chats.createEventGroup(
-            input.eventId,
-            input.occurrenceId ?? null,
-            viewer.id,
-            input.minTrustLevelToJoin,
-          );
+        : await this.openEventGroup(input, viewer);
 
     return this.findOne(conversationId, viewer);
+  }
+
+  private async openEventGroup(
+    input: Extract<ConversationCreateRequestT, { type: 'event_group' }>,
+    viewer: CurrentUserContext,
+  ): Promise<string> {
+    let result;
+    try {
+      result = await this.chats.openEventGroup({
+        eventId: input.eventId,
+        occurrenceId: input.occurrenceId ?? null,
+        viewerId: viewer.id,
+        viewerTrustLevel: viewer.trustLevel,
+        minTrustLevelToJoin: input.minTrustLevelToJoin,
+      });
+    } catch (error) {
+      throw translatePostgresError(error);
+    }
+
+    switch (result.outcome) {
+      case 'ok':
+        return result.conversationId;
+      case 'occurrence_mismatch':
+        throw new BadRequestException({
+          code: 'OCCURRENCE_NOT_IN_EVENT',
+          messageKey: 'errors.common.referenceNotFound',
+        });
+      default:
+        // Unknown, unpublished and not-yours are one answer: a waitlisted or
+        // uninvited caller must not learn that a room exists.
+        throw new NotFoundException({
+          code: 'EVENT_NOT_FOUND',
+          messageKey: 'errors.event.notFound',
+        });
+    }
   }
 
   private async openDirect(
@@ -85,9 +115,24 @@ export class ChatService {
     return toPage(rows, limit, toConversationResponse, conversationCursorOf);
   }
 
-  /** Joining an event room is open to members; the host's trust floor still applies. */
+  /**
+   * Joins an event room. Only an organizer or a confirmed attendee who meets the
+   * room's trust floor gets in; every other case, including a direct thread and
+   * an unknown id, answers the same 404 so existence is not disclosed.
+   */
   async join(id: string, viewer: CurrentUserContext): Promise<ConversationResponseT> {
-    await this.chats.join(id, viewer.id);
+    let admitted: boolean;
+    try {
+      admitted = await this.chats.joinEventGroup(id, viewer.id, viewer.trustLevel);
+    } catch (error) {
+      throw translatePostgresError(error);
+    }
+    if (!admitted) {
+      throw new NotFoundException({
+        code: 'CONVERSATION_NOT_FOUND',
+        messageKey: 'errors.chat.conversationNotFound',
+      });
+    }
     return this.findOne(id, viewer);
   }
 

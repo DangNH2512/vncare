@@ -276,6 +276,11 @@ describe('chat module', () => {
         capacity: 8,
       })
       .expect(201);
+    await request(app.getHttpServer())
+      .put(`/api/v1/events/${event.body.data.id}/status`)
+      .set(host.headers)
+      .send({ status: 'published' })
+      .expect(200);
 
     const room = await request(app.getHttpServer())
       .post('/api/v1/conversations')
@@ -292,6 +297,15 @@ describe('chat module', () => {
       .set(member.headers)
       .expect(404);
 
+    // Joining needs a confirmed RSVP; a bare member is turned away.
+    await request(app.getHttpServer())
+      .post(`/api/v1/conversations/${id}/participants`)
+      .set(member.headers)
+      .expect(404);
+    await request(app.getHttpServer())
+      .post(`/api/v1/occurrences/${event.body.data.occurrenceId}/rsvps`)
+      .set({ ...member.headers, 'idempotency-key': randomUUID() })
+      .expect(201);
     await request(app.getHttpServer())
       .post(`/api/v1/conversations/${id}/participants`)
       .set(member.headers)
