@@ -30,5 +30,14 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    // Safari engine: the date inputs, native selects and focus rules differ from
+    // Chromium, so the two list screens run here as well.
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+      testMatch: /(users|events|kit-select)\.spec\.ts$/,
+    },
+  ],
 });

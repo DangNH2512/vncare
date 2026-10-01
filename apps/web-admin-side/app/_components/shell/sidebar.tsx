@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SYSTEM_HEALTH_ROLES } from '@dnc/domain';
+import { allowedRolesFor, SYSTEM_HEALTH_ROLES } from '@dnc/domain';
 import type { UserRoleT } from '@dnc/contracts';
 
 import { cn } from '../../_lib/cn';
@@ -28,6 +28,12 @@ export function Sidebar({ role }: { role: UserRoleT }) {
   const pathname = usePathname();
 
   const items: NavItem[] = [{ href: '/', labelKey: 'admin.nav.overview' }];
+  if (allowedRolesFor('user.directory.view').includes(role)) {
+    items.push({ href: '/users', labelKey: 'admin.nav.users' });
+  }
+  if (allowedRolesFor('event.directory.view').includes(role)) {
+    items.push({ href: '/events', labelKey: 'admin.nav.events' });
+  }
   if (SYSTEM_HEALTH_ROLES.includes(role)) {
     items.push({ href: '/system-health', labelKey: 'admin.nav.systemHealth' });
   }
@@ -39,7 +45,9 @@ export function Sidebar({ role }: { role: UserRoleT }) {
     >
       <ul className="flex flex-col gap-1">
         {items.map((item) => {
-          const active = pathname === item.href;
+          // Detail pages (/users/[id]) keep their section highlighted.
+          const active =
+            item.href === '/' ? pathname === '/' : pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <li key={item.href}>
               <Link

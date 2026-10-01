@@ -7,7 +7,7 @@
  * Fixed rather than randomised: global-setup and every spec file need to
  * agree on the same identities without a handoff file between processes.
  */
-export type AccountRole = 'member' | 'curator' | 'admin';
+export type AccountRole = 'member' | 'curator' | 'moderator' | 'admin';
 
 export interface TestAccount {
   email: string;
@@ -34,6 +34,13 @@ export const ACCOUNTS: Readonly<Record<AccountRole, TestAccount>> = {
     displayName: 'E2E Curator',
     handle: 'e2e_admin_shell_curator',
     role: 'curator',
+  },
+  moderator: {
+    email: 'e2e-admin-shell-moderator@example.test',
+    password: PASSWORD,
+    displayName: 'E2E Moderator',
+    handle: 'e2e_admin_shell_mod',
+    role: 'moderator',
   },
   admin: {
     email: 'e2e-admin-shell-admin@example.test',

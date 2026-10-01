@@ -78,7 +78,7 @@ interface Envelope<T> {
  * and an array of tuples, neither of which merges correctly into an object
  * literal. A plain record is the only shape this client ever needs.
  */
-interface CallInit {
+export interface CallInit {
   method?: string;
   body?: string;
   headers?: Record<string, string>;
@@ -86,7 +86,11 @@ interface CallInit {
   retried?: boolean;
 }
 
-async function call<T>(path: string, init?: CallInit): Promise<T> {
+/**
+ * Shared transport for the per-resource API modules (`users-api.ts`, ...).
+ * Mutating callers pass an `Idempotency-Key` through `init.headers`.
+ */
+export async function call<T>(path: string, init?: CallInit): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`${API_BASE}${path}`, {

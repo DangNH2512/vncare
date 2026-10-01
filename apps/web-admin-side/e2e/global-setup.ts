@@ -45,8 +45,22 @@ async function ensureAccount(account: (typeof ACCOUNTS)[keyof typeof ACCOUNTS]):
   ]);
 }
 
+/**
+ * Origin of the app under test. A dev server compiles each route on its first
+ * request, which can exceed an assertion timeout; touching the routes once here
+ * moves that cost out of the first test that happens to need them.
+ */
+const BASE_URL = process.env['PW_BASE_URL'] ?? 'http://localhost:3002';
+
+async function warmUp(): Promise<void> {
+  for (const path of ['/login', '/users', '/events']) {
+    await fetch(`${BASE_URL}${path}`, { redirect: 'manual' }).catch(() => undefined);
+  }
+}
+
 export default async function globalSetup(): Promise<void> {
   for (const account of Object.values(ACCOUNTS)) {
     await ensureAccount(account);
   }
+  await warmUp();
 }

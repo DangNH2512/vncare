@@ -11,6 +11,8 @@ export interface InputProps extends Omit<ComponentPropsWithRef<'input'>, 'size'>
   error?: string;
   /** Non-interactive decoration inside the field, e.g. a search glyph. */
   leading?: ReactNode;
+  /** Classes for the outer wrapper (width, flex basis...). */
+  wrapperClassName?: string;
 }
 
 /**
@@ -25,6 +27,7 @@ export function Input({
   hint,
   error,
   leading,
+  wrapperClassName,
   id,
   className,
   ...rest
@@ -35,7 +38,7 @@ export function Input({
   const hasError = error !== undefined && error !== '';
 
   return (
-    <div className="flex min-w-0 flex-col gap-1.5">
+    <div className={cn('flex min-w-0 flex-col gap-1.5', wrapperClassName)}>
       <label htmlFor={inputId} className="text-sm font-medium text-fg">
         {label}
       </label>

@@ -7,6 +7,7 @@ import { useAuth } from '../auth-provider';
 import { LanguageToggle } from '../language-toggle';
 import { useTranslate } from '../locale-provider';
 import { Badge, Button } from '../ui';
+import { TimeZoneNote } from './time-zone-note';
 
 /**
  * Console top bar: who is signed in, their role, the language switch and
@@ -30,6 +31,8 @@ export function Header({ user }: { user: SessionUserResponseT }) {
         {labelKey !== undefined && <Badge tone="accent">{t(labelKey)}</Badge>}
       </div>
       <div className="flex shrink-0 items-center gap-3">
+        {/* The one place the zone is named; every date in the console is Da Nang time. */}
+        <TimeZoneNote />
         <LanguageToggle />
         <Button variant="secondary" size="sm" onClick={() => void signOut()}>
           {t('auth.action.signOut')}
