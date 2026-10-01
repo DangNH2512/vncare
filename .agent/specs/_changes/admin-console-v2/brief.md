@@ -387,7 +387,7 @@ Không cần migration cho khoá tài khoản và đổi role (dùng cột sẵn
 | `admin.action.review.title` / `.confirm` / `.cancel` | Review before you confirm / Confirm / Cancel | Xem lại trước khi xác nhận / Xác nhận / Huỷ |
 | `admin.action.typeToConfirm` | Type {value} to confirm | Gõ {value} để xác nhận |
 | `admin.action.irreversible` | This cannot be undone. | Không thể hoàn tác. |
-| `admin.action.suspendUser.effect` | The person is signed out everywhere and cannot sign in. Their events and posts stay as they are. | Người này bị đăng xuất khỏi mọi thiết bị và không đăng nhập lại được. Sự kiện và bài đăng của họ giữ nguyên. |
+| `admin.action.suspendUserEffect` | The person is signed out everywhere and cannot sign in. Their events and posts stay as they are. | Người này bị đăng xuất khỏi mọi thiết bị và không đăng nhập lại được. Sự kiện và bài đăng của họ giữ nguyên. |
 | `admin.action.failed` | Could not complete this action. Nothing was changed. | Không thực hiện được thao tác này. Chưa có gì bị thay đổi. |
 | `admin.audit.title` / `.col.time` / `.col.actor` / `.col.action` / `.col.target` / `.col.severity` / `.col.reason` | Audit log / Time / Actor / Action / Target / Severity / Reason | Nhật ký thao tác / Thời gian / Người thực hiện / Hành động / Đối tượng / Mức độ / Lý do |
 | `admin.audit.action.user.suspended` / `...unsuspended` / `...role_changed` / `event.suspended` / `...restored` / `...taken_down` | Account suspended / Account restored / Role changed / Event suspended / Event restored / Event taken down | Đã tạm khoá tài khoản / Đã mở khoá tài khoản / Đã đổi vai trò / Đã ẩn sự kiện / Đã khôi phục sự kiện / Đã gỡ sự kiện |

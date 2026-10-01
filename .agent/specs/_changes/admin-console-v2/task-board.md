@@ -512,3 +512,29 @@ Task cards: AD-0..AD-18 + AD-I.
 Thứ tự thực thi: mục 4. Nhóm song song an toàn: mỗi nhịp một cặp BE ∥ Web/package. File chung nối tiếp: mục 5. Test lane: mục 6. Ảnh hưởng EAS: không.
 Câu hỏi kỹ thuật còn mở (cần xác nhận, không chặn A1/A2): (a) `uuidv7()` có sẵn trên DB chạy migration không (BE kiểm ở AD-7); (b) đã có bootstrap BullMQ dùng được cho AD-15 chưa (BE kiểm); (c) Founder duyệt D-M7 ẩn tự động, bảng D-M4, hai DDL trước A-T8; (d) tài liệu cần đồng bộ (Coordinator): `.agent/rules/behaviors.md:114-115` và `checklists.md` đổi `moderation_audit_log` thành `audit_logs`; doc 03 §9 theo doc 05 §13; doc 05 comment "28 giá trị" thực tế 30; brief §9.3/§10.2 ghi `0010/0011` nhưng số chốt là `0010/0012` (và Social giữ `0011`), cập nhật tên file trong brief.
 Cần Debate Gate: không. Các lựa chọn có đánh đổi (deny-list Redis thay vì token ngắn hơn/cột epoch; giữ `moderation_cases`; không phân vùng audit) đã chốt theo nguyên tắc đơn giản và có căn cứ code; chỉ trình chủ dự án hai DDL.
+## 9. Ghi chú Coordinator sau review AD-1/AD-I/AD-4 (01/10/2026)
+
+- Key i18n đổi tên do xung đột cấu trúc: `admin.action.suspendUser.effect` → `admin.action.suspendUserEffect`; hint ghế là `admin.events.detail.seatsTakenHint` (không phải `seatsTaken.hint`). Card UI dùng đúng tên này.
+- `AuditSeverity` phải có đủ 4 mức `info|notice|warning|critical` khớp cột DB và i18n (review MAJOR-3, sửa ở AD-1).
+- Phân trang: trang kế/trang trước dùng `router.push` (Back quay về trang trước); đổi lọc/sắp xếp dùng `replace`.
+- AD-2 xong (75 e2e admin xanh). Quyết định: `emailMasked` thành nullable trong contract vì `users.email` có thể NULL (tài khoản chỉ có phone/social); bỏ placeholder. Làm ở card dọn **AD-2b**, cùng lint `require-array-sort-compare` trong e2e.
+- Key lỗi mới của AD-2 (`errors.admin.queryInvalid|cursorInvalid|userNotFound`) và MINOR-10 được thêm ở lượt AD-I follow-up, chạy trước AD-5 trong cùng worker web-admin. `packages/i18n` vẫn nối tiếp, mỗi lúc một worker.
+- `AuditEntityType` hiện chỉ có `user|event`. AD-7/AD-14 thêm giá trị (report, comment, post...) khi cần, nối tiếp qua `contracts/index.ts`.
+- Worker không được dùng `pkill -f next-server`/`pkill -f next`. Chỉ kill đúng PID mình đã bật.
+
+## 10. Ghi chú Coordinator sau review AD-2/AD-4 lượt 2, AD-3/AD-5 xong (01/10/2026)
+
+- **Chủ dự án đã duyệt DDL `0010_audit_logs.sql` (mục 7.1)** ngày 01/10/2026, áp trên DB local. Trước khi chạy trên dữ liệu thật vẫn cần xác nhận pháp lý về thời hạn lưu (24 tháng, xoá `ip`/`user_agent` sau 90 ngày). `0012` chưa trình.
+- Review lượt 2: AD-1 approved (m9: `AuditDiff` phải chuẩn hoá khoá snake_case/camelCase/hoa thường trước AD-7). AD-2/2b changes-requested (M1 cursor hợp lệ về hình dạng nhưng sai giá trị gây 500). AD-4 changes-requested (M11 Select tự đóng khi cuộn chính listbox). Sửa ở card **AD-2c** (BE + contracts) và **AD-4b** (kit web).
+- **Quyết định m5 (PII trong query string `q`), không mở Debate Gate:** giữ `GET /admin/users?q=` theo D-U3 (console nội bộ, chỉ admin+). Giảm thiểu ở hạ tầng: log nginx cho `/api/v1/admin/*` và console admin bỏ `$args`; Sentry (khi có) xoá query khỏi breadcrumb và URL. Gộp vào T-18 (runbook nginx production). Nếu sau này mở tìm kiếm cho vai thấp hơn thì chuyển sang `POST .../search`.
+- Gap kit AD-4 (từ AD-5): `Input` chưa có `wrapperClassName`, chưa có `Checkbox`. `RequireRole` redirect `/` thay vì hiện màn thiếu quyền (A1-AC-12), ghi nợ cho card shell.
+- AD-3 thêm key lỗi `errors.admin.eventNotFound`, lượt i18n tiếp theo do worker web-admin (AD-6) thêm.
+- Review AD-3: changes-requested nhẹ (M-A cursor sai giá trị cùng gốc M1; m-1 `escapeLike` sang `admin-sql.ts`; m-2 test đang diễn ra; m-3 draft không lộ `updatedAt`/`slug`; m-5 e2e không lệch KPI overview). Gộp vào AD-2c. m-4 (7 scalar subquery, chưa EXPLAIN) ghi nợ.
+- Review AD-5: approved-with-changes. Card **AD-5b** chạy sau AD-6 (cùng worker web-admin, vì i18n nối tiếp):
+  - m-6: nhãn `revokedReason`, không in mã thô.
+  - m-7: 400 `queryInvalid` thì hiện "bộ lọc không hợp lệ" + Xoá bộ lọc; chặn trust min > max.
+  - m-8: test lọc ngày VN→UTC, moderator gõ `/users`, `includeDeleted`, trust range; thêm project WebKit.
+  - m-10: giảm chữ. Gộp hint tìm kiếm vào tooltip, rút placeholder; ẩn hàng hồ sơ trống; bỏ `contactMasked`/`trust.hint` khỏi thân thẻ; thẻ rỗng chỉ ghi "Chưa có"; ghi chú múi giờ một lần ở shell; bỏ cột "Hết hạn" ở bảng phiên.
+  - n-1: xoá key mồ côi.
+  - n-2: nhãn VI `expat.*`, ví dụ `local_host` = "Người dẫn dắt địa phương".
+  - n-4: comment lỗi thời.
