@@ -34,6 +34,9 @@ export function Sidebar({ role }: { role: UserRoleT }) {
   if (allowedRolesFor('event.directory.view').includes(role)) {
     items.push({ href: '/events', labelKey: 'admin.nav.events' });
   }
+  if (allowedRolesFor('audit_log.view').includes(role)) {
+    items.push({ href: '/audit-log', labelKey: 'admin.nav.auditLog' });
+  }
   if (SYSTEM_HEALTH_ROLES.includes(role)) {
     items.push({ href: '/system-health', labelKey: 'admin.nav.systemHealth' });
   }

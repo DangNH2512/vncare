@@ -556,3 +556,18 @@ Cần Debate Gate: không. Các lựa chọn có đánh đổi (deny-list Redis 
   - Rủi ro còn lại: `x-request-id` do client đặt (chỉ nhận UUID, dùng để tra cứu); `req.ip` phụ thuộc cấu hình `TRUST_PROXY` (T-18).
 - C-1 (commit 32fdacd): gửi chat nguyên tử theo hội thoại, `lock_timeout` 2 s → 503. Cách xử lý này đóng cả lỗi vượt quota tin mở đầu lẫn lỗi 403 khi replay đồng thời.
 - AD-9 xong (`suspend`/`restore`/`takedown` sự kiện; khoá một hàng `events`, không advisory lock vì không có bất biến liên hàng; moderator là organizer thì 403 `CONFLICT_OF_INTEREST`; không ghi `rsvps`). **Quyết định coordinator:** restore trả sự kiện về đúng trạng thái trước khi bị suspend, lấy từ `before.status` của dòng audit `event.suspended` gần nhất. Không xác định được thì về `pending_review`, không bao giờ về `published`. Lý do: không để UGC chưa duyệt thành công khai. Sửa ở AD-9b.
+- **Chủ dự án duyệt ngày 01/10/2026:**
+  - **Q-3:** bật ẩn tự động cho case `critical` (D-M7). Tài khoản không bị khoá tự động.
+  - **Q-4:** giữ bảng D-M4 mặc định:
+    - `critical` (2 giờ): danger, illegal, privacy.
+    - `high` (12 giờ): harassment, sexual, hate, scam, ghost_event, impersonation, unsafe_setup.
+    - `normal` (48 giờ): spam.
+    - `low` (7 ngày): other.
+    - SLA chạy 24/7.
+  - **DDL `0012_moderation.sql` (mục 7.2):** áp lên DB local. Trước production cần luật sư xác nhận thời hạn giữ snapshot báo cáo.
+- AD-13 xong. Quyết định coordinator cho các điểm worker tự chọn:
+  - `DecideCaseBody.closeCase` (mặc định true) và `resolutionCode` tuỳ chọn: chấp nhận.
+  - `due_soon` khi còn ≤ 1 giờ; `overdue` khi `now > dueAt` (so sánh nghiêm ngặt).
+  - `malicious_report` và `curation_takedown_request` xếp nhóm `other`; BA xem lại sau, không chặn.
+  - AD-14/15 phải mở rộng `AuditEntityType` (thêm report/post/comment/moderation_case) qua `contracts/index.ts`.
+- AD-10 xong (`/audit-log`). API trên :3101 từng chạy bản cũ; worker bật API riêng trên :3102 để test.

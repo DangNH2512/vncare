@@ -1142,7 +1142,8 @@
         "action": "Action",
         "target": "Target",
         "severity": "Severity",
-        "reason": "Reason"
+        "reason": "Reason",
+        "details": "Details"
       },
       "action": {
         "user": {
@@ -1167,7 +1168,64 @@
         "noSuperAdmin": "Super admin actions are not shown."
       },
       "empty": {
-        "title": "No audit entries match your filters"
+        "title": "No audit entries match your filters",
+        "none": "No audit entries yet"
+      },
+      "hintLabel": "About this list",
+      "hint": "Newest first. Times are Da Nang time (GMT+7). The end date includes the whole day. Reasons are shown exactly as the staff member wrote them.",
+      "table": {
+        "caption": "Audit log",
+        "filterLabel": "Filter the audit log",
+        "pagesLabel": "Audit log pages",
+        "shown": "{count} shown"
+      },
+      "previous": "Previous page",
+      "next": "Next page",
+      "cursorReset": "The list changed. Showing the first page.",
+      "row": {
+        "expand": "Show details",
+        "collapse": "Hide details"
+      },
+      "actor": {
+        "none": "System"
+      },
+      "entity": {
+        "user": "User",
+        "event": "Event"
+      },
+      "target": {
+        "open": "Open {type} {id}"
+      },
+      "filter": {
+        "action": "Action",
+        "allActions": "All actions",
+        "severity": "Severity",
+        "allSeverities": "All levels",
+        "entityType": "Target type",
+        "allTypes": "All types",
+        "from": "From",
+        "to": "To",
+        "selected": "{count} selected",
+        "clearSelection": "Clear selection",
+        "clear": "Clear filters",
+        "actorId": "Actor {id}",
+        "entityId": "Target {id}",
+        "remove": "Remove this filter"
+      },
+      "detail": {
+        "reason": "Reason",
+        "noReason": "No reason recorded",
+        "changes": "Changes",
+        "noChanges": "No field changes recorded.",
+        "to": "to",
+        "field": {
+          "role": "Role",
+          "status": "Status"
+        }
+      },
+      "error": {
+        "title": "Could not load the audit log",
+        "body": "Check your connection and try again."
       }
     },
     "moderation": {

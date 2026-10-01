@@ -1142,7 +1142,8 @@
         "action": "Hành động",
         "target": "Đối tượng",
         "severity": "Mức độ",
-        "reason": "Lý do"
+        "reason": "Lý do",
+        "details": "Chi tiết"
       },
       "action": {
         "user": {
@@ -1167,7 +1168,64 @@
         "noSuperAdmin": "Thao tác của super admin không được hiển thị."
       },
       "empty": {
-        "title": "Không có bản ghi nào khớp bộ lọc"
+        "title": "Không có bản ghi nào khớp bộ lọc",
+        "none": "Chưa có bản ghi nào"
+      },
+      "hintLabel": "Về danh sách này",
+      "hint": "Mới nhất trước. Giờ hiển thị theo giờ Đà Nẵng (GMT+7). Ngày kết thúc gồm cả ngày đó. Lý do hiển thị đúng như nhân sự đã nhập.",
+      "table": {
+        "caption": "Nhật ký thao tác",
+        "filterLabel": "Lọc nhật ký thao tác",
+        "pagesLabel": "Các trang nhật ký thao tác",
+        "shown": "Hiện {count}"
+      },
+      "previous": "Trang trước",
+      "next": "Trang sau",
+      "cursorReset": "Danh sách đã thay đổi. Đang hiện trang đầu.",
+      "row": {
+        "expand": "Xem chi tiết",
+        "collapse": "Ẩn chi tiết"
+      },
+      "actor": {
+        "none": "Hệ thống"
+      },
+      "entity": {
+        "user": "Người dùng",
+        "event": "Sự kiện"
+      },
+      "target": {
+        "open": "Mở {type} {id}"
+      },
+      "filter": {
+        "action": "Hành động",
+        "allActions": "Mọi hành động",
+        "severity": "Mức độ",
+        "allSeverities": "Mọi mức",
+        "entityType": "Loại đối tượng",
+        "allTypes": "Mọi loại",
+        "from": "Từ ngày",
+        "to": "Đến ngày",
+        "selected": "Đã chọn {count}",
+        "clearSelection": "Bỏ chọn",
+        "clear": "Xoá bộ lọc",
+        "actorId": "Người thực hiện {id}",
+        "entityId": "Đối tượng {id}",
+        "remove": "Bỏ bộ lọc này"
+      },
+      "detail": {
+        "reason": "Lý do",
+        "noReason": "Không có lý do",
+        "changes": "Thay đổi",
+        "noChanges": "Không ghi nhận thay đổi trường nào.",
+        "to": "thành",
+        "field": {
+          "role": "Vai trò",
+          "status": "Trạng thái"
+        }
+      },
+      "error": {
+        "title": "Không tải được nhật ký thao tác",
+        "body": "Kiểm tra kết nối mạng và thử lại."
       }
     },
     "moderation": {

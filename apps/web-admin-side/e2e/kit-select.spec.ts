@@ -15,13 +15,23 @@ async function openEvents(page: Page): Promise<void> {
 
 test.describe('Select kit', () => {
   test('scrolling a long listbox keeps the popover open', async ({ page }) => {
+    // The six areas only overflow when the popover is clamped by a short viewport.
+    // On a tall one the list is not scrollable, and a wheel gesture over it chains
+    // to the page; the page scroll then closes the popover on purpose (WebKit does
+    // this every time, Chromium only when the page itself is scrollable).
+    await page.setViewportSize({ width: 1280, height: 400 });
     await openEvents(page);
     const area = page.getByRole('combobox', { name: /Area/ });
     await area.click();
     const list = page.getByRole('listbox');
     await expect(list).toBeVisible();
-    await list.hover();
-    await page.mouse.wheel(0, 400);
+    const overflow = await list.evaluate((el) => el.scrollHeight - el.clientHeight);
+    expect(overflow).toBeGreaterThan(0);
+    // Scrolls the list itself, so the scroll event comes from inside the popover.
+    await list.evaluate((el) => {
+      el.scrollTop = el.scrollHeight;
+    });
+    await expect.poll(() => list.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
     await area.press('End');
     await expect(list).toBeVisible();
     await expect(page.getByRole('option').last()).toBeVisible();

@@ -27,19 +27,59 @@ export type MessageKey =
   | 'admin.audit.action.user.role_changed'
   | 'admin.audit.action.user.suspended'
   | 'admin.audit.action.user.unsuspended'
+  | 'admin.audit.actor.none'
   | 'admin.audit.col.action'
   | 'admin.audit.col.actor'
+  | 'admin.audit.col.details'
   | 'admin.audit.col.reason'
   | 'admin.audit.col.severity'
   | 'admin.audit.col.target'
   | 'admin.audit.col.time'
+  | 'admin.audit.cursorReset'
+  | 'admin.audit.detail.changes'
+  | 'admin.audit.detail.field.role'
+  | 'admin.audit.detail.field.status'
+  | 'admin.audit.detail.noChanges'
+  | 'admin.audit.detail.noReason'
+  | 'admin.audit.detail.reason'
+  | 'admin.audit.detail.to'
+  | 'admin.audit.empty.none'
   | 'admin.audit.empty.title'
+  | 'admin.audit.entity.event'
+  | 'admin.audit.entity.user'
+  | 'admin.audit.error.body'
+  | 'admin.audit.error.title'
+  | 'admin.audit.filter.action'
+  | 'admin.audit.filter.actorId'
+  | 'admin.audit.filter.allActions'
+  | 'admin.audit.filter.allSeverities'
+  | 'admin.audit.filter.allTypes'
+  | 'admin.audit.filter.clear'
+  | 'admin.audit.filter.clearSelection'
+  | 'admin.audit.filter.entityId'
+  | 'admin.audit.filter.entityType'
+  | 'admin.audit.filter.from'
+  | 'admin.audit.filter.remove'
+  | 'admin.audit.filter.selected'
+  | 'admin.audit.filter.severity'
+  | 'admin.audit.filter.to'
+  | 'admin.audit.hint'
+  | 'admin.audit.hintLabel'
+  | 'admin.audit.next'
+  | 'admin.audit.previous'
+  | 'admin.audit.row.collapse'
+  | 'admin.audit.row.expand'
   | 'admin.audit.scope.noSuperAdmin'
   | 'admin.audit.scope.own'
   | 'admin.audit.severity.critical'
   | 'admin.audit.severity.info'
   | 'admin.audit.severity.notice'
   | 'admin.audit.severity.warning'
+  | 'admin.audit.table.caption'
+  | 'admin.audit.table.filterLabel'
+  | 'admin.audit.table.pagesLabel'
+  | 'admin.audit.table.shown'
+  | 'admin.audit.target.open'
   | 'admin.audit.title'
   | 'admin.common.dateRange.invalid'
   | 'admin.common.dateRange.order'
@@ -1011,19 +1051,59 @@ export const MESSAGE_KEYS = [
   'admin.audit.action.user.role_changed',
   'admin.audit.action.user.suspended',
   'admin.audit.action.user.unsuspended',
+  'admin.audit.actor.none',
   'admin.audit.col.action',
   'admin.audit.col.actor',
+  'admin.audit.col.details',
   'admin.audit.col.reason',
   'admin.audit.col.severity',
   'admin.audit.col.target',
   'admin.audit.col.time',
+  'admin.audit.cursorReset',
+  'admin.audit.detail.changes',
+  'admin.audit.detail.field.role',
+  'admin.audit.detail.field.status',
+  'admin.audit.detail.noChanges',
+  'admin.audit.detail.noReason',
+  'admin.audit.detail.reason',
+  'admin.audit.detail.to',
+  'admin.audit.empty.none',
   'admin.audit.empty.title',
+  'admin.audit.entity.event',
+  'admin.audit.entity.user',
+  'admin.audit.error.body',
+  'admin.audit.error.title',
+  'admin.audit.filter.action',
+  'admin.audit.filter.actorId',
+  'admin.audit.filter.allActions',
+  'admin.audit.filter.allSeverities',
+  'admin.audit.filter.allTypes',
+  'admin.audit.filter.clear',
+  'admin.audit.filter.clearSelection',
+  'admin.audit.filter.entityId',
+  'admin.audit.filter.entityType',
+  'admin.audit.filter.from',
+  'admin.audit.filter.remove',
+  'admin.audit.filter.selected',
+  'admin.audit.filter.severity',
+  'admin.audit.filter.to',
+  'admin.audit.hint',
+  'admin.audit.hintLabel',
+  'admin.audit.next',
+  'admin.audit.previous',
+  'admin.audit.row.collapse',
+  'admin.audit.row.expand',
   'admin.audit.scope.noSuperAdmin',
   'admin.audit.scope.own',
   'admin.audit.severity.critical',
   'admin.audit.severity.info',
   'admin.audit.severity.notice',
   'admin.audit.severity.warning',
+  'admin.audit.table.caption',
+  'admin.audit.table.filterLabel',
+  'admin.audit.table.pagesLabel',
+  'admin.audit.table.shown',
+  'admin.audit.target.open',
   'admin.audit.title',
   'admin.common.dateRange.invalid',
   'admin.common.dateRange.order',
