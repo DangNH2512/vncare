@@ -3,7 +3,16 @@
 Ghi nhanh trạng thái cuối mỗi phiên để phiên sau vào việc được ngay. Ghi đè, không
 tích luỹ — lịch sử dài hạn thuộc về [DECISIONS.md](DECISIONS.md).
 
-## Trạng thái hiện tại (2026-09-01)
+## Cập nhật 2026-10-01
+
+- **Chạy stack:** `ADMIN_PORT=3012 pnpm dev` (máy này: 3002 bị `nail-booking-admin` chiếm). `ops/dev.sh` giờ bật đủ `postgres redis-cache redis-queue mailpit minio` và kiểm Docker daemon trước. Web :3000, Admin :3012, API :3101, Mailpit :8025.
+- **Sau khi sửa `apps/api/src/main.ts` phải restart API**: `vite-node --watch` không chạy lại `bootstrap()` (ví dụ `trust proxy`).
+- **Đợt `m1-auth-hardening`** (`.agent/specs/_changes/m1-auth-hardening/`): rate limit login/register (Redis cache, HMAC key, fail-open 750ms, env `RATE_LIMIT_*`, `TRUST_PROXY`), bỏ log khoá JWT, bảng `trust_signals` append-only (0009, đã áp tay vào DB local), test `pg_enum`, web-client đọc body lỗi phẳng + helper `translateApiError`, admin login một ô identifier. `apps/api/.env` local có ngưỡng 1000 để dev/Playwright không tự khoá.
+- **Next 16 không tự điền `X-Forwarded-For`**: không có reverse proxy thì mọi người dùng web chung một bucket IP (T-18).
+- `apps/web-admin-side` đã có: đăng nhập staff, Overview (mới tiêu đề), System health; Playwright 18 ca.
+- Đợt kế tiếp đã chốt brief + task board: `.agent/specs/_changes/discover-and-admin-overview/`.
+
+## Trạng thái trước đó (2026-09-01)
 
 ### apps/api — không còn là spike, đã nối Postgres thật
 
@@ -58,7 +67,7 @@ người đầu hàng chờ trong cùng transaction.
   định dạng locale và đã từng che mất một lỗi hydration thật.
 
 - Auth đã thật. Chưa có: xác minh email (đăng ký cấp thẳng T1), social login,
-  rate limit đăng nhập. Xem T-10 → T-13.
+  (rate limit đã có từ 01/10). Xem T-10, T-11, T-13.
 - `apps/web-client-side` proxy `/api/*` sang API qua `rewrites()` trong
   `next.config.ts` (biến `API_ORIGIN`). Đây là điều kiện để cookie httpOnly hoạt
   động — đừng gọi thẳng cross-origin.
@@ -68,6 +77,6 @@ người đầu hàng chờ trong cùng transaction.
 - **Dọn dữ liệu test:** `pnpm db:clean-test` — CHỈ xoá tài khoản `@example.test`.
   Không bao giờ chạy `DELETE FROM users` không giới hạn: nó xoá luôn tài khoản
   chủ dự án đăng ký tay và trông y hệt như đăng nhập bị hỏng.
-- CORS allow-list ở `main.ts`, mặc định `localhost:3000` và `localhost:3002`.
-- `apps/web-admin-side` và `apps/mobile`: vẫn rỗng.
+- CORS allow-list ở `main.ts`, mặc định `localhost:3000` và `localhost:3002` (hai web gọi API qua rewrite cùng origin nên không phụ thuộc CORS).
+- `apps/mobile`: vẫn rỗng.
 - Kế hoạch bản đồ đã viết xong, chưa code: `docs/analysis/13-...`.

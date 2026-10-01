@@ -4,7 +4,7 @@
 
 | Năng lực | Trạng thái | apps/api | apps/web-client-side | apps/web-admin-side | apps/mobile | Tài liệu |
 |---|---|---|---|---|---|---|
-| Đăng ký / đăng nhập | **API + web xong** (email/mật khẩu) | `modules/auth` | /login, /register, dialog gate | — | — | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
+| Đăng ký / đăng nhập | **API + web xong** (email/mật khẩu, rate limit login/register từ 01/10) | `modules/auth`, `common/rate-limit` | /login, /register, dialog gate | /login staff (email, username hoặc phone) | — | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
 | Hồ sơ & trust level | **API + web xong** | `modules/profile` | /profile, /u/[handle] | — | — | `docs/analysis/01-tac-nhan-va-phan-quyen.md` |
 | Tạo & quản lý sự kiện | **API + web xong** | `modules/event` | feed thật, /events/[id], /events/new | — | — | `docs/analysis/02-use-case.md` |
 | RSVP & waitlist | **API + web xong** | `modules/rsvp` | nút Join/Waitlist + danh sách người tham gia | — | — | `docs/analysis/02-use-case.md` |
@@ -23,4 +23,4 @@
 
 Ghi chú trạng thái web (2026-09-01): `apps/web-client-side` đang dựng UI cơ bản
 với Next.js 16 — bốn màn hình feed, chi tiết sự kiện, khám phá, hồ sơ; chưa nối
-API thật. `apps/web-admin-side` còn rỗng, chưa bắt đầu.
+API thật. `apps/web-admin-side` (01/10/2026): đăng nhập staff, RBAC, Overview, System health. Bảng `trust_signals` đã có (0009), chưa có job ghi.
