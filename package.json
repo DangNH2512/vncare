@@ -16,6 +16,7 @@
     "db:up": "docker compose -f docker-compose.local.yml up -d",
     "db:down": "docker compose -f docker-compose.local.yml down",
     "db:seed": "pnpm --filter @dnc/api seed:areas",
+    "db:seed:demo": "pnpm --filter @dnc/api seed:demo",
     "db:smoke": "bash ops/db/smoke/run-smoke.sh",
     "db:clean-test": "docker exec -i vncare-postgres-1 bash -s -- postgresql://dnc:dnc@127.0.0.1:5432/dnc < ops/db/clean-test-data.sh"
   },

@@ -8,6 +8,7 @@
     "dev": "vite-node --watch src/main.ts",
     "start": "vite-node src/main.ts",
     "seed:areas": "vite-node src/database/seeds/seed-areas.ts",
+    "seed:demo": "vite-node src/database/seeds/seed-demo.ts --",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
