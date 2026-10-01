@@ -4,7 +4,7 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { io, type Socket } from 'socket.io-client';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { CHAT_SOCKET_EVENTS, type MessageResponseT } from '@dnc/contracts';
+import { CHAT_SOCKET_EVENTS } from '@dnc/contracts';
 import {
   createActor,
   createTestApp,
@@ -29,6 +29,7 @@ describe('chat gateway', () => {
   let listener: Actor;
   let outsider: Actor;
   let conversationId: string;
+  let areaId: string;
 
   const connect = (actor: Actor): Promise<Socket> =>
     new Promise((resolve, reject) => {
@@ -53,7 +54,7 @@ describe('chat gateway', () => {
     });
 
   beforeAll(async () => {
-    ({ cleanup } = await seedArea());
+    ({ areaId, cleanup } = await seedArea());
     app = await createTestApp();
     speaker = await createActor(app, { trustLevel: 2 });
     listener = await createActor(app, { trustLevel: 2 });
@@ -121,7 +122,10 @@ describe('chat gateway', () => {
     const socket = await connect(listener);
     await socket.emitWithAck('conversation.join', { conversationId });
 
-    const delivered = waitFor<MessageResponseT>(socket, CHAT_SOCKET_EVENTS.messageCreated);
+    const delivered = waitFor<{ conversationId: string; messageId: string }>(
+      socket,
+      CHAT_SOCKET_EVENTS.messageCreated,
+    );
     const sent = await request(app.getHttpServer())
       .post(`/api/v1/conversations/${conversationId}/messages`)
       .set(speaker.headers)
@@ -129,8 +133,9 @@ describe('chat gateway', () => {
       .expect(201);
 
     const payload = await delivered;
-    expect(payload.id).toBe(sent.body.data.id);
-    expect(payload.body).toBe('Realtime hello');
+    // The socket only signals; content is fetched over REST, which checks access.
+    expect(payload).toEqual({ conversationId, messageId: sent.body.data.id });
+    expect(payload).not.toHaveProperty('body');
   });
 
   /** The inbox must move even when the recipient is not looking at the thread. */
@@ -165,5 +170,65 @@ describe('chat gateway', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 300));
     expect(received).toBe(false);
+  });
+
+  it('stops leaking content to a joined socket once its RSVP is cancelled', async () => {
+    const host = await createActor(app, { trustLevel: 2 });
+    const member = await createActor(app, { trustLevel: 2 });
+    const http = () => request(app.getHttpServer());
+
+    const event = await http()
+      .post('/api/v1/events')
+      .set(host.headers)
+      .send({
+        title: 'Gateway revoke event',
+        areaId,
+        lat: 16.06,
+        lng: 108.247,
+        startsAt: new Date(Date.now() + 86_400_000).toISOString(),
+        capacity: 8,
+      })
+      .expect(201);
+    await http()
+      .put(`/api/v1/events/${event.body.data.id}/status`)
+      .set(host.headers)
+      .send({ status: 'published' })
+      .expect(200);
+    const room = await http()
+      .post('/api/v1/conversations')
+      .set(host.headers)
+      .send({ type: 'event_group', eventId: event.body.data.id })
+      .expect(201);
+    const roomId: string = room.body.data.id;
+    const occurrenceId: string = event.body.data.occurrenceId;
+
+    await http()
+      .post(`/api/v1/occurrences/${occurrenceId}/rsvps`)
+      .set({ ...member.headers, 'idempotency-key': randomUUID() })
+      .expect(201);
+    await http().post(`/api/v1/conversations/${roomId}/participants`).set(member.headers).expect(201);
+
+    const socket = await connect(member);
+    expect(await socket.emitWithAck('conversation.join', { conversationId: roomId })).toEqual({
+      joined: true,
+    });
+    const frames: unknown[] = [];
+    socket.on(CHAT_SOCKET_EVENTS.messageCreated, (payload) => frames.push(payload));
+
+    await http()
+      .delete(`/api/v1/occurrences/${occurrenceId}/rsvps`)
+      .set(member.headers)
+      .expect(204);
+
+    await http()
+      .post(`/api/v1/conversations/${roomId}/messages`)
+      .set(host.headers)
+      .send({ type: 'text', body: 'Members only secret', clientMessageId: randomUUID() })
+      .expect(201);
+
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    expect(JSON.stringify(frames)).not.toContain('Members only secret');
+    expect(frames.every((f) => !Object.prototype.hasOwnProperty.call(f, 'body'))).toBe(true);
+    await http().get(`/api/v1/conversations/${roomId}/messages`).set(member.headers).expect(404);
   });
 });

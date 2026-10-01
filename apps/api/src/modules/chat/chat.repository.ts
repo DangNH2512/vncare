@@ -26,10 +26,55 @@ const PARTICIPANTS_JSON = `
      'role', p.role,
      'joinedAt', to_char(p.joined_at AT TIME ZONE 'UTC', ${JSON_UTC}),
      'leftAt', CASE WHEN p.left_at IS NULL THEN NULL
-                    ELSE to_char(p.left_at AT TIME ZONE 'UTC', ${JSON_UTC}) END
+                    ELSE to_char(p.left_at AT TIME ZONE 'UTC', ${JSON_UTC}) END,
+     'handle', pp.handle,
+     'displayName', pp.display_name,
+     'trustLevel', pu.trust_level
    ) ORDER BY p.joined_at), '[]'::json)
-     FROM conversation_participants p WHERE p.conversation_id = c.id) AS participants
+     FROM conversation_participants p
+     LEFT JOIN users pu
+       ON pu.id = p.user_id AND pu.anonymized_at IS NULL AND pu.deleted_at IS NULL
+     LEFT JOIN profiles pp ON pp.user_id = pu.id
+    WHERE p.conversation_id = c.id) AS participants
 `;
+
+/**
+ * Who may see a conversation, as a predicate over the aliases in
+ * {@link conversationFrom}. A direct thread needs only the participant join; an
+ * event room additionally needs a published event and the viewer to be its
+ * organizer or hold a confirmed/attended RSVP on the room's occurrence, so
+ * cancelling an RSVP closes the room to that person on their next request.
+ *
+ * The RSVP predicate repeats the one in rsvp.repository.ts and the
+ * seat-occupying statuses of 0002_rsvp_core.sql on purpose: importing
+ * RsvpRepository would couple the modules.
+ */
+const viewerEligible = (viewer: string): string => `
+  (c.type = 'direct'
+   OR (c.type = 'event_group'
+       AND e.status = 'published' AND e.deleted_at IS NULL
+       AND (e.organizer_id = ${viewer}
+            OR EXISTS (
+              SELECT 1 FROM rsvps r
+                JOIN event_occurrences ro ON ro.id = r.occurrence_id
+               WHERE ro.event_id = e.id
+                 AND (c.occurrence_id IS NULL OR ro.id = c.occurrence_id)
+                 AND r.user_id = ${viewer}
+                 AND r.status IN ('confirmed', 'attended')
+                 AND r.deleted_at IS NULL))))`;
+
+/** Conversation with its viewer row, event and the occurrence that times its window. */
+const conversationFrom = (viewer: string): string => `
+  FROM conversations c
+  JOIN conversation_participants me
+    ON me.conversation_id = c.id AND me.user_id = ${viewer} AND me.left_at IS NULL
+  LEFT JOIN events e ON e.id = c.event_id
+  LEFT JOIN LATERAL (
+    SELECT o.starts_at, o.ends_at FROM event_occurrences o
+     WHERE o.event_id = c.event_id AND o.deleted_at IS NULL
+       AND (c.occurrence_id IS NULL OR o.id = c.occurrence_id)
+     ORDER BY o.starts_at LIMIT 1
+  ) occ ON true`;
 
 export interface ConversationRow {
   id: string;
@@ -49,7 +94,14 @@ export interface ConversationRow {
     role: 'owner' | 'member';
     joinedAt: string;
     leftAt: string | null;
+    handle: string | null;
+    displayName: string | null;
+    trustLevel: number | null;
   }>;
+  /** Event and occurrence times; null for a direct thread or an occurrence that is gone. */
+  event_title: string | null;
+  event_starts_at: Date | null;
+  event_ends_at: Date | null;
 }
 
 export interface MessageRow {
@@ -65,6 +117,9 @@ export interface MessageRow {
   status: ContentStatusT;
   edited_at: Date | null;
   created_at: Date;
+  sender_handle: string | null;
+  sender_display_name: string | null;
+  sender_trust_level: number | null;
 }
 
 export interface MessageCreateInput {
@@ -87,21 +142,26 @@ interface ConversationCursor extends Record<string, unknown> {
 const CONVERSATION_COLUMNS = `
   c.id, c.type, c.event_id, c.occurrence_id, c.created_by_user_id,
   c.request_status, c.status, c.last_message_at, c.last_message_preview,
-  c.message_count, c.created_at, me.unread_count
+  c.message_count, c.created_at, me.unread_count,
+  CASE WHEN occ.starts_at IS NULL THEN NULL ELSE e.title END AS event_title,
+  occ.starts_at AS event_starts_at, occ.ends_at AS event_ends_at
 `;
 
 const MESSAGE_COLUMNS = `
   m.id, m.conversation_id, m.sender_user_id, m.type, m.body, m.body_locale,
   m.media_id, m.shared_event_id, m.reply_to_message_id, m.status,
-  m.edited_at, m.created_at
+  m.edited_at, m.created_at,
+  sp.handle AS sender_handle,
+  sp.display_name AS sender_display_name,
+  su.trust_level AS sender_trust_level
 `;
 
-/** Same fields without the alias: RETURNING has no FROM clause to alias. */
-const MESSAGE_RETURNING = `
-  id, conversation_id, sender_user_id, type, body, body_locale,
-  media_id, shared_event_id, reply_to_message_id, status,
-  edited_at, created_at
-`;
+/** Sender identity; a system message or a departed account yields nulls. */
+const MESSAGE_FROM = `
+  FROM messages m
+  LEFT JOIN users su
+    ON su.id = m.sender_user_id AND su.anonymized_at IS NULL AND su.deleted_at IS NULL
+  LEFT JOIN profiles sp ON sp.user_id = su.id`;
 
 /** Inbox key: last activity, falling back to creation for a silent thread. */
 export function conversationCursorOf(row: ConversationRow): string {
@@ -114,6 +174,11 @@ export function conversationCursorOf(row: ConversationRow): string {
 /** Message key: the id alone, because UUIDv7 already sorts by time. */
 export function messageCursorOf(row: MessageRow): string {
   return encodeCursor({ id: row.id });
+}
+
+export interface OccurrenceTimes {
+  startsAt: Date;
+  endsAt: Date | null;
 }
 
 export type OpenEventGroupResult =
@@ -188,6 +253,8 @@ export class ChatRepository {
     viewerId: string;
     viewerTrustLevel: number;
     minTrustLevelToJoin: number;
+    /** Runs once the caller is known to be eligible, before anything is written; may throw to refuse. */
+    assertWindow?: (times: OccurrenceTimes) => void;
   }): Promise<OpenEventGroupResult> {
     return withTransaction(this.pool, async (tx) => {
       const event = (
@@ -200,8 +267,8 @@ export class ChatRepository {
       if (!event) return { outcome: 'event_not_found' };
 
       const occurrence = (
-        await tx.query<{ id: string }>(
-          `SELECT id FROM event_occurrences
+        await tx.query<{ id: string; starts_at: Date; ends_at: Date | null }>(
+          `SELECT id, starts_at, ends_at FROM event_occurrences
             WHERE event_id = $1 AND deleted_at IS NULL
               AND ($2::uuid IS NULL OR id = $2)
             ORDER BY starts_at, id
@@ -237,6 +304,8 @@ export class ChatRepository {
         );
         if (attending.rowCount === 0) return { outcome: 'not_eligible' };
       }
+
+      input.assertWindow?.({ startsAt: occurrence.starts_at, endsAt: occurrence.ends_at });
 
       await tx.query(`SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`, [
         `chat_room:${occurrence.id}`,
@@ -321,7 +390,7 @@ export class ChatRepository {
    * still admit someone. The event, its RSVPs and the caller's trust are checked
    * as of the read and are not locked: an event unpublished or an RSVP cancelled
    * in that instant can still admit once, and is caught by the per-request
-   * membership re-check planned in S3-1. Returns false for every refusal (a direct thread, a
+   * membership re-check in findForParticipant. Returns false for every refusal (a direct thread, a
    * missing, archived or deleted room, an unpublished event, too little trust,
    * no confirmed RSVP) so the caller can answer one indistinguishable 404.
    */
@@ -329,12 +398,22 @@ export class ChatRepository {
     conversationId: string,
     userId: string,
     trustLevel: number,
+    assertWindow?: (times: OccurrenceTimes) => void,
   ): Promise<boolean> {
     return withTransaction(this.pool, async (tx) => {
-      const { rowCount } = await tx.query(
-        `SELECT 1
+      const { rowCount, rows } = await tx.query<{
+        starts_at: Date | null;
+        ends_at: Date | null;
+      }>(
+        `SELECT occ.starts_at, occ.ends_at
            FROM conversations c
            JOIN events e ON e.id = c.event_id
+           LEFT JOIN LATERAL (
+             SELECT o.starts_at, o.ends_at FROM event_occurrences o
+              WHERE o.event_id = e.id AND o.deleted_at IS NULL
+                AND (c.occurrence_id IS NULL OR o.id = c.occurrence_id)
+              ORDER BY o.starts_at LIMIT 1
+           ) occ ON true
           WHERE c.id = $1
             AND c.type = 'event_group'
             AND c.status = 'active'
@@ -360,16 +439,24 @@ export class ChatRepository {
         [conversationId, userId, trustLevel],
       );
       if (rowCount === 0) return false;
+      const times = rows[0];
+      if (times?.starts_at) {
+        assertWindow?.({ startsAt: times.starts_at, endsAt: times.ends_at });
+      }
       await this.upsertMember(tx, conversationId, userId);
       return true;
     });
   }
 
   /**
-   * Membership check backing every read and write on a thread.
+   * Membership and eligibility check backing every read and write on a thread,
+   * including the socket's `conversation.join`.
    *
-   * A non-member must be indistinguishable from a non-existent conversation, so
-   * this returns null in both cases and the caller answers 404 either way.
+   * Being a participant is not enough for an event room: the viewer must still
+   * be its organizer or hold a confirmed/attended RSVP on a published event. A
+   * non-member, an ex-attendee and a non-existent conversation are
+   * indistinguishable, so this returns null in all three and the caller answers
+   * 404 either way.
    */
   async findForParticipant(
     conversationId: string,
@@ -377,10 +464,9 @@ export class ChatRepository {
   ): Promise<ConversationRow | null> {
     const { rows } = await this.pool.query<ConversationRow>(
       `SELECT ${CONVERSATION_COLUMNS}, ${PARTICIPANTS_JSON}
-         FROM conversations c
-         JOIN conversation_participants me
-           ON me.conversation_id = c.id AND me.user_id = $2 AND me.left_at IS NULL
-        WHERE c.id = $1 AND c.deleted_at IS NULL`,
+         ${conversationFrom('$2')}
+        WHERE c.id = $1 AND c.deleted_at IS NULL
+          AND ${viewerEligible('$2')}`,
       [conversationId, userId],
     );
     return rows[0] ?? null;
@@ -394,10 +480,9 @@ export class ChatRepository {
     const cursor = decodeCursor<ConversationCursor>(query.cursor);
     const { rows } = await this.pool.query<ConversationRow>(
       `SELECT ${CONVERSATION_COLUMNS}, ${PARTICIPANTS_JSON}
-         FROM conversations c
-         JOIN conversation_participants me
-           ON me.conversation_id = c.id AND me.user_id = $1 AND me.left_at IS NULL
+         ${conversationFrom('$1')}
         WHERE c.deleted_at IS NULL
+          AND ${viewerEligible('$1')}
           AND ($2::conversation_type_enum IS NULL OR c.type = $2)
           AND ($3::conversation_request_status_enum IS NULL OR c.request_status = $3)
           AND ($4::timestamptz IS NULL OR
@@ -447,7 +532,7 @@ export class ChatRepository {
     clientMessageId: string,
   ): Promise<MessageRow | null> {
     const { rows } = await this.pool.query<MessageRow>(
-      `SELECT ${MESSAGE_COLUMNS} FROM messages m
+      `SELECT ${MESSAGE_COLUMNS} ${MESSAGE_FROM}
         WHERE m.conversation_id = $1 AND m.sender_user_id = $2 AND m.client_message_id = $3`,
       [conversationId, senderUserId, clientMessageId],
     );
@@ -461,8 +546,10 @@ export class ChatRepository {
    * resolves to the original row. `DO NOTHING` plus a re-read is used instead of
    * `DO UPDATE` because a retry must not be able to rewrite a delivered message.
    */
-  async createMessage(input: MessageCreateInput): Promise<MessageRow> {
-    const inserted = await this.pool.query<MessageRow>(
+  async createMessage(
+    input: MessageCreateInput,
+  ): Promise<{ row: MessageRow; inserted: boolean }> {
+    const insert = await this.pool.query(
       `INSERT INTO messages
          (conversation_id, sender_user_id, type, body, body_locale, media_id,
           shared_event_id, reply_to_message_id, client_message_id)
@@ -470,7 +557,7 @@ export class ChatRepository {
        ON CONFLICT (conversation_id, sender_user_id, client_message_id)
          WHERE client_message_id IS NOT NULL
        DO NOTHING
-       RETURNING ${MESSAGE_RETURNING}`,
+       RETURNING id`,
       [
         input.conversationId,
         input.senderUserId,
@@ -483,14 +570,16 @@ export class ChatRepository {
         input.clientMessageId,
       ],
     );
-    if (inserted.rows[0]) return inserted.rows[0];
-
+    // The sender's identity comes from a join, which RETURNING cannot do, so the
+    // stored row is re-read by its key: that is the fresh row or the original.
     const { rows } = await this.pool.query<MessageRow>(
-      `SELECT ${MESSAGE_COLUMNS} FROM messages m
+      `SELECT ${MESSAGE_COLUMNS} ${MESSAGE_FROM}
         WHERE m.conversation_id = $1 AND m.sender_user_id = $2 AND m.client_message_id = $3`,
       [input.conversationId, input.senderUserId, input.clientMessageId],
     );
-    return rows[0] as MessageRow;
+    // `inserted` is false when a concurrent request with the same
+    // clientMessageId won the race; the caller must not emit or spend a slot.
+    return { row: rows[0] as MessageRow, inserted: (insert.rowCount ?? 0) > 0 };
   }
 
   /**
@@ -505,7 +594,7 @@ export class ChatRepository {
   ): Promise<{ rows: MessageRow[]; limit: number }> {
     const cursor = decodeCursor<{ id: string }>(query.cursor);
     const { rows } = await this.pool.query<MessageRow>(
-      `SELECT ${MESSAGE_COLUMNS} FROM messages m
+      `SELECT ${MESSAGE_COLUMNS} ${MESSAGE_FROM}
         WHERE m.conversation_id = $1
           AND m.deleted_at IS NULL
           AND m.status = 'visible'
@@ -519,19 +608,58 @@ export class ChatRepository {
 
   async findMessage(id: string): Promise<MessageRow | null> {
     const { rows } = await this.pool.query<MessageRow>(
-      `SELECT ${MESSAGE_COLUMNS} FROM messages m WHERE m.id = $1 AND m.deleted_at IS NULL`,
+      `SELECT ${MESSAGE_COLUMNS} ${MESSAGE_FROM} WHERE m.id = $1 AND m.deleted_at IS NULL`,
       [id],
     );
     return rows[0] ?? null;
   }
 
-  async softDeleteMessage(id: string, senderUserId: string): Promise<boolean> {
+  /** Only the sender can delete, and only inside the conversation named in the URL. */
+  async softDeleteMessage(
+    conversationId: string,
+    id: string,
+    senderUserId: string,
+  ): Promise<boolean> {
     const { rowCount } = await this.pool.query(
       `UPDATE messages SET deleted_at = now(), status = 'removed'
-        WHERE id = $1 AND sender_user_id = $2 AND deleted_at IS NULL`,
-      [id, senderUserId],
+        WHERE id = $1 AND conversation_id = $2 AND sender_user_id = $3 AND deleted_at IS NULL`,
+      [id, conversationId, senderUserId],
     );
     return (rowCount ?? 0) > 0;
+  }
+
+  /** True when the message belongs to the conversation, whatever its state. */
+  async messageInConversation(conversationId: string, messageId: string): Promise<boolean> {
+    const { rowCount } = await this.pool.query(
+      `SELECT 1 FROM messages WHERE id = $1 AND conversation_id = $2`,
+      [messageId, conversationId],
+    );
+    return (rowCount ?? 0) > 0;
+  }
+
+  /**
+   * Marks the caller as having left an event room.
+   *
+   * Returns false only when the caller never had a seat, so a repeat leave stays
+   * a success while a stranger still learns nothing. A direct thread is not
+   * leavable: there is no way back in, so it would silently end the pair's thread.
+   */
+  async leave(conversationId: string, userId: string): Promise<boolean> {
+    const { rows } = await this.pool.query<{ seated: boolean }>(
+      `WITH seat AS (
+         SELECT p.left_at FROM conversation_participants p
+           JOIN conversations c ON c.id = p.conversation_id
+          WHERE p.conversation_id = $1 AND p.user_id = $2
+            AND c.type = 'event_group' AND c.deleted_at IS NULL
+       ), upd AS (
+         UPDATE conversation_participants SET left_at = now()
+          WHERE conversation_id = $1 AND user_id = $2 AND left_at IS NULL
+            AND EXISTS (SELECT 1 FROM seat)
+       )
+       SELECT EXISTS (SELECT 1 FROM seat) AS seated`,
+      [conversationId, userId],
+    );
+    return rows[0]?.seated ?? false;
   }
 
   /**

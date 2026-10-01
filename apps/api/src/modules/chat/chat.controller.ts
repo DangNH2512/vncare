@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   SerializeOptions,
+  UseFilters,
 } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -34,6 +35,7 @@ import {
   CurrentUser,
   type CurrentUserContext,
 } from '../../common/decorators/current-user.decorator.js';
+import { RateLimitedExceptionFilter } from '../../common/rate-limit/index.js';
 import { ChatService } from './chat.service.js';
 
 const ConversationEnvelope = envelope(ConversationResponse);
@@ -49,6 +51,7 @@ const UuidParam = z.uuid();
  * the `/chat` socket namespace. A client with no socket connection loses no
  * message, it just learns about it later.
  */
+@UseFilters(RateLimitedExceptionFilter)
 @Controller('api/v1/conversations')
 export class ChatController {
   constructor(private readonly chats: ChatService) {}
@@ -90,6 +93,16 @@ export class ChatController {
     @CurrentUser() viewer: CurrentUserContext,
   ) {
     return { success: true, data: await this.chats.join(id, viewer) };
+  }
+
+  /** Leaves an event room: 204 every time, so a retry after a dropped response is harmless. */
+  @Delete(':id/participants/me')
+  @HttpCode(204)
+  async leave(
+    @Param('id', { schema: UuidParam }) id: string,
+    @CurrentUser() viewer: CurrentUserContext,
+  ): Promise<void> {
+    await this.chats.leave(id, viewer);
   }
 
   /** Accept, decline or block a pending request. Only the recipient may call it. */

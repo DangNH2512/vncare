@@ -106,12 +106,19 @@ export class ChatGateway implements OnGatewayConnection {
       .emit(CHAT_SOCKET_EVENTS.typing, { conversationId, userId });
   }
 
-  /** Broadcasts a stored message to the thread room and to every participant. */
+  /**
+   * Signals that a message exists; it never carries content. Rooms are joined
+   * once and outlive membership, so a payload would keep leaking to someone who
+   * has since lost access. Clients refetch over REST, which re-checks access.
+   */
   emitMessageCreated(message: MessageResponseT, participantIds: readonly string[]): void {
     if (!this.server) return;
     this.server
       .to(room.conversation(message.conversationId))
-      .emit(CHAT_SOCKET_EVENTS.messageCreated, message);
+      .emit(CHAT_SOCKET_EVENTS.messageCreated, {
+        conversationId: message.conversationId,
+        messageId: message.id,
+      });
 
     // Participants who have the app open but are not viewing the thread still
     // need the inbox to move; they are reached through their user room.

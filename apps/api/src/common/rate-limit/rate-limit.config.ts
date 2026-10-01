@@ -35,6 +35,16 @@ export const REACTION_MINUTE_MAX = 60;
 export const COMMENT_DAILY_WINDOW_SECONDS = 86_400;
 export const MINUTE_WINDOW_SECONDS = 60;
 
+/** Chat messages per hour by trust level (brief D-S3-10); T4 and above share the last tier. */
+export const CHAT_HOURLY_MAX_BY_TRUST: Readonly<Record<number, number>> = {
+  1: 30,
+  2: 100,
+  3: 300,
+};
+export const CHAT_HOURLY_MAX_DEFAULT = 500;
+export const CHAT_MINUTE_MAX = 10;
+export const HOUR_WINDOW_SECONDS = 3_600;
+
 type Env = Readonly<Record<string, string | undefined>>;
 
 const MAX_COUNT = 1_000_000;

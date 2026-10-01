@@ -279,3 +279,11 @@ Cần Debate Gate: không. Các đánh đổi (follow A/B, socket proxy, payload
 - **Card mới S2-2b (backend, sau S2-2):** áp quyết định (c) cho mọi thao tác ghi còn lại — `update`, `remove`, `setPinned` của comment và reaction lên comment khi sự kiện/bài cha không còn công khai (`cancelled` chỉ đọc; `draft`/`pending_review`/`suspended`/`taken_down`/đã xoá → 404). Nguyên tắc "ẩn là ẩn". Review S2-2 minor-2.
 - **Nợ kỹ thuật:** gom `RateLimitService` + `RATE_LIMIT_CONFIG` thành một `RateLimitModule` dùng chung (hiện khai báo lặp ở Auth/Comment/Reaction module, nhân bản cờ `degraded` và log). Làm khi có card chạm `auth.module.ts`.
 - Hai request ghim đồng thời hai comment khác nhau có thể cùng `is_pinned=true` (hành vi có từ trước; cần partial unique index — follow-up có migration).
+
+## 10. Ghi chú Coordinator sau review S3-1 + S2-2b (01/10/2026)
+
+- S2-2b: approved. S3-1: approved-with-conditions. Điều kiện: socket đã `conversation.join` vẫn nhận nguyên nội dung tin sau khi người dùng huỷ RSVP/rời phòng (review major-1, vi phạm D-S3-1 và quyết định (h)).
+- **Coordinator kéo S3-4a lên trước và commit S3-1 cùng S3-4a**: `message.created` chỉ phát `{conversationId, messageId}`, client refetch qua REST có kiểm quyền. Replay đồng thời cùng `clientMessageId` thì release slot và không emit (minor-3a). Lý do: sửa nhỏ, đóng lỗ rò quyền đọc ngay thay vì để nợ.
+- **Cổng bắt buộc:** không client web/mobile nào nối socket chat (S3b) trước khi S3-4a được merge.
+- S2-2b minor-5 (tác giả vẫn sửa được comment đã bị ẩn) gộp vào cùng lượt sửa: `update` thêm `status = 'visible'`.
+- **Nợ ghi nhận:** (1) người huỷ RSVP nhưng không gọi leave vẫn `left_at IS NULL`, còn trong `participants[]` và nhận `conversation.updated` (không nội dung). Xử lý khi có hook huỷ RSVP hoặc lọc participant theo vị từ đủ điều kiện. (2) Trust bị hạ giữa phiên: route chat dựa vào `@MinTrustLevel(1)` theo token; giới hạn chấp nhận được ở beta. (3) `chat.repository.ts` 722 dòng > 500, tách fragment SQL cần Tech Lead xác nhận khuôn file helper. (4) `RateLimitService` khai báo lặp ở 4 module (Auth, Comment, Reaction, Chat).

@@ -164,6 +164,29 @@ describe('chat module', () => {
     expect(listed.body.data.items).toHaveLength(1);
   });
 
+  /** Concurrent replays race on the unique index; exactly one row must survive. */
+  it('collapses concurrent sends with the same clientMessageId into one message', async () => {
+    const [sender, recipient] = await pair();
+    const conversation = await openDirect(sender, recipient).expect(201);
+    const id: string = conversation.body.data.id;
+    const clientMessageId = randomUUID();
+    const post = () =>
+      request(app.getHttpServer())
+        .post(`/api/v1/conversations/${id}/messages`)
+        .set(sender.headers)
+        .send({ type: 'text', body: 'Race me', clientMessageId });
+
+    const results = await Promise.all([post(), post(), post()]);
+    for (const r of results) expect(r.status).toBe(201);
+    expect(new Set(results.map((r) => r.body.data.id)).size).toBe(1);
+
+    const listed = await request(app.getHttpServer())
+      .get(`/api/v1/conversations/${id}/messages`)
+      .set(sender.headers)
+      .expect(200);
+    expect(listed.body.data.items).toHaveLength(1);
+  });
+
   it('rejects a payload that does not match its message type', async () => {
     const [sender, recipient] = await pair();
     const conversation = await openDirect(sender, recipient).expect(201);
@@ -272,7 +295,7 @@ describe('chat module', () => {
         areaId,
         lat: 16.06,
         lng: 108.247,
-        startsAt: '2026-12-01T09:00:00.000Z',
+        startsAt: new Date(Date.now() + 86_400_000).toISOString(),
         capacity: 8,
       })
       .expect(201);

@@ -45,3 +45,11 @@ export {
   type DeckEvent,
   type TimeClash,
 } from './time-clash';
+export {
+  CHAT_CLOSE_AFTER_END_MS,
+  CHAT_OPEN_BEFORE_START_MS,
+  chatStateAt,
+  chatWindowOf,
+  type ChatState,
+  type ChatWindow,
+} from './chat-window';

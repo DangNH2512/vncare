@@ -9,13 +9,28 @@ import type {
   MessageCreateRequestT,
   MessageResponseT,
 } from '@dnc/contracts';
+import { chatStateAt, chatWindowOf } from '@dnc/domain';
 import { toPage } from '../../common/pagination.js';
+import {
+  CHAT_HOURLY_MAX_BY_TRUST,
+  CHAT_HOURLY_MAX_DEFAULT,
+  CHAT_MINUTE_MAX,
+  HOUR_WINDOW_SECONDS,
+  MINUTE_WINDOW_SECONDS,
+} from '../../common/rate-limit/rate-limit.config.js';
+import {
+  RateLimitedException,
+  RateLimitService,
+  type RateLimitRule,
+  type Reservation,
+} from '../../common/rate-limit/index.js';
 import { translatePostgresError } from '../../common/db/pg-error.js';
 import type { CurrentUserContext } from '../../common/decorators/current-user.decorator.js';
 import {
   ChatRepository,
   conversationCursorOf,
   messageCursorOf,
+  type OccurrenceTimes,
 } from './chat.repository.js';
 import { ChatGateway } from './chat.gateway.js';
 import { toConversationResponse, toMessageResponse } from './chat.mapper.js';
@@ -23,11 +38,31 @@ import { toConversationResponse, toMessageResponse } from './chat.mapper.js';
 /** Opening a direct thread with a stranger requires T2 (see the trust ladder). */
 const DIRECT_MESSAGE_MIN_TRUST = 2;
 
+/** Refuses opening or joining a room before its window starts; the caller is already known to be eligible. */
+function assertChatOpenable(times: OccurrenceTimes): void {
+  const window = chatWindowOf(times);
+  if (chatStateAt(window, new Date()) === 'not_open') {
+    throw new ForbiddenException({
+      code: 'CHAT_NOT_OPEN',
+      messageKey: 'errors.chat.notOpen',
+      details: { opensAt: window.opensAt.toISOString() },
+    });
+  }
+}
+
+function conversationClosed(): ForbiddenException {
+  return new ForbiddenException({
+    code: 'CONVERSATION_CLOSED',
+    messageKey: 'errors.chat.conversationClosed',
+  });
+}
+
 @Injectable()
 export class ChatService {
   constructor(
     private readonly chats: ChatRepository,
     private readonly gateway: ChatGateway,
+    private readonly rateLimit: RateLimitService,
   ) {}
 
   async create(
@@ -54,6 +89,7 @@ export class ChatService {
         viewerId: viewer.id,
         viewerTrustLevel: viewer.trustLevel,
         minTrustLevelToJoin: input.minTrustLevelToJoin,
+        assertWindow: assertChatOpenable,
       });
     } catch (error) {
       throw translatePostgresError(error);
@@ -123,7 +159,12 @@ export class ChatService {
   async join(id: string, viewer: CurrentUserContext): Promise<ConversationResponseT> {
     let admitted: boolean;
     try {
-      admitted = await this.chats.joinEventGroup(id, viewer.id, viewer.trustLevel);
+      admitted = await this.chats.joinEventGroup(
+        id,
+        viewer.id,
+        viewer.trustLevel,
+        assertChatOpenable,
+      );
     } catch (error) {
       throw translatePostgresError(error);
     }
@@ -134,6 +175,20 @@ export class ChatService {
       });
     }
     return this.findOne(id, viewer);
+  }
+
+  /**
+   * Leaves an event room. Repeating it is a success; only someone who never had a
+   * seat (or a direct thread) gets the indistinguishable 404.
+   */
+  async leave(id: string, viewer: CurrentUserContext): Promise<void> {
+    const seated = await this.chats.leave(id, viewer.id);
+    if (!seated) {
+      throw new NotFoundException({
+        code: 'CONVERSATION_NOT_FOUND',
+        messageKey: 'errors.chat.conversationNotFound',
+      });
+    }
   }
 
   async respond(
@@ -179,17 +234,16 @@ export class ChatService {
     );
     if (replayed) return toMessageResponse(replayed);
 
-    if (conversation.status !== 'active') {
-      throw new ForbiddenException({
-        code: 'CONVERSATION_CLOSED',
-        messageKey: 'errors.chat.conversationClosed',
-      });
-    }
+    if (conversation.status !== 'active') throw conversationClosed();
+    this.assertWindowAllowsSending(conversation);
     await this.assertRequestQuota(conversation, viewer);
 
-    let row;
+    // Last gate before the write, so a message refused above never spends a slot.
+    const slots = await this.reserveSendSlots(viewer);
+
+    let stored;
     try {
-      row = await this.chats.createMessage({
+      stored = await this.chats.createMessage({
         conversationId,
         senderUserId: viewer.id,
         type: input.type,
@@ -201,10 +255,17 @@ export class ChatService {
         clientMessageId: input.clientMessageId,
       });
     } catch (error) {
+      await this.rateLimit.release(slots);
       throw translatePostgresError(error);
     }
 
-    const message = toMessageResponse(row);
+    const message = toMessageResponse(stored.row);
+    if (!stored.inserted) {
+      // A concurrent replay of the same clientMessageId: the original is already
+      // stored and announced, so give back the slots and stay silent.
+      await this.rateLimit.release(slots);
+      return message;
+    }
     // Broadcast after the write commits. The socket is an accelerator: a failed
     // emit must never make a stored message look unsent.
     this.gateway.emitMessageCreated(
@@ -212,6 +273,53 @@ export class ChatService {
       await this.chats.activeParticipantIds(conversationId),
     );
     return message;
+  }
+
+  /** Event rooms accept messages only inside their window; reading stays open afterwards. */
+  private assertWindowAllowsSending(conversation: {
+    type: string;
+    event_starts_at: Date | null;
+    event_ends_at: Date | null;
+  }): void {
+    if (conversation.type !== 'event_group' || !conversation.event_starts_at) return;
+    const window = chatWindowOf({
+      startsAt: conversation.event_starts_at,
+      endsAt: conversation.event_ends_at,
+    });
+    const state = chatStateAt(window, new Date());
+    if (state === 'closed') throw conversationClosed();
+    if (state === 'not_open') {
+      throw new ForbiddenException({
+        code: 'CHAT_NOT_OPEN',
+        messageKey: 'errors.chat.notOpen',
+        details: { opensAt: window.opensAt.toISOString() },
+      });
+    }
+  }
+
+  /** Hourly allowance by trust level plus a per-minute burst ceiling. */
+  private async reserveSendSlots(viewer: CurrentUserContext): Promise<Reservation[]> {
+    const rules: RateLimitRule[] = [
+      {
+        key: this.rateLimit.keyFor('chat_message', 'user', viewer.id, 'minute'),
+        max: CHAT_MINUTE_MAX,
+        windowSeconds: MINUTE_WINDOW_SECONDS,
+        bucket: 'user_minute',
+        action: 'chat_message',
+      },
+      {
+        key: this.rateLimit.keyFor('chat_message', 'user', viewer.id, 'hour'),
+        max: CHAT_HOURLY_MAX_BY_TRUST[viewer.trustLevel] ?? CHAT_HOURLY_MAX_DEFAULT,
+        windowSeconds: HOUR_WINDOW_SECONDS,
+        bucket: 'user_hour',
+        action: 'chat_message',
+      },
+    ];
+    const decision = await this.rateLimit.reserve(rules);
+    if (decision.blocked) {
+      throw new RateLimitedException(decision.retryAfterSeconds, 'errors.rateLimit.exceeded');
+    }
+    return decision.reservations;
   }
 
   /**
@@ -267,7 +375,7 @@ export class ChatService {
     viewer: CurrentUserContext,
   ): Promise<void> {
     await this.loadOrThrow(conversationId, viewer);
-    const deleted = await this.chats.softDeleteMessage(messageId, viewer.id);
+    const deleted = await this.chats.softDeleteMessage(conversationId, messageId, viewer.id);
     if (!deleted) {
       throw new NotFoundException({
         code: 'MESSAGE_NOT_FOUND',
@@ -282,6 +390,14 @@ export class ChatService {
     viewer: CurrentUserContext,
   ): Promise<ConversationResponseT> {
     await this.loadOrThrow(conversationId, viewer);
+    // A marker pointing outside this room would let a caller probe other rooms'
+    // message ids and skew the unread count against the wrong thread.
+    if (!(await this.chats.messageInConversation(conversationId, input.lastReadMessageId))) {
+      throw new NotFoundException({
+        code: 'MESSAGE_NOT_FOUND',
+        messageKey: 'errors.chat.messageNotFound',
+      });
+    }
     await this.chats.markRead(conversationId, viewer.id, input.lastReadMessageId);
     return this.findOne(conversationId, viewer);
   }

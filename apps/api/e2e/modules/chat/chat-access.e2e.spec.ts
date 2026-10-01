@@ -34,7 +34,7 @@ describe('chat access control', () => {
         areaId,
         lat: 16.06,
         lng: 108.247,
-        startsAt: new Date(Date.now() + 7 * 86_400_000).toISOString(),
+        startsAt: new Date(Date.now() + 86_400_000).toISOString(),
         capacity,
       })
       .expect(201);
@@ -291,7 +291,7 @@ describe('chat access control', () => {
           areaId,
           lat: 16.06,
           lng: 108.247,
-          startsAt: new Date(Date.now() + 7 * 86_400_000).toISOString(),
+          startsAt: new Date(Date.now() + 86_400_000).toISOString(),
           capacity: 5,
         })
         .expect(201);
