@@ -44,6 +44,34 @@ describe('allowedRolesFor', () => {
   });
 });
 
+describe('admin console permission table', () => {
+  const ROLES = ['member', 'curator', 'moderator', 'admin', 'super_admin'] as const;
+  const expected: Record<string, readonly string[]> = {
+    'user.directory.view': ['admin', 'super_admin'],
+    'event.directory.view': ['moderator', 'admin', 'super_admin'],
+    'content.hide': ['moderator', 'admin', 'super_admin'],
+    'event.takedown': ['admin', 'super_admin'],
+    'user.suspend': ['admin', 'super_admin'],
+    'user.role.assign': ['super_admin'],
+    'audit_log.view': ['moderator', 'admin', 'super_admin'],
+    'moderation.queue.view': ['moderator', 'admin', 'super_admin'],
+    'moderation.decide': ['moderator', 'admin', 'super_admin'],
+  };
+
+  for (const [key, allowed] of Object.entries(expected)) {
+    it(`grants ${key} to exactly ${allowed.join(', ')}`, () => {
+      const roles = allowedRolesFor(key as PermissionKey);
+      for (const role of ROLES) {
+        expect(roles.includes(role), `${key} / ${role}`).toBe(allowed.includes(role));
+      }
+    });
+  }
+
+  it('has no role-based rule for report.create', () => {
+    expect(() => allowedRolesFor('report.create' as PermissionKey)).toThrow();
+  });
+});
+
 describe('PERMISSION_MATRIX', () => {
   it('has one entry per key, with no duplicates', () => {
     const keys = PERMISSION_MATRIX.map((rule) => rule.key);

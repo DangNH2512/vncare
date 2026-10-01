@@ -19,8 +19,30 @@ export const SYSTEM_HEALTH_ROLES: readonly UserRoleT[] = ['admin', 'super_admin'
 /** Roles allowed to read platform-wide analytics (the admin overview). */
 export const ANALYTICS_PLATFORM_ROLES: readonly UserRoleT[] = ['admin', 'super_admin'];
 
+/** A1: browse and search the user directory (read-only). */
+export const USER_DIRECTORY_VIEW_ROLES: readonly UserRoleT[] = ['admin', 'super_admin'];
+/** A2: browse events of every status (read-only). */
+export const EVENT_DIRECTORY_VIEW_ROLES: readonly UserRoleT[] = ['moderator', 'admin', 'super_admin'];
+/** A3/A4: hide user content without deleting it. */
+export const CONTENT_HIDE_ROLES: readonly UserRoleT[] = ['moderator', 'admin', 'super_admin'];
+/** A3: take an event down. */
+export const EVENT_TAKEDOWN_ROLES: readonly UserRoleT[] = ['admin', 'super_admin'];
+/** A3: suspend or restore an account; per-row limits (admin vs admin) live in the service. */
+export const USER_SUSPEND_ROLES: readonly UserRoleT[] = ['admin', 'super_admin'];
+/** A3: change a user's role. */
+export const USER_ROLE_ASSIGN_ROLES: readonly UserRoleT[] = ['super_admin'];
+/** A3: read the audit log; row filtering per role is applied in the service. */
+export const AUDIT_LOG_VIEW_ROLES: readonly UserRoleT[] = ['moderator', 'admin', 'super_admin'];
+/** A4: read the moderation queue. */
+export const MODERATION_QUEUE_VIEW_ROLES: readonly UserRoleT[] = ['moderator', 'admin', 'super_admin'];
+/** A4: decide a moderation case. */
+export const MODERATION_DECIDE_ROLES: readonly UserRoleT[] = ['moderator', 'admin', 'super_admin'];
+
 /**
  * Machine-readable permission keys.
+ *
+ * `report.create` is deliberately absent: it is not role-based. Any signed-in
+ * user with trust_level >= 1 may report (enforced by @MinTrustLevel(1)).
  *
  * This union covers what `apps/api` and `apps/web-admin-side` need today. It
  * is meant to grow toward the full 22-permission matrix in
@@ -30,7 +52,16 @@ export const ANALYTICS_PLATFORM_ROLES: readonly UserRoleT[] = ['admin', 'super_a
 export type PermissionKey =
   | 'admin_console.access'
   | 'system.health.view'
-  | 'analytics.platform.view';
+  | 'analytics.platform.view'
+  | 'user.directory.view'
+  | 'event.directory.view'
+  | 'content.hide'
+  | 'event.takedown'
+  | 'user.suspend'
+  | 'user.role.assign'
+  | 'audit_log.view'
+  | 'moderation.queue.view'
+  | 'moderation.decide';
 
 export interface PermissionRule {
   key: PermissionKey;
@@ -63,6 +94,51 @@ export const PERMISSION_MATRIX: readonly PermissionRule[] = [
     key: 'analytics.platform.view',
     docRef: 'docs/analysis/01-tac-nhan-va-phan-quyen.md §9.2',
     allowedRoles: ANALYTICS_PLATFORM_ROLES,
+  },
+  {
+    key: 'user.directory.view',
+    docRef: '.agent/specs/_changes/admin-console-v2/brief.md §2 (A1)',
+    allowedRoles: USER_DIRECTORY_VIEW_ROLES,
+  },
+  {
+    key: 'event.directory.view',
+    docRef: '.agent/specs/_changes/admin-console-v2/brief.md §2 (A2)',
+    allowedRoles: EVENT_DIRECTORY_VIEW_ROLES,
+  },
+  {
+    key: 'content.hide',
+    docRef: 'docs/analysis/01-tac-nhan-va-phan-quyen.md §9.2 #14',
+    allowedRoles: CONTENT_HIDE_ROLES,
+  },
+  {
+    key: 'event.takedown',
+    docRef: '.agent/specs/_changes/admin-console-v2/brief.md §2 (A3)',
+    allowedRoles: EVENT_TAKEDOWN_ROLES,
+  },
+  {
+    key: 'user.suspend',
+    docRef: 'docs/analysis/01-tac-nhan-va-phan-quyen.md §9.2 #15',
+    allowedRoles: USER_SUSPEND_ROLES,
+  },
+  {
+    key: 'user.role.assign',
+    docRef: 'docs/analysis/01-tac-nhan-va-phan-quyen.md §9.4',
+    allowedRoles: USER_ROLE_ASSIGN_ROLES,
+  },
+  {
+    key: 'audit_log.view',
+    docRef: 'docs/analysis/01-tac-nhan-va-phan-quyen.md §9.2 #22',
+    allowedRoles: AUDIT_LOG_VIEW_ROLES,
+  },
+  {
+    key: 'moderation.queue.view',
+    docRef: 'docs/analysis/01-tac-nhan-va-phan-quyen.md §9.2 #16',
+    allowedRoles: MODERATION_QUEUE_VIEW_ROLES,
+  },
+  {
+    key: 'moderation.decide',
+    docRef: 'docs/analysis/05-trust-safety-va-kiem-duyet.md §13.10',
+    allowedRoles: MODERATION_DECIDE_ROLES,
   },
 ];
 
