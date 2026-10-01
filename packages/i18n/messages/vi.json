@@ -303,7 +303,8 @@
       "handleTaken": "Tên người dùng này đã có người lấy.",
       "handleFormat": "Dùng 3-24 ký tự thường, số hoặc dấu gạch dưới.",
       "accountSuspended": "Tài khoản này đang bị đình chỉ.",
-      "accountUnavailable": "Tài khoản này không khả dụng."
+      "accountUnavailable": "Tài khoản này không khả dụng.",
+      "rateLimited": "Bạn thử quá nhiều lần. Vui lòng đợi vài phút rồi thử lại."
     },
     "event": {
       "notFound": "Sự kiện này không còn tồn tại.",

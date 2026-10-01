@@ -112,6 +112,7 @@ export type MessageKey =
   | 'errors.auth.invalidCredentials'
   | 'errors.auth.invalidRefresh'
   | 'errors.auth.invalidToken'
+  | 'errors.auth.rateLimited'
   | 'errors.auth.roleNotAllowed'
   | 'errors.auth.trustLevelTooLow'
   | 'errors.auth.unauthenticated'
@@ -506,6 +507,7 @@ export const MESSAGE_KEYS = [
   'errors.auth.invalidCredentials',
   'errors.auth.invalidRefresh',
   'errors.auth.invalidToken',
+  'errors.auth.rateLimited',
   'errors.auth.roleNotAllowed',
   'errors.auth.trustLevelTooLow',
   'errors.auth.unauthenticated',

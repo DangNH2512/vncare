@@ -303,7 +303,8 @@
       "handleTaken": "That username is already taken.",
       "handleFormat": "Use 3-24 lowercase letters, numbers or underscores.",
       "accountSuspended": "This account is suspended.",
-      "accountUnavailable": "This account is not available."
+      "accountUnavailable": "This account is not available.",
+      "rateLimited": "Too many attempts. Please wait a few minutes and try again."
     },
     "event": {
       "notFound": "This event no longer exists.",

@@ -7,6 +7,7 @@ import {
   Req,
   Res,
   SerializeOptions,
+  UseFilters,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import {
@@ -23,6 +24,7 @@ import {
   CurrentUser,
   type CurrentUserContext,
 } from '../../common/decorators/current-user.decorator.js';
+import { RateLimitedExceptionFilter } from '../../common/rate-limit/index.js';
 import { AuthService, type RefreshResult, type SessionContext } from './auth.service.js';
 
 const SessionEnvelope = envelope(AuthSessionResponse);
@@ -33,6 +35,7 @@ const REFRESH_COOKIE = 'dnc_refresh';
 const REFRESH_COOKIE_PATH = '/api/v1/auth';
 
 @Controller('api/v1/auth')
+@UseFilters(RateLimitedExceptionFilter)
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 

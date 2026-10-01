@@ -10,6 +10,7 @@ import { Pool } from 'pg';
 import request from 'supertest';
 import type { UserRoleT } from '@dnc/contracts';
 import { AppModule } from '../../src/app.module.js';
+import { applyTrustProxy } from '../../src/common/http/trust-proxy.js';
 
 /**
  * Shared setup for the API integration specs.
@@ -32,6 +33,7 @@ export async function createTestApp(): Promise<INestApplication> {
   process.env['DATABASE_POOL_MAX'] ??= '4';
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
   const app = moduleRef.createNestApplication();
+  applyTrustProxy(app, process.env);
   app.useGlobalPipes(new StandardSchemaValidationPipe());
   app.useGlobalInterceptors(new StandardSchemaSerializerInterceptor(app.get(Reflector)));
   await app.init();

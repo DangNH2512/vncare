@@ -1,4 +1,9 @@
 import { Global, Module } from '@nestjs/common';
+import {
+  loadRateLimitConfig,
+  RATE_LIMIT_CONFIG,
+  RateLimitService,
+} from '../../common/rate-limit/index.js';
 import { MediaModule } from '../media/index.js';
 import { AuthController } from './auth.controller.js';
 import { AuthRepository } from './auth.repository.js';
@@ -13,7 +18,14 @@ import { AuthService } from './auth.service.js';
 @Module({
   imports: [MediaModule],
   controllers: [AuthController],
-  providers: [AuthService, AuthRepository],
+  providers: [
+    AuthService,
+    AuthRepository,
+    RateLimitService,
+    // Read lazily so an invalid value fails module construction, and so specs
+    // can set process.env before building the app.
+    { provide: RATE_LIMIT_CONFIG, useFactory: () => loadRateLimitConfig(process.env) },
+  ],
   exports: [AuthService, AuthRepository],
 })
 export class AuthModule {}

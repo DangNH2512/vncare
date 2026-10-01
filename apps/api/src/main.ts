@@ -7,6 +7,7 @@ import {
 import { NestFactory, Reflector } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
+import { applyTrustProxy } from './common/http/trust-proxy.js';
 import { createOpenApiDocument } from './common/openapi.js';
 
 /**
@@ -24,6 +25,8 @@ function corsOrigins(): string[] {
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  // Decides whose X-Forwarded-For is believed; fails fast in production when unset.
+  applyTrustProxy(app, process.env);
   // Without this, SIGTERM/SIGINT kill the process directly and every
   // `onApplicationShutdown` hook (DB pool, Redis clients, SMTP transport) is
   // skipped instead of running.

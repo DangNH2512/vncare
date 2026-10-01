@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import {
   ConflictException,
   ForbiddenException,
+  Inject,
   Injectable,
   Logger,
   UnauthorizedException,
@@ -9,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { hash as argonHash, verify as argonVerify } from '@node-rs/argon2';
 import { normalizePhone } from '@dnc/domain';
-import { SignJWT, exportPKCS8, exportSPKI, generateKeyPair, importPKCS8, importSPKI, jwtVerify } from 'jose';
+import { SignJWT, generateKeyPair, importPKCS8, importSPKI, jwtVerify } from 'jose';
 import type { CryptoKey } from 'jose';
 import type {
   AuthSessionResponseT,
@@ -18,6 +19,15 @@ import type {
   SessionUserResponseT,
 } from '@dnc/contracts';
 import { translatePostgresError } from '../../common/db/pg-error.js';
+import {
+  normalizeClientIp,
+  RATE_LIMIT_CONFIG,
+  RateLimitedException,
+  RateLimitService,
+  type RateLimitConfig,
+  type RateLimitRule,
+  type Reservation,
+} from '../../common/rate-limit/index.js';
 import { MediaService } from '../media/index.js';
 import { AuthRepository, type UserRow } from './auth.repository.js';
 import { toSessionUser } from './auth.mapper.js';
@@ -73,11 +83,17 @@ export class AuthService implements OnModuleInit {
   constructor(
     private readonly users: AuthRepository,
     private readonly media: MediaService,
+    private readonly rateLimit: RateLimitService,
+    @Inject(RATE_LIMIT_CONFIG) private readonly limits: RateLimitConfig,
   ) {}
 
   /**
    * Loads the RS256 key pair, generating an ephemeral one when none is
    * configured.
+   *
+   * Key material never reaches a logger: the ephemeral pair is generated
+   * non-extractable, so it cannot be exported even by accident, and a malformed
+   * configured key is reported by variable name only.
    *
    * A generated key means every restart invalidates outstanding access tokens —
    * acceptable in development, catastrophic in production, so the absence of
@@ -90,8 +106,13 @@ export class AuthService implements OnModuleInit {
     const publicPem = process.env['JWT_PUBLIC_KEY'];
 
     if (privatePem && publicPem) {
-      this.privateKey = await importPKCS8(privatePem, 'RS256');
-      this.publicKey = await importSPKI(publicPem, 'RS256');
+      // The jose error is dropped on purpose: it must not carry the PEM back out.
+      this.privateKey = await importPKCS8(privatePem, 'RS256').catch(() => {
+        throw new Error('JWT_PRIVATE_KEY is not a valid RS256 PKCS8 key');
+      });
+      this.publicKey = await importSPKI(publicPem, 'RS256').catch(() => {
+        throw new Error('JWT_PUBLIC_KEY is not a valid RS256 SPKI key');
+      });
       return;
     }
 
@@ -99,18 +120,36 @@ export class AuthService implements OnModuleInit {
       throw new Error('JWT_PRIVATE_KEY and JWT_PUBLIC_KEY must be configured in production');
     }
 
-    const pair = await generateKeyPair('RS256', { extractable: true });
+    const pair = await generateKeyPair('RS256', { extractable: false });
     this.privateKey = pair.privateKey;
     this.publicKey = pair.publicKey;
     this.logger.warn(
       'No JWT key pair configured; generated an ephemeral one. Every restart signs out every session.',
     );
-    // Exported so a developer can pin the pair in .env and stop being signed out.
-    this.logger.debug(await exportPKCS8(pair.privateKey));
-    this.logger.debug(await exportSPKI(pair.publicKey));
   }
 
   async register(input: RegisterRequestT, context: SessionContext): Promise<RefreshResult> {
+    // Counted before the uniqueness checks so a throttled caller learns nothing
+    // about which handles or emails exist, and every call counts, taken or not.
+    const ip = normalizeClientIp(context.ip);
+    const decision = await this.rateLimit.reserve([
+      {
+        key: this.rateLimit.keyFor('register', 'ip', ip, 'hour'),
+        max: this.limits.registerHourlyMax,
+        windowSeconds: 3600,
+        bucket: 'ip_hour',
+        action: 'register',
+      },
+      {
+        key: this.rateLimit.keyFor('register', 'ip', ip, 'day'),
+        max: this.limits.registerDailyMax,
+        windowSeconds: 86_400,
+        bucket: 'ip_day',
+        action: 'register',
+      },
+    ]);
+    if (decision.blocked) throw new RateLimitedException(decision.retryAfterSeconds);
+
     if (await this.users.handleTaken(input.handle)) {
       throw new ConflictException({
         code: 'HANDLE_TAKEN',
@@ -147,21 +186,63 @@ export class AuthService implements OnModuleInit {
    * A missing account still pays for one Argon2 verification against a dummy
    * hash: returning early would make "no such user" measurably faster than
    * "wrong password", which turns the sign-in form into an account enumerator.
+   *
+   * Two counters guard this, per client IP and per identifier, and a slot on
+   * each is taken before any lookup or hashing, so a blocked caller gets 429
+   * even with the right password. Only a wrong password keeps its slots: a
+   * correct login resets the identifier counter and returns the IP slot, and a
+   * suspended account or an internal failure is not a guess and costs nothing.
    */
   async login(input: LoginRequestT, context: SessionContext): Promise<RefreshResult> {
     const identifier = input.identifier.trim().toLowerCase();
-    const row = await this.users.findByIdentifier(identifier, normalizePhone(identifier));
-    const hash = row?.password_hash ?? this.dummyHash;
-    const ok = await argonVerify(hash, input.password).catch(() => false);
+    const phone = normalizePhone(identifier);
 
-    if (!row || !ok) {
-      throw new UnauthorizedException({
-        code: 'INVALID_CREDENTIALS',
-        messageKey: 'errors.auth.invalidCredentials',
-      });
+    const rules: RateLimitRule[] = [
+      {
+        key: this.rateLimit.keyFor('login', 'ip', normalizeClientIp(context.ip)),
+        max: this.limits.loginIpMax,
+        windowSeconds: this.limits.loginWindowSeconds,
+        bucket: 'ip',
+        action: 'login',
+      },
+      {
+        key: this.rateLimit.keyFor('login', 'id', phone ?? identifier),
+        max: this.limits.loginIdentifierMax,
+        windowSeconds: this.limits.loginWindowSeconds,
+        bucket: 'identifier',
+        action: 'login',
+      },
+    ];
+    const decision = await this.rateLimit.reserve(rules);
+    if (decision.blocked) throw new RateLimitedException(decision.retryAfterSeconds);
+    const [ipSlot, identifierSlot] = decision.reservations as [Reservation, Reservation];
+
+    // 'failed' keeps both slots; anything not set to 'failed' or 'ok' hands them back.
+    let outcome: 'failed' | 'ok' | 'neutral' = 'neutral';
+    try {
+      const row = await this.users.findByIdentifier(identifier, phone);
+      const hash = row?.password_hash ?? this.dummyHash;
+      const ok = await argonVerify(hash, input.password).catch(() => false);
+
+      if (!row || !ok) {
+        outcome = 'failed';
+        throw new UnauthorizedException({
+          code: 'INVALID_CREDENTIALS',
+          messageKey: 'errors.auth.invalidCredentials',
+        });
+      }
+      this.assertUsable(row);
+      const result = await this.issue(row, context);
+      outcome = 'ok';
+      return result;
+    } finally {
+      if (outcome === 'ok') {
+        await this.rateLimit.clear(identifierSlot);
+        await this.rateLimit.release([ipSlot]);
+      } else if (outcome === 'neutral') {
+        await this.rateLimit.release([ipSlot, identifierSlot]);
+      }
     }
-    this.assertUsable(row);
-    return this.issue(row, context);
   }
 
   /**
