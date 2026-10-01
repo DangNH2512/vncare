@@ -17,13 +17,13 @@ import { useAuth } from '../../../_components/auth-provider';
 import { useLocale, useTranslate } from '../../../_components/locale-provider';
 import { areaName, findAreaById } from '../../../_lib/areas';
 import {
-  ApiError,
   cancelRsvp,
   getEvent,
   joinOccurrence,
   listAttendees,
   publishEvent,
 } from '../../../_lib/api';
+import { translateApiError } from '../../../_lib/api-error';
 import { cn } from '../../../_lib/cn';
 import {
   formatEventDateLong,
@@ -94,11 +94,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
       await action();
       await refresh();
     } catch (cause) {
-      setError(
-        cause instanceof ApiError && cause.messageKey !== undefined
-          ? t(cause.messageKey as never)
-          : t('rsvp.error.generic'),
-      );
+      setError(translateApiError(t, cause, 'rsvp.error.generic'));
     } finally {
       setBusy(false);
     }

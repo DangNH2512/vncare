@@ -8,7 +8,8 @@ import { Avatar, Badge, Button, Card, TrustBadge } from '../../_components/ui';
 import { useAuth } from '../../_components/auth-provider';
 import { useLocale, useTranslate } from '../../_components/locale-provider';
 import { areaName, findAreaById } from '../../_lib/areas';
-import { ApiError, cancelRsvp, joinOccurrence } from '../../_lib/api';
+import { cancelRsvp, joinOccurrence } from '../../_lib/api';
+import { translateApiError } from '../../_lib/api-error';
 import { cn } from '../../_lib/cn';
 import {
   formatEventDate,
@@ -52,11 +53,7 @@ export function EventCard({ event, onChanged }: EventCardProps) {
         seatsTaken: rsvp.status === 'waitlisted' ? event.seatsTaken : event.seatsTaken + 1,
       });
     } catch (cause) {
-      setError(
-        cause instanceof ApiError && cause.messageKey !== undefined
-          ? t(cause.messageKey as never)
-          : t('rsvp.error.generic'),
-      );
+      setError(translateApiError(t, cause, 'rsvp.error.generic'));
     } finally {
       setBusy(null);
     }

@@ -66,6 +66,7 @@ export function AuthForm({ mode, onDone, onSwitchMode, className }: AuthFormProp
         const known = t(cause.messageKey as never);
         if (known !== cause.messageKey) return known;
       }
+      if (cause.status === 429) return t('errors.auth.rateLimited');
       if (cause.status === 401) return t('errors.auth.invalidCredentials');
     }
     return t('auth.error.generic');

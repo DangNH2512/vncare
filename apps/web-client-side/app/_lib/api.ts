@@ -91,6 +91,11 @@ interface CallInit {
   retried?: boolean;
 }
 
+/** Narrows an untrusted error-body field to a string, or undefined. */
+function pick(value: unknown): string | undefined {
+  return typeof value === 'string' ? value : undefined;
+}
+
 async function call<T>(path: string, init?: CallInit): Promise<T> {
   let response: Response;
   try {
@@ -120,11 +125,19 @@ async function call<T>(path: string, init?: CallInit): Promise<T> {
 
   if (!response.ok) {
     const body: unknown = await response.json().catch(() => null);
-    const error =
-      typeof body === 'object' && body !== null
-        ? ((body as { message?: { code?: string; messageKey?: string } }).message ?? {})
-        : {};
-    throw new ApiError(response.status, error.code, error.messageKey);
+    // The API answers with a flat `{ code, messageKey, details? }` body; the
+    // nested `message` form is kept as a fallback for framework-shaped errors.
+    type ErrorFields = { code?: unknown; messageKey?: unknown };
+    const flat: ErrorFields =
+      typeof body === 'object' && body !== null ? (body as ErrorFields) : {};
+    const nestedRaw = (flat as { message?: unknown }).message;
+    const nested: ErrorFields =
+      typeof nestedRaw === 'object' && nestedRaw !== null ? (nestedRaw as ErrorFields) : {};
+    throw new ApiError(
+      response.status,
+      pick(flat.code) ?? pick(nested.code),
+      pick(flat.messageKey) ?? pick(nested.messageKey),
+    );
   }
 
   if (response.status === 204) return undefined as T;

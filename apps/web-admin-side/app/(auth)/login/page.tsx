@@ -23,6 +23,7 @@ function describeError(t: Translate, cause: unknown): string {
       const known = t(cause.messageKey as MessageKey);
       if (known !== cause.messageKey) return known;
     }
+    if (cause.status === 429) return t('errors.auth.rateLimited');
     if (cause.status === 401) return t('errors.auth.invalidCredentials');
   }
   return t('auth.error.generic');
@@ -43,7 +44,7 @@ export default function LoginPage() {
   const { user, loading, signIn } = useAuth();
   const formId = useId();
 
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,14 +54,14 @@ export default function LoginPage() {
     if (!loading && user !== null) router.replace('/');
   }, [loading, user, router]);
 
-  const canSubmit = email.trim().length > 0 && password.length > 0 && !submitting;
+  const canSubmit = identifier.trim().length > 0 && password.length > 0 && !submitting;
 
   const submit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
     setError(null);
     try {
-      const signedIn = await signIn({ identifier: email.trim(), password });
+      const signedIn = await signIn({ identifier: identifier.trim(), password });
       if (signedIn === null) {
         setError(t('admin.login.rejected'));
         return;
@@ -91,12 +92,14 @@ export default function LoginPage() {
           }}
         >
           <Input
-            label={t('auth.field.email')}
-            type="email"
-            value={email}
+            label={t('auth.field.identifier')}
+            type="text"
+            value={identifier}
             maxLength={254}
-            autoComplete="email"
-            onChange={(event) => setEmail(event.target.value)}
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            onChange={(event) => setIdentifier(event.target.value)}
           />
           <Input
             label={t('auth.field.password')}
