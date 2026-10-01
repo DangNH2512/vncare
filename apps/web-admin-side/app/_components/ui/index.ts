@@ -9,4 +9,5 @@ export { Button, type ButtonProps } from './button';
 export { Card, type CardProps } from './card';
 export { EmptyState, type EmptyStateProps } from './empty-state';
 export { Input, type InputProps } from './input';
+export { MetricHint, type MetricHintProps } from './metric-hint';
 export { Skeleton, SkeletonText, type SkeletonProps } from './skeleton';

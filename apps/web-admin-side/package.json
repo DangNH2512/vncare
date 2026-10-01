@@ -15,6 +15,7 @@
   "dependencies": {
     "@dnc/contracts": "workspace:*",
     "@dnc/domain": "workspace:*",
+    "@dnc/geo": "workspace:*",
     "@dnc/i18n": "workspace:*",
     "@dnc/tokens": "workspace:*",
     "next": "16.3.4",

@@ -13,7 +13,7 @@ test.describe('System health', () => {
     page,
   }) => {
     await loginAs(page, 'admin');
-    await page.getByRole('link', { name: /system health/i }).click();
+    await page.getByRole('navigation').getByRole('link', { name: /system health/i }).click();
     await expect(page.getByText('All systems operational')).toBeVisible();
 
     await page.route('**/api/v1/admin/system/health', (route) => route.abort('connectionrefused'));
@@ -22,7 +22,7 @@ test.describe('System health', () => {
     // AuthProvider's own session, which is not what this covers): navigate
     // away and back via the sidebar, both client-side.
     await page.getByRole('link', { name: 'Overview' }).click();
-    await page.getByRole('link', { name: /system health/i }).click();
+    await page.getByRole('navigation').getByRole('link', { name: /system health/i }).click();
 
     await expect(page.getByText('Cannot reach the API')).toBeVisible();
     await expect(page.getByText('Check your connection and try again.')).toBeVisible();
@@ -43,7 +43,7 @@ test.describe('System health', () => {
   // so a locale switch cannot be the thing that leaves the wrong item lit.
   test('VI locale translates the dependency status badges', async ({ page }) => {
     await loginAs(page, 'admin');
-    await page.getByRole('link', { name: /system health/i }).click();
+    await page.getByRole('navigation').getByRole('link', { name: /system health/i }).click();
     await expect(page.getByText('All systems operational')).toBeVisible();
 
     await page.getByRole('button', { name: 'VI' }).click();

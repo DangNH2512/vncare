@@ -13,6 +13,7 @@
  * provisioned another way, not self-served through this app.
  */
 import type {
+  AdminOverviewResponseT,
   AdminSystemHealthResponseT,
   AuthSessionResponseT,
   LoginRequestT,
@@ -219,4 +220,15 @@ export function me(): Promise<SessionUserResponseT> {
  */
 export function getSystemHealth(): Promise<AdminSystemHealthResponseT> {
   return call<AdminSystemHealthResponseT>('/api/v1/admin/system/health');
+}
+
+/**
+ * Platform-wide counts plus the newest members and events.
+ *
+ * Requires `admin` or `super_admin` (`analytics.platform.view` in
+ * `@dnc/domain`); curator and moderator get 403, so callers check the role
+ * before calling instead of provoking the error.
+ */
+export function getAdminOverview(): Promise<AdminOverviewResponseT> {
+  return call<AdminOverviewResponseT>('/api/v1/admin/overview');
 }

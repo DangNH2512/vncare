@@ -135,6 +135,9 @@ importers:
       '@dnc/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@dnc/geo':
+        specifier: workspace:*
+        version: link:../../packages/geo
       '@dnc/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n

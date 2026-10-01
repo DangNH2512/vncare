@@ -11,7 +11,7 @@ const API_ORIGIN = process.env.API_ORIGIN ?? 'http://localhost:3001';
  * would silently do nothing here.
  */
 const config: NextConfig = {
-  transpilePackages: ['@dnc/contracts', '@dnc/domain', '@dnc/i18n', '@dnc/tokens'],
+  transpilePackages: ['@dnc/contracts', '@dnc/domain', '@dnc/geo', '@dnc/i18n', '@dnc/tokens'],
   /**
    * Off while the route tree is still being filled in: typed routes reject a
    * link to a screen another task card has not landed yet, and those links

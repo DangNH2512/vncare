@@ -15,7 +15,7 @@ test.describe('console shell and role gating', () => {
     await expect(page.getByText('Signed in as E2E Curator')).toBeVisible();
     const navLinks = await page.locator('nav a').allTextContents();
     expect(navLinks).toEqual(['Overview']);
-    await expect(page.getByRole('link', { name: /system health/i })).toHaveCount(0);
+    await expect(page.getByRole('navigation').getByRole('link', { name: /system health/i })).toHaveCount(0);
 
     await page.goto('/system-health');
     await expect(page).toHaveURL('/');
@@ -39,7 +39,7 @@ test.describe('console shell and role gating', () => {
     await expect(page).toHaveURL('/');
 
     const overview = page.getByRole('link', { name: 'Overview' });
-    const systemHealth = page.getByRole('link', { name: /system health/i });
+    const systemHealth = page.getByRole('navigation').getByRole('link', { name: /system health/i });
 
     await expect(overview).toHaveAttribute('aria-current', 'page');
     await expect.poll(() => hasActiveBackground(overview)).toBe(true);

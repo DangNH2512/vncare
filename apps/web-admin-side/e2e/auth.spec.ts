@@ -28,7 +28,7 @@ test.describe('staff sign-in gate', () => {
     // A second, real history entry for a console URL (client-side push via
     // <Link>), so "Back" below has actual console history to try to return
     // to — not just the empty tab that existed before this test began.
-    await page.getByRole('link', { name: /system health/i }).click();
+    await page.getByRole('navigation').getByRole('link', { name: /system health/i }).click();
     await expect(page).toHaveURL('/system-health');
 
     await page.getByRole('button', { name: /sign out/i }).click();
