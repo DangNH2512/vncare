@@ -168,7 +168,8 @@
       "notifications": "Notifications",
       "profile": "Profile",
       "create": "Create",
-      "createEvent": "Create event"
+      "createEvent": "Create event",
+      "messages": "Messages"
     },
     "a11y": {
       "primaryNav": "Primary navigation",
@@ -428,7 +429,8 @@
       "notAuthor": "Only the author can change this comment.",
       "parentNotFound": "The comment being replied to no longer exists.",
       "notThreadOwner": "Only the organizer or author can pin a comment here.",
-      "cannotPinReply": "Only a top-level comment can be pinned."
+      "cannotPinReply": "Only a top-level comment can be pinned.",
+      "closed": "Comments are closed for this event."
     },
     "chat": {
       "cannotMessageSelf": "You cannot start a conversation with yourself.",
@@ -438,7 +440,9 @@
       "requestQuotaExhausted": "Wait for a reply before sending another message.",
       "notRequestRecipient": "Only the recipient can answer this request.",
       "messageNotFound": "This message no longer exists.",
-      "messagePayloadMismatch": "The message content does not match its type."
+      "messagePayloadMismatch": "The message content does not match its type.",
+      "notOpen": "This chat is not open yet.",
+      "notAttending": "Only people going to this event can chat here."
     },
     "media": {
       "typeNotAllowed": "That file type is not supported.",
@@ -450,6 +454,13 @@
       "notFound": "That profile no longer exists.",
       "phoneInvalid": "That does not look like a phone number.",
       "phoneTaken": "That phone number is already on another account."
+    },
+    "rateLimit": {
+      "exceeded": "You are doing that too often. Please wait a moment and try again."
+    },
+    "follow": {
+      "cannotFollowSelf": "You cannot follow yourself.",
+      "limitReached": "You are following the maximum number of people. Unfollow someone to follow more."
     }
   },
   "post": {
@@ -511,6 +522,9 @@
       "labelField": "Place name",
       "remove": "Remove",
       "mapUnavailable": "The map could not load. You can still post without a location."
+    },
+    "author": {
+      "former": "Former member"
     }
   },
   "auth": {
@@ -619,6 +633,16 @@
     },
     "error": {
       "save": "Could not save your profile. Please try again."
+    },
+    "following": {
+      "title": "Following",
+      "since": "Following since {date}",
+      "empty": {
+        "title": "Follow hosts you like",
+        "body": "Keep the people you want to hear from close by.",
+        "cta": "Browse hosts"
+      },
+      "link": "Following ({count})"
     }
   },
   "blank": {
@@ -739,6 +763,146 @@
           "body": "Check your connection and try again."
         }
       }
+    }
+  },
+  "comments": {
+    "title": "Comments ({count})",
+    "composer": {
+      "placeholder": "Ask a question or leave a comment…",
+      "aria": "Write a comment",
+      "counter": "{count} left",
+      "post": "Post",
+      "replyingTo": "Replying to {name}",
+      "cancelReply": "Cancel reply",
+      "locked": "Verify your account to join the conversation."
+    },
+    "signInPrompt": "Sign in to ask a question or leave a comment.",
+    "empty": {
+      "title": "No questions yet",
+      "body": "Ask the host anything — what to bring, how to find the spot, whether beginners are welcome.",
+      "cta": "Ask a question"
+    },
+    "pinned": {
+      "host": "Pinned by the host",
+      "author": "Pinned by the author"
+    },
+    "action": {
+      "pin": "Pin",
+      "unpin": "Unpin",
+      "reply": "Reply",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "edited": "edited",
+    "replies": {
+      "view": "View {count} replies",
+      "viewOne": "View 1 reply",
+      "hide": "Hide replies"
+    },
+    "showMore": "Show more comments",
+    "showMoreReplies": "Show more replies",
+    "delete": {
+      "title": "Delete this comment?",
+      "body": "This cannot be undone.",
+      "bodyWithReplies": "This cannot be undone. Replies will be removed too."
+    },
+    "status": {
+      "posted": "Comment posted."
+    },
+    "closed": {
+      "cancelled": "Comments are closed because the event was cancelled."
+    },
+    "error": {
+      "load": {
+        "title": "We could not load comments",
+        "body": "Check your connection and try again."
+      },
+      "post": "We could not post your comment. Check your connection and try again.",
+      "tryAgain": "Try again"
+    },
+    "loading": "Loading comments"
+  },
+  "reaction": {
+    "like": "Like",
+    "liked": "Liked",
+    "count": "{count} likes",
+      "countOne": "1 like",
+    "aria": "Like this {target}",
+    "error": "Could not save your reaction. Try again.",
+    "target": {
+      "post": "post",
+      "comment": "comment",
+      "event": "event"
+    }
+  },
+  "chat": {
+    "card": {
+      "title": "Group chat",
+      "open": "Open chat",
+      "opensAt": "Opens {time}",
+      "needRsvp": "RSVP to join the group chat."
+    },
+    "notYet": {
+      "title": "This chat opens {hours} hours before the event",
+      "body": "You will be able to coordinate with the other people going."
+    },
+    "closed": "This chat is closed.",
+    "unavailable": "This chat is no longer available.",
+    "composer": {
+      "placeholder": "Write a message…",
+      "aria": "Message",
+      "send": "Send"
+    },
+    "rules": "Be kind. Hosts may remove people who break the rules.",
+    "message": {
+      "sending": "Sending…",
+      "failed": "Not sent. Tap to retry.",
+      "removed": "Message removed",
+      "delete": "Delete message"
+    },
+    "status": {
+      "reconnecting": "Reconnecting…",
+      "offline": "You are offline. Messages will send when you are back."
+    },
+    "typing": "{name} is typing…",
+    "newMessages": "New messages",
+    "beginning": "Beginning of the chat",
+    "empty": {
+      "title": "No messages yet",
+      "body": "Say hi to the others going."
+    },
+    "leave": {
+      "confirm": "Leave this chat? You can join again while you are going.",
+      "action": "Leave chat"
+    },
+    "error": {
+      "load": "We could not load this chat."
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "empty": {
+      "title": "No chats yet",
+      "body": "RSVP to an event to join its group chat.",
+      "cta": "Browse events"
+    },
+    "unread": "{count} unread",
+    "participants": "{count} people"
+  },
+  "follow": {
+    "action": {
+      "follow": "Follow",
+      "following": "Following",
+      "unfollow": "Unfollow"
+    },
+    "aria": {
+      "follow": "Follow {name}",
+      "following": "Following {name}. Activate to unfollow."
+    },
+    "error": {
+      "generic": "Could not update. Check your connection and try again."
     }
   }
 }

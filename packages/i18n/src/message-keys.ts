@@ -94,6 +94,69 @@ export type MessageKey =
   | 'blank.notFound.title'
   | 'blank.notifications.body'
   | 'blank.notifications.title'
+  | 'chat.beginning'
+  | 'chat.card.needRsvp'
+  | 'chat.card.open'
+  | 'chat.card.opensAt'
+  | 'chat.card.title'
+  | 'chat.closed'
+  | 'chat.composer.aria'
+  | 'chat.composer.placeholder'
+  | 'chat.composer.send'
+  | 'chat.empty.body'
+  | 'chat.empty.title'
+  | 'chat.error.load'
+  | 'chat.leave.action'
+  | 'chat.leave.confirm'
+  | 'chat.message.delete'
+  | 'chat.message.failed'
+  | 'chat.message.removed'
+  | 'chat.message.sending'
+  | 'chat.newMessages'
+  | 'chat.notYet.body'
+  | 'chat.notYet.title'
+  | 'chat.rules'
+  | 'chat.status.offline'
+  | 'chat.status.reconnecting'
+  | 'chat.typing'
+  | 'chat.unavailable'
+  | 'comments.action.cancel'
+  | 'comments.action.delete'
+  | 'comments.action.edit'
+  | 'comments.action.pin'
+  | 'comments.action.reply'
+  | 'comments.action.save'
+  | 'comments.action.unpin'
+  | 'comments.closed.cancelled'
+  | 'comments.composer.aria'
+  | 'comments.composer.cancelReply'
+  | 'comments.composer.counter'
+  | 'comments.composer.locked'
+  | 'comments.composer.placeholder'
+  | 'comments.composer.post'
+  | 'comments.composer.replyingTo'
+  | 'comments.delete.body'
+  | 'comments.delete.bodyWithReplies'
+  | 'comments.delete.title'
+  | 'comments.edited'
+  | 'comments.empty.body'
+  | 'comments.empty.cta'
+  | 'comments.empty.title'
+  | 'comments.error.load.body'
+  | 'comments.error.load.title'
+  | 'comments.error.post'
+  | 'comments.error.tryAgain'
+  | 'comments.loading'
+  | 'comments.pinned.author'
+  | 'comments.pinned.host'
+  | 'comments.replies.hide'
+  | 'comments.replies.view'
+  | 'comments.replies.viewOne'
+  | 'comments.showMore'
+  | 'comments.showMoreReplies'
+  | 'comments.signInPrompt'
+  | 'comments.status.posted'
+  | 'comments.title'
   | 'common.appName'
   | 'common.comingSoon'
   | 'common.free'
@@ -226,10 +289,13 @@ export type MessageKey =
   | 'errors.chat.conversationNotFound'
   | 'errors.chat.messageNotFound'
   | 'errors.chat.messagePayloadMismatch'
+  | 'errors.chat.notAttending'
+  | 'errors.chat.notOpen'
   | 'errors.chat.notRequestRecipient'
   | 'errors.chat.requestQuotaExhausted'
   | 'errors.chat.requestRefused'
   | 'errors.comment.cannotPinReply'
+  | 'errors.comment.closed'
   | 'errors.comment.notAuthor'
   | 'errors.comment.notFound'
   | 'errors.comment.notThreadOwner'
@@ -243,6 +309,8 @@ export type MessageKey =
   | 'errors.event.notOrganizer'
   | 'errors.event.radiusRequiresCoordinates'
   | 'errors.event.underModeration'
+  | 'errors.follow.cannotFollowSelf'
+  | 'errors.follow.limitReached'
   | 'errors.media.notFound'
   | 'errors.media.notUploaded'
   | 'errors.media.tooLarge'
@@ -252,6 +320,7 @@ export type MessageKey =
   | 'errors.profile.notFound'
   | 'errors.profile.phoneInvalid'
   | 'errors.profile.phoneTaken'
+  | 'errors.rateLimit.exceeded'
   | 'event.card.almostFull'
   | 'event.card.attendees'
   | 'event.card.details'
@@ -342,6 +411,12 @@ export type MessageKey =
   | 'feed.seatsOf'
   | 'feed.share'
   | 'feed.title'
+  | 'follow.action.follow'
+  | 'follow.action.following'
+  | 'follow.action.unfollow'
+  | 'follow.aria.follow'
+  | 'follow.aria.following'
+  | 'follow.error.generic'
   | 'home.componentsHeading'
   | 'home.componentsNote'
   | 'home.eyebrow'
@@ -359,10 +434,17 @@ export type MessageKey =
   | 'home.status.ready'
   | 'home.subtitle'
   | 'home.title'
+  | 'messages.empty.body'
+  | 'messages.empty.cta'
+  | 'messages.empty.title'
+  | 'messages.participants'
+  | 'messages.title'
+  | 'messages.unread'
   | 'nav.createEvent'
   | 'nav.events'
   | 'nav.map'
   | 'nav.profile'
+  | 'post.author.former'
   | 'post.card.cityWide'
   | 'post.card.comments'
   | 'post.card.edited'
@@ -425,6 +507,12 @@ export type MessageKey =
   | 'profile.field.showArea'
   | 'profile.field.since'
   | 'profile.field.visibility'
+  | 'profile.following.empty.body'
+  | 'profile.following.empty.cta'
+  | 'profile.following.empty.title'
+  | 'profile.following.link'
+  | 'profile.following.since'
+  | 'profile.following.title'
   | 'profile.hint.headline'
   | 'profile.hint.phone'
   | 'profile.language.de'
@@ -454,6 +542,15 @@ export type MessageKey =
   | 'profile.visibilityHint.members_only'
   | 'profile.visibilityHint.private'
   | 'profile.visibilityHint.public'
+  | 'reaction.aria'
+  | 'reaction.count'
+  | 'reaction.countOne'
+  | 'reaction.error'
+  | 'reaction.like'
+  | 'reaction.liked'
+  | 'reaction.target.comment'
+  | 'reaction.target.event'
+  | 'reaction.target.post'
   | 'role.admin.label'
   | 'role.curator.label'
   | 'role.moderator.label'
@@ -474,6 +571,7 @@ export type MessageKey =
   | 'shell.nav.createEvent'
   | 'shell.nav.discover'
   | 'shell.nav.home'
+  | 'shell.nav.messages'
   | 'shell.nav.myEvents'
   | 'shell.nav.notifications'
   | 'shell.nav.profile'
@@ -596,6 +694,69 @@ export const MESSAGE_KEYS = [
   'blank.notFound.title',
   'blank.notifications.body',
   'blank.notifications.title',
+  'chat.beginning',
+  'chat.card.needRsvp',
+  'chat.card.open',
+  'chat.card.opensAt',
+  'chat.card.title',
+  'chat.closed',
+  'chat.composer.aria',
+  'chat.composer.placeholder',
+  'chat.composer.send',
+  'chat.empty.body',
+  'chat.empty.title',
+  'chat.error.load',
+  'chat.leave.action',
+  'chat.leave.confirm',
+  'chat.message.delete',
+  'chat.message.failed',
+  'chat.message.removed',
+  'chat.message.sending',
+  'chat.newMessages',
+  'chat.notYet.body',
+  'chat.notYet.title',
+  'chat.rules',
+  'chat.status.offline',
+  'chat.status.reconnecting',
+  'chat.typing',
+  'chat.unavailable',
+  'comments.action.cancel',
+  'comments.action.delete',
+  'comments.action.edit',
+  'comments.action.pin',
+  'comments.action.reply',
+  'comments.action.save',
+  'comments.action.unpin',
+  'comments.closed.cancelled',
+  'comments.composer.aria',
+  'comments.composer.cancelReply',
+  'comments.composer.counter',
+  'comments.composer.locked',
+  'comments.composer.placeholder',
+  'comments.composer.post',
+  'comments.composer.replyingTo',
+  'comments.delete.body',
+  'comments.delete.bodyWithReplies',
+  'comments.delete.title',
+  'comments.edited',
+  'comments.empty.body',
+  'comments.empty.cta',
+  'comments.empty.title',
+  'comments.error.load.body',
+  'comments.error.load.title',
+  'comments.error.post',
+  'comments.error.tryAgain',
+  'comments.loading',
+  'comments.pinned.author',
+  'comments.pinned.host',
+  'comments.replies.hide',
+  'comments.replies.view',
+  'comments.replies.viewOne',
+  'comments.showMore',
+  'comments.showMoreReplies',
+  'comments.signInPrompt',
+  'comments.status.posted',
+  'comments.title',
   'common.appName',
   'common.comingSoon',
   'common.free',
@@ -728,10 +889,13 @@ export const MESSAGE_KEYS = [
   'errors.chat.conversationNotFound',
   'errors.chat.messageNotFound',
   'errors.chat.messagePayloadMismatch',
+  'errors.chat.notAttending',
+  'errors.chat.notOpen',
   'errors.chat.notRequestRecipient',
   'errors.chat.requestQuotaExhausted',
   'errors.chat.requestRefused',
   'errors.comment.cannotPinReply',
+  'errors.comment.closed',
   'errors.comment.notAuthor',
   'errors.comment.notFound',
   'errors.comment.notThreadOwner',
@@ -745,6 +909,8 @@ export const MESSAGE_KEYS = [
   'errors.event.notOrganizer',
   'errors.event.radiusRequiresCoordinates',
   'errors.event.underModeration',
+  'errors.follow.cannotFollowSelf',
+  'errors.follow.limitReached',
   'errors.media.notFound',
   'errors.media.notUploaded',
   'errors.media.tooLarge',
@@ -754,6 +920,7 @@ export const MESSAGE_KEYS = [
   'errors.profile.notFound',
   'errors.profile.phoneInvalid',
   'errors.profile.phoneTaken',
+  'errors.rateLimit.exceeded',
   'event.card.almostFull',
   'event.card.attendees',
   'event.card.details',
@@ -844,6 +1011,12 @@ export const MESSAGE_KEYS = [
   'feed.seatsOf',
   'feed.share',
   'feed.title',
+  'follow.action.follow',
+  'follow.action.following',
+  'follow.action.unfollow',
+  'follow.aria.follow',
+  'follow.aria.following',
+  'follow.error.generic',
   'home.componentsHeading',
   'home.componentsNote',
   'home.eyebrow',
@@ -861,10 +1034,17 @@ export const MESSAGE_KEYS = [
   'home.status.ready',
   'home.subtitle',
   'home.title',
+  'messages.empty.body',
+  'messages.empty.cta',
+  'messages.empty.title',
+  'messages.participants',
+  'messages.title',
+  'messages.unread',
   'nav.createEvent',
   'nav.events',
   'nav.map',
   'nav.profile',
+  'post.author.former',
   'post.card.cityWide',
   'post.card.comments',
   'post.card.edited',
@@ -927,6 +1107,12 @@ export const MESSAGE_KEYS = [
   'profile.field.showArea',
   'profile.field.since',
   'profile.field.visibility',
+  'profile.following.empty.body',
+  'profile.following.empty.cta',
+  'profile.following.empty.title',
+  'profile.following.link',
+  'profile.following.since',
+  'profile.following.title',
   'profile.hint.headline',
   'profile.hint.phone',
   'profile.language.de',
@@ -956,6 +1142,15 @@ export const MESSAGE_KEYS = [
   'profile.visibilityHint.members_only',
   'profile.visibilityHint.private',
   'profile.visibilityHint.public',
+  'reaction.aria',
+  'reaction.count',
+  'reaction.countOne',
+  'reaction.error',
+  'reaction.like',
+  'reaction.liked',
+  'reaction.target.comment',
+  'reaction.target.event',
+  'reaction.target.post',
   'role.admin.label',
   'role.curator.label',
   'role.moderator.label',
@@ -976,6 +1171,7 @@ export const MESSAGE_KEYS = [
   'shell.nav.createEvent',
   'shell.nav.discover',
   'shell.nav.home',
+  'shell.nav.messages',
   'shell.nav.myEvents',
   'shell.nav.notifications',
   'shell.nav.profile',

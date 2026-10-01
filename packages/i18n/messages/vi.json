@@ -168,7 +168,8 @@
       "notifications": "Thông báo",
       "profile": "Hồ sơ",
       "create": "Tạo",
-      "createEvent": "Tạo sự kiện"
+      "createEvent": "Tạo sự kiện",
+      "messages": "Tin nhắn"
     },
     "a11y": {
       "primaryNav": "Điều hướng chính",
@@ -428,7 +429,8 @@
       "notAuthor": "Chỉ tác giả mới sửa được bình luận này.",
       "parentNotFound": "Bình luận được trả lời không còn tồn tại.",
       "notThreadOwner": "Chỉ người tổ chức hoặc tác giả mới ghim được bình luận ở đây.",
-      "cannotPinReply": "Chỉ bình luận gốc mới ghim được."
+      "cannotPinReply": "Chỉ bình luận gốc mới ghim được.",
+      "closed": "Bình luận đã đóng cho sự kiện này."
     },
     "chat": {
       "cannotMessageSelf": "Bạn không thể tự nhắn tin cho chính mình.",
@@ -438,7 +440,9 @@
       "requestQuotaExhausted": "Hãy chờ phản hồi trước khi gửi thêm tin nhắn.",
       "notRequestRecipient": "Chỉ người nhận mới trả lời được lời mời này.",
       "messageNotFound": "Tin nhắn này không còn tồn tại.",
-      "messagePayloadMismatch": "Nội dung tin nhắn không khớp với loại tin nhắn."
+      "messagePayloadMismatch": "Nội dung tin nhắn không khớp với loại tin nhắn.",
+      "notOpen": "Phòng chat này chưa mở.",
+      "notAttending": "Chỉ người tham gia sự kiện này mới nhắn được ở đây."
     },
     "media": {
       "typeNotAllowed": "Định dạng tệp này không được hỗ trợ.",
@@ -450,6 +454,13 @@
       "notFound": "Hồ sơ này không còn tồn tại.",
       "phoneInvalid": "Đây không giống một số điện thoại.",
       "phoneTaken": "Số điện thoại này đã thuộc về tài khoản khác."
+    },
+    "rateLimit": {
+      "exceeded": "Bạn thao tác quá nhanh. Hãy chờ một chút rồi thử lại."
+    },
+    "follow": {
+      "cannotFollowSelf": "Bạn không thể tự theo dõi chính mình.",
+      "limitReached": "Bạn đã theo dõi số người tối đa. Hãy bỏ theo dõi bớt để theo dõi thêm."
     }
   },
   "post": {
@@ -511,6 +522,9 @@
       "labelField": "Tên địa điểm",
       "remove": "Bỏ",
       "mapUnavailable": "Không tải được bản đồ. Bạn vẫn đăng bài được mà không cần địa điểm."
+    },
+    "author": {
+      "former": "Thành viên cũ"
     }
   },
   "auth": {
@@ -619,6 +633,16 @@
     },
     "error": {
       "save": "Không lưu được hồ sơ. Vui lòng thử lại."
+    },
+    "following": {
+      "title": "Đang theo dõi",
+      "since": "Theo dõi từ {date}",
+      "empty": {
+        "title": "Theo dõi người tổ chức bạn thích",
+        "body": "Giữ những người bạn muốn theo dõi ở gần bạn.",
+        "cta": "Xem người tổ chức"
+      },
+      "link": "Đang theo dõi ({count})"
     }
   },
   "blank": {
@@ -739,6 +763,146 @@
           "body": "Kiểm tra kết nối mạng và thử lại."
         }
       }
+    }
+  },
+  "comments": {
+    "title": "Bình luận ({count})",
+    "composer": {
+      "placeholder": "Đặt câu hỏi hoặc để lại bình luận…",
+      "aria": "Viết bình luận",
+      "counter": "Còn {count} ký tự",
+      "post": "Đăng",
+      "replyingTo": "Đang trả lời {name}",
+      "cancelReply": "Huỷ trả lời",
+      "locked": "Hãy xác minh tài khoản để tham gia trò chuyện."
+    },
+    "signInPrompt": "Đăng nhập để đặt câu hỏi hoặc bình luận.",
+    "empty": {
+      "title": "Chưa có câu hỏi nào",
+      "body": "Hỏi người tổ chức bất cứ điều gì: cần mang gì, tìm chỗ thế nào, người mới có tham gia được không.",
+      "cta": "Đặt câu hỏi"
+    },
+    "pinned": {
+      "host": "Được người tổ chức ghim",
+      "author": "Được tác giả ghim"
+    },
+    "action": {
+      "pin": "Ghim",
+      "unpin": "Bỏ ghim",
+      "reply": "Trả lời",
+      "edit": "Sửa",
+      "delete": "Xoá",
+      "save": "Lưu",
+      "cancel": "Huỷ"
+    },
+    "edited": "đã sửa",
+    "replies": {
+      "view": "Xem {count} câu trả lời",
+      "viewOne": "Xem 1 câu trả lời",
+      "hide": "Ẩn câu trả lời"
+    },
+    "showMore": "Xem thêm bình luận",
+    "showMoreReplies": "Xem thêm câu trả lời",
+    "delete": {
+      "title": "Xoá bình luận này?",
+      "body": "Không thể hoàn tác.",
+      "bodyWithReplies": "Không thể hoàn tác. Các câu trả lời cũng sẽ bị xoá."
+    },
+    "status": {
+      "posted": "Đã đăng bình luận."
+    },
+    "closed": {
+      "cancelled": "Bình luận đã đóng vì sự kiện đã bị huỷ."
+    },
+    "error": {
+      "load": {
+        "title": "Không tải được bình luận",
+        "body": "Kiểm tra kết nối rồi thử lại."
+      },
+      "post": "Chưa đăng được bình luận. Kiểm tra kết nối rồi thử lại.",
+      "tryAgain": "Thử lại"
+    },
+    "loading": "Đang tải bình luận"
+  },
+  "reaction": {
+    "like": "Thích",
+    "liked": "Đã thích",
+    "count": "{count} lượt thích",
+      "countOne": "1 lượt thích",
+    "aria": "Thích {target} này",
+    "error": "Chưa lưu được cảm xúc của bạn. Hãy thử lại.",
+    "target": {
+      "post": "bài đăng",
+      "comment": "bình luận",
+      "event": "sự kiện"
+    }
+  },
+  "chat": {
+    "card": {
+      "title": "Trò chuyện nhóm",
+      "open": "Mở trò chuyện",
+      "opensAt": "Mở lúc {time}",
+      "needRsvp": "Đăng ký tham gia để vào nhóm trò chuyện."
+    },
+    "notYet": {
+      "title": "Phòng chat mở trước sự kiện {hours} giờ",
+      "body": "Bạn sẽ có thể trao đổi với những người cùng tham gia."
+    },
+    "closed": "Phòng chat này đã đóng.",
+    "unavailable": "Phòng chat này không còn khả dụng.",
+    "composer": {
+      "placeholder": "Viết tin nhắn…",
+      "aria": "Tin nhắn",
+      "send": "Gửi"
+    },
+    "rules": "Hãy tử tế. Người tổ chức có thể mời ra khỏi phòng những ai vi phạm.",
+    "message": {
+      "sending": "Đang gửi…",
+      "failed": "Chưa gửi được. Chạm để thử lại.",
+      "removed": "Tin nhắn đã bị xoá",
+      "delete": "Xoá tin nhắn"
+    },
+    "status": {
+      "reconnecting": "Đang kết nối lại…",
+      "offline": "Bạn đang ngoại tuyến. Tin nhắn sẽ được gửi khi có mạng."
+    },
+    "typing": "{name} đang soạn tin…",
+    "newMessages": "Tin nhắn mới",
+    "beginning": "Đầu cuộc trò chuyện",
+    "empty": {
+      "title": "Chưa có tin nhắn nào",
+      "body": "Hãy chào những người cùng tham gia."
+    },
+    "leave": {
+      "confirm": "Rời phòng chat này? Bạn có thể vào lại khi vẫn đang tham gia.",
+      "action": "Rời phòng chat"
+    },
+    "error": {
+      "load": "Không tải được phòng chat này."
+    }
+  },
+  "messages": {
+    "title": "Tin nhắn",
+    "empty": {
+      "title": "Chưa có cuộc trò chuyện nào",
+      "body": "Đăng ký một sự kiện để vào nhóm trò chuyện của sự kiện đó.",
+      "cta": "Xem sự kiện"
+    },
+    "unread": "{count} tin chưa đọc",
+    "participants": "{count} người"
+  },
+  "follow": {
+    "action": {
+      "follow": "Theo dõi",
+      "following": "Đang theo dõi",
+      "unfollow": "Bỏ theo dõi"
+    },
+    "aria": {
+      "follow": "Theo dõi {name}",
+      "following": "Đang theo dõi {name}. Kích hoạt để bỏ theo dõi."
+    },
+    "error": {
+      "generic": "Chưa cập nhật được. Kiểm tra kết nối rồi thử lại."
     }
   }
 }
