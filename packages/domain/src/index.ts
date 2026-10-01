@@ -12,6 +12,7 @@ export {
   type TrustSignals,
 } from './trust';
 export {
+  ANALYTICS_PLATFORM_ROLES,
   allowedRolesFor,
   isStaffRole,
   PERMISSION_MATRIX,
@@ -20,3 +21,18 @@ export {
   type PermissionKey,
   type PermissionRule,
 } from './permission-matrix';
+export {
+  resolveEventWindow,
+  type DiscoverWhen,
+  type EventWindow,
+} from './event-window';
+export {
+  DEFAULT_EVENT_DURATION_MINUTES,
+  eventEndMs,
+  findTimeClashes,
+  findTimeClashesAgainst,
+  selectSwipeCandidates,
+  type ClashInput,
+  type DeckEvent,
+  type TimeClash,
+} from './time-clash';

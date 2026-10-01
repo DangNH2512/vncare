@@ -172,6 +172,18 @@ export class EventRepository {
    * WHERE clause computes a distance for every row in the table and cannot use
    * the index at all. Both the coordinates and the radius are bound parameters,
    * never interpolated.
+   *
+   * `from` (inclusive) and `to` (exclusive) bound `occ.starts_at` and combine
+   * with every other filter and with the keyset cursor via AND. The cursor does
+   * not encode the window, so the caller must resend the same `from`/`to` on
+   * every page.
+   *
+   * R-5: the window is applied outside the LATERAL, i.e. against each event's
+   * earliest occurrence only. That is correct while an event has exactly one
+   * occurrence (v1). Once recurring events ship, an event whose first
+   * occurrence is before `from` but a later one is inside the window would be
+   * missed; the fix is to push `starts_at >= from` into OCCURRENCE_JOIN, which
+   * also enables an index range scan on (event_id, starts_at).
    */
   async list(
     query: ListEventQueryT,
@@ -191,6 +203,8 @@ export class EventRepository {
                  ST_SetSRID(ST_MakePoint($6, $5), 4326)::geography,
                  $7::double precision))
           AND ($8::timestamptz IS NULL OR (occ.starts_at, e.id) > ($8, $9::uuid))
+          AND ($11::timestamptz IS NULL OR occ.starts_at >= $11)
+          AND ($12::timestamptz IS NULL OR occ.starts_at < $12)
         ORDER BY occ.starts_at ASC, e.id ASC
         LIMIT $10`,
       [
@@ -204,6 +218,8 @@ export class EventRepository {
         cursor?.startsAt ?? null,
         cursor?.id ?? null,
         query.limit + 1,
+        query.from ?? null,
+        query.to ?? null,
       ],
     );
     return { rows, limit: query.limit };

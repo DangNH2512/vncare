@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ANALYTICS_PLATFORM_ROLES,
   allowedRolesFor,
   isStaffRole,
   PERMISSION_MATRIX,
@@ -23,6 +24,15 @@ describe('isStaffRole', () => {
 describe('allowedRolesFor', () => {
   it('restricts system.health.view to admin and super_admin', () => {
     expect(allowedRolesFor('system.health.view')).toEqual(SYSTEM_HEALTH_ROLES);
+  });
+
+  it('restricts analytics.platform.view to admin and super_admin', () => {
+    const roles = allowedRolesFor('analytics.platform.view');
+    expect(roles).toEqual(ANALYTICS_PLATFORM_ROLES);
+    expect([...roles]).toEqual(['admin', 'super_admin']);
+    for (const denied of ['member', 'curator', 'moderator'] as const) {
+      expect(roles).not.toContain(denied);
+    }
   });
 
   it('opens admin_console.access to every staff role', () => {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import type { AdminSystemHealthResponseT } from '@dnc/contracts';
+import type { AdminOverviewResponseT, AdminSystemHealthResponseT } from '@dnc/contracts';
 import { HealthService } from '../health/index.js';
 import { AdminRepository } from './admin.repository.js';
-import { toAdminSystemHealthResponse } from './admin.mapper.js';
+import { toAdminOverviewResponse, toAdminSystemHealthResponse } from './admin.mapper.js';
 
 /**
  * Assembles the admin system-health snapshot from the shared readiness
@@ -22,5 +22,10 @@ export class AdminService {
       uptimeSeconds: this.admin.uptimeSeconds(),
       checkedAt: this.admin.checkedAt(),
     });
+  }
+
+  /** Read-only platform snapshot; no audit entry and no logging, by design. */
+  async overview(): Promise<AdminOverviewResponseT> {
+    return toAdminOverviewResponse(await this.admin.overview());
   }
 }

@@ -16,6 +16,9 @@ export function isStaffRole(role: UserRoleT): boolean {
 /** Roles allowed to read the aggregated system-health snapshot. */
 export const SYSTEM_HEALTH_ROLES: readonly UserRoleT[] = ['admin', 'super_admin'];
 
+/** Roles allowed to read platform-wide analytics (the admin overview). */
+export const ANALYTICS_PLATFORM_ROLES: readonly UserRoleT[] = ['admin', 'super_admin'];
+
 /**
  * Machine-readable permission keys.
  *
@@ -24,7 +27,10 @@ export const SYSTEM_HEALTH_ROLES: readonly UserRoleT[] = ['admin', 'super_admin'
  * docs/analysis/01-tac-nhan-va-phan-quyen.md §9.2 without changing shape —
  * new keys extend the union and add one PERMISSION_MATRIX entry each.
  */
-export type PermissionKey = 'admin_console.access' | 'system.health.view';
+export type PermissionKey =
+  | 'admin_console.access'
+  | 'system.health.view'
+  | 'analytics.platform.view';
 
 export interface PermissionRule {
   key: PermissionKey;
@@ -52,6 +58,11 @@ export const PERMISSION_MATRIX: readonly PermissionRule[] = [
     key: 'system.health.view',
     docRef: 'docs/analysis/01-tac-nhan-va-phan-quyen.md §9.2',
     allowedRoles: SYSTEM_HEALTH_ROLES,
+  },
+  {
+    key: 'analytics.platform.view',
+    docRef: 'docs/analysis/01-tac-nhan-va-phan-quyen.md §9.2',
+    allowedRoles: ANALYTICS_PLATFORM_ROLES,
   },
 ];
 

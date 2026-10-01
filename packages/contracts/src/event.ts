@@ -76,6 +76,9 @@ export const EventStatusUpdateRequest = z.object({
 });
 export type EventStatusUpdateRequestT = z.infer<typeof EventStatusUpdateRequest>;
 
+/** Widest `from`..`to` window the list endpoint accepts, in days. */
+export const EVENT_LIST_MAX_WINDOW_DAYS = 92;
+
 /**
  * Event list filters.
  *
@@ -83,6 +86,14 @@ export type EventStatusUpdateRequestT = z.infer<typeof EventStatusUpdateRequest>
  * country scan, which is a cheap denial-of-service. A radius search requires
  * both coordinates, checked by the refinement below rather than silently
  * ignored.
+ *
+ * `from` is inclusive and `to` is exclusive (`starts_at >= from AND
+ * starts_at < to`), so adjacent windows such as "today" and "tomorrow" tile
+ * without overlap or gap. Both are UTC instants ending in `Z`; the client
+ * converts local day boundaries before sending. Each is optional on its own;
+ * when both are present the window must be positive and at most
+ * EVENT_LIST_MAX_WINDOW_DAYS, which bounds the range scan a caller can ask
+ * for.
  */
 export const ListEventQuery = z
   .object({
@@ -94,11 +105,21 @@ export const ListEventQuery = z
     lat: z.coerce.number().min(-90).max(90).optional(),
     lng: z.coerce.number().min(-180).max(180).optional(),
     radiusMeters: z.coerce.number().int().min(100).max(50_000).optional(),
+    from: z.iso.datetime().optional(),
+    to: z.iso.datetime().optional(),
   })
   .refine(
     (q) =>
       (q.lat === undefined && q.lng === undefined && q.radiusMeters === undefined) ||
       (q.lat !== undefined && q.lng !== undefined && q.radiusMeters !== undefined),
     { error: 'errors.event.radiusRequiresCoordinates', path: ['radiusMeters'] },
+  )
+  .refine(
+    (q) => {
+      if (q.from === undefined || q.to === undefined) return true;
+      const span = Date.parse(q.to) - Date.parse(q.from);
+      return span > 0 && span <= EVENT_LIST_MAX_WINDOW_DAYS * 86_400_000;
+    },
+    { error: 'errors.event.dateRangeInvalid', path: ['to'] },
   );
 export type ListEventQueryT = z.infer<typeof ListEventQuery>;
