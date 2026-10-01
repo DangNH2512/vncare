@@ -43,7 +43,10 @@ export class ProfileService {
     const isOwner = viewer?.id === row.user_id;
     if (!isOwner && !this.visibleTo(row, viewer)) throw this.notFound();
 
-    return toPublicProfile(row, await this.avatar(row));
+    // null (not false) for a guest or the owner: the page has no Follow button to drive.
+    const viewerIsFollowing =
+      viewer && !isOwner ? await this.profiles.isFollowing(viewer.id, row.user_id) : null;
+    return toPublicProfile(row, await this.avatar(row), viewerIsFollowing);
   }
 
   private visibleTo(row: ProfileRow, viewer: CurrentUserContext | null): boolean {

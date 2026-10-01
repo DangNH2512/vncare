@@ -45,6 +45,9 @@ export const CHAT_HOURLY_MAX_DEFAULT = 500;
 export const CHAT_MINUTE_MAX = 10;
 export const HOUR_WINDOW_SECONDS = 3_600;
 
+/** Follow creations per hour per member at every trust level (brief D-S4-6); unfollow is never counted. */
+export const FOLLOW_HOURLY_MAX = 30;
+
 type Env = Readonly<Record<string, string | undefined>>;
 
 const MAX_COUNT = 1_000_000;

@@ -163,4 +163,31 @@ describe('profile module', () => {
       .send({ avatarMediaId: theirUpload.body.data.mediaId })
       .expect(403);
   });
+
+  it('reports viewerIsFollowing only to a signed-in reader looking at someone else', async () => {
+    const http = () => request(app.getHttpServer());
+    const target = await createActor(app);
+
+    const guest = await http().get(`/api/v1/profiles/${target.handle}`).expect(200);
+    expect(guest.body.data.viewerIsFollowing).toBeNull();
+
+    const before = await http().get(`/api/v1/profiles/${target.handle}`).set(owner.headers).expect(200);
+    expect(before.body.data.viewerIsFollowing).toBe(false);
+
+    await http().post(`/api/v1/users/${target.id}/follow`).set(owner.headers).expect(200);
+    const after = await http().get(`/api/v1/profiles/${target.handle}`).set(owner.headers).expect(200);
+    expect(after.body.data.viewerIsFollowing).toBe(true);
+    // Someone else's view is unaffected by the owner's edge.
+    const stranger = await http().get(`/api/v1/profiles/${target.handle}`).set(other.headers).expect(200);
+    expect(stranger.body.data.viewerIsFollowing).toBe(false);
+
+    const self = await http().get(`/api/v1/profiles/${target.handle}`).set(target.headers).expect(200);
+    expect(self.body.data.viewerIsFollowing).toBeNull();
+    const mine = await http().get('/api/v1/me/profile').set(owner.headers).expect(200);
+    expect(mine.body.data.viewerIsFollowing).toBeNull();
+
+    await http().delete(`/api/v1/users/${target.id}/follow`).set(owner.headers).expect(204);
+    const gone = await http().get(`/api/v1/profiles/${target.handle}`).set(owner.headers).expect(200);
+    expect(gone.body.data.viewerIsFollowing).toBe(false);
+  });
 });

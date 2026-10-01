@@ -13,10 +13,12 @@ const MIN_RATINGS_TO_SHOW = 3;
  *
  * `homeAreaId` is withheld when the member turned off public area display, and
  * the rating average is withheld until it is based on enough reviews.
+ * `viewerIsFollowing` is null unless a signed-in reader is looking at someone else.
  */
 export function toPublicProfile(
   row: ProfileRow,
   avatar: MediaResponseT | null,
+  viewerIsFollowing: boolean | null = null,
 ): PublicProfileResponseT {
   return {
     userId: row.user_id,
@@ -39,7 +41,7 @@ export function toPublicProfile(
         : null,
     ratingCount: row.rating_count,
     memberSince: row.member_since.toISOString(),
-    viewerIsFollowing: null,
+    viewerIsFollowing,
   };
 }
 

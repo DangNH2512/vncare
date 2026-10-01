@@ -12,6 +12,7 @@ import { AuthModule } from './modules/auth/index.js';
 import { ChatModule } from './modules/chat/index.js';
 import { CommentModule } from './modules/comment/index.js';
 import { EventModule } from './modules/event/index.js';
+import { FollowModule } from './modules/follow/index.js';
 import { HealthModule } from './modules/health/index.js';
 import { MediaModule } from './modules/media/index.js';
 import { PostModule } from './modules/post/index.js';
@@ -36,6 +37,7 @@ import { RsvpModule } from './modules/rsvp/index.js';
     CommentModule,
     ReactionModule,
     ChatModule,
+    FollowModule,
   ],
   providers: [
     // Applied to every route, in this order. Authentication denies by default —

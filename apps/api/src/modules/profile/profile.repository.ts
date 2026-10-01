@@ -61,6 +61,20 @@ export class ProfileRepository {
     return this.select('p.user_id = $1', [userId]);
   }
 
+  /**
+   * Whether `viewerId` follows `targetId`. Read-only `EXISTS` on `follows`; the
+   * viewer's own edge is the only thing ever asked about, never the target's
+   * followers. Profile owns this query so it does not depend on the follow module.
+   */
+  async isFollowing(viewerId: string, targetId: string): Promise<boolean> {
+    const { rowCount } = await this.pool.query(
+      `SELECT 1 FROM follows
+        WHERE follower_user_id = $1 AND target_type = 'user' AND target_id = $2`,
+      [viewerId, targetId],
+    );
+    return (rowCount ?? 0) > 0;
+  }
+
   private async select(predicate: string, params: unknown[]): Promise<ProfileRow | null> {
     const { rows } = await this.pool.query<ProfileRow>(
       `SELECT ${SELECT_COLUMNS}
