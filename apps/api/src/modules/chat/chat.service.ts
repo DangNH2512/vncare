@@ -28,6 +28,7 @@ import { translatePostgresError } from '../../common/db/pg-error.js';
 import type { CurrentUserContext } from '../../common/decorators/current-user.decorator.js';
 import {
   ChatRepository,
+  ConversationGoneError,
   conversationCursorOf,
   messageCursorOf,
   type OccurrenceTimes,
@@ -212,9 +213,12 @@ export class ChatService {
   /**
    * Sends a message.
    *
-   * Order matters: membership, then the conversation's own state, then the
-   * request quota, and only then the write. Each check is cheap and each one
-   * that passes narrows what the next one has to consider.
+   * Order matters: membership, then a cheap replay lookup, then the
+   * conversation's own state, then the rate limit, and only then one
+   * transaction that re-decides idempotency, quota and the write under the
+   * conversation row lock. The rate limit is reserved before that transaction
+   * so no DB lock is held across a Redis round trip; every path that does not
+   * store a new message gives the slots back exactly once.
    */
   async sendMessage(
     conversationId: string,
@@ -226,7 +230,8 @@ export class ChatService {
     // Idempotency resolves before every send-side rule. A retry after a dropped
     // connection is the same request as the original: charging it against the
     // request quota a second time would reject a message the sender already
-    // sent successfully.
+    // sent successfully. This unlocked read is only a fast path; the
+    // authoritative check repeats under the lock.
     const replayed = await this.chats.findClientMessage(
       conversationId,
       viewer.id,
@@ -234,28 +239,39 @@ export class ChatService {
     );
     if (replayed) return toMessageResponse(replayed);
 
-    if (conversation.status !== 'active') throw conversationClosed();
-    this.assertWindowAllowsSending(conversation);
-    await this.assertRequestQuota(conversation, viewer);
+    // Unlocked pre-check so a refusal never spends a slot. The quota is only
+    // decidable under the lock, so it is not counted here.
+    this.assertSendable({ ...conversation, request_message_quota: 0 }, viewer, null);
 
-    // Last gate before the write, so a message refused above never spends a slot.
     const slots = await this.reserveSendSlots(viewer);
 
     let stored;
     try {
-      stored = await this.chats.createMessage({
-        conversationId,
-        senderUserId: viewer.id,
-        type: input.type,
-        body: input.body ?? null,
-        bodyLocale: input.bodyLocale ?? null,
-        mediaId: input.mediaId ?? null,
-        sharedEventId: input.sharedEventId ?? null,
-        replyToMessageId: input.replyToMessageId ?? null,
-        clientMessageId: input.clientMessageId,
-      });
+      stored = await this.chats.appendMessage(
+        {
+          conversationId,
+          senderUserId: viewer.id,
+          type: input.type,
+          body: input.body ?? null,
+          bodyLocale: input.bodyLocale ?? null,
+          mediaId: input.mediaId ?? null,
+          sharedEventId: input.sharedEventId ?? null,
+          replyToMessageId: input.replyToMessageId ?? null,
+          clientMessageId: input.clientMessageId,
+        },
+        // Re-decide on the state read under FOR UPDATE: status and request
+        // status may have changed since the unlocked read above.
+        (locked) =>
+          this.assertSendable({ ...conversation, ...locked }, viewer, locked.sentBySender),
+      );
     } catch (error) {
       await this.rateLimit.release(slots);
+      if (error instanceof ConversationGoneError) {
+        throw new NotFoundException({
+          code: 'CONVERSATION_NOT_FOUND',
+          messageKey: 'errors.chat.conversationNotFound',
+        });
+      }
       throw translatePostgresError(error);
     }
 
@@ -266,13 +282,32 @@ export class ChatService {
       await this.rateLimit.release(slots);
       return message;
     }
-    // Broadcast after the write commits. The socket is an accelerator: a failed
-    // emit must never make a stored message look unsent.
+    // Broadcast after the transaction commits, only for a new row. The socket
+    // is an accelerator: a failed emit must never make a stored message look unsent.
     this.gateway.emitMessageCreated(
       message,
       await this.chats.activeParticipantIds(conversationId),
     );
     return message;
+  }
+
+  /** Conversation state, event window and (when `sent` is known) the opening quota. */
+  private assertSendable(
+    conversation: {
+      type: string;
+      status: string;
+      request_status: string;
+      request_message_quota: number;
+      created_by_user_id: string;
+      event_starts_at: Date | null;
+      event_ends_at: Date | null;
+    },
+    viewer: CurrentUserContext,
+    sent: number | null,
+  ): void {
+    if (conversation.status !== 'active') throw conversationClosed();
+    this.assertWindowAllowsSending(conversation);
+    this.assertRequestQuota(conversation, viewer, sent);
   }
 
   /** Event rooms accept messages only inside their window; reading stays open afterwards. */
@@ -330,10 +365,16 @@ export class ChatService {
    * recipient still receives an unbounded stream from someone they never
    * accepted.
    */
-  private async assertRequestQuota(
-    conversation: { id: string; type: string; request_status: string; created_by_user_id: string },
+  private assertRequestQuota(
+    conversation: {
+      type: string;
+      request_status: string;
+      request_message_quota: number;
+      created_by_user_id: string;
+    },
     viewer: CurrentUserContext,
-  ): Promise<void> {
+    sent: number | null,
+  ): void {
     if (conversation.type !== 'direct') return;
 
     if (conversation.request_status === 'declined' || conversation.request_status === 'blocked') {
@@ -344,16 +385,13 @@ export class ChatService {
     }
     if (conversation.request_status !== 'pending') return;
     if (conversation.created_by_user_id !== viewer.id) return;
+    if (sent === null) return;
 
-    const [sent, quota] = await Promise.all([
-      this.chats.countMessagesFrom(conversation.id, viewer.id),
-      this.chats.requestMessageQuota(conversation.id),
-    ]);
-    if (sent >= quota) {
+    if (sent >= conversation.request_message_quota) {
       throw new ForbiddenException({
         code: 'REQUEST_QUOTA_EXHAUSTED',
         messageKey: 'errors.chat.requestQuotaExhausted',
-        details: { quota },
+        details: { quota: conversation.request_message_quota },
       });
     }
   }

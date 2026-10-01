@@ -134,6 +134,22 @@ export interface MessageCreateInput {
   clientMessageId: string;
 }
 
+/** Conversation state read under `FOR UPDATE`, plus what the sender already posted. */
+export interface LockedConversation {
+  type: string;
+  status: string;
+  request_status: string;
+  request_message_quota: number;
+  /** Non-deleted messages from the sending user in this thread. */
+  sentBySender: number;
+}
+
+/** Longest a send waits for the conversation lock before answering 503. */
+const SEND_LOCK_TIMEOUT = '2s';
+
+/** Raised when the conversation vanished between the access check and the lock. */
+export class ConversationGoneError extends Error {}
+
 interface ConversationCursor extends Record<string, unknown> {
   lastMessageAt: string | null;
   id: string;
@@ -501,24 +517,6 @@ export class ChatRepository {
     return { rows, limit: query.limit };
   }
 
-  /** Messages the request-quota check counts: what the opener has already sent. */
-  async countMessagesFrom(conversationId: string, senderUserId: string): Promise<number> {
-    const { rows } = await this.pool.query<{ count: number }>(
-      `SELECT count(*)::int AS count FROM messages
-        WHERE conversation_id = $1 AND sender_user_id = $2 AND deleted_at IS NULL`,
-      [conversationId, senderUserId],
-    );
-    return rows[0]?.count ?? 0;
-  }
-
-  async requestMessageQuota(conversationId: string): Promise<number> {
-    const { rows } = await this.pool.query<{ request_message_quota: number }>(
-      `SELECT request_message_quota FROM conversations WHERE id = $1`,
-      [conversationId],
-    );
-    return rows[0]?.request_message_quota ?? 0;
-  }
-
   /**
    * Looks up a message by its client-supplied idempotency key.
    *
@@ -540,46 +538,82 @@ export class ChatRepository {
   }
 
   /**
-   * Appends a message, or returns the one a previous attempt already stored.
+   * Appends a message atomically with its idempotency and quota decisions.
    *
-   * The idempotency key is the client's, so a retry after a dropped connection
-   * resolves to the original row. `DO NOTHING` plus a re-read is used instead of
-   * `DO UPDATE` because a retry must not be able to rewrite a delivered message.
+   * Lock order: `conversations` row first, then `messages`. Nothing else in
+   * this path may take them the other way round. Holding the conversation lock
+   * serialises every send to one thread, so the replay lookup, the opening
+   * quota count and the insert all observe the same committed state; without
+   * it, parallel sends each see the pre-insert count and overshoot the quota,
+   * and a retry can pass the replay check and then be charged for the original.
+   *
+   * `gate` receives the freshly locked conversation state and throws to refuse.
+   * It is skipped for a replay, which returns the stored original untouched.
    */
-  async createMessage(
+  async appendMessage(
     input: MessageCreateInput,
+    gate: (locked: LockedConversation) => void,
   ): Promise<{ row: MessageRow; inserted: boolean }> {
-    const insert = await this.pool.query(
-      `INSERT INTO messages
-         (conversation_id, sender_user_id, type, body, body_locale, media_id,
-          shared_event_id, reply_to_message_id, client_message_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       ON CONFLICT (conversation_id, sender_user_id, client_message_id)
-         WHERE client_message_id IS NOT NULL
-       DO NOTHING
-       RETURNING id`,
-      [
-        input.conversationId,
-        input.senderUserId,
-        input.type,
-        input.body,
-        input.bodyLocale,
-        input.mediaId,
-        input.sharedEventId,
-        input.replyToMessageId,
-        input.clientMessageId,
-      ],
-    );
-    // The sender's identity comes from a join, which RETURNING cannot do, so the
-    // stored row is re-read by its key: that is the fresh row or the original.
-    const { rows } = await this.pool.query<MessageRow>(
-      `SELECT ${MESSAGE_COLUMNS} ${MESSAGE_FROM}
-        WHERE m.conversation_id = $1 AND m.sender_user_id = $2 AND m.client_message_id = $3`,
-      [input.conversationId, input.senderUserId, input.clientMessageId],
-    );
-    // `inserted` is false when a concurrent request with the same
-    // clientMessageId won the race; the caller must not emit or spend a slot.
-    return { row: rows[0] as MessageRow, inserted: (insert.rowCount ?? 0) > 0 };
+    return withTransaction(this.pool, async (tx) => {
+      // A hot room queues senders on this lock, each holding a pooled
+      // connection. Bounding the wait turns a pile-up into a fast 503 (55P03)
+      // instead of starving unrelated requests of connections.
+      await tx.query(`SET LOCAL lock_timeout = '${SEND_LOCK_TIMEOUT}'`);
+      const locked = await tx.query<Omit<LockedConversation, 'sentBySender'>>(
+        `SELECT type, status, request_status, request_message_quota
+           FROM conversations
+          WHERE id = $1 AND deleted_at IS NULL
+          FOR UPDATE`,
+        [input.conversationId],
+      );
+      const conversation = locked.rows[0];
+      if (!conversation) throw new ConversationGoneError();
+
+      const existing = await tx.query<MessageRow>(
+        `SELECT ${MESSAGE_COLUMNS} ${MESSAGE_FROM}
+          WHERE m.conversation_id = $1 AND m.sender_user_id = $2 AND m.client_message_id = $3`,
+        [input.conversationId, input.senderUserId, input.clientMessageId],
+      );
+      if (existing.rows[0]) return { row: existing.rows[0], inserted: false };
+
+      // Only a pending direct request is measured against the opening quota;
+      // every other thread skips the count to keep the lock short.
+      let sentBySender = 0;
+      if (conversation.type === 'direct' && conversation.request_status === 'pending') {
+        const sent = await tx.query<{ count: number }>(
+          `SELECT count(*)::int AS count FROM messages
+            WHERE conversation_id = $1 AND sender_user_id = $2 AND deleted_at IS NULL`,
+          [input.conversationId, input.senderUserId],
+        );
+        sentBySender = sent.rows[0]?.count ?? 0;
+      }
+      gate({ ...conversation, sentBySender });
+
+      const insert = await tx.query<{ id: string }>(
+        `INSERT INTO messages
+           (conversation_id, sender_user_id, type, body, body_locale, media_id,
+            shared_event_id, reply_to_message_id, client_message_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         RETURNING id`,
+        [
+          input.conversationId,
+          input.senderUserId,
+          input.type,
+          input.body,
+          input.bodyLocale,
+          input.mediaId,
+          input.sharedEventId,
+          input.replyToMessageId,
+          input.clientMessageId,
+        ],
+      );
+      // The sender's identity comes from a join, which RETURNING cannot do.
+      const { rows } = await tx.query<MessageRow>(
+        `SELECT ${MESSAGE_COLUMNS} ${MESSAGE_FROM} WHERE m.id = $1`,
+        [insert.rows[0]?.id],
+      );
+      return { row: rows[0] as MessageRow, inserted: true };
+    });
   }
 
   /**
