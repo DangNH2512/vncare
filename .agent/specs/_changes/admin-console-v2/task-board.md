@@ -191,6 +191,11 @@ Owner viết tắt: BE = backend-agent, WA = web-admin-agent, WC = web-client-ag
 - Owner: BE. Allowed: `apps/api/src/modules/admin/admin-moderation.{controller,service,repository,mapper}.ts` (mới), `admin.module.ts` (nối tiếp), `apps/api/src/modules/admin/admin-user-actions.service.ts`, `admin-event-actions.service.ts` (**chỉ** thêm chèn `moderation_actions` với `case_id` NULL trong cùng transaction, D-R17), `apps/api/src/modules/auth/auth.service.ts` (`assertUsable` gọi `expireDueSuspensions` lười), module/queue job `apps/api/src/modules/moderation-jobs/**` (mới), `apps/api/e2e/modules/admin/admin-moderation.e2e.spec.ts`. Do not edit: `modules/report/**` (AD-14), `packages/**`.
 - Goal: queue D-M8 (sắp `severity` rồi `sla_due_at`, COI ẩn khỏi danh sách của người đó), detail D-M9, assign D-M10, severity, decide D-M11 (mọi hành động + `moderation_actions` + `audit_logs` + `moderation_state/report_count` một transaction; `suspended` có `expiresAt`, moderator ≤ 30 ngày chỉ `member`, đích staff 403; `event.takedown` cần admin+; no_action khôi phục nội dung auto-hidden), T-9 job. Dependencies: AD-14.
 - Acceptance: A4-AC-2, 5, 6, 7, 12, 13, 15 (đua), 16, 17, 18.
+- Ghi chú từ review AD-14 (bắt buộc cho AD-15):
+  - Đóng case phải đặt `reports.status='resolved'` cho mọi report của case (F-7); `/reports/mine` và `uq_reports_one_open` dựa vào đó.
+  - Lỗi trigger COI (SQLSTATE `P0001`, message bắt đầu `INV-4`) phải map thành 403 `CONFLICT_OF_INTEREST` (`errors.admin.conflictOfInterest`).
+  - Decide phải khoá hàng target (`events`|`posts`|`comments`|`users`; comment trên post thì khoá `posts` cha trước) **trước** `moderation_cases`, cùng thứ tự với `POST /reports`.
+  - `uq_moderation_cases_open_target` gồm cả `escalated` (AD-14b); `ON CONFLICT ... WHERE` phải khớp từng chữ nếu AD-15 viết upsert.
 - Test lane: **integration** (5 vai; đồng hồ giả cho SLA/expiry; hai moderator decide `Promise.all` → 1 thành công) + regression A3 (`corepack pnpm --filter @dnc/api test -- e2e/modules/admin` vẫn xanh sau retrofit).
 - DoD: COI: chèn trực tiếp `resolved_by_user_id=<organizer>` bị trigger từ chối; đóng case khi rollback giữa chừng giữ nguyên nội dung và `moderation_actions`; job: `expires_at` qua → tài khoản `active` trong ≤ 5 phút và audit `actor_type='job'`; +31 ngày → 400 `durationTooLong`. Lệnh như trên + full `test`.
 - Risk: **cao** (quyền theo hàng, COI, thao tác không đảo ngược `taken_down`/`removed`, job lặp mới trong BullMQ: tên queue riêng, đặt `jobId` cố định để không nhân bản lịch).
@@ -571,3 +576,14 @@ Cần Debate Gate: không. Các lựa chọn có đánh đổi (deny-list Redis 
   - `malicious_report` và `curation_takedown_request` xếp nhóm `other`; BA xem lại sau, không chặn.
   - AD-14/15 phải mở rộng `AuditEntityType` (thêm report/post/comment/moderation_case) qua `contracts/index.ts`.
 - AD-10 xong (`/audit-log`). API trên :3101 từng chạy bản cũ; worker bật API riêng trên :3102 để test.
+- Review AD-14: approved.
+  - **Chủ dự án duyệt sửa DDL 0012:** predicate của `uq_moderation_cases_open_target` thêm `'escalated'`, để mỗi target có tối đa một case đang xử lý (đúng D-M6). Index được DROP và CREATE lại trên DB local khi bảng còn 0 dòng.
+  - **R-6 (chống lạm dụng ẩn tự động):** chủ dự án chỉ chọn cooldown 7 ngày. Sau khi case của cùng target đóng với `no_violation` hoặc `malicious_report`, report `critical` mới không ẩn tự động nữa nhưng vẫn vào hàng đợi `critical`. Không làm ngưỡng T1, miễn trừ staff/T4+ hay trần 2/ngày.
+  - AD-14b sửa thêm: khoá `posts` cha trước comment khi ẩn comment (tránh deadlock với trigger counter); cursor `/reports/mine` validate uuid.
+  - **Follow-up có chủ:** job dọn snapshot báo cáo khi tài khoản bị ẩn danh và theo thời hạn giữ (F-4), cần luật sư xác nhận trước production.
+- Review AD-11: approved. Lượt AD-11c sửa trước khi commit:
+  - comment `Idempotency-Key` (API admin chưa dedupe);
+  - guard cho refresh im lặng;
+  - thuật ngữ VI "Tạm khoá" / "Mở khoá";
+  - `ActionDialog` thêm `targetLabel` và `identifierPrefix` cho AD-12;
+  - bớt chữ trong hộp thoại.

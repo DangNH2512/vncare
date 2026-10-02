@@ -18,6 +18,7 @@ import { MediaModule } from './modules/media/index.js';
 import { PostModule } from './modules/post/index.js';
 import { ProfileModule } from './modules/profile/index.js';
 import { ReactionModule } from './modules/reaction/index.js';
+import { ReportModule } from './modules/report/index.js';
 import { RsvpModule } from './modules/rsvp/index.js';
 
 @Module({
@@ -38,6 +39,7 @@ import { RsvpModule } from './modules/rsvp/index.js';
     ReactionModule,
     ChatModule,
     FollowModule,
+    ReportModule,
   ],
   providers: [
     // Applied to every route, in this order. Authentication denies by default —

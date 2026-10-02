@@ -16,7 +16,18 @@ export type AuditActionT = z.infer<typeof AuditAction>;
 export const AuditSeverity = z.enum(['info', 'notice', 'warning', 'critical']);
 export type AuditSeverityT = z.infer<typeof AuditSeverity>;
 
-export const AuditEntityType = z.enum(['user', 'event']);
+/**
+ * Kinds of entity an audit line can point at. `post`, `comment`, `report` and
+ * `moderation_case` are written by the moderation flow (A4).
+ */
+export const AuditEntityType = z.enum([
+  'user',
+  'event',
+  'post',
+  'comment',
+  'report',
+  'moderation_case',
+]);
 export type AuditEntityTypeT = z.infer<typeof AuditEntityType>;
 
 /** Query of `GET /admin/audit-logs`. Strict; `action` and `severity` accept CSV. */

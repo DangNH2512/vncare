@@ -48,6 +48,17 @@ export const HOUR_WINDOW_SECONDS = 3_600;
 /** Follow creations per hour per member at every trust level (brief D-S4-6); unfollow is never counted. */
 export const FOLLOW_HOURLY_MAX = 30;
 
+/**
+ * Member reports per day by trust level (brief D-M15, T-10); T3 and above share
+ * the last tier. Reporting is never taken away, only paced.
+ */
+export const REPORT_DAILY_MAX_BY_TRUST: Readonly<Record<number, number>> = {
+  1: 5,
+  2: 10,
+};
+export const REPORT_DAILY_MAX_DEFAULT = 20;
+export const REPORT_DAILY_WINDOW_SECONDS = 86_400;
+
 type Env = Readonly<Record<string, string | undefined>>;
 
 const MAX_COUNT = 1_000_000;
