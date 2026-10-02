@@ -1,12 +1,19 @@
 'use client';
 
+import Link from 'next/link';
+import { useId, useRef, useState } from 'react';
 import { MAX_GALLERY_PREVIEW, type PostKindT, type PostResponseT } from '@dnc/contracts';
 import type { MessageKey } from '@dnc/i18n';
 
-import { Avatar, Badge, Card } from '../../_components/ui';
+import { Avatar, Badge, Card, TrustBadge, type TrustLevel } from '../../_components/ui';
+import { useAuth } from '../../_components/auth-provider';
 import { useLocale, useTranslate } from '../../_components/locale-provider';
 import { areaName, findAreaById } from '../../_lib/areas';
 import { timeAgo } from '../../_lib/datetime';
+import { cn } from '../../_lib/cn';
+import { ChatIcon } from './comments/comment-icons';
+import { CommentThread } from './comments/comment-thread';
+import { ReactionButton } from './comments/reaction-button';
 import { MediaCarousel } from './media-carousel';
 
 const KIND_LABEL: Readonly<Record<PostKindT, MessageKey>> = {
@@ -38,21 +45,85 @@ export interface CommunityPostProps {
 export function CommunityPost({ post }: CommunityPostProps) {
   const t = useTranslate();
   const { locale } = useLocale();
+  const { user } = useAuth();
+  const threadId = useId();
+  const [threadOpen, setThreadOpen] = useState(false);
+  /** Set on the first open: the thread is then kept (hidden when closed) so a draft survives. */
+  const [threadLoaded, setThreadLoaded] = useState(false);
+  const [gone, setGone] = useState(false);
+  /** Exact total reported by the thread once loaded; overrides the feed's snapshot. */
+  const [threadCount, setThreadCount] = useState<number | null>(null);
+
+  // One epoch per change between members (or member to guest): the Like button and
+  // the thread remount, so nothing one account did or typed reaches the next.
+  // Guest -> member keeps them, because that is the sign-in-then-act flow.
+  const viewerId = user?.id ?? null;
+  const epoch = useRef({ viewer: viewerId, n: 0, staleFor: null as PostResponseT | null });
+  if (epoch.current.viewer !== viewerId) {
+    if (epoch.current.viewer !== null) {
+      epoch.current.n += 1;
+      // `post` was read for the previous account; its `viewerReaction` is not this one's.
+      epoch.current.staleFor = post;
+    }
+    epoch.current.viewer = viewerId;
+  }
+  const reactionIsStale = epoch.current.staleFor === post;
 
   const area = post.areaId === null ? undefined : findAreaById(post.areaId);
-  // The author's display name arrives with the profile endpoint; until then the
-  // id seeds a stable avatar so two posts by the same person look the same.
-  const authorLabel = post.authorUserId.slice(0, 2).toUpperCase();
+  const author = post.author;
+  const name = author?.displayName ?? t('post.author.former');
+  const commentCount = threadCount ?? post.commentCount;
+  const commentsLabel =
+    commentCount === 1
+      ? t('post.card.commentsOne')
+      : t('post.card.comments', { count: commentCount });
+
+  if (gone) {
+    return (
+      <Card padding="md">
+        <p role="status" className="text-sm text-fg-muted">
+          {t('post.unavailable')}
+        </p>
+      </Card>
+    );
+  }
 
   return (
-    <Card padding="md" className="flex flex-col gap-3">
+    <Card as="article" padding="md" className="flex flex-col gap-3">
       <div className="flex items-center gap-3">
-        <Avatar name={authorLabel} size="md" />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm text-fg-muted">
-            {t('post.card.posted')} · {timeAgo(post.createdAt, locale)}
+        {/* Avatar and name share one link so the tap target is the whole identity. */}
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          {author === null ? (
+            <Avatar name={name} size="md" />
+          ) : (
+            <Link
+              href={`/u/${author.handle}`}
+              aria-label={name}
+              tabIndex={-1}
+              className="shrink-0"
+            >
+              <Avatar name={name} size="md" />
+            </Link>
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-center gap-1.5">
+              {author === null ? (
+                <span className="block truncate text-sm font-semibold text-fg">{name}</span>
+              ) : (
+                <Link href={`/u/${author.handle}`} className="min-w-0 hover:underline">
+                  <span className="block truncate text-sm font-semibold text-fg">{name}</span>
+                </Link>
+              )}
+              {author !== null && (
+                <TrustBadge level={author.trustLevel as TrustLevel} variant="compact" />
+              )}
+            </div>
+          <p className="truncate text-xs text-fg-muted">
+            {author !== null && <>@{author.handle} · </>}
+            {timeAgo(post.createdAt, locale)}
             {post.isEdited ? ` · ${t('post.card.edited')}` : ''}
           </p>
+          </div>
         </div>
         <Badge tone={KIND_TONE[post.kind]}>{t(KIND_LABEL[post.kind])}</Badge>
       </div>
@@ -88,8 +159,53 @@ export function CommunityPost({ post }: CommunityPostProps) {
             {post.location.label}
           </span>
         )}
-        <span>💬 {t('post.card.comments', { count: post.commentCount })}</span>
       </div>
+
+      <div className="-mx-2 flex items-center gap-1">
+        <ReactionButton
+          key={`like-${epoch.current.n}`}
+          targetType="post"
+          targetId={post.id}
+          count={post.reactionCount}
+          reacted={reactionIsStale ? false : post.viewerReaction !== null}
+        />
+        <button
+          type="button"
+          aria-expanded={threadOpen}
+          aria-controls={threadId}
+          aria-label={commentsLabel}
+          title={commentsLabel}
+          onClick={() => {
+            setThreadLoaded(true);
+            setThreadOpen((open) => !open);
+          }}
+          className={cn(
+            'inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-md px-2 text-sm',
+            'font-semibold transition-colors hover:bg-surface-sunken active:scale-[0.98]',
+            threadOpen ? 'text-accent-text' : 'text-fg-muted',
+          )}
+        >
+          <ChatIcon />
+          <span aria-hidden>{commentCount}</span>
+        </button>
+      </div>
+
+      {threadLoaded && (
+        // Mounted on first open, so a feed of posts costs no comment requests.
+        // Hidden rather than unmounted: closing must not throw away a half-typed comment
+        // or force a reload on the next open.
+        <div id={threadId} hidden={!threadOpen} className="min-w-0">
+          <CommentThread
+            key={`thread-${epoch.current.n}`}
+            variant="embedded"
+            targetType="post"
+            targetId={post.id}
+            isThreadOwner={viewerId !== null && viewerId === post.authorUserId}
+            onUnavailable={() => setGone(true)}
+            onCountChange={setThreadCount}
+          />
+        </div>
+      )}
     </Card>
   );
 }

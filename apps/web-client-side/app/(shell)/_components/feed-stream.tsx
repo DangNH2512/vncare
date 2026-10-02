@@ -27,7 +27,7 @@ function isWeekend(iso: string): boolean {
 export function FeedStream() {
   const t = useTranslate();
   const { locale } = useLocale();
-  const { user, requireAuth } = useAuth();
+  const { user, requireAuth, whenActionSettled } = useAuth();
   const [filter, setFilter] = useState<Filter>('all');
   const [composerOpen, setComposerOpen] = useState(false);
   const [posts, setPosts] = useState<PostResponseT[]>([]);
@@ -40,16 +40,19 @@ export function FeedStream() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    void Promise.allSettled([listPosts(), listEvents(50)]).then(([p, e]) => {
-      if (cancelled) return;
-      if (p.status === 'fulfilled') setPosts(p.value.items);
-      if (e.status === 'fulfilled') setEvents(e.value.items);
-      setLoading(false);
-    });
+    // A like or RSVP carried through sign-in lands first, so this read includes it.
+    void whenActionSettled()
+      .then(() => Promise.allSettled([listPosts(), listEvents(50)]))
+      .then(([p, e]) => {
+        if (cancelled) return;
+        if (p.status === 'fulfilled') setPosts(p.value.items);
+        if (e.status === 'fulfilled') setEvents(e.value.items);
+        setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
-  }, [user?.id]);
+  }, [user?.id, whenActionSettled]);
 
   const handleCreated = useCallback((post: PostResponseT) => {
     setPosts((current) => [post, ...current]);

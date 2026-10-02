@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import type { CommentResponseT } from '@dnc/contracts';
 
 import { Button, Card, Skeleton } from '../../../_components/ui';
@@ -19,12 +20,40 @@ export interface CommentThreadProps {
   isThreadOwner: boolean;
   /** Read-only target (a cancelled event): no composer, reply, edit, delete or pin. */
   closed?: boolean;
+  /** `embedded` drops the card chrome so the thread can sit inside another card (a post). */
+  variant?: 'card' | 'embedded';
+  /** Called when the target answers 404 (hidden or removed) so the parent can drop the thread. */
+  onUnavailable?: () => void;
+  /** Reports the exact total (roots + replies) once every page is loaded and after each change. */
+  onCountChange?: (total: number) => void;
 }
 
 interface ReplyTarget {
   rootId: string;
   parentId: string;
   name: string;
+}
+
+interface SectionProps {
+  'aria-labelledby': string;
+  className: string;
+  children: ReactNode;
+}
+
+function CardSection({ children, ...rest }: SectionProps) {
+  return (
+    <Card as="section" padding="md" {...rest}>
+      {children}
+    </Card>
+  );
+}
+
+function EmbeddedSection({ children, className, ...rest }: SectionProps) {
+  return (
+    <section {...rest} className={`${className} min-w-0 border-t border-line pt-3`}>
+      {children}
+    </section>
+  );
 }
 
 function ThreadSkeleton() {
@@ -57,6 +86,9 @@ export function CommentThread({
   targetId,
   isThreadOwner,
   closed = false,
+  variant = 'card',
+  onUnavailable,
+  onCountChange,
 }: CommentThreadProps) {
   const t = useTranslate();
   const { user, requireAuth } = useAuth();
@@ -65,6 +97,19 @@ export function CommentThread({
   const headingRef = useRef<HTMLHeadingElement | null>(null);
   const [replyTo, setReplyTo] = useState<ReplyTarget | null>(null);
   const [live, setLive] = useState({ text: '', n: 0 });
+
+  useEffect(() => {
+    if (thread.missing) onUnavailable?.();
+    // `onUnavailable` is deliberately not a dependency: it only needs to fire once per 404.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [thread.missing]);
+
+  const settledTotal = thread.status === 'ready' && !thread.hasMore ? thread.total : null;
+  useEffect(() => {
+    if (settledTotal !== null) onCountChange?.(settledTotal);
+    // The callback identity is not a trigger; only a changed total is.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settledTotal]);
 
   const announce = (text: string) => setLive((prior) => ({ text, n: prior.n + 1 }));
 
@@ -183,17 +228,29 @@ export function CommentThread({
     );
   };
 
+  const emptyTitle =
+    targetType === 'post' ? t('comments.emptyPost.title') : t('comments.empty.title');
+  const emptyCta = targetType === 'post' ? t('comments.emptyPost.cta') : t('comments.empty.cta');
+  const Wrapper = variant === 'embedded' ? EmbeddedSection : CardSection;
   const count = thread.hasMore ? `${thread.total}+` : thread.total;
 
   return (
-    <Card as="section" padding="md" aria-labelledby={`comments-${targetId}`} className="flex flex-col gap-4">
+    <Wrapper
+      aria-labelledby={`comments-${targetId}`}
+      className="flex flex-col gap-4"
+    >
       <h2
         id={`comments-${targetId}`}
         ref={headingRef}
         tabIndex={-1}
-        className="flex items-center gap-2 text-sm font-bold text-fg outline-none"
+        // Embedded in a post, the toggle above already shows the icon and count.
+        className={
+          variant === 'embedded'
+            ? 'sr-only'
+            : 'flex items-center gap-2 text-sm font-bold text-fg outline-none'
+        }
       >
-        <ChatIcon className="text-fg-muted" />
+        {variant !== 'embedded' && <ChatIcon className="text-fg-muted" />}
         {thread.status === 'ready' ? t('comments.title', { count }) : t('comments.heading')}
       </h2>
       <p key={live.n} role="status" aria-live="polite" className="sr-only">
@@ -223,7 +280,7 @@ export function CommentThread({
 
       {thread.status === 'ready' && thread.roots.length === 0 && (
         <div className="flex flex-col items-center gap-1 px-2 py-4 text-center">
-          <p className="text-md font-semibold text-fg">{t('comments.empty.title')}</p>
+          <p className="text-md font-semibold text-fg">{emptyTitle}</p>
           {!closed && (
             <Button
               size="sm"
@@ -231,7 +288,7 @@ export function CommentThread({
               className="mt-1"
               onClick={() => composerRef.current?.focus()}
             >
-              {t('comments.empty.cta')}
+              {emptyCta}
             </Button>
           )}
         </div>
@@ -265,6 +322,6 @@ export function CommentThread({
           </Button>
         </div>
       )}
-    </Card>
+    </Wrapper>
   );
 }

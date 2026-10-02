@@ -513,13 +513,13 @@
       "lookingFor": "Looking for"
     },
     "card": {
-      "posted": "posted",
       "cityWide": "Da Nang",
       "edited": "edited",
       "comments": "{count} comments",
       "react": "React to this post",
       "gallery": "Gallery with {count} items",
-      "showMore": "+{count} more"
+      "showMore": "+{count} more",
+      "commentsOne": "1 comment"
     },
     "feed": {
       "loading": "Loading community posts",
@@ -548,7 +548,8 @@
     },
     "author": {
       "former": "Former member"
-    }
+    },
+    "unavailable": "This post is no longer available."
   },
   "auth": {
     "action": {
@@ -1620,7 +1621,11 @@
       "action": "Could not complete that. Try again.",
       "tryAgain": "Try again"
     },
-    "loading": "Loading comments"
+    "loading": "Loading comments",
+    "emptyPost": {
+      "title": "No comments yet",
+      "cta": "Add a comment"
+    }
   },
   "reaction": {
     "like": "Like",
@@ -1651,14 +1656,17 @@
     "composer": {
       "placeholder": "Write a message…",
       "aria": "Message",
-      "send": "Send"
+      "send": "Send",
+      "remaining": "{count} characters left"
     },
     "rules": "Be kind. Hosts may remove people who break the rules.",
     "message": {
       "sending": "Sending…",
       "failed": "Not sent. Tap to retry.",
       "removed": "Message removed",
-      "delete": "Delete message"
+      "delete": "Delete message",
+      "discard": "Discard",
+      "notSent": "Not sent"
     },
     "status": {
       "reconnecting": "Reconnecting…",
@@ -1669,14 +1677,26 @@
     "beginning": "Beginning of the chat",
     "empty": {
       "title": "No messages yet",
-      "body": "Say hi to the others going."
+      "body": "Say hi to the others going.",
+      "closed": "Nobody wrote in this chat."
     },
     "leave": {
       "confirm": "Leave this chat? You can join again while you are going.",
-      "action": "Leave chat"
+      "action": "Leave chat",
+      "keep": "Stay"
     },
     "error": {
-      "load": "We could not load this chat."
+      "load": "We could not load this chat.",
+      "older": "Could not load older messages.",
+      "open": "Could not open the chat. Try again.",
+      "leave": "Could not leave the chat. Try again.",
+      "delete": "Could not delete that message. Try again."
+    },
+    "loadOlder": "Show older messages",
+    "refresh": "Refresh chat",
+    "back": "Back to event",
+    "log": {
+      "aria": "Chat messages"
     }
   },
   "messages": {

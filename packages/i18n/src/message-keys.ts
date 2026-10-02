@@ -661,6 +661,7 @@ export type MessageKey =
   | 'blank.notFound.title'
   | 'blank.notifications.body'
   | 'blank.notifications.title'
+  | 'chat.back'
   | 'chat.beginning'
   | 'chat.card.needRsvp'
   | 'chat.card.open'
@@ -669,19 +670,31 @@ export type MessageKey =
   | 'chat.closed'
   | 'chat.composer.aria'
   | 'chat.composer.placeholder'
+  | 'chat.composer.remaining'
   | 'chat.composer.send'
   | 'chat.empty.body'
+  | 'chat.empty.closed'
   | 'chat.empty.title'
+  | 'chat.error.delete'
+  | 'chat.error.leave'
   | 'chat.error.load'
+  | 'chat.error.older'
+  | 'chat.error.open'
   | 'chat.leave.action'
   | 'chat.leave.confirm'
+  | 'chat.leave.keep'
+  | 'chat.loadOlder'
+  | 'chat.log.aria'
   | 'chat.message.delete'
+  | 'chat.message.discard'
   | 'chat.message.failed'
+  | 'chat.message.notSent'
   | 'chat.message.removed'
   | 'chat.message.sending'
   | 'chat.newMessages'
   | 'chat.notYet.body'
   | 'chat.notYet.title'
+  | 'chat.refresh'
   | 'chat.rules'
   | 'chat.status.offline'
   | 'chat.status.reconnecting'
@@ -708,6 +721,8 @@ export type MessageKey =
   | 'comments.edited'
   | 'comments.empty.cta'
   | 'comments.empty.title'
+  | 'comments.emptyPost.cta'
+  | 'comments.emptyPost.title'
   | 'comments.error.action'
   | 'comments.error.load.body'
   | 'comments.error.load.title'
@@ -1038,9 +1053,9 @@ export type MessageKey =
   | 'post.author.former'
   | 'post.card.cityWide'
   | 'post.card.comments'
+  | 'post.card.commentsOne'
   | 'post.card.edited'
   | 'post.card.gallery'
-  | 'post.card.posted'
   | 'post.card.react'
   | 'post.card.showMore'
   | 'post.composer.areaCityWide'
@@ -1083,6 +1098,7 @@ export type MessageKey =
   | 'post.media.rejectedSize'
   | 'post.media.rejectedType'
   | 'post.media.remove'
+  | 'post.unavailable'
   | 'profile.action.cancel'
   | 'profile.action.edit'
   | 'profile.action.save'
@@ -1878,6 +1894,7 @@ export const MESSAGE_KEYS = [
   'blank.notFound.title',
   'blank.notifications.body',
   'blank.notifications.title',
+  'chat.back',
   'chat.beginning',
   'chat.card.needRsvp',
   'chat.card.open',
@@ -1886,19 +1903,31 @@ export const MESSAGE_KEYS = [
   'chat.closed',
   'chat.composer.aria',
   'chat.composer.placeholder',
+  'chat.composer.remaining',
   'chat.composer.send',
   'chat.empty.body',
+  'chat.empty.closed',
   'chat.empty.title',
+  'chat.error.delete',
+  'chat.error.leave',
   'chat.error.load',
+  'chat.error.older',
+  'chat.error.open',
   'chat.leave.action',
   'chat.leave.confirm',
+  'chat.leave.keep',
+  'chat.loadOlder',
+  'chat.log.aria',
   'chat.message.delete',
+  'chat.message.discard',
   'chat.message.failed',
+  'chat.message.notSent',
   'chat.message.removed',
   'chat.message.sending',
   'chat.newMessages',
   'chat.notYet.body',
   'chat.notYet.title',
+  'chat.refresh',
   'chat.rules',
   'chat.status.offline',
   'chat.status.reconnecting',
@@ -1925,6 +1954,8 @@ export const MESSAGE_KEYS = [
   'comments.edited',
   'comments.empty.cta',
   'comments.empty.title',
+  'comments.emptyPost.cta',
+  'comments.emptyPost.title',
   'comments.error.action',
   'comments.error.load.body',
   'comments.error.load.title',
@@ -2255,9 +2286,9 @@ export const MESSAGE_KEYS = [
   'post.author.former',
   'post.card.cityWide',
   'post.card.comments',
+  'post.card.commentsOne',
   'post.card.edited',
   'post.card.gallery',
-  'post.card.posted',
   'post.card.react',
   'post.card.showMore',
   'post.composer.areaCityWide',
@@ -2300,6 +2331,7 @@ export const MESSAGE_KEYS = [
   'post.media.rejectedSize',
   'post.media.rejectedType',
   'post.media.remove',
+  'post.unavailable',
   'profile.action.cancel',
   'profile.action.edit',
   'profile.action.save',

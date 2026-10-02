@@ -50,6 +50,20 @@ export function ReactionButton({
   const [desired, setDesired] = useState(reacted);
   const [failed, setFailed] = useState(false);
 
+  /** Who is signed in right now; a queued write must not be sent under someone else's session. */
+  const viewerRef = useRef<string | null>(user?.id ?? null);
+  viewerRef.current = user?.id ?? null;
+  /**
+   * True once this instance is gone (for example the post remounted for another
+   * account). `viewerRef` freezes at unmount, so only this flag can stop a queue.
+   */
+  const unmounted = useRef(false);
+  useEffect(() => {
+    unmounted.current = false;
+    return () => {
+      unmounted.current = true;
+    };
+  }, []);
   const confirmedRef = useRef<Confirmed>(confirmed);
   const desiredRef = useRef(desired);
   const flushing = useRef(false);
@@ -83,8 +97,13 @@ export function ReactionButton({
   const flush = useCallback(async (): Promise<void> => {
     if (flushing.current) return;
     flushing.current = true;
+    const startedAs = viewerRef.current;
     try {
       while (desiredRef.current !== confirmedRef.current.reacted) {
+        // The account changed mid-queue: the remaining taps belonged to the previous one.
+        // Guest -> member is the sign-in flow (a pending like), not a change of account.
+        if (startedAs !== null && viewerRef.current !== startedAs) return;
+        if (unmounted.current) return;
         const want = desiredRef.current;
         const base = confirmedRef.current;
         try {

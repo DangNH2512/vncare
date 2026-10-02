@@ -76,6 +76,8 @@ export function useCommentThread(type: CommentTargetType, targetId: string) {
   const viewerId = user?.id;
 
   const [status, setStatus] = useState<ThreadStatus>('loading');
+  /** The target answered 404: it was hidden or removed, so retrying cannot help. */
+  const [missing, setMissing] = useState(false);
   const [roots, setRoots] = useState<CommentResponseT[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -95,6 +97,7 @@ export function useCommentThread(type: CommentTargetType, targetId: string) {
     const mine = ++generation.current;
     const startedAt = Date.now();
     setStatus('loading');
+    setMissing(false);
     try {
       // After a sign-in that carried an action (like, reply), read once it has landed.
       await whenActionSettled();
@@ -112,8 +115,10 @@ export function useCommentThread(type: CommentTargetType, targetId: string) {
       setBranches({});
       setMoreFailed(false);
       setStatus('ready');
-    } catch {
-      if (mine === generation.current) setStatus('error');
+    } catch (cause) {
+      if (mine !== generation.current) return;
+      setMissing(cause instanceof ApiError && cause.status === 404);
+      setStatus('error');
     }
   }, [type, targetId, whenActionSettled]);
 
@@ -441,6 +446,7 @@ export function useCommentThread(type: CommentTargetType, targetId: string) {
 
   return {
     status,
+    missing,
     roots,
     hasMore: nextCursor !== null,
     loadingMore,

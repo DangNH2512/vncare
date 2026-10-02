@@ -441,7 +441,7 @@
       "notRequestRecipient": "Chỉ người nhận mới trả lời được lời mời này.",
       "messageNotFound": "Tin nhắn này không còn tồn tại.",
       "messagePayloadMismatch": "Nội dung tin nhắn không khớp với loại tin nhắn.",
-      "notOpen": "Phòng chat này chưa mở.",
+      "notOpen": "Cuộc trò chuyện này chưa mở.",
       "notAttending": "Chỉ người tham gia sự kiện này mới nhắn được ở đây."
     },
     "media": {
@@ -513,13 +513,13 @@
       "lookingFor": "Đang tìm"
     },
     "card": {
-      "posted": "đã đăng",
       "cityWide": "Đà Nẵng",
       "edited": "đã sửa",
       "comments": "{count} bình luận",
       "react": "Bày tỏ cảm xúc với bài này",
       "gallery": "Bộ ảnh gồm {count} mục",
-      "showMore": "+{count} nữa"
+      "showMore": "+{count} nữa",
+      "commentsOne": "1 bình luận"
     },
     "feed": {
       "loading": "Đang tải bài cộng đồng",
@@ -548,7 +548,8 @@
     },
     "author": {
       "former": "Thành viên cũ"
-    }
+    },
+    "unavailable": "Bài đăng này không còn nữa."
   },
   "auth": {
     "action": {
@@ -1620,7 +1621,11 @@
       "action": "Chưa thực hiện được. Hãy thử lại.",
       "tryAgain": "Thử lại"
     },
-    "loading": "Đang tải bình luận"
+    "loading": "Đang tải bình luận",
+    "emptyPost": {
+      "title": "Chưa có bình luận",
+      "cta": "Thêm bình luận"
+    }
   },
   "reaction": {
     "like": "Thích",
@@ -1643,22 +1648,25 @@
       "needRsvp": "Đăng ký tham gia để vào nhóm trò chuyện."
     },
     "notYet": {
-      "title": "Phòng chat mở trước sự kiện {hours} giờ",
+      "title": "Cuộc trò chuyện mở trước sự kiện {hours} giờ",
       "body": "Bạn sẽ có thể trao đổi với những người cùng tham gia."
     },
-    "closed": "Phòng chat này đã đóng.",
-    "unavailable": "Phòng chat này không còn khả dụng.",
+    "closed": "Cuộc trò chuyện này đã đóng.",
+    "unavailable": "Cuộc trò chuyện này không còn khả dụng.",
     "composer": {
       "placeholder": "Viết tin nhắn…",
       "aria": "Tin nhắn",
-      "send": "Gửi"
+      "send": "Gửi",
+      "remaining": "Còn {count} ký tự"
     },
     "rules": "Hãy tử tế. Người tổ chức có thể mời ra khỏi phòng những ai vi phạm.",
     "message": {
       "sending": "Đang gửi…",
       "failed": "Chưa gửi được. Chạm để thử lại.",
       "removed": "Tin nhắn đã bị xoá",
-      "delete": "Xoá tin nhắn"
+      "delete": "Xoá tin nhắn",
+      "discard": "Bỏ tin",
+      "notSent": "Chưa gửi được"
     },
     "status": {
       "reconnecting": "Đang kết nối lại…",
@@ -1669,14 +1677,26 @@
     "beginning": "Đầu cuộc trò chuyện",
     "empty": {
       "title": "Chưa có tin nhắn nào",
-      "body": "Hãy chào những người cùng tham gia."
+      "body": "Hãy chào những người cùng tham gia.",
+      "closed": "Chưa ai viết gì trong cuộc trò chuyện này."
     },
     "leave": {
-      "confirm": "Rời phòng chat này? Bạn có thể vào lại khi vẫn đang tham gia.",
-      "action": "Rời phòng chat"
+      "confirm": "Rời cuộc trò chuyện này? Bạn có thể vào lại khi vẫn đang tham gia.",
+      "action": "Rời cuộc trò chuyện",
+      "keep": "Ở lại"
     },
     "error": {
-      "load": "Không tải được phòng chat này."
+      "load": "Không tải được cuộc trò chuyện này.",
+      "older": "Không tải được tin cũ hơn.",
+      "open": "Không mở được trò chuyện. Hãy thử lại.",
+      "leave": "Không rời được trò chuyện. Hãy thử lại.",
+      "delete": "Không xoá được tin nhắn này. Hãy thử lại."
+    },
+    "loadOlder": "Xem tin cũ hơn",
+    "refresh": "Làm mới trò chuyện",
+    "back": "Quay lại sự kiện",
+    "log": {
+      "aria": "Tin nhắn trò chuyện"
     }
   },
   "messages": {
