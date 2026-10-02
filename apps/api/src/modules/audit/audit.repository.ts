@@ -81,4 +81,31 @@ export class AuditRepository {
     );
     return rows[0]?.status ?? null;
   }
+
+  /**
+   * Newest line with this `action` for the entity: who wrote it (`actor_type`)
+   * and the case number it recorded, or null. Ordered by `id` for the same
+   * reason as {@link lastSuspensionSource}.
+   */
+  async latestByAction(
+    tx: PoolClient,
+    entityType: string,
+    entityId: string,
+    action: string,
+  ): Promise<{ actorType: AuditActorType; caseNumber: number | null } | null> {
+    const { rows } = await tx.query<{ actor_type: AuditActorType; case_number: string | null }>(
+      `SELECT actor_type, "after"->>'caseNumber' AS case_number
+         FROM audit_logs
+        WHERE entity_type = $1 AND entity_id = $2 AND action = $3
+        ORDER BY id DESC
+        LIMIT 1`,
+      [entityType, entityId, action],
+    );
+    const row = rows[0];
+    if (!row) return null;
+    return {
+      actorType: row.actor_type,
+      caseNumber: row.case_number === null ? null : Number(row.case_number),
+    };
+  }
 }

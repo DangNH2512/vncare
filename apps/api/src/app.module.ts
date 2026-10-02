@@ -15,6 +15,7 @@ import { EventModule } from './modules/event/index.js';
 import { FollowModule } from './modules/follow/index.js';
 import { HealthModule } from './modules/health/index.js';
 import { MediaModule } from './modules/media/index.js';
+import { ModerationJobsModule } from './modules/moderation-jobs/index.js';
 import { PostModule } from './modules/post/index.js';
 import { ProfileModule } from './modules/profile/index.js';
 import { ReactionModule } from './modules/reaction/index.js';
@@ -40,6 +41,7 @@ import { RsvpModule } from './modules/rsvp/index.js';
     ChatModule,
     FollowModule,
     ReportModule,
+    ModerationJobsModule,
   ],
   providers: [
     // Applied to every route, in this order. Authentication denies by default —

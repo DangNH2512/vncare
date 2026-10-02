@@ -77,6 +77,16 @@ export class AuditService {
     return this.repository.lastSuspensionSource(tx, eventId);
   }
 
+  /** Newest line of `action` on the entity: its actor type and recorded case number; null if none. */
+  latestByAction(
+    tx: PoolClient,
+    entityType: AuditEntityTypeT,
+    entityId: string,
+    action: string,
+  ): Promise<{ actorType: AuditActorType; caseNumber: number | null } | null> {
+    return this.repository.latestByAction(tx, entityType, entityId, action);
+  }
+
   private diff(value: Record<string, unknown> | null | undefined): Record<string, unknown> | null {
     if (value === undefined || value === null) return null;
     const parsed = AuditDiff.safeParse(value);

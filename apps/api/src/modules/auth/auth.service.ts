@@ -32,6 +32,7 @@ import {
 } from '../../common/rate-limit/index.js';
 import { REDIS_CACHE } from '../../redis/redis.module.js';
 import { MediaService } from '../media/index.js';
+import { SuspensionExpiryService } from '../moderation-jobs/index.js';
 import { AuthRepository, type UserRow } from './auth.repository.js';
 import { toSessionUser } from './auth.mapper.js';
 
@@ -130,6 +131,7 @@ export class AuthService implements OnModuleInit {
     private readonly rateLimit: RateLimitService,
     @Inject(RATE_LIMIT_CONFIG) private readonly limits: RateLimitConfig,
     @Inject(REDIS_CACHE) private readonly redis: Redis,
+    private readonly suspensions: SuspensionExpiryService,
   ) {}
   private revocationDegraded = false;
   private revocationRetryAt = 0;
@@ -278,8 +280,8 @@ export class AuthService implements OnModuleInit {
           messageKey: 'errors.auth.invalidCredentials',
         });
       }
-      this.assertUsable(row);
-      const result = await this.issue(row, context);
+      const usable = await this.ensureUsable(row);
+      const result = await this.issue(usable, context);
       outcome = 'ok';
       return result;
     } finally {
@@ -320,14 +322,14 @@ export class AuthService implements OnModuleInit {
 
     const row = await this.users.findById(session.user_id);
     if (!row) throw this.invalidRefresh();
-    this.assertUsable(row);
+    const usable = await this.ensureUsable(row);
 
     // Already revoked means this was the tolerated race; revoking again would
     // overwrite the reason and lose why it was spent.
     if (session.revoked_at === null) {
       await this.users.revokeSession(session.id, 'rotation');
     }
-    return this.issue(row, context, session.family_id);
+    return this.issue(usable, context, session.family_id);
   }
 
   async logout(refreshToken: string | undefined): Promise<void> {
@@ -533,8 +535,25 @@ export class AuthService implements OnModuleInit {
     return this.users.touchLastActive(userId);
   }
 
-  private assertUsable(row: UserRow): void {
-    if (row.status === 'active') return;
+  /**
+   * Returns the row when the account may sign in, or throws 403.
+   *
+   * A suspension that carries an expiry and has passed is lifted here first
+   * (D-M12, T-9), so the user is not turned away while the scheduled job is
+   * late or Redis is down. The lift is a conditional UPDATE with its own audit
+   * line; if it fails the account simply stays suspended for this attempt.
+   */
+  private async ensureUsable(row: UserRow): Promise<UserRow> {
+    if (row.status === 'active') return row;
+    // Only a suspension with an expiry that has passed can lift here: an open-ended
+    // one must not cost a transaction on every sign-in attempt.
+    if (row.status === 'suspended' && row.suspended_until && row.suspended_until <= new Date()) {
+      const lifted = await this.suspensions.expireDueSuspensions(row.id).catch((error: unknown) => {
+        this.logger.error(`lazy suspension expiry failed: ${(error as Error).message}`);
+        return [] as string[];
+      });
+      if (lifted.includes(row.id)) return { ...row, status: 'active' };
+    }
     throw new ForbiddenException({
       code: 'ACCOUNT_NOT_ACTIVE',
       messageKey: `errors.auth.account${row.status === 'suspended' ? 'Suspended' : 'Unavailable'}`,

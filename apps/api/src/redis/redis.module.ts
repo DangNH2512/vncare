@@ -4,7 +4,10 @@ import { Redis } from 'ioredis';
 /** Injection token for the cache instance: rate limits, short-lived caches. */
 export const REDIS_CACHE = Symbol('REDIS_CACHE');
 
-/** Injection token for the queue instance: BullMQ jobs only. */
+/**
+ * Injection token for the queue instance: BullMQ jobs, plus the single lock key of
+ * the suspension expiry scheduler (`moderation:expire-suspensions:lock`).
+ */
 export const REDIS_QUEUE = Symbol('REDIS_QUEUE');
 
 /** Clients being disconnected on purpose; their 'close' is not an outage. */

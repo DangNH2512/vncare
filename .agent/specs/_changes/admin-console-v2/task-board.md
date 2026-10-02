@@ -198,6 +198,7 @@ Owner viết tắt: BE = backend-agent, WA = web-admin-agent, WC = web-client-ag
   - `uq_moderation_cases_open_target` gồm cả `escalated` (AD-14b); `ON CONFLICT ... WHERE` phải khớp từng chữ nếu AD-15 viết upsert.
 - Test lane: **integration** (5 vai; đồng hồ giả cho SLA/expiry; hai moderator decide `Promise.all` → 1 thành công) + regression A3 (`corepack pnpm --filter @dnc/api test -- e2e/modules/admin` vẫn xanh sau retrofit).
 - DoD: COI: chèn trực tiếp `resolved_by_user_id=<organizer>` bị trigger từ chối; đóng case khi rollback giữa chừng giữ nguyên nội dung và `moderation_actions`; job: `expires_at` qua → tài khoản `active` trong ≤ 5 phút và audit `actor_type='job'`; +31 ngày → 400 `durationTooLong`. Lệnh như trên + full `test`.
+- Ghi chú AD-15: strike từ `warning` không hết hạn (`expires_at` NULL, đến khi bị revoke); BA xác nhận hạn strike sau.
 - Risk: **cao** (quyền theo hàng, COI, thao tác không đảo ngược `taken_down`/`removed`, job lặp mới trong BullMQ: tên queue riêng, đặt `jobId` cố định để không nhân bản lịch).
 
 **AD-16** — Web A4 console: `/moderation`, `/moderation/[caseNumber]` + khối "Reports"
@@ -587,3 +588,12 @@ Cần Debate Gate: không. Các lựa chọn có đánh đổi (deny-list Redis 
   - thuật ngữ VI "Tạm khoá" / "Mở khoá";
   - `ActionDialog` thêm `targetLabel` và `identifierPrefix` cho AD-12;
   - bớt chữ trong hộp thoại.
+- AD-12 đã commit. Admin có nhãn trạng thái sự kiện riêng (`admin.events.status.suspended` = "Đã ẩn", `takenDown` = "Đã gỡ bỏ"), vì web-client dùng key chung `event.status.*`. **Follow-up nhỏ:** ô "Newest events" trong `overview-screen.tsx` vẫn dùng key chung, cần chuyển sang nhãn admin ở card web-admin kế tiếp (AD-16).
+- AD-15 xong. **Quyết định coordinator:** không thêm dependency `bullmq`, vì đợt Admin không thêm dependency mới và `pnpm-lock` giữ nguyên. Job hết hạn dùng `ExpireSuspensionsScheduler`: `setInterval` 60 s cộng khoá `SET NX PX 55000` trên Redis queue; `ensureUsable` gọi lười khi login/refresh. Muốn chuyển sang BullMQ repeatable chỉ cần thay file scheduler (follow-up khi dự án chính thức đưa BullMQ vào).
+- i18n còn thiếu `errors.admin.caseNotFound`: thêm ở AD-16.
+- AD-15b đã sửa hai major của review: kiểm COI của người gán khi `assign`; khoá Redis của scheduler có timeout 2 s, kèm cờ `running`/`lockPending`. Đã sửa thêm các minor và tách file, file lớn nhất còn 387 dòng.
+- **Follow-up NIT-2:** khi A3 mở khoá thủ công, đặt `revoked_*` lên dòng `moderation_actions.suspended` còn hiệu lực. Cần sửa `admin-user-actions.*` (không thuộc diện chỉ thêm), nên làm ở card sau.
+- Review lại AD-15b: approved. Follow-up P3:
+  - Test riêng cho nhánh "case đã gán nhưng `first_response_at` NULL → 409".
+  - Scheduler: đặt `lockPending = true` bên trong `try`.
+  - Ghi chú ngoại lệ quy ước 4 class cho thư mục `admin/`, vì ở đây có nhiều service/repository con theo màn hình (users, events, audit, moderation-queue, moderation-effects).

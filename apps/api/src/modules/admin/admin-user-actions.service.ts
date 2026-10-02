@@ -15,6 +15,7 @@ import type {
 import { AuditService } from '../audit/index.js';
 import { AuthService } from '../auth/index.js';
 import { ChatSocketControl } from '../chat/index.js';
+import { AdminModerationRepository } from './admin-moderation.repository.js';
 import {
   AdminUserActionsRepository,
   type ActionTargetRow,
@@ -84,6 +85,7 @@ export class AdminUserActionsService {
     private readonly audit: AuditService,
     private readonly auth: AuthService,
     private readonly chat: ChatSocketControl,
+    private readonly moderation: AdminModerationRepository,
   ) {}
 
   async suspend(
@@ -114,6 +116,19 @@ export class AdminUserActionsService {
         after: { status: 'suspended' },
         reason,
         ...meta,
+      });
+      // D-R17: the same act is also a moderation action, outside any case.
+      await this.moderation.insertAction(tx, {
+        caseId: null,
+        actionType: 'suspended',
+        actorUserId: actor.id,
+        actorRole,
+        subjectUserId: target.id,
+        targetType: 'user',
+        targetId: target.id,
+        reasonCode: 'other',
+        reasonNote: reason,
+        severity: 'high',
       });
       await cut(target.id, 'suspended');
       return { id: target.id, status: 'suspended' as const, role: target.role };

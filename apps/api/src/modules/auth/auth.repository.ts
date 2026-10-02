@@ -14,6 +14,8 @@ export interface UserRow {
   role: UserRoleT;
   trust_level: number;
   status: UserStatusT;
+  /** Set only for a time-limited suspension; NULL means open-ended (A3). */
+  suspended_until: Date | null;
   locale: 'en' | 'vi';
   handle: string;
   display_name: string;
@@ -59,7 +61,7 @@ export interface SessionInput {
 const USER_COLUMNS = `
   u.id, u.email, u.email_verified_at, u.password_hash,
   u.phone, u.phone_verified_at, u.role,
-  u.trust_level, u.status, u.locale,
+  u.trust_level, u.status, u.suspended_until, u.locale,
   p.handle, p.display_name, p.avatar_media_id
 `;
 

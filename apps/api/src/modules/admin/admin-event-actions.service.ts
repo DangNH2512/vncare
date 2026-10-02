@@ -1,7 +1,8 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { allowedRolesFor } from '@dnc/domain';
-import type { AdminEventActionResultT, EventStatusT } from '@dnc/contracts';
+import type { AdminEventActionResultT, EventStatusT, ModerationActionTypeT } from '@dnc/contracts';
 import { AuditService } from '../audit/index.js';
+import { AdminModerationRepository } from './admin-moderation.repository.js';
 import type { ActionActor, ActionRequestMeta } from './admin-user-actions.service.js';
 import { AdminEventActionsRepository } from './admin-event-actions.repository.js';
 
@@ -40,6 +41,13 @@ const RULES: Record<EventAction, ActionRule> = {
   },
 };
 
+/** Moderation action type each console event action is logged as (D-R17). */
+const MODERATION_ACTION = {
+  suspend: 'content_hidden',
+  restore: 'action_revoked',
+  takedown: 'content_removed',
+} as const satisfies Record<EventAction, ModerationActionTypeT>;
+
 const fail = {
   notFound: () =>
     new NotFoundException({ code: 'EVENT_NOT_FOUND', messageKey: 'errors.admin.eventNotFound' }),
@@ -71,6 +79,7 @@ export class AdminEventActionsService {
   constructor(
     private readonly actions: AdminEventActionsRepository,
     private readonly audit: AuditService,
+    private readonly moderation: AdminModerationRepository,
   ) {}
 
   suspend(actor: ActionActor, id: string, reason: string, meta: ActionRequestMeta) {
@@ -141,6 +150,19 @@ export class AdminEventActionsService {
         after: { status: to },
         reason,
         ...meta,
+      });
+      // D-R17: mirrored into the moderation action log, outside any case.
+      await this.moderation.insertAction(tx, {
+        caseId: null,
+        actionType: MODERATION_ACTION[action],
+        actorUserId: actor.id,
+        actorRole: current.role,
+        subjectUserId: event.organizer_id,
+        targetType: 'event',
+        targetId: event.id,
+        reasonCode: 'other',
+        reasonNote: reason,
+        severity: action === 'takedown' ? 'high' : 'normal',
       });
       return { id: event.id, status: to };
     });
