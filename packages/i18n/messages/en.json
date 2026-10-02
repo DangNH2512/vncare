@@ -659,13 +659,13 @@
     },
     "following": {
       "title": "Following",
-      "since": "Following since {date}",
       "empty": {
         "title": "Follow hosts you like",
         "body": "Keep the people you want to hear from close by.",
         "cta": "Browse hosts"
       },
-      "link": "Following ({count})"
+      "error": "Could not load the people you follow.",
+      "more": "Show more"
     }
   },
   "blank": {

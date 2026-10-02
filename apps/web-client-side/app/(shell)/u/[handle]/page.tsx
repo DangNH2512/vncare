@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { MyProfileResponseT, PublicProfileResponseT } from '@dnc/contracts';
 
@@ -8,6 +9,7 @@ import { Button, Card, EmptyState, SkeletonText } from '../../../_components/ui'
 import { useTranslate } from '../../../_components/locale-provider';
 import { useAuth } from '../../../_components/auth-provider';
 import { myProfile, publicProfile } from '../../../_lib/api';
+import { ProfileFollowAction } from './_components/profile-follow-action';
 import { ProfileView } from '../../_components/profile-view';
 
 /**
@@ -33,6 +35,25 @@ export default function ProfilePage({ params }: { params: Promise<{ handle: stri
   const [missing, setMissing] = useState(false);
 
   const isOwner = user !== null && user.handle === handle;
+  const viewerId = user?.id ?? null;
+
+  // One scope per viewer and per handle. Moving to another member or signing
+  // out drops the loaded profile (so its follow state cannot leak to the next
+  // viewer) and remounts the follow button. A guest's first sign-in keeps both:
+  // the guest's tap is a pending intent that must land on the button on screen.
+  const [scope, setScope] = useState<{ viewer: string | null; handle: string; epoch: number }>({
+    viewer: viewerId,
+    handle,
+    epoch: 0,
+  });
+  if (scope.viewer !== viewerId || scope.handle !== handle) {
+    const crossing = scope.handle !== handle || scope.viewer !== null;
+    setScope({ viewer: viewerId, handle, epoch: crossing ? scope.epoch + 1 : scope.epoch });
+    if (crossing) {
+      setProfile(null);
+      setMissing(false);
+    }
+  }
 
   useEffect(() => {
     // Wait for the session to settle: asking too early would fetch the public
@@ -54,7 +75,7 @@ export default function ProfilePage({ params }: { params: Promise<{ handle: stri
     return () => {
       cancelled = true;
     };
-  }, [handle, isOwner, loading]);
+  }, [handle, isOwner, loading, viewerId]);
 
   const handleUpdated = useCallback(
     (updated: MyProfileResponseT) => {
@@ -91,7 +112,28 @@ export default function ProfilePage({ params }: { params: Promise<{ handle: stri
 
   return (
     <div className="flex flex-col gap-4 px-4 py-6 md:px-0 md:py-8">
-      <ProfileView profile={profile} isOwner={isOwner} onUpdated={handleUpdated} />
+      <ProfileView
+        profile={profile}
+        isOwner={isOwner}
+        onUpdated={handleUpdated}
+        action={
+          isOwner ? (
+            <Link
+              href="/following"
+              className="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-semibold text-accent-text hover:bg-accent-subtle"
+            >
+              {t('profile.following.title')}
+            </Link>
+          ) : (
+            <ProfileFollowAction
+              key={`${scope.epoch}:${profile.userId}`}
+              userId={profile.userId}
+              displayName={profile.displayName}
+              serverFollowing={profile.viewerIsFollowing === true}
+            />
+          )
+        }
+      />
       {isOwner && (
         <div className="flex justify-end">
           <Button

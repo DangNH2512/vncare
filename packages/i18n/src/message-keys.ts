@@ -1102,8 +1102,8 @@ export type MessageKey =
   | 'profile.following.empty.body'
   | 'profile.following.empty.cta'
   | 'profile.following.empty.title'
-  | 'profile.following.link'
-  | 'profile.following.since'
+  | 'profile.following.error'
+  | 'profile.following.more'
   | 'profile.following.title'
   | 'profile.hint.headline'
   | 'profile.hint.phone'
@@ -2320,8 +2320,8 @@ export const MESSAGE_KEYS = [
   'profile.following.empty.body',
   'profile.following.empty.cta',
   'profile.following.empty.title',
-  'profile.following.link',
-  'profile.following.since',
+  'profile.following.error',
+  'profile.following.more',
   'profile.following.title',
   'profile.hint.headline',
   'profile.hint.phone',

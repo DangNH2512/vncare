@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { MyProfileResponseT, PublicProfileResponseT } from '@dnc/contracts';
 import { nextTrustRequirement } from '@dnc/domain';
 
@@ -16,6 +16,8 @@ export interface ProfileViewProps {
   /** True when the viewer owns this profile, which is what unlocks editing. */
   isOwner: boolean;
   onUpdated?: (profile: MyProfileResponseT) => void;
+  /** Rendered in the header beside Edit: Follow for visitors, a shortcut for the owner. */
+  action?: ReactNode;
 }
 
 function isMine(
@@ -32,7 +34,7 @@ function isMine(
  * Two components would drift, and the private fields would end up rendered from
  * the wrong shape.
  */
-export function ProfileView({ profile, isOwner, onUpdated }: ProfileViewProps) {
+export function ProfileView({ profile, isOwner, onUpdated, action }: ProfileViewProps) {
   const t = useTranslate();
   const { locale } = useLocale();
   const [editing, setEditing] = useState(false);
@@ -69,11 +71,14 @@ export function ProfileView({ profile, isOwner, onUpdated }: ProfileViewProps) {
                 {...(profile.avatar === null ? {} : { src: profile.avatar.url })}
               />
             </div>
-            {isOwner && (
-              <Button variant="secondary" size="sm" onClick={() => setEditing(true)}>
-                {t('profile.action.edit')}
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {action}
+              {isOwner && (
+                <Button variant="secondary" size="sm" onClick={() => setEditing(true)}>
+                  {t('profile.action.edit')}
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="min-w-0">

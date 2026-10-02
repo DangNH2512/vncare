@@ -659,13 +659,13 @@
     },
     "following": {
       "title": "Đang theo dõi",
-      "since": "Theo dõi từ {date}",
       "empty": {
         "title": "Theo dõi người tổ chức bạn thích",
         "body": "Giữ những người bạn muốn theo dõi ở gần bạn.",
         "cta": "Xem người tổ chức"
       },
-      "link": "Đang theo dõi ({count})"
+      "error": "Chưa tải được danh sách bạn theo dõi.",
+      "more": "Xem thêm"
     }
   },
   "blank": {
