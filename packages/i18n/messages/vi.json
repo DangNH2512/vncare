@@ -179,8 +179,7 @@
     "rail": {
       "upcoming": "Sắp diễn ra",
       "areas": "Khu vực",
-      "suggestions": "Gợi ý theo dõi",
-      "follow": "Theo dõi"
+      "suggestions": "Gợi ý theo dõi"
     }
   },
   "feed": {
@@ -1548,7 +1547,6 @@
         "countOne": "1 case đang mở",
         "none": "Không có case đang mở.",
         "error": "Không tải được các báo cáo.",
-        "truncated": "Chỉ liệt kê các kết quả đầu tiên.",
         "open": "Mở case #{number}"
       }
     },
@@ -1564,6 +1562,7 @@
   },
   "comments": {
     "title": "Bình luận ({count})",
+    "heading": "Bình luận",
     "composer": {
       "placeholder": "Đặt câu hỏi hoặc để lại bình luận…",
       "aria": "Viết bình luận",
@@ -1702,7 +1701,8 @@
       "following": "Đang theo dõi {name}. Kích hoạt để bỏ theo dõi."
     },
     "error": {
-      "generic": "Chưa cập nhật được. Kiểm tra kết nối rồi thử lại."
+      "generic": "Chưa cập nhật được. Kiểm tra kết nối rồi thử lại.",
+      "verify": "Hãy xác minh tài khoản để theo dõi mọi người."
     }
   },
   "safety": {

@@ -413,7 +413,6 @@ export type MessageKey =
   | 'admin.moderation.related.none'
   | 'admin.moderation.related.open'
   | 'admin.moderation.related.title'
-  | 'admin.moderation.related.truncated'
   | 'admin.moderation.resolutionCode.duplicate'
   | 'admin.moderation.resolutionCode.malicious_report'
   | 'admin.moderation.resolutionCode.no_violation'
@@ -715,6 +714,7 @@ export type MessageKey =
   | 'comments.error.load.title'
   | 'comments.error.post'
   | 'comments.error.tryAgain'
+  | 'comments.heading'
   | 'comments.loading'
   | 'comments.pinned.author'
   | 'comments.pinned.host'
@@ -1008,6 +1008,7 @@ export type MessageKey =
   | 'follow.aria.follow'
   | 'follow.aria.following'
   | 'follow.error.generic'
+  | 'follow.error.verify'
   | 'home.componentsHeading'
   | 'home.componentsNote'
   | 'home.eyebrow'
@@ -1194,7 +1195,6 @@ export type MessageKey =
   | 'shell.nav.notifications'
   | 'shell.nav.profile'
   | 'shell.rail.areas'
-  | 'shell.rail.follow'
   | 'shell.rail.suggestions'
   | 'shell.rail.upcoming'
   | 'theme.dark'
@@ -1631,7 +1631,6 @@ export const MESSAGE_KEYS = [
   'admin.moderation.related.none',
   'admin.moderation.related.open',
   'admin.moderation.related.title',
-  'admin.moderation.related.truncated',
   'admin.moderation.resolutionCode.duplicate',
   'admin.moderation.resolutionCode.malicious_report',
   'admin.moderation.resolutionCode.no_violation',
@@ -1933,6 +1932,7 @@ export const MESSAGE_KEYS = [
   'comments.error.load.title',
   'comments.error.post',
   'comments.error.tryAgain',
+  'comments.heading',
   'comments.loading',
   'comments.pinned.author',
   'comments.pinned.host',
@@ -2226,6 +2226,7 @@ export const MESSAGE_KEYS = [
   'follow.aria.follow',
   'follow.aria.following',
   'follow.error.generic',
+  'follow.error.verify',
   'home.componentsHeading',
   'home.componentsNote',
   'home.eyebrow',
@@ -2412,7 +2413,6 @@ export const MESSAGE_KEYS = [
   'shell.nav.notifications',
   'shell.nav.profile',
   'shell.rail.areas',
-  'shell.rail.follow',
   'shell.rail.suggestions',
   'shell.rail.upcoming',
   'theme.dark',

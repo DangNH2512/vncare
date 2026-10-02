@@ -179,8 +179,7 @@
     "rail": {
       "upcoming": "Coming up",
       "areas": "Areas",
-      "suggestions": "People to follow",
-      "follow": "Follow"
+      "suggestions": "People to follow"
     }
   },
   "feed": {
@@ -1548,7 +1547,6 @@
         "countOne": "1 open case",
         "none": "No open cases.",
         "error": "Could not load the reports.",
-        "truncated": "Only the first matches are listed.",
         "open": "Open case #{number}"
       }
     },
@@ -1564,6 +1562,7 @@
   },
   "comments": {
     "title": "Comments ({count})",
+    "heading": "Comments",
     "composer": {
       "placeholder": "Ask a question or leave a comment…",
       "aria": "Write a comment",
@@ -1702,7 +1701,8 @@
       "following": "Following {name}. Activate to unfollow."
     },
     "error": {
-      "generic": "Could not update. Check your connection and try again."
+      "generic": "Could not update. Check your connection and try again.",
+      "verify": "Verify your account to follow people."
     }
   },
   "safety": {

@@ -83,7 +83,7 @@ interface Envelope<T> {
  * and an array of tuples, neither of which merges correctly into an object
  * literal. A plain record is the only shape this client ever needs.
  */
-interface CallInit {
+export interface CallInit {
   method?: string;
   body?: string;
   headers?: Record<string, string>;
@@ -98,7 +98,7 @@ function pick(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
-async function call<T>(path: string, init?: CallInit): Promise<T> {
+export async function call<T>(path: string, init?: CallInit): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`${API_BASE}${path}`, {
