@@ -8,7 +8,7 @@ import { Button, EmptyState, Skeleton } from '../../../_components/ui';
 import { formatDayTime, NO_VALUE } from '../../../_components/labels/format';
 import { RoleBadge } from '../../../_components/labels/user-labels';
 import { cn } from '../../../_lib/cn';
-import type { Translate } from '../../../_lib/i18n';
+import type { MessageKey, Translate } from '../../../_lib/i18n';
 import { AuditDiff } from './audit-diff';
 import { ActionLabel, ENTITY_KEY, SeverityBadge } from './audit-labels';
 
@@ -19,7 +19,12 @@ export interface TargetAccess {
 }
 
 const COLUMN_COUNT = 7;
-const HREF: Readonly<Record<AuditEntityTypeT, (id: string) => string>> = {
+/**
+ * Only users and events have a detail page. Other entity types render as
+ * plain text.
+ * TODO(AD-16): link `moderation_case` to `/moderation/[caseNumber]` once that page exists.
+ */
+const HREF: Readonly<Partial<Record<AuditEntityTypeT, (id: string) => string>>> = {
   user: (id) => `/users/${id}`,
   event: (id) => `/events/${id}`,
 };
@@ -34,7 +39,9 @@ function Target({
   t: Translate;
 }) {
   if (item.entityId === null) return <span className="text-fg-subtle">{NO_VALUE}</span>;
-  const type = t(ENTITY_KEY[item.entityType]);
+  // A type this build does not know (a newer server) reads as a dash, never a raw key.
+  const typeKey = ENTITY_KEY[item.entityType] as MessageKey | undefined;
+  const type = typeKey === undefined ? NO_VALUE : t(typeKey);
   const shortId = item.entityId.slice(0, 8);
   const content = (
     <>
@@ -44,12 +51,14 @@ function Target({
       </span>
     </>
   );
-  if (!access[item.entityType]) {
+  const href = HREF[item.entityType];
+  const allowed = item.entityType === 'user' ? access.user : item.entityType === 'event' ? access.event : false;
+  if (href === undefined || !allowed) {
     return <span className="inline-flex items-baseline gap-1.5">{content}</span>;
   }
   return (
     <Link
-      href={HREF[item.entityType](item.entityId)}
+      href={href(item.entityId)}
       aria-label={t('admin.audit.target.open', { type, id: shortId })}
       className="inline-flex items-baseline gap-1.5 hover:text-accent-text"
     >

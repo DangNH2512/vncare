@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { AdminUserDetailResponseT } from '@dnc/contracts';
 
@@ -15,6 +15,7 @@ import {
   SessionsSection,
   TrustSection,
 } from './user-detail-sections';
+import { UserDetailActions } from './user-detail-actions';
 import { RoleBadge, StatusBadge, TrustBadge } from '../../../_components/labels/user-labels';
 
 type State =
@@ -24,22 +25,32 @@ type State =
   | { kind: 'error' }
   | { kind: 'ready'; data: AdminUserDetailResponseT };
 
-/** Read-only user detail (D-U7..U11). Actions on the user arrive with their own cards. */
+/** User detail (D-U7..U11) with the staff actions of A3 above the blocks. */
 export function UserDetailScreen({ id }: { id: string }) {
   const t = useTranslate();
   const { locale } = useLocale();
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [reloads, setReloads] = useState(0);
 
-  useEffect(() => {
-    let current = true;
-    setState({ kind: 'loading' });
-    getAdminUser(id)
-      .then((data) => {
-        if (current) setState({ kind: 'ready', data });
-      })
-      .catch((error: unknown) => {
-        if (!current) return;
+  // Bumped per request: only the newest response may touch the screen, so a slow
+  // earlier reply (or one for a user we already left) cannot overwrite fresher data.
+  const latestRequest = useRef(0);
+  const currentId = useRef(id);
+  currentId.current = id;
+
+  const load = useCallback(
+    async (silent: boolean) => {
+      const request = ++latestRequest.current;
+      const requestedId = id;
+      const isCurrent = () => request === latestRequest.current && requestedId === currentId.current;
+      if (!silent) setState({ kind: 'loading' });
+      try {
+        const data = await getAdminUser(id);
+        if (isCurrent()) setState({ kind: 'ready', data });
+      } catch (error: unknown) {
+        if (!isCurrent()) return;
+        // A failed silent refresh keeps the data and the result notice on screen.
+        if (silent) return;
         if (error instanceof ApiError && (error.status === 404 || error.status === 400)) {
           setState({ kind: 'notFound' });
         } else if (error instanceof ApiError && error.status === 403) {
@@ -47,11 +58,21 @@ export function UserDetailScreen({ id }: { id: string }) {
         } else {
           setState({ kind: 'error' });
         }
-      });
+      }
+    },
+    [id],
+  );
+
+  useEffect(() => {
+    void load(false);
     return () => {
-      current = false;
+      // Invalidates anything still in flight for this id.
+      latestRequest.current += 1;
     };
-  }, [id, reloads]);
+  }, [load, reloads]);
+
+  /** Reload after an action: no loading state, so the action buttons keep their place and focus. */
+  const refresh = useCallback(() => load(true), [load]);
 
   const retry = useCallback(() => setReloads((count) => count + 1), []);
   const back = (
@@ -103,6 +124,7 @@ export function UserDetailScreen({ id }: { id: string }) {
             <StatusBadge status={state.data.account.status} t={t} />
             <TrustBadge level={state.data.trust.trustLevel} t={t} />
           </div>
+          <UserDetailActions data={state.data} refresh={refresh} />
           <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
             <ProfileSection t={t} locale={locale} data={state.data} />
             <AccountSection t={t} locale={locale} data={state.data} />

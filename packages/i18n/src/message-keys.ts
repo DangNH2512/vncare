@@ -5,22 +5,42 @@ export type MessageKey =
   | 'a11y.openMenu'
   | 'a11y.switchLanguage'
   | 'a11y.toggleTheme'
+  | 'admin.action.back'
   | 'admin.action.changeRole'
+  | 'admin.action.changeRoleEffect'
+  | 'admin.action.closeLabel'
+  | 'admin.action.done.changeRole'
+  | 'admin.action.done.suspendUser'
+  | 'admin.action.done.unsuspendUser'
   | 'admin.action.failed'
+  | 'admin.action.hint.changeRole'
+  | 'admin.action.hint.suspendUser'
+  | 'admin.action.hint.unsuspendUser'
+  | 'admin.action.hintLabel'
+  | 'admin.action.history'
   | 'admin.action.irreversible'
+  | 'admin.action.next'
   | 'admin.action.reason.counter'
   | 'admin.action.reason.hint'
   | 'admin.action.reason.label'
+  | 'admin.action.refresh'
   | 'admin.action.restoreEvent'
   | 'admin.action.review.cancel'
-  | 'admin.action.review.confirm'
+  | 'admin.action.review.change'
+  | 'admin.action.review.role'
   | 'admin.action.review.title'
+  | 'admin.action.role.label'
+  | 'admin.action.role.trustRequired'
+  | 'admin.action.sessionCutDeferred'
   | 'admin.action.suspendEvent'
   | 'admin.action.suspendUser'
   | 'admin.action.suspendUserEffect'
   | 'admin.action.takeDownEvent'
+  | 'admin.action.target'
   | 'admin.action.typeToConfirm'
   | 'admin.action.unsuspendUser'
+  | 'admin.action.unsuspendUserEffect'
+  | 'admin.action.working'
   | 'admin.audit.action.event.restored'
   | 'admin.audit.action.event.suspended'
   | 'admin.audit.action.event.taken_down'
@@ -45,7 +65,11 @@ export type MessageKey =
   | 'admin.audit.detail.to'
   | 'admin.audit.empty.none'
   | 'admin.audit.empty.title'
+  | 'admin.audit.entity.comment'
   | 'admin.audit.entity.event'
+  | 'admin.audit.entity.moderation_case'
+  | 'admin.audit.entity.post'
+  | 'admin.audit.entity.report'
   | 'admin.audit.entity.user'
   | 'admin.audit.error.body'
   | 'admin.audit.error.title'
@@ -717,6 +741,7 @@ export type MessageKey =
   | 'errors.report.alreadyReported'
   | 'errors.report.idempotencyRequired'
   | 'errors.report.ownContent'
+  | 'errors.report.targetNotFound'
   | 'errors.report.targetUnavailable'
   | 'event.card.almostFull'
   | 'event.card.attendees'
@@ -1029,22 +1054,42 @@ export const MESSAGE_KEYS = [
   'a11y.openMenu',
   'a11y.switchLanguage',
   'a11y.toggleTheme',
+  'admin.action.back',
   'admin.action.changeRole',
+  'admin.action.changeRoleEffect',
+  'admin.action.closeLabel',
+  'admin.action.done.changeRole',
+  'admin.action.done.suspendUser',
+  'admin.action.done.unsuspendUser',
   'admin.action.failed',
+  'admin.action.hint.changeRole',
+  'admin.action.hint.suspendUser',
+  'admin.action.hint.unsuspendUser',
+  'admin.action.hintLabel',
+  'admin.action.history',
   'admin.action.irreversible',
+  'admin.action.next',
   'admin.action.reason.counter',
   'admin.action.reason.hint',
   'admin.action.reason.label',
+  'admin.action.refresh',
   'admin.action.restoreEvent',
   'admin.action.review.cancel',
-  'admin.action.review.confirm',
+  'admin.action.review.change',
+  'admin.action.review.role',
   'admin.action.review.title',
+  'admin.action.role.label',
+  'admin.action.role.trustRequired',
+  'admin.action.sessionCutDeferred',
   'admin.action.suspendEvent',
   'admin.action.suspendUser',
   'admin.action.suspendUserEffect',
   'admin.action.takeDownEvent',
+  'admin.action.target',
   'admin.action.typeToConfirm',
   'admin.action.unsuspendUser',
+  'admin.action.unsuspendUserEffect',
+  'admin.action.working',
   'admin.audit.action.event.restored',
   'admin.audit.action.event.suspended',
   'admin.audit.action.event.taken_down',
@@ -1069,7 +1114,11 @@ export const MESSAGE_KEYS = [
   'admin.audit.detail.to',
   'admin.audit.empty.none',
   'admin.audit.empty.title',
+  'admin.audit.entity.comment',
   'admin.audit.entity.event',
+  'admin.audit.entity.moderation_case',
+  'admin.audit.entity.post',
+  'admin.audit.entity.report',
   'admin.audit.entity.user',
   'admin.audit.error.body',
   'admin.audit.error.title',
@@ -1741,6 +1790,7 @@ export const MESSAGE_KEYS = [
   'errors.report.alreadyReported',
   'errors.report.idempotencyRequired',
   'errors.report.ownContent',
+  'errors.report.targetNotFound',
   'errors.report.targetUnavailable',
   'event.card.almostFull',
   'event.card.attendees',

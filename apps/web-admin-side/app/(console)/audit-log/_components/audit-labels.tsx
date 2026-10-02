@@ -18,7 +18,14 @@ export const ACTION_KEY: Readonly<Record<string, MessageKey>> = {
 export const ACTIONS: readonly (readonly [string, MessageKey])[] = Object.entries(ACTION_KEY);
 
 export const SEVERITIES: readonly AuditSeverityT[] = ['info', 'notice', 'warning', 'critical'];
-export const ENTITY_TYPES: readonly AuditEntityTypeT[] = ['user', 'event'];
+export const ENTITY_TYPES: readonly AuditEntityTypeT[] = [
+  'user',
+  'event',
+  'post',
+  'comment',
+  'report',
+  'moderation_case',
+];
 
 const SEVERITY_KEY: Readonly<Record<AuditSeverityT, MessageKey>> = {
   info: 'admin.audit.severity.info',
@@ -37,6 +44,10 @@ const SEVERITY_TONE: Readonly<Record<AuditSeverityT, BadgeTone>> = {
 export const ENTITY_KEY: Readonly<Record<AuditEntityTypeT, MessageKey>> = {
   user: 'admin.audit.entity.user',
   event: 'admin.audit.entity.event',
+  post: 'admin.audit.entity.post',
+  comment: 'admin.audit.entity.comment',
+  report: 'admin.audit.entity.report',
+  moderation_case: 'admin.audit.entity.moderation_case',
 };
 
 export function severityLabel(severity: AuditSeverityT, t: Translate): string {

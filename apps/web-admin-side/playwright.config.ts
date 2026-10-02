@@ -37,7 +37,7 @@ export default defineConfig({
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
-      testMatch: /(users|events|audit-log|kit-select)\.spec\.ts$/,
+      testMatch: /(users|events|audit-log|kit-select|user-actions)\.spec\.ts$/,
     },
   ],
 });

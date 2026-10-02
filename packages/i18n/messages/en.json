@@ -482,7 +482,8 @@
       "ownContent": "You cannot report your own content.",
       "targetUnavailable": "This content is already under review.",
       "alreadyReported": "You already reported this.",
-      "idempotencyRequired": "Missing request key."
+      "idempotencyRequired": "Missing request key.",
+      "targetNotFound": "We couldn't find this content."
     }
   },
   "post": {
@@ -1126,13 +1127,39 @@
       },
       "review": {
         "title": "Review before you confirm",
-        "confirm": "Confirm",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "role": "Role",
+        "change": "{from} → {to}"
       },
       "typeToConfirm": "Type {value} to confirm",
       "irreversible": "This cannot be undone.",
       "suspendUserEffect": "The person is signed out everywhere and cannot sign in. Their events and posts stay as they are.",
-      "failed": "Could not complete this action. Nothing was changed."
+      "failed": "Could not complete this action. Nothing was changed.",
+      "closeLabel": "Close",
+      "next": "Continue",
+      "back": "Back",
+      "working": "Working...",
+      "target": "Account",
+      "history": "View history",
+      "refresh": "Refresh",
+      "hintLabel": "About this action",
+      "hint": {
+        "suspendUser": "Signs the person out of every device right away and blocks sign-in until the account is restored. Their events, posts and RSVPs are not hidden or removed. Staff accounts need the username typed again. The action is written to the audit log with your reason.",
+        "unsuspendUser": "The person can sign in again. Nothing else changes. The action is written to the audit log with your reason.",
+        "changeRole": "Takes effect immediately: the person is signed out everywhere and must sign in again to get the new role. Moderator and admin need trust level 3 or higher. Super admin cannot be granted here. The username must be typed again. The action is written to the audit log with your reason."
+      },
+      "unsuspendUserEffect": "The person can sign in again.",
+      "changeRoleEffect": "The person is signed out everywhere and must sign in again.",
+      "role": {
+        "label": "New role",
+        "trustRequired": "Needs trust level 3 or higher."
+      },
+      "done": {
+        "suspendUser": "Account suspended.",
+        "unsuspendUser": "Account restored.",
+        "changeRole": "Role changed to {role}."
+      },
+      "sessionCutDeferred": "Sign-out was delayed. The old session may stay valid for up to 15 minutes."
     },
     "audit": {
       "title": "Audit log",
@@ -1191,7 +1218,11 @@
       },
       "entity": {
         "user": "User",
-        "event": "Event"
+        "event": "Event",
+        "post": "Post",
+        "comment": "Comment",
+        "report": "Report",
+        "moderation_case": "Moderation case"
       },
       "target": {
         "open": "Open {type} {id}"
