@@ -19,6 +19,7 @@ import {
 } from './event-detail-sections';
 import { EventDetailActions } from './event-detail-actions';
 import { EventHistory } from './event-history';
+import { RelatedReports } from '../../moderation/_components/related-reports';
 
 type State =
   | { kind: 'loading' }
@@ -172,6 +173,7 @@ function EventDetailBody({ data, canOpenUser }: { data: AdminEventDetailResponse
         <div className="flex min-w-0 flex-col gap-4">
           <HostSection t={t} data={data} canOpenUser={canOpenUser} />
           <DescriptionSection t={t} data={data} />
+          <RelatedReports targetType="event" targetId={data.id} />
         </div>
       </div>
       <OccurrencesSection t={t} data={data} />

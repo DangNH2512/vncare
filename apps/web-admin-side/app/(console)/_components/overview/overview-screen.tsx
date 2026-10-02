@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import type { AdminOverviewResponseT, EventStatusT } from '@dnc/contracts';
+import type { AdminOverviewResponseT } from '@dnc/contracts';
 import { allowedRolesFor } from '@dnc/domain';
 
 import { useAuth } from '../../../_components/auth-provider';
 import { useLocale, useTranslate } from '../../../_components/locale-provider';
+import { EventStatusBadge } from '../../../_components/labels/event-labels';
 import { Badge, Button, Card, EmptyState } from '../../../_components/ui';
-import type { BadgeTone } from '../../../_components/ui';
 import { getAdminOverview, getSystemHealth } from '../../../_lib/api';
 import { findAreaName } from '../../../_lib/areas';
 import { formatCheckedAt } from '../../../_lib/datetime';
@@ -21,16 +21,6 @@ type OverviewState =
   | { kind: 'error' }
   | { kind: 'ready'; data: AdminOverviewResponseT };
 
-/** Explicit map: the catalog holds both snake_case and camelCase variants, so never interpolate. */
-const STATUS_KEY: Readonly<Record<EventStatusT, MessageKey>> = {
-  draft: 'event.status.draft',
-  pending_review: 'event.status.pending_review',
-  published: 'event.status.published',
-  suspended: 'event.status.suspended',
-  taken_down: 'event.status.taken_down',
-  cancelled: 'event.status.cancelled',
-};
-
 const TRUST_LEVEL_KEY: Readonly<Record<number, MessageKey>> = {
   0: 'trust.level.t0',
   1: 'trust.level.t1',
@@ -38,15 +28,6 @@ const TRUST_LEVEL_KEY: Readonly<Record<number, MessageKey>> = {
   3: 'trust.level.t3',
   4: 'trust.level.t4',
   5: 'trust.level.t5',
-};
-
-const STATUS_TONE: Readonly<Record<EventStatusT, BadgeTone>> = {
-  draft: 'neutral',
-  pending_review: 'warning',
-  published: 'success',
-  suspended: 'danger',
-  taken_down: 'danger',
-  cancelled: 'neutral',
 };
 
 /** Landing screen. Admin-only blocks load only once the role is known and allowed. */
@@ -164,9 +145,7 @@ export function OverviewScreen() {
                     findAreaName(event.areaId, locale) ?? '—',
                     <Nowrap key="s">{formatCheckedAt(event.startsAt)}</Nowrap>,
                     <span key="h">{event.organizer.displayName}</span>,
-                    <Badge key="st" tone={STATUS_TONE[event.status]}>
-                      {t(STATUS_KEY[event.status])}
-                    </Badge>,
+                    <EventStatusBadge key="st" status={event.status} t={t} />,
                   ],
                 }))}
               />

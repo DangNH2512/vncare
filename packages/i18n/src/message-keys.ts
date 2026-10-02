@@ -234,33 +234,149 @@ export type MessageKey =
   | 'admin.login.body'
   | 'admin.login.rejected'
   | 'admin.login.title'
+  | 'admin.moderation.action.assignOther'
+  | 'admin.moderation.action.changeSeverity'
+  | 'admin.moderation.action.target'
+  | 'admin.moderation.actionType.action_revoked'
+  | 'admin.moderation.actionType.banned'
+  | 'admin.moderation.actionType.content_hidden'
+  | 'admin.moderation.actionType.content_removed'
+  | 'admin.moderation.actionType.feature_restricted'
+  | 'admin.moderation.actionType.no_action'
+  | 'admin.moderation.actionType.reminder'
+  | 'admin.moderation.actionType.severity_changed'
+  | 'admin.moderation.actionType.suspended'
+  | 'admin.moderation.actionType.trust_level_downgraded'
+  | 'admin.moderation.actionType.warning'
   | 'admin.moderation.assign'
   | 'admin.moderation.assignedToYou'
+  | 'admin.moderation.assigneeFilter.me'
+  | 'admin.moderation.assigneeFilter.unassigned'
   | 'admin.moderation.autoHidden'
+  | 'admin.moderation.back'
   | 'admin.moderation.col.assignee'
   | 'admin.moderation.col.case'
   | 'admin.moderation.col.reports'
   | 'admin.moderation.col.severity'
   | 'admin.moderation.col.sla'
   | 'admin.moderation.col.target'
+  | 'admin.moderation.contentStatus.deleted'
+  | 'admin.moderation.contentStatus.hidden'
+  | 'admin.moderation.contentStatus.pending_review'
+  | 'admin.moderation.contentStatus.removed'
+  | 'admin.moderation.contentStatus.visible'
+  | 'admin.moderation.cursorReset'
   | 'admin.moderation.decision.dismiss'
   | 'admin.moderation.decision.hide'
   | 'admin.moderation.decision.remove'
   | 'admin.moderation.decision.suspend'
   | 'admin.moderation.decision.warn'
+  | 'admin.moderation.detail.actionList'
+  | 'admin.moderation.detail.assignee'
+  | 'admin.moderation.detail.by'
   | 'admin.moderation.detail.current'
+  | 'admin.moderation.detail.currentStatus'
+  | 'admin.moderation.detail.deadline'
+  | 'admin.moderation.detail.error.title'
+  | 'admin.moderation.detail.expires'
+  | 'admin.moderation.detail.field.area'
+  | 'admin.moderation.detail.field.bio'
+  | 'admin.moderation.detail.field.body'
+  | 'admin.moderation.detail.field.description'
+  | 'admin.moderation.detail.field.displayName'
+  | 'admin.moderation.detail.field.endsAt'
+  | 'admin.moderation.detail.field.handle'
+  | 'admin.moderation.detail.field.headline'
+  | 'admin.moderation.detail.field.startsAt'
+  | 'admin.moderation.detail.field.title'
+  | 'admin.moderation.detail.firstReported'
+  | 'admin.moderation.detail.firstResponse'
+  | 'admin.moderation.detail.gone'
   | 'admin.moderation.detail.history'
+  | 'admin.moderation.detail.noActions'
+  | 'admin.moderation.detail.noDescription'
+  | 'admin.moderation.detail.noResponse'
+  | 'admin.moderation.detail.owner'
+  | 'admin.moderation.detail.ownerNone'
+  | 'admin.moderation.detail.previousCases'
+  | 'admin.moderation.detail.reportList'
+  | 'admin.moderation.detail.reporterGone'
   | 'admin.moderation.detail.reports'
+  | 'admin.moderation.detail.resolution'
+  | 'admin.moderation.detail.revoked'
   | 'admin.moderation.detail.snapshot'
+  | 'admin.moderation.detail.strikeWeight'
   | 'admin.moderation.detail.strikes'
+  | 'admin.moderation.detail.system'
+  | 'admin.moderation.detail.textLabel'
+  | 'admin.moderation.detail.title'
+  | 'admin.moderation.dialog.assign.choose'
+  | 'admin.moderation.dialog.assign.confirm'
+  | 'admin.moderation.dialog.assign.effect'
+  | 'admin.moderation.dialog.assign.error'
+  | 'admin.moderation.dialog.assign.hint'
+  | 'admin.moderation.dialog.assign.loading'
+  | 'admin.moderation.dialog.assign.staff'
+  | 'admin.moderation.dialog.assign.title'
+  | 'admin.moderation.dialog.choose'
+  | 'admin.moderation.dialog.decide.close'
+  | 'admin.moderation.dialog.decide.confirm'
+  | 'admin.moderation.dialog.decide.days'
+  | 'admin.moderation.dialog.decide.daysCount'
+  | 'admin.moderation.dialog.decide.daysHint'
+  | 'admin.moderation.dialog.decide.effect'
+  | 'admin.moderation.dialog.decide.hint'
+  | 'admin.moderation.dialog.decide.no'
+  | 'admin.moderation.dialog.decide.reasonCode'
+  | 'admin.moderation.dialog.decide.summary.action'
+  | 'admin.moderation.dialog.decide.summary.closes'
+  | 'admin.moderation.dialog.decide.summary.duration'
+  | 'admin.moderation.dialog.decide.summary.reasonCode'
+  | 'admin.moderation.dialog.decide.title'
+  | 'admin.moderation.dialog.decide.yes'
+  | 'admin.moderation.dialog.severity.confirm'
+  | 'admin.moderation.dialog.severity.effect'
+  | 'admin.moderation.dialog.severity.hint'
+  | 'admin.moderation.dialog.severity.label'
+  | 'admin.moderation.dialog.severity.summary'
+  | 'admin.moderation.dialog.severity.title'
+  | 'admin.moderation.done.assigned'
+  | 'admin.moderation.done.decidedClosed'
+  | 'admin.moderation.done.decidedOpen'
+  | 'admin.moderation.done.severity'
+  | 'admin.moderation.done.stale'
+  | 'admin.moderation.done.taken'
+  | 'admin.moderation.effect.content_hidden'
+  | 'admin.moderation.effect.content_removed'
+  | 'admin.moderation.effect.no_action'
+  | 'admin.moderation.effect.suspended'
+  | 'admin.moderation.effect.warning'
   | 'admin.moderation.empty.title'
+  | 'admin.moderation.error.body'
   | 'admin.moderation.error.title'
+  | 'admin.moderation.filter.allDeadlines'
+  | 'admin.moderation.filter.allSeverities'
+  | 'admin.moderation.filter.allStatuses'
+  | 'admin.moderation.filter.allTargetTypes'
+  | 'admin.moderation.filter.anyone'
+  | 'admin.moderation.filter.assignee'
+  | 'admin.moderation.filter.clear'
+  | 'admin.moderation.filter.clearSelection'
+  | 'admin.moderation.filter.label'
+  | 'admin.moderation.filter.overdue'
+  | 'admin.moderation.filter.overdueOnly'
+  | 'admin.moderation.filter.selected'
+  | 'admin.moderation.filter.severity'
+  | 'admin.moderation.filter.status'
+  | 'admin.moderation.filter.targetType'
   | 'admin.moderation.kpi.critical'
   | 'admin.moderation.kpi.criticalHint'
   | 'admin.moderation.kpi.open'
   | 'admin.moderation.kpi.openHint'
   | 'admin.moderation.kpi.overdue'
   | 'admin.moderation.kpi.overdueHint'
+  | 'admin.moderation.next'
+  | 'admin.moderation.previous'
   | 'admin.moderation.reason.ban_evasion'
   | 'admin.moderation.reason.cross_post_spam'
   | 'admin.moderation.reason.curation_attribution_error'
@@ -291,6 +407,18 @@ export type MessageKey =
   | 'admin.moderation.reason.stalking'
   | 'admin.moderation.reason.unauthorized_religious_activity'
   | 'admin.moderation.reason.unsafe_activity_setup'
+  | 'admin.moderation.related.count'
+  | 'admin.moderation.related.countOne'
+  | 'admin.moderation.related.error'
+  | 'admin.moderation.related.none'
+  | 'admin.moderation.related.open'
+  | 'admin.moderation.related.title'
+  | 'admin.moderation.related.truncated'
+  | 'admin.moderation.resolutionCode.duplicate'
+  | 'admin.moderation.resolutionCode.malicious_report'
+  | 'admin.moderation.resolutionCode.no_violation'
+  | 'admin.moderation.resolutionCode.resolved_stale'
+  | 'admin.moderation.resolutionCode.violation_confirmed'
   | 'admin.moderation.severity.critical'
   | 'admin.moderation.severity.high'
   | 'admin.moderation.severity.low'
@@ -298,7 +426,23 @@ export type MessageKey =
   | 'admin.moderation.sla.dueSoon'
   | 'admin.moderation.sla.left'
   | 'admin.moderation.sla.overdue'
+  | 'admin.moderation.status.awaiting_info'
+  | 'admin.moderation.status.escalated'
+  | 'admin.moderation.status.in_review'
+  | 'admin.moderation.status.open'
+  | 'admin.moderation.status.resolved'
+  | 'admin.moderation.table.caption'
+  | 'admin.moderation.table.open'
+  | 'admin.moderation.table.pagesLabel'
+  | 'admin.moderation.table.reports'
+  | 'admin.moderation.table.reportsOne'
+  | 'admin.moderation.table.shown'
+  | 'admin.moderation.targetType.comment'
+  | 'admin.moderation.targetType.event'
+  | 'admin.moderation.targetType.post'
+  | 'admin.moderation.targetType.user'
   | 'admin.moderation.title'
+  | 'admin.moderation.unassigned'
   | 'admin.nav.auditLog'
   | 'admin.nav.events'
   | 'admin.nav.moderation'
@@ -566,6 +710,7 @@ export type MessageKey =
   | 'comments.empty.body'
   | 'comments.empty.cta'
   | 'comments.empty.title'
+  | 'comments.error.action'
   | 'comments.error.load.body'
   | 'comments.error.load.title'
   | 'comments.error.post'
@@ -579,7 +724,9 @@ export type MessageKey =
   | 'comments.showMore'
   | 'comments.showMoreReplies'
   | 'comments.signInPrompt'
+  | 'comments.status.deleted'
   | 'comments.status.posted'
+  | 'comments.status.saved'
   | 'comments.title'
   | 'common.appName'
   | 'common.comingSoon'
@@ -697,6 +844,7 @@ export type MessageKey =
   | 'discover.when.upcoming'
   | 'discover.when.week'
   | 'discover.when.weekend'
+  | 'errors.admin.caseNotFound'
   | 'errors.admin.confirmationRequired'
   | 'errors.admin.conflictOfInterest'
   | 'errors.admin.cursorInvalid'
@@ -1304,33 +1452,149 @@ export const MESSAGE_KEYS = [
   'admin.login.body',
   'admin.login.rejected',
   'admin.login.title',
+  'admin.moderation.action.assignOther',
+  'admin.moderation.action.changeSeverity',
+  'admin.moderation.action.target',
+  'admin.moderation.actionType.action_revoked',
+  'admin.moderation.actionType.banned',
+  'admin.moderation.actionType.content_hidden',
+  'admin.moderation.actionType.content_removed',
+  'admin.moderation.actionType.feature_restricted',
+  'admin.moderation.actionType.no_action',
+  'admin.moderation.actionType.reminder',
+  'admin.moderation.actionType.severity_changed',
+  'admin.moderation.actionType.suspended',
+  'admin.moderation.actionType.trust_level_downgraded',
+  'admin.moderation.actionType.warning',
   'admin.moderation.assign',
   'admin.moderation.assignedToYou',
+  'admin.moderation.assigneeFilter.me',
+  'admin.moderation.assigneeFilter.unassigned',
   'admin.moderation.autoHidden',
+  'admin.moderation.back',
   'admin.moderation.col.assignee',
   'admin.moderation.col.case',
   'admin.moderation.col.reports',
   'admin.moderation.col.severity',
   'admin.moderation.col.sla',
   'admin.moderation.col.target',
+  'admin.moderation.contentStatus.deleted',
+  'admin.moderation.contentStatus.hidden',
+  'admin.moderation.contentStatus.pending_review',
+  'admin.moderation.contentStatus.removed',
+  'admin.moderation.contentStatus.visible',
+  'admin.moderation.cursorReset',
   'admin.moderation.decision.dismiss',
   'admin.moderation.decision.hide',
   'admin.moderation.decision.remove',
   'admin.moderation.decision.suspend',
   'admin.moderation.decision.warn',
+  'admin.moderation.detail.actionList',
+  'admin.moderation.detail.assignee',
+  'admin.moderation.detail.by',
   'admin.moderation.detail.current',
+  'admin.moderation.detail.currentStatus',
+  'admin.moderation.detail.deadline',
+  'admin.moderation.detail.error.title',
+  'admin.moderation.detail.expires',
+  'admin.moderation.detail.field.area',
+  'admin.moderation.detail.field.bio',
+  'admin.moderation.detail.field.body',
+  'admin.moderation.detail.field.description',
+  'admin.moderation.detail.field.displayName',
+  'admin.moderation.detail.field.endsAt',
+  'admin.moderation.detail.field.handle',
+  'admin.moderation.detail.field.headline',
+  'admin.moderation.detail.field.startsAt',
+  'admin.moderation.detail.field.title',
+  'admin.moderation.detail.firstReported',
+  'admin.moderation.detail.firstResponse',
+  'admin.moderation.detail.gone',
   'admin.moderation.detail.history',
+  'admin.moderation.detail.noActions',
+  'admin.moderation.detail.noDescription',
+  'admin.moderation.detail.noResponse',
+  'admin.moderation.detail.owner',
+  'admin.moderation.detail.ownerNone',
+  'admin.moderation.detail.previousCases',
+  'admin.moderation.detail.reportList',
+  'admin.moderation.detail.reporterGone',
   'admin.moderation.detail.reports',
+  'admin.moderation.detail.resolution',
+  'admin.moderation.detail.revoked',
   'admin.moderation.detail.snapshot',
+  'admin.moderation.detail.strikeWeight',
   'admin.moderation.detail.strikes',
+  'admin.moderation.detail.system',
+  'admin.moderation.detail.textLabel',
+  'admin.moderation.detail.title',
+  'admin.moderation.dialog.assign.choose',
+  'admin.moderation.dialog.assign.confirm',
+  'admin.moderation.dialog.assign.effect',
+  'admin.moderation.dialog.assign.error',
+  'admin.moderation.dialog.assign.hint',
+  'admin.moderation.dialog.assign.loading',
+  'admin.moderation.dialog.assign.staff',
+  'admin.moderation.dialog.assign.title',
+  'admin.moderation.dialog.choose',
+  'admin.moderation.dialog.decide.close',
+  'admin.moderation.dialog.decide.confirm',
+  'admin.moderation.dialog.decide.days',
+  'admin.moderation.dialog.decide.daysCount',
+  'admin.moderation.dialog.decide.daysHint',
+  'admin.moderation.dialog.decide.effect',
+  'admin.moderation.dialog.decide.hint',
+  'admin.moderation.dialog.decide.no',
+  'admin.moderation.dialog.decide.reasonCode',
+  'admin.moderation.dialog.decide.summary.action',
+  'admin.moderation.dialog.decide.summary.closes',
+  'admin.moderation.dialog.decide.summary.duration',
+  'admin.moderation.dialog.decide.summary.reasonCode',
+  'admin.moderation.dialog.decide.title',
+  'admin.moderation.dialog.decide.yes',
+  'admin.moderation.dialog.severity.confirm',
+  'admin.moderation.dialog.severity.effect',
+  'admin.moderation.dialog.severity.hint',
+  'admin.moderation.dialog.severity.label',
+  'admin.moderation.dialog.severity.summary',
+  'admin.moderation.dialog.severity.title',
+  'admin.moderation.done.assigned',
+  'admin.moderation.done.decidedClosed',
+  'admin.moderation.done.decidedOpen',
+  'admin.moderation.done.severity',
+  'admin.moderation.done.stale',
+  'admin.moderation.done.taken',
+  'admin.moderation.effect.content_hidden',
+  'admin.moderation.effect.content_removed',
+  'admin.moderation.effect.no_action',
+  'admin.moderation.effect.suspended',
+  'admin.moderation.effect.warning',
   'admin.moderation.empty.title',
+  'admin.moderation.error.body',
   'admin.moderation.error.title',
+  'admin.moderation.filter.allDeadlines',
+  'admin.moderation.filter.allSeverities',
+  'admin.moderation.filter.allStatuses',
+  'admin.moderation.filter.allTargetTypes',
+  'admin.moderation.filter.anyone',
+  'admin.moderation.filter.assignee',
+  'admin.moderation.filter.clear',
+  'admin.moderation.filter.clearSelection',
+  'admin.moderation.filter.label',
+  'admin.moderation.filter.overdue',
+  'admin.moderation.filter.overdueOnly',
+  'admin.moderation.filter.selected',
+  'admin.moderation.filter.severity',
+  'admin.moderation.filter.status',
+  'admin.moderation.filter.targetType',
   'admin.moderation.kpi.critical',
   'admin.moderation.kpi.criticalHint',
   'admin.moderation.kpi.open',
   'admin.moderation.kpi.openHint',
   'admin.moderation.kpi.overdue',
   'admin.moderation.kpi.overdueHint',
+  'admin.moderation.next',
+  'admin.moderation.previous',
   'admin.moderation.reason.ban_evasion',
   'admin.moderation.reason.cross_post_spam',
   'admin.moderation.reason.curation_attribution_error',
@@ -1361,6 +1625,18 @@ export const MESSAGE_KEYS = [
   'admin.moderation.reason.stalking',
   'admin.moderation.reason.unauthorized_religious_activity',
   'admin.moderation.reason.unsafe_activity_setup',
+  'admin.moderation.related.count',
+  'admin.moderation.related.countOne',
+  'admin.moderation.related.error',
+  'admin.moderation.related.none',
+  'admin.moderation.related.open',
+  'admin.moderation.related.title',
+  'admin.moderation.related.truncated',
+  'admin.moderation.resolutionCode.duplicate',
+  'admin.moderation.resolutionCode.malicious_report',
+  'admin.moderation.resolutionCode.no_violation',
+  'admin.moderation.resolutionCode.resolved_stale',
+  'admin.moderation.resolutionCode.violation_confirmed',
   'admin.moderation.severity.critical',
   'admin.moderation.severity.high',
   'admin.moderation.severity.low',
@@ -1368,7 +1644,23 @@ export const MESSAGE_KEYS = [
   'admin.moderation.sla.dueSoon',
   'admin.moderation.sla.left',
   'admin.moderation.sla.overdue',
+  'admin.moderation.status.awaiting_info',
+  'admin.moderation.status.escalated',
+  'admin.moderation.status.in_review',
+  'admin.moderation.status.open',
+  'admin.moderation.status.resolved',
+  'admin.moderation.table.caption',
+  'admin.moderation.table.open',
+  'admin.moderation.table.pagesLabel',
+  'admin.moderation.table.reports',
+  'admin.moderation.table.reportsOne',
+  'admin.moderation.table.shown',
+  'admin.moderation.targetType.comment',
+  'admin.moderation.targetType.event',
+  'admin.moderation.targetType.post',
+  'admin.moderation.targetType.user',
   'admin.moderation.title',
+  'admin.moderation.unassigned',
   'admin.nav.auditLog',
   'admin.nav.events',
   'admin.nav.moderation',
@@ -1636,6 +1928,7 @@ export const MESSAGE_KEYS = [
   'comments.empty.body',
   'comments.empty.cta',
   'comments.empty.title',
+  'comments.error.action',
   'comments.error.load.body',
   'comments.error.load.title',
   'comments.error.post',
@@ -1649,7 +1942,9 @@ export const MESSAGE_KEYS = [
   'comments.showMore',
   'comments.showMoreReplies',
   'comments.signInPrompt',
+  'comments.status.deleted',
   'comments.status.posted',
+  'comments.status.saved',
   'comments.title',
   'common.appName',
   'common.comingSoon',
@@ -1767,6 +2062,7 @@ export const MESSAGE_KEYS = [
   'discover.when.upcoming',
   'discover.when.week',
   'discover.when.weekend',
+  'errors.admin.caseNotFound',
   'errors.admin.confirmationRequired',
   'errors.admin.conflictOfInterest',
   'errors.admin.cursorInvalid',

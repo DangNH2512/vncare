@@ -16,6 +16,7 @@ import {
   TrustSection,
 } from './user-detail-sections';
 import { UserDetailActions } from './user-detail-actions';
+import { RelatedReports } from '../../moderation/_components/related-reports';
 import { RoleBadge, StatusBadge, TrustBadge } from '../../../_components/labels/user-labels';
 
 type State =
@@ -131,6 +132,7 @@ export function UserDetailScreen({ id }: { id: string }) {
             <TrustSection t={t} locale={locale} data={state.data} />
             <div className="flex min-w-0 flex-col gap-4">
               <SessionsSection t={t} locale={locale} data={state.data} />
+              <RelatedReports targetType="user" targetId={state.data.id} />
             </div>
             <ActivitySections t={t} locale={locale} data={state.data} />
           </div>

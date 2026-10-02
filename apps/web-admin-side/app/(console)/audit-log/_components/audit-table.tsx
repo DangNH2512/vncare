@@ -20,14 +20,33 @@ export interface TargetAccess {
 
 const COLUMN_COUNT = 7;
 /**
- * Only users and events have a detail page. Other entity types render as
- * plain text.
- * TODO(AD-16): link `moderation_case` to `/moderation/[caseNumber]` once that page exists.
+ * Users, events and moderation cases have a detail page. Other entity types
+ * render as plain text.
  */
 const HREF: Readonly<Partial<Record<AuditEntityTypeT, (id: string) => string>>> = {
   user: (id) => `/users/${id}`,
   event: (id) => `/events/${id}`,
 };
+
+/**
+ * Case page of a `moderation_case` row. The row's entity id is the case uuid
+ * but the page is keyed by case number, which only some lines carry in
+ * `after`; without it the target stays plain text. Same role set as the audit
+ * log itself, so no extra gate is needed here.
+ */
+function caseHref(item: AdminAuditItemT): string | null {
+  const number = item.after?.['caseNumber'];
+  return typeof number === 'number' && Number.isSafeInteger(number) && number > 0
+    ? `/moderation/${number}`
+    : null;
+}
+
+function targetHref(item: AdminAuditItemT, access: TargetAccess): string | null {
+  if (item.entityType === 'moderation_case') return caseHref(item);
+  const href = HREF[item.entityType];
+  const allowed = item.entityType === 'user' ? access.user : item.entityType === 'event' ? access.event : false;
+  return href === undefined || !allowed || item.entityId === null ? null : href(item.entityId);
+}
 
 function Target({
   item,
@@ -51,14 +70,13 @@ function Target({
       </span>
     </>
   );
-  const href = HREF[item.entityType];
-  const allowed = item.entityType === 'user' ? access.user : item.entityType === 'event' ? access.event : false;
-  if (href === undefined || !allowed) {
+  const target = targetHref(item, access);
+  if (target === null) {
     return <span className="inline-flex items-baseline gap-1.5">{content}</span>;
   }
   return (
     <Link
-      href={href(item.entityId)}
+      href={target}
       aria-label={t('admin.audit.target.open', { type, id: shortId })}
       className="inline-flex items-baseline gap-1.5 hover:text-accent-text"
     >

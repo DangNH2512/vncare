@@ -476,7 +476,8 @@
       "trustTooLow": "The account needs trust level 3 or higher for this role.",
       "invalidTransition": "This is no longer possible in the current state. Refresh and try again.",
       "conflictOfInterest": "You cannot act on your own event.",
-      "durationTooLong": "Your role can suspend for at most 30 days."
+      "durationTooLong": "Your role can suspend for at most 30 days.",
+      "caseNotFound": "This case does not exist."
     },
     "report": {
       "ownContent": "You cannot report your own content.",
@@ -1328,13 +1329,52 @@
         "current": "Content now",
         "reports": "Reports",
         "history": "History",
-        "strikes": "Active strikes"
+        "strikes": "Active strikes",
+        "title": "Case #{number}",
+        "error": {
+          "title": "Could not load this case"
+        },
+        "deadline": "Response due",
+        "firstReported": "First reported",
+        "firstResponse": "First response",
+        "noResponse": "Nobody has taken it yet",
+        "assignee": "Assigned to",
+        "resolution": "Resolution",
+        "owner": "Content owner",
+        "ownerNone": "The owner is unknown or the account is gone.",
+        "previousCases": "Earlier cases",
+        "gone": "This content no longer exists.",
+        "currentStatus": "Status now",
+        "textLabel": "Reported text",
+        "reporterGone": "Deleted account",
+        "noDescription": "No description",
+        "noActions": "No actions yet.",
+        "reportList": "Reports on this case",
+        "actionList": "Actions on this case",
+        "strikeWeight": "Strike weight {weight}",
+        "expires": "Until {time}",
+        "revoked": "Revoked {time}",
+        "by": "by {name}",
+        "system": "System",
+        "field": {
+          "title": "Title",
+          "description": "Description",
+          "startsAt": "Starts",
+          "endsAt": "Ends",
+          "area": "Area",
+          "body": "Text",
+          "handle": "Username",
+          "displayName": "Display name",
+          "headline": "Headline",
+          "bio": "Bio"
+        }
       },
       "empty": {
         "title": "The queue is clear"
       },
       "error": {
-        "title": "Could not load the moderation queue"
+        "title": "Could not load the moderation queue",
+        "body": "Check your connection and try again."
       },
       "reason": {
         "physical_threat": "Physical threat",
@@ -1367,6 +1407,149 @@
         "curation_attribution_error": "Curation attribution error",
         "curation_takedown_request": "Takedown request for curated listing",
         "other": "Other"
+      },
+      "back": "Back to the queue",
+      "cursorReset": "The list changed. Showing the first page.",
+      "previous": "Previous page",
+      "next": "Next page",
+      "unassigned": "Unassigned",
+      "filter": {
+        "label": "Filter cases",
+        "severity": "Severity",
+        "allSeverities": "All severities",
+        "status": "Status",
+        "allStatuses": "Open and in review",
+        "targetType": "Content type",
+        "allTargetTypes": "All content",
+        "assignee": "Assigned to",
+        "anyone": "Anyone",
+        "overdue": "Deadline",
+        "allDeadlines": "Any deadline",
+        "overdueOnly": "Overdue only",
+        "selected": "{count} selected",
+        "clear": "Clear filters",
+        "clearSelection": "Clear selection"
+      },
+      "status": {
+        "open": "Open",
+        "in_review": "In review",
+        "awaiting_info": "Awaiting information",
+        "resolved": "Resolved",
+        "escalated": "Escalated"
+      },
+      "assigneeFilter": {
+        "me": "Assigned to me",
+        "unassigned": "Unassigned"
+      },
+      "targetType": {
+        "event": "Event",
+        "post": "Post",
+        "comment": "Comment",
+        "user": "Account"
+      },
+      "table": {
+        "caption": "Moderation cases",
+        "pagesLabel": "Moderation queue pages",
+        "shown": "{count} shown",
+        "open": "Open case #{number}",
+        "reports": "{count} reports",
+        "reportsOne": "1 report"
+      },
+      "contentStatus": {
+        "visible": "Visible",
+        "hidden": "Hidden",
+        "removed": "Removed",
+        "pending_review": "Awaiting review",
+        "deleted": "Deleted"
+      },
+      "resolutionCode": {
+        "violation_confirmed": "Violation confirmed",
+        "no_violation": "No violation",
+        "malicious_report": "Malicious report",
+        "duplicate": "Duplicate",
+        "resolved_stale": "Closed as stale"
+      },
+      "actionType": {
+        "reminder": "Reminder",
+        "warning": "Warning",
+        "content_hidden": "Content hidden",
+        "content_removed": "Content removed",
+        "feature_restricted": "Feature restricted",
+        "suspended": "Account suspended",
+        "banned": "Account banned",
+        "no_action": "Dismissed",
+        "severity_changed": "Severity changed",
+        "trust_level_downgraded": "Trust level lowered",
+        "action_revoked": "Action revoked"
+      },
+      "action": {
+        "assignOther": "Assign to someone",
+        "changeSeverity": "Change severity",
+        "target": "Case"
+      },
+      "dialog": {
+        "assign": {
+          "title": "Assign this case",
+          "effect": "The person you pick takes over this case and becomes its owner.",
+          "hint": "Only an administrator can hand a case to someone else. A moderator cannot be assigned a case about their own content or event. The action is written to the audit log.",
+          "staff": "Assign to",
+          "choose": "Choose a person",
+          "loading": "Loading staff...",
+          "error": "Could not load the staff list. Try again.",
+          "confirm": "Assign case"
+        },
+        "severity": {
+          "title": "Change severity",
+          "effect": "Raising the severity can bring the response deadline forward. The earlier deadline is always kept.",
+          "hint": "Every change is recorded with your note in the case history and the audit log. A lower severity never pushes the deadline back.",
+          "label": "New severity",
+          "confirm": "Change severity",
+          "summary": "Severity"
+        },
+        "decide": {
+          "title": "Decide this case",
+          "effect": "The decision is applied at once to the reported content or to its owner.",
+          "hint": "Dismiss restores content the system hid on its own. Hide and Remove act on the content (Remove cannot be undone; taking down an event is admin only). Warn adds a strike to the owner, and nobody is notified yet. Suspend signs the owner out for a fixed time: moderators up to 30 days and only members. The decision is written to the case history and the audit log with your reason.",
+          "reasonCode": "Reason category",
+          "days": "Suspend for (days)",
+          "daysHint": "Moderators can suspend for up to 30 days.",
+          "close": "Close the case after this decision",
+          "confirm": "Record decision",
+          "summary": {
+            "action": "Decision",
+            "reasonCode": "Category",
+            "duration": "Duration",
+            "closes": "Closes the case"
+          },
+          "yes": "Yes",
+          "no": "No, keep it open",
+          "daysCount": "{count} days"
+        },
+        "choose": "Choose"
+      },
+      "effect": {
+        "no_action": "The report is dismissed and content the system hid comes back.",
+        "content_hidden": "The content is hidden from the public.",
+        "content_removed": "The content is removed for good. This cannot be undone.",
+        "warning": "The owner gets a strike. Nobody is notified yet.",
+        "suspended": "The owner is signed out everywhere and cannot sign in until the date you set."
+      },
+      "done": {
+        "assigned": "Case assigned to {name}.",
+        "taken": "You took this case.",
+        "severity": "Severity changed to {severity}.",
+        "decidedClosed": "Decision recorded. The case is now {status}.",
+        "decidedOpen": "Decision recorded. The case stays open.",
+        "stale": "Reload the page to see the new state."
+      },
+      "related": {
+        "title": "Reports",
+        "count": "{count} open cases",
+        "countOne": "1 open case",
+        "none": "No open cases.",
+        "error": "Could not load the reports.",
+        "truncated": "Only the first matches are listed.",
+        "open": "Open case #{number}"
       }
     },
     "common": {
@@ -1423,7 +1606,9 @@
       "bodyWithReplies": "This cannot be undone. Replies will be removed too."
     },
     "status": {
-      "posted": "Comment posted."
+      "posted": "Comment posted.",
+      "saved": "Comment updated.",
+      "deleted": "Comment deleted."
     },
     "closed": {
       "cancelled": "Comments are closed because the event was cancelled."
@@ -1434,6 +1619,7 @@
         "body": "Check your connection and try again."
       },
       "post": "We could not post your comment. Check your connection and try again.",
+      "action": "Could not complete that. Try again.",
       "tryAgain": "Try again"
     },
     "loading": "Loading comments"

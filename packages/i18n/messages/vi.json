@@ -476,7 +476,8 @@
       "trustTooLow": "Tài khoản cần cấp tin cậy 3 trở lên để nhận vai trò này.",
       "invalidTransition": "Hiện không thể thực hiện ở trạng thái này. Hãy làm mới và thử lại.",
       "conflictOfInterest": "Bạn không thể xử lý sự kiện của chính mình.",
-      "durationTooLong": "Vai trò của bạn chỉ được khoá tối đa 30 ngày."
+      "durationTooLong": "Vai trò của bạn chỉ được khoá tối đa 30 ngày.",
+      "caseNotFound": "Case này không tồn tại."
     },
     "report": {
       "ownContent": "Bạn không thể báo cáo nội dung của chính mình.",
@@ -1328,13 +1329,52 @@
         "current": "Nội dung hiện tại",
         "reports": "Báo cáo",
         "history": "Lịch sử",
-        "strikes": "Lần vi phạm đang hiệu lực"
+        "strikes": "Lần vi phạm đang hiệu lực",
+        "title": "Case #{number}",
+        "error": {
+          "title": "Không tải được case này"
+        },
+        "deadline": "Hạn phản hồi",
+        "firstReported": "Báo cáo đầu tiên",
+        "firstResponse": "Phản hồi đầu tiên",
+        "noResponse": "Chưa có ai nhận",
+        "assignee": "Người xử lý",
+        "resolution": "Kết luận",
+        "owner": "Chủ nội dung",
+        "ownerNone": "Không rõ chủ nội dung hoặc tài khoản đã bị xoá.",
+        "previousCases": "Case trước đó",
+        "gone": "Nội dung này không còn tồn tại.",
+        "currentStatus": "Trạng thái hiện tại",
+        "textLabel": "Nội dung bị báo cáo",
+        "reporterGone": "Tài khoản đã bị xoá",
+        "noDescription": "Không có mô tả",
+        "noActions": "Chưa có hành động nào.",
+        "reportList": "Các báo cáo của case này",
+        "actionList": "Các hành động của case này",
+        "strikeWeight": "Trọng số vi phạm {weight}",
+        "expires": "Đến {time}",
+        "revoked": "Đã thu hồi {time}",
+        "by": "bởi {name}",
+        "system": "Hệ thống",
+        "field": {
+          "title": "Tiêu đề",
+          "description": "Mô tả",
+          "startsAt": "Bắt đầu",
+          "endsAt": "Kết thúc",
+          "area": "Khu vực",
+          "body": "Nội dung",
+          "handle": "Tên người dùng",
+          "displayName": "Tên hiển thị",
+          "headline": "Giới thiệu ngắn",
+          "bio": "Tiểu sử"
+        }
       },
       "empty": {
         "title": "Hàng đợi đang trống"
       },
       "error": {
-        "title": "Không tải được hàng đợi kiểm duyệt"
+        "title": "Không tải được hàng đợi kiểm duyệt",
+        "body": "Kiểm tra kết nối và thử lại."
       },
       "reason": {
         "physical_threat": "Đe doạ bạo lực",
@@ -1367,6 +1407,149 @@
         "curation_attribution_error": "Sai sót ghi nguồn khi curate",
         "curation_takedown_request": "Yêu cầu gỡ nội dung đã curate",
         "other": "Khác"
+      },
+      "back": "Về hàng đợi",
+      "cursorReset": "Danh sách đã thay đổi. Đang hiện trang đầu.",
+      "previous": "Trang trước",
+      "next": "Trang sau",
+      "unassigned": "Chưa có người xử lý",
+      "filter": {
+        "label": "Lọc case",
+        "severity": "Mức độ",
+        "allSeverities": "Mọi mức độ",
+        "status": "Trạng thái",
+        "allStatuses": "Đang mở và đang xem xét",
+        "targetType": "Loại nội dung",
+        "allTargetTypes": "Mọi nội dung",
+        "assignee": "Người xử lý",
+        "anyone": "Bất kỳ ai",
+        "overdue": "Hạn phản hồi",
+        "allDeadlines": "Mọi hạn",
+        "overdueOnly": "Chỉ case quá hạn",
+        "selected": "Đã chọn {count}",
+        "clear": "Xoá bộ lọc",
+        "clearSelection": "Bỏ chọn"
+      },
+      "status": {
+        "open": "Đang mở",
+        "in_review": "Đang xem xét",
+        "awaiting_info": "Chờ thêm thông tin",
+        "resolved": "Đã xử lý",
+        "escalated": "Đã chuyển cấp trên"
+      },
+      "assigneeFilter": {
+        "me": "Giao cho tôi",
+        "unassigned": "Chưa có người xử lý"
+      },
+      "targetType": {
+        "event": "Sự kiện",
+        "post": "Bài đăng",
+        "comment": "Bình luận",
+        "user": "Tài khoản"
+      },
+      "table": {
+        "caption": "Các case kiểm duyệt",
+        "pagesLabel": "Các trang của hàng đợi kiểm duyệt",
+        "shown": "Đang hiện {count}",
+        "open": "Mở case #{number}",
+        "reports": "{count} báo cáo",
+        "reportsOne": "1 báo cáo"
+      },
+      "contentStatus": {
+        "visible": "Đang hiện",
+        "hidden": "Đã ẩn",
+        "removed": "Đã gỡ",
+        "pending_review": "Chờ duyệt",
+        "deleted": "Đã xoá"
+      },
+      "resolutionCode": {
+        "violation_confirmed": "Xác nhận vi phạm",
+        "no_violation": "Không vi phạm",
+        "malicious_report": "Báo cáo ác ý",
+        "duplicate": "Trùng lặp",
+        "resolved_stale": "Đóng do quá cũ"
+      },
+      "actionType": {
+        "reminder": "Nhắc nhở",
+        "warning": "Cảnh cáo",
+        "content_hidden": "Đã ẩn nội dung",
+        "content_removed": "Đã gỡ nội dung",
+        "feature_restricted": "Hạn chế tính năng",
+        "suspended": "Đã tạm khoá tài khoản",
+        "banned": "Đã cấm tài khoản",
+        "no_action": "Đã bỏ qua",
+        "severity_changed": "Đã đổi mức độ",
+        "trust_level_downgraded": "Đã hạ mức tin cậy",
+        "action_revoked": "Đã thu hồi hành động"
+      },
+      "action": {
+        "assignOther": "Giao cho người khác",
+        "changeSeverity": "Đổi mức độ",
+        "target": "Case"
+      },
+      "dialog": {
+        "assign": {
+          "title": "Giao case này",
+          "effect": "Người bạn chọn sẽ nhận case này và trở thành người xử lý.",
+          "hint": "Chỉ quản trị viên mới giao case cho người khác được. Kiểm duyệt viên không thể được giao case về nội dung hoặc sự kiện của chính mình. Thao tác được ghi vào nhật ký.",
+          "staff": "Giao cho",
+          "choose": "Chọn một người",
+          "loading": "Đang tải danh sách nhân sự...",
+          "error": "Không tải được danh sách nhân sự. Hãy thử lại.",
+          "confirm": "Giao case"
+        },
+        "severity": {
+          "title": "Đổi mức độ",
+          "effect": "Nâng mức độ có thể làm hạn phản hồi đến sớm hơn. Hạn sớm hơn luôn được giữ lại.",
+          "hint": "Mỗi lần đổi đều được ghi cùng ghi chú của bạn vào lịch sử case và nhật ký thao tác. Hạ mức độ không bao giờ làm lùi hạn.",
+          "label": "Mức độ mới",
+          "confirm": "Đổi mức độ",
+          "summary": "Mức độ"
+        },
+        "decide": {
+          "title": "Quyết định case này",
+          "effect": "Quyết định được áp dụng ngay lên nội dung bị báo cáo hoặc chủ nội dung.",
+          "hint": "Bỏ qua sẽ khôi phục nội dung mà hệ thống đã tự ẩn. Ẩn và Gỡ tác động lên nội dung (Gỡ không hoàn tác được; gỡ sự kiện chỉ dành cho quản trị viên). Cảnh cáo ghi một lần vi phạm cho chủ nội dung, hiện chưa có ai được thông báo. Tạm khoá đăng xuất chủ nội dung trong một thời gian cố định: kiểm duyệt viên tối đa 30 ngày và chỉ với thành viên. Quyết định được ghi vào lịch sử case và nhật ký thao tác cùng lý do của bạn.",
+          "reasonCode": "Nhóm lý do",
+          "days": "Tạm khoá trong (ngày)",
+          "daysHint": "Kiểm duyệt viên chỉ được khoá tối đa 30 ngày.",
+          "close": "Đóng case sau quyết định này",
+          "confirm": "Ghi nhận quyết định",
+          "summary": {
+            "action": "Quyết định",
+            "reasonCode": "Nhóm",
+            "duration": "Thời hạn",
+            "closes": "Đóng case"
+          },
+          "yes": "Có",
+          "no": "Không, để case mở",
+          "daysCount": "{count} ngày"
+        },
+        "choose": "Chọn"
+      },
+      "effect": {
+        "no_action": "Báo cáo được bỏ qua và nội dung hệ thống đã ẩn sẽ hiện lại.",
+        "content_hidden": "Nội dung bị ẩn khỏi công chúng.",
+        "content_removed": "Nội dung bị gỡ vĩnh viễn. Không thể hoàn tác.",
+        "warning": "Chủ nội dung bị ghi một lần vi phạm. Hiện chưa có ai được thông báo.",
+        "suspended": "Chủ nội dung bị đăng xuất khỏi mọi nơi và không đăng nhập được đến ngày bạn đặt."
+      },
+      "done": {
+        "assigned": "Đã giao case cho {name}.",
+        "taken": "Bạn đã nhận case này.",
+        "severity": "Đã đổi mức độ thành {severity}.",
+        "decidedClosed": "Đã ghi nhận quyết định. Case hiện ở trạng thái {status}.",
+        "decidedOpen": "Đã ghi nhận quyết định. Case vẫn đang mở.",
+        "stale": "Hãy tải lại trang để xem trạng thái mới."
+      },
+      "related": {
+        "title": "Báo cáo",
+        "count": "{count} case đang mở",
+        "countOne": "1 case đang mở",
+        "none": "Không có case đang mở.",
+        "error": "Không tải được các báo cáo.",
+        "truncated": "Chỉ liệt kê các kết quả đầu tiên.",
+        "open": "Mở case #{number}"
       }
     },
     "common": {
@@ -1423,7 +1606,9 @@
       "bodyWithReplies": "Không thể hoàn tác. Các câu trả lời cũng sẽ bị xoá."
     },
     "status": {
-      "posted": "Đã đăng bình luận."
+      "posted": "Đã đăng bình luận.",
+      "saved": "Đã cập nhật bình luận.",
+      "deleted": "Đã xoá bình luận."
     },
     "closed": {
       "cancelled": "Bình luận đã đóng vì sự kiện đã bị huỷ."
@@ -1434,6 +1619,7 @@
         "body": "Kiểm tra kết nối rồi thử lại."
       },
       "post": "Chưa đăng được bình luận. Kiểm tra kết nối rồi thử lại.",
+      "action": "Chưa thực hiện được. Hãy thử lại.",
       "tryAgain": "Thử lại"
     },
     "loading": "Đang tải bình luận"
