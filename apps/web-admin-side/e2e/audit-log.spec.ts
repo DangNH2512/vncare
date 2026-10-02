@@ -300,8 +300,14 @@ test.describe('Audit log', () => {
   });
 
   test('an invalid filter in the URL offers a way out; a stale cursor restarts', async ({ page }) => {
+    // A non-UUID id is caught in the browser: the API must not be called with it.
+    const sent: string[] = [];
+    page.on('request', (r) => {
+      if (r.url().includes('/api/v1/admin/audit-logs?') && r.url().includes('not-a-uuid')) sent.push(r.url());
+    });
     await openAudit(page, 'admin', '?actorId=not-a-uuid');
     await expect(page.getByText('One of the filters is not valid.')).toBeVisible();
+    expect(sent).toEqual([]);
     await page.getByRole('button', { name: 'Clear filters' }).last().click();
     await expect(page).not.toHaveURL(/actorId=/);
     await expect(page.getByRole('heading', { level: 1, name: 'Audit log' })).toBeVisible();

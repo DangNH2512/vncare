@@ -38,34 +38,23 @@ export function getModerationCase(caseNumber: number): Promise<AdminModerationCa
   return call<AdminModerationCaseDetailResponseT>(casePath(caseNumber));
 }
 
-/** Cases pulled per page when looking for the open cases of one piece of content. */
-const RELATED_PAGE_LIMIT = 100;
-/** Hard stop so a very long queue cannot turn a detail page into dozens of requests. */
-const RELATED_MAX_PAGES = 5;
+/** Rows requested for the Reports block of one record; far above the open cases one item realistically has. */
+const RELATED_LIMIT = 20;
 
 /**
- * Open cases whose reported content is `targetId`.
- *
- * The queue has no `targetId` filter, so this narrows by `targetType`, pages
- * through the result and keeps the matching rows. `truncated` is true when the
- * page cap was hit and more rows may exist. Cases the caller has a conflict of
- * interest with never appear in the queue, so they are not counted either.
+ * Open cases whose reported content is `targetId`, from one server-filtered
+ * request. Only `items` is read: `stats` always describes the whole queue, not
+ * this target. Cases the caller has a conflict of interest with never appear in
+ * the queue, so they are not counted either.
  */
 export async function listCasesForTarget(
   targetType: 'event' | 'user',
   targetId: string,
-): Promise<{ cases: AdminModerationQueueResponseT['items']; truncated: boolean }> {
-  const cases: AdminModerationQueueResponseT['items'] = [];
-  let cursor: string | null = null;
-  for (let page = 0; page < RELATED_MAX_PAGES; page += 1) {
-    const result: AdminModerationQueueResponseT = await listModerationCases(
-      toQueryString({ targetType: [targetType], limit: RELATED_PAGE_LIMIT, cursor }),
-    );
-    cases.push(...result.items.filter((item) => item.targetId === targetId));
-    if (result.nextCursor === null) return { cases, truncated: false };
-    cursor = result.nextCursor;
-  }
-  return { cases, truncated: true };
+): Promise<AdminModerationQueueResponseT['items']> {
+  const result = await listModerationCases(
+    toQueryString({ targetType: [targetType], targetId, limit: RELATED_LIMIT }),
+  );
+  return result.items;
 }
 
 /** Takes the case for the caller, or assigns it to `assigneeId` (admin only, enforced by the API). */

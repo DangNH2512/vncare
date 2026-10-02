@@ -602,3 +602,12 @@ Cần Debate Gate: không. Các lựa chọn có đánh đổi (deny-list Redis 
 - **Quyết định (AD-15c):** unsuspend thủ công (A3) thu hồi dòng `moderation_actions` loại `suspended` còn hiệu lực (đặt `revoked_*`), nên strike của lần đó rơi khỏi `active_strikes` (tức chấp nhận kháng nghị). Job tự hết hạn không revoke; dòng đã hết hạn tự nhiên không bị đụng.
 - Follow-up: hàng đợi cập nhật realtime khi có case mới (chưa có hook socket trong admin app).
 - AD-16b xong. Follow-up nhỏ: `ActionDialog` thêm prop để đặt hint `i` cạnh nhãn field/tiêu đề, vì hiện hint đứng một hàng riêng. Cần card được phép sửa `action-dialog/**`.
+- AD-16c đã commit:
+  - khối Reports dùng filter `targetId` của server (tối đa 20, chỉ đọc `items`);
+  - `ActionDialog` có `hintPlacement='label'`;
+  - audit-log không gọi API khi chip id không phải UUID.
+- Key mồ côi `admin.moderation.related.truncated` được xoá cùng commit i18n kế tiếp.
+- Follow-up nhỏ:
+  - kiểm bằng mắt bề rộng tooltip `MetricHint` trong dialog (có thể cần `data-metric-anchor`);
+  - hiện "20+" khi `nextCursor` khác null;
+  - giữ cảnh báo hệ quả ở bước 2 của dialog có `hintPlacement='label'`.

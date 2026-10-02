@@ -1,6 +1,6 @@
 'use client';
 
-import { useId } from 'react';
+import { useId, type ReactNode } from 'react';
 import { ADMIN_REASON_MAX, ADMIN_REASON_MIN } from '@dnc/contracts';
 
 import { cn } from '../../_lib/cn';
@@ -20,6 +20,8 @@ export interface ReasonFieldProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  /** Rendered beside the label, e.g. an info trigger. */
+  labelAddon?: ReactNode;
 }
 
 /**
@@ -28,7 +30,7 @@ export interface ReasonFieldProps {
  * The counter shows the trimmed length, the same number the API validates, so
  * the button state and the server verdict cannot disagree.
  */
-export function ReasonField({ value, onChange, disabled = false }: ReasonFieldProps) {
+export function ReasonField({ value, onChange, disabled = false, labelAddon }: ReasonFieldProps) {
   const t = useTranslate();
   const id = useId();
   const noteId = `${id}-note`;
@@ -37,9 +39,12 @@ export function ReasonField({ value, onChange, disabled = false }: ReasonFieldPr
 
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-fg">
-        {t('admin.action.reason.label')}
-      </label>
+      <div className="flex items-center gap-1.5">
+        <label htmlFor={id} className="text-sm font-medium text-fg">
+          {t('admin.action.reason.label')}
+        </label>
+        {labelAddon}
+      </div>
       <textarea
         id={id}
         data-autofocus

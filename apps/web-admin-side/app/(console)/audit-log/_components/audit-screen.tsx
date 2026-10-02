@@ -11,7 +11,7 @@ import { Button, MetricHint, Pagination } from '../../../_components/ui';
 import { ApiError } from '../../../_lib/api';
 import { listAuditLogs } from '../../../_lib/audit-api';
 import { useListQuery } from '../../../_lib/list-query';
-import { AUDIT_FILTER_KEYS, AuditFilters } from './audit-filters';
+import { AUDIT_FILTER_KEYS, AuditFilters, hasInvalidIdFilter } from './audit-filters';
 import { AuditTable, type TargetAccess } from './audit-table';
 
 // The API has one fixed order (newest first), so the hook's sort is only a
@@ -54,7 +54,14 @@ export function AuditScreen() {
   const [reloads, setReloads] = useState(0);
   const [cursorReset, setCursorReset] = useState(false);
 
+  const invalidIds = hasInvalidIdFilter(list);
+
   useEffect(() => {
+    if (invalidIds) {
+      // A hand-edited or stale link: show the same recovery as a 400 without the round trip.
+      setState({ kind: 'queryInvalid' });
+      return undefined;
+    }
     let current = true;
     setState({ kind: 'loading' });
     listAuditLogs(query)
@@ -78,7 +85,7 @@ export function AuditScreen() {
     return () => {
       current = false;
     };
-  }, [query, reloads]);
+  }, [query, reloads, invalidIds]);
 
   const clearNotice = useCallback(() => setCursorReset(false), []);
   const retry = useCallback(() => setReloads((count) => count + 1), []);

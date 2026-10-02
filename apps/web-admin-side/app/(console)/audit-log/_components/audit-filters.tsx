@@ -17,6 +17,20 @@ export const AUDIT_FILTER_KEYS = [
   'entityId',
 ] as const;
 
+/** Same shape the API's `z.uuid()` accepts (RFC 9562 version and variant bits). */
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/**
+ * True when `actorId` or `entityId` in the URL is set but not a UUID. The
+ * screen then skips the request instead of provoking a 400 from the API.
+ */
+export function hasInvalidIdFilter(list: Pick<ListQuery<'createdAt'>, 'get'>): boolean {
+  return (['actorId', 'entityId'] as const).some((key) => {
+    const value = list.get(key);
+    return value !== '' && !UUID.test(value);
+  });
+}
+
 /** Short form of an id for a chip: the full value stays in the URL. */
 const shortId = (id: string): string => id.slice(0, 8);
 

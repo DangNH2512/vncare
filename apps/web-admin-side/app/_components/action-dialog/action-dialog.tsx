@@ -27,6 +27,12 @@ export interface ActionDialogProps {
   description: string;
   /** Longer rules and consequences, shown behind the info trigger. */
   hint: string;
+  /**
+   * Where the info trigger sits. `row` (default) is its own right-aligned row
+   * above the form; `label` puts it beside the reason label on step 1 and
+   * leaves step 2, which has no form, without a trigger.
+   */
+  hintPlacement?: 'row' | 'label';
   /** Who the action is about; `identifier` is what step 2 may ask to retype. */
   target: { name: string; identifier: string };
   /** Label of the target row on the review step. Defaults to "Account". */
@@ -73,6 +79,7 @@ export function ActionDialog({
   title,
   description,
   hint,
+  hintPlacement = 'row',
   target,
   targetLabel,
   identifierPrefix = '@',
@@ -187,14 +194,22 @@ export function ActionDialog({
       footer={footer}
     >
       <div ref={body} className="flex min-w-0 flex-col gap-4">
-        <div className="flex justify-end">
-          <MetricHint label={t('admin.action.hintLabel')} hint={hint} />
-        </div>
+        {hintPlacement === 'row' && (
+          <div className="flex justify-end">
+            <MetricHint label={t('admin.action.hintLabel')} hint={hint} />
+          </div>
+        )}
 
         {step === 1 ? (
           <>
             {fields}
-            <ReasonField value={reason} onChange={setReason} />
+            <ReasonField
+              value={reason}
+              onChange={setReason}
+              {...(hintPlacement === 'label'
+                ? { labelAddon: <MetricHint label={t('admin.action.hintLabel')} hint={hint} /> }
+                : {})}
+            />
           </>
         ) : (
           <>

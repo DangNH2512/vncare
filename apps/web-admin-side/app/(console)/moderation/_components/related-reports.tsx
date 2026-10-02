@@ -17,15 +17,15 @@ import { useNow } from './use-now';
 type State =
   | { kind: 'loading' }
   | { kind: 'error' }
-  | { kind: 'ready'; cases: AdminModerationQueueItemT[]; truncated: boolean };
+  | { kind: 'ready'; cases: AdminModerationQueueItemT[] };
 
 /**
  * "Reports" block of an event or user detail (D-E9): the open moderation cases
  * about this one record, each linking to its case page.
  *
  * Renders nothing for roles without `moderation.queue.view`, so the block is
- * absent rather than empty for them. The queue has no filter by content id, so
- * the matching cases are picked out client-side (see `listCasesForTarget`).
+ * absent rather than empty for them. The API filters by content id, so one
+ * request returns exactly this record's cases (see `listCasesForTarget`).
  */
 export function RelatedReports({ targetType, targetId }: { targetType: 'event' | 'user'; targetId: string }) {
   const { user } = useAuth();
@@ -46,7 +46,7 @@ function RelatedReportsBody({ targetType, targetId }: { targetType: 'event' | 'u
     let current = true;
     setState({ kind: 'loading' });
     listCasesForTarget(targetType, targetId)
-      .then(({ cases, truncated }) => current && setState({ kind: 'ready', cases, truncated }))
+      .then((cases) => current && setState({ kind: 'ready', cases }))
       .catch(() => current && setState({ kind: 'error' }));
     return () => {
       current = false;
@@ -81,7 +81,7 @@ function RelatedReportsBody({ targetType, targetId }: { targetType: 'event' | 'u
         </p>
       )}
 
-      {state.kind === 'ready' && state.cases.length === 0 && !state.truncated && (
+      {state.kind === 'ready' && state.cases.length === 0 && (
         <p className="text-sm text-fg-muted">{t('admin.moderation.related.none')}</p>
       )}
 
@@ -106,10 +106,6 @@ function RelatedReportsBody({ targetType, targetId }: { targetType: 'event' | 'u
             </li>
           ))}
         </ul>
-      )}
-
-      {state.kind === 'ready' && state.truncated && (
-        <p className="text-xs text-fg-muted">{t('admin.moderation.related.truncated')}</p>
       )}
     </Card>
   );

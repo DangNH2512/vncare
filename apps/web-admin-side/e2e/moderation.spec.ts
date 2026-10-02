@@ -495,6 +495,7 @@ test.describe('Moderation console', () => {
     const dialog = page.getByRole('dialog', { name: 'Change severity' });
     await dialog.getByRole('combobox', { name: 'New severity' }).click();
     await dialog.getByRole('option', { name: 'High' }).click();
+    await shot(page, 'dialog-severity');
     await fillReason(dialog, REASON);
     await dialog.getByRole('button', { name: 'Change severity' }).click();
     await expect(page.getByRole('status').filter({ hasText: 'Severity changed to High.' })).toBeVisible();

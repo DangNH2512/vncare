@@ -321,6 +321,7 @@ export function CaseDetailActions({ data, refresh }: CaseDetailActionsProps) {
             ? 'admin.moderation.dialog.severity.hint'
             : 'admin.moderation.dialog.decide.hint',
         )}
+        hintPlacement="label"
         target={{
           name: data.target.currentExcerpt ?? data.target.id.slice(0, 8),
           identifier: String(data.caseNumber),

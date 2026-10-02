@@ -12,8 +12,9 @@ const FIELD_KEY: Readonly<Record<string, MessageKey>> = {
   status: 'admin.audit.detail.field.status',
 };
 
-const has = (map: Readonly<Record<string, MessageKey>>, key: string): boolean =>
-  Object.prototype.hasOwnProperty.call(map, key);
+/** Own-property lookup, so a value like `constructor` never resolves to an inherited member. */
+const lookup = (map: Readonly<Record<string, MessageKey>>, key: string): MessageKey | undefined =>
+  Object.hasOwn(map, key) ? map[key] : undefined;
 
 /** Plain text of one value. Known enums read as their label; anything else is stringified. */
 function valueText(
@@ -24,16 +25,13 @@ function valueText(
 ): string {
   if (value === undefined || value === null) return NO_VALUE;
   if (typeof value === 'string') {
-    if (field === 'role') {
-      const roles: Readonly<Record<string, MessageKey>> = ROLE_KEY;
-      if (has(roles, value)) return t(roles[value] as MessageKey);
-    }
-    if (field === 'status') {
-      const map: Readonly<Record<string, MessageKey>> =
-        entityType === 'event' ? EVENT_STATUS_LABEL_KEY : STATUS_KEY;
-      if (has(map, value)) return t(map[value] as MessageKey);
-    }
-    return value;
+    const key =
+      field === 'role'
+        ? lookup(ROLE_KEY, value)
+        : field === 'status'
+          ? lookup(entityType === 'event' ? EVENT_STATUS_LABEL_KEY : STATUS_KEY, value)
+          : undefined;
+    return key === undefined ? value : t(key);
   }
   if (typeof value === 'number' || typeof value === 'boolean') return String(value);
   return JSON.stringify(value);
@@ -56,11 +54,11 @@ export function AuditDiff({ item, t }: { item: AdminAuditItemT; t: Translate }) 
   return (
     <ul className="flex flex-col gap-1">
       {fields.map((field) => {
-        const labelKey = has(FIELD_KEY, field) ? FIELD_KEY[field] : undefined;
+        const labelKey = lookup(FIELD_KEY, field);
         return (
           <li key={field} className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
             {labelKey === undefined ? (
-              <span translate="no" className="font-mono text-xs text-fg-muted">
+              <span translate="no" className="font-mono text-xs break-all text-fg-muted">
                 {field}
               </span>
             ) : (
