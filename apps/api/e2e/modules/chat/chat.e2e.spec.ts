@@ -280,7 +280,8 @@ describe('chat module', () => {
       .get(`/api/v1/conversations/${id}/messages`)
       .set(speaker.headers)
       .expect(200);
-    expect(listed.body.data.items).toHaveLength(0);
+    expect(listed.body.data.items).toHaveLength(1);
+    expect(listed.body.data.items[0]).toMatchObject({ status: 'removed', body: null });
   });
 
   it('opens an event group room and lets a member join it', async () => {

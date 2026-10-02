@@ -291,3 +291,26 @@ Cần Debate Gate: không. Các đánh đổi (follow A/B, socket proxy, payload
 - Review S4-1: approved. Sửa nhanh trước commit: cursor `/me/following` được validate trước khi query, không còn `catch` nuốt lỗi DB; thêm test "cùng khu" cho suggestions. Cursor hỏng ở API phía người dùng thì về trang 1 (cùng quy ước post/comment); admin vẫn trả 400.
 - **Nợ:** (1) `FollowRepository.deleteAllForUser(userId, tx)` chưa có caller, gắn vào card xoá/ẩn danh tài khoản (F-5). (2) `idx_follows_target` là partial `WHERE notify`; khi có tính năng tắt thông báo thì thêm index đầy đủ `(target_type, target_id)` hoặc tách DELETE. (3) Replay follow khi đã hết 30 lượt/giờ trả 429, chấp nhận theo AC-13.
 - Review S2-3: approved. **Follow-up BE:** API bình luận chưa có idempotency, nên client chống gửi trùng theo D-S2-8 chỉ ở mức best-effort (lỗi mơ hồ thì tìm lại bình luận cùng tác giả và nội dung). Nên thêm `clientCommentId` cùng unique index `(target, author, client_comment_id)`, theo mẫu `clientMessageId` của chat. Cần migration, phải trình chủ dự án.
+
+## 11. Ghi chú Coordinator: pha web S2/S3/S4 (02/10/2026)
+
+- Đã commit:
+  - S4-2 (97583d8): gợi ý theo dõi và `FollowButton`.
+  - S4-3 (e912e69): Follow ở hồ sơ và trang `/following`.
+  - S2-3 (c9c4a14): bình luận và like trên trang sự kiện.
+- **Bài học lặp lại (S4-2, S4-3):** state lạc quan rò giữa hai phiên. Mọi component có state lạc quan phải reset theo viewer bằng mẫu `epoch`: không tăng khi khách → member lần đầu (để giữ pending intent), tăng khi A → khách / A → B. Phải có test đổi tài khoản.
+- **Review S3-2 (chat web): changes-requested.**
+  - Lỗi phải sửa:
+    - Hàng chờ gửi sau khi đổi tài khoản.
+    - Đối chiếu outbox bằng body làm mất tin trùng nội dung.
+    - Hụt tin khi có >30 tin giữa hai lần poll.
+  - **Quyết định coordinator:**
+    - Poll theo brief: 5 s khi tab visible + focused, 30 s khi visible nhưng không focus, dừng khi hidden.
+    - Làm hàng đợi offline tự gửi lại bằng cùng `clientMessageId` (D-S3-12), thay hẳn đối chiếu bằng body.
+    - VI thống nhất gọi là "trò chuyện".
+    - Đường dẫn `(shell)/_components/chat/**` được chấp nhận.
+- **S3-1b (backend):** `listMessages` trả tombstone (`status` removed, `body` null) cho tin đã gỡ (D-S3-9, S3-AC-6), không đổi contract.
+- **Follow-up:**
+  - `viewerRsvpStatus` chưa trả `attended`, nên người đã check-in trong 48 h sau sự kiện thấy lời nhắc RSVP dù server cho vào chat.
+  - Kiểm bàn phím ảo iOS thật cho `/events/[id]/chat` (S3-AC-22).
+- Follow-up (S3-1b, cần trình chủ dự án): thêm migration mới (không sửa 0005) để nhánh `delta < 0` của `sync_message_counters` trừ `unread_count` của participant chưa đọc tin bị xoá; hiện badge có thể đếm dư tới khi người nhận mark-read.

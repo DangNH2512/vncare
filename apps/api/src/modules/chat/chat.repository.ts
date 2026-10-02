@@ -157,7 +157,12 @@ interface ConversationCursor extends Record<string, unknown> {
 
 const CONVERSATION_COLUMNS = `
   c.id, c.type, c.event_id, c.occurrence_id, c.created_by_user_id,
-  c.request_status, c.status, c.last_message_at, c.last_message_preview,
+  c.request_status, c.status, c.last_message_at,
+  -- Derived, not the stored column: that one keeps the body of a message
+  -- deleted after it was posted.
+  (SELECT left(lm.body, 140) FROM messages lm
+    WHERE lm.conversation_id = c.id AND lm.status = 'visible' AND lm.deleted_at IS NULL
+    ORDER BY lm.id DESC LIMIT 1) AS last_message_preview,
   c.message_count, c.created_at, me.unread_count,
   CASE WHEN occ.starts_at IS NULL THEN NULL ELSE e.title END AS event_title,
   occ.starts_at AS event_starts_at, occ.ends_at AS event_ends_at
@@ -619,6 +624,9 @@ export class ChatRepository {
   /**
    * One page of a thread, newest first.
    *
+   * Removed messages stay in the page so the client can show a tombstone; the
+   * mapper strips their content. Moderation-hidden messages are left out.
+   *
    * The cursor is a message id: UUIDv7 sorts by creation time, so no separate
    * timestamp column is needed in the key and there are no ties to break.
    */
@@ -630,8 +638,7 @@ export class ChatRepository {
     const { rows } = await this.pool.query<MessageRow>(
       `SELECT ${MESSAGE_COLUMNS} ${MESSAGE_FROM}
         WHERE m.conversation_id = $1
-          AND m.deleted_at IS NULL
-          AND m.status = 'visible'
+          AND ((m.status = 'visible' AND m.deleted_at IS NULL) OR m.status = 'removed')
           AND ($2::uuid IS NULL OR m.id < $2)
         ORDER BY m.id DESC
         LIMIT $3`,
@@ -716,6 +723,7 @@ export class ChatRepository {
                  WHERE m.conversation_id = $1
                    AND m.id > $3
                    AND m.deleted_at IS NULL
+                   AND m.status = 'visible'
                    AND m.sender_user_id IS DISTINCT FROM $2
               )
         WHERE conversation_id = $1

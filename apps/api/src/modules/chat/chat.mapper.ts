@@ -58,6 +58,7 @@ function toChatWindow(row: ConversationRow): ConversationResponseT['chatWindow']
 }
 
 export function toMessageResponse(row: MessageRow): MessageResponseT {
+  const visible = row.status === 'visible';
   return {
     id: row.id,
     conversationId: row.conversation_id,
@@ -68,13 +69,14 @@ export function toMessageResponse(row: MessageRow): MessageResponseT {
       trustLevel: row.sender_trust_level,
     }),
     type: row.type,
-    body: row.body,
-    bodyLocale: row.body_locale,
-    mediaId: row.media_id,
-    sharedEventId: row.shared_event_id,
-    replyToMessageId: row.reply_to_message_id,
+    // A tombstone keeps who and when, never what.
+    body: visible ? row.body : null,
+    bodyLocale: visible ? row.body_locale : null,
+    mediaId: visible ? row.media_id : null,
+    sharedEventId: visible ? row.shared_event_id : null,
+    replyToMessageId: visible ? row.reply_to_message_id : null,
     status: row.status,
-    editedAt: row.edited_at?.toISOString() ?? null,
+    editedAt: visible ? (row.edited_at?.toISOString() ?? null) : null,
     createdAt: row.created_at.toISOString(),
   };
 }
