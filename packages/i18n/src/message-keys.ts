@@ -706,7 +706,6 @@ export type MessageKey =
   | 'comments.delete.bodyWithReplies'
   | 'comments.delete.title'
   | 'comments.edited'
-  | 'comments.empty.body'
   | 'comments.empty.cta'
   | 'comments.empty.title'
   | 'comments.error.action'
@@ -1924,7 +1923,6 @@ export const MESSAGE_KEYS = [
   'comments.delete.bodyWithReplies',
   'comments.delete.title',
   'comments.edited',
-  'comments.empty.body',
   'comments.empty.cta',
   'comments.empty.title',
   'comments.error.action',

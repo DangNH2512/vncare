@@ -1575,7 +1575,6 @@
     "signInPrompt": "Sign in to ask a question or leave a comment.",
     "empty": {
       "title": "No questions yet",
-      "body": "Ask the host anything — what to bring, how to find the spot, whether beginners are welcome.",
       "cta": "Ask a question"
     },
     "pinned": {

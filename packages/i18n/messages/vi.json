@@ -1575,7 +1575,6 @@
     "signInPrompt": "Đăng nhập để đặt câu hỏi hoặc bình luận.",
     "empty": {
       "title": "Chưa có câu hỏi nào",
-      "body": "Hỏi người tổ chức bất cứ điều gì: cần mang gì, tìm chỗ thế nào, người mới có tham gia được không.",
       "cta": "Đặt câu hỏi"
     },
     "pinned": {

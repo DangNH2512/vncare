@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useCallback, useEffect, useState } from 'react';
+import { use, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { AttendeeResponseT, EventResponseT } from '@dnc/contracts';
 
@@ -25,6 +25,8 @@ import {
 } from '../../../_lib/api';
 import { translateApiError } from '../../../_lib/api-error';
 import { cn } from '../../../_lib/cn';
+import { CommentThread } from '../../_components/comments/comment-thread';
+import { EventReaction } from '../../_components/comments/reaction-button';
 import {
   formatEventDateLong,
   formatEventTimeRange,
@@ -41,6 +43,16 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const t = useTranslate();
   const { locale } = useLocale();
   const { user, loading: authLoading, requireAuth } = useAuth();
+
+  // Remount the thread when the viewer changes between members or to a guest, so
+  // one member's draft never reaches the next. Guest -> member keeps it: that is
+  // the sign-in-then-post flow (S2-AC-13).
+  const threadKey = useRef({ viewer: null as string | null, n: 0 });
+  const viewerId = user?.id ?? null;
+  if (threadKey.current.viewer !== viewerId) {
+    if (threadKey.current.viewer !== null) threadKey.current.n += 1;
+    threadKey.current.viewer = viewerId;
+  }
 
   const [event, setEvent] = useState<EventResponseT | null>(null);
   const [attendees, setAttendees] = useState<AttendeeResponseT[] | null>(null);
@@ -130,6 +142,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const mine = event.viewerRsvpStatus;
   const isOwn = user?.handle === event.organizer.handle;
   const cancelled = event.status === 'cancelled';
+  // The API answers 404 for comments and reactions on anything not public.
+  const commentsVisible = event.status === 'published' || cancelled;
 
   return (
     <div className="flex flex-col gap-4 px-4 py-6 md:px-0 md:py-8">
@@ -190,42 +204,46 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           </span>
         </div>
 
-        {!cancelled && (
-          <div className="flex flex-wrap items-center gap-2">
-            {isOwn ? (
-              event.status === 'draft' && (
-                <Button disabled={busy} onClick={() => void act(() => publishEvent(event.id))}>
-                  {t('event.detail.publish')}
+        <div className="flex flex-wrap items-center gap-2">
+          {!cancelled && (
+            <>
+              {isOwn ? (
+                event.status === 'draft' && (
+                  <Button disabled={busy} onClick={() => void act(() => publishEvent(event.id))}>
+                    {t('event.detail.publish')}
+                  </Button>
+                )
+              ) : mine === null ? (
+                <Button
+                  disabled={busy}
+                  onClick={() =>
+                    requireAuth(() => void act(() => joinOccurrence(event.occurrenceId)))
+                  }
+                >
+                  {busy
+                    ? t('rsvp.action.working')
+                    : full
+                      ? t('feed.joinWaitlist')
+                      : t('feed.rsvp')}
                 </Button>
-              )
-            ) : mine === null ? (
-              <Button
-                disabled={busy}
-                onClick={() =>
-                  requireAuth(() => void act(() => joinOccurrence(event.occurrenceId)))
-                }
-              >
-                {busy
-                  ? t('rsvp.action.working')
-                  : full
-                    ? t('feed.joinWaitlist')
-                    : t('feed.rsvp')}
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                disabled={busy}
-                onClick={() => void act(() => cancelRsvp(event.occurrenceId))}
-              >
-                {busy
-                  ? t('rsvp.action.working')
-                  : mine === 'waitlisted'
-                    ? t('feed.onWaitlist')
-                    : t('feed.going')}
-              </Button>
-            )}
-          </div>
-        )}
+              ) : (
+                <Button
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => void act(() => cancelRsvp(event.occurrenceId))}
+                >
+                  {busy
+                    ? t('rsvp.action.working')
+                    : mine === 'waitlisted'
+                      ? t('feed.onWaitlist')
+                      : t('feed.going')}
+                </Button>
+              )}
+            </>
+          )}
+          {/* Interest is allowed on a cancelled event too; drafts are not public yet. */}
+          {commentsVisible && <EventReaction eventId={event.id} />}
+        </div>
 
         {error !== null && (
           <p role="alert" className="rounded-md bg-danger-subtle px-3 py-2 text-sm text-danger-text">
@@ -280,6 +298,16 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           </ul>
         )}
       </Card>
+
+      {commentsVisible && (
+        <CommentThread
+          key={threadKey.current.n}
+          targetType="event"
+          targetId={event.id}
+          isThreadOwner={isOwn}
+          closed={cancelled}
+        />
+      )}
     </div>
   );
 }
