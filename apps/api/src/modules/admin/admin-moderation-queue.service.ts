@@ -71,10 +71,12 @@ export class AdminModerationQueueService {
     caseNumber: number,
   ): Promise<AdminModerationCaseDetailResponseT> {
     const row = await this.queue.findDetail(caseNumber);
-    if (!row) throw new NotFoundException({
+    if (!row) {
+      throw new NotFoundException({
         code: 'CASE_NOT_FOUND',
         messageKey: 'errors.admin.caseNotFound',
       });
+    }
     if (await this.queue.hasConflictRead(row.id, caller.id)) {
       throw new ForbiddenException({
         code: 'CONFLICT_OF_INTEREST',
@@ -93,6 +95,4 @@ export class AdminModerationQueueService {
     ]);
     return toCaseDetail({ row, snapshot, current, owner, reports, actions, now });
   }
-
-
 }

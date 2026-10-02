@@ -152,6 +152,7 @@ export class AdminUserActionsService {
       if (!(await this.actions.transitionStatus(tx, target.id, 'suspended', 'active', null))) {
         throw fail.transition();
       }
+      await this.actions.revokeActiveSuspension(tx, target.id, actor.id, reason);
       await this.audit.record(tx, {
         actor: { userId: actor.id, type: 'staff', role: actorRole },
         action: 'user.unsuspended',

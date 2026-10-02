@@ -85,7 +85,6 @@ export interface ActionDetailRow {
   created_at: Date;
 }
 
-
 /**
  * Read side of the moderation console: the queue (with the conflict-of-interest
  * filter) and the case detail. Split from `AdminModerationRepository`, which
@@ -119,6 +118,7 @@ export class AdminModerationQueueRepository {
     if (query.severity) where.push(`c.severity::text = ANY(${bind(query.severity)}::text[])`);
     if (query.status) where.push(`c.status::text = ANY(${bind(query.status)}::text[])`);
     if (query.targetType) where.push(`c.target_type::text = ANY(${bind(query.targetType)}::text[])`);
+    if (query.targetId) where.push(`c.target_id = ${bind(query.targetId)}::uuid`);
     if (query.assignee === 'me') where.push(`c.assigned_to_user_id = ${bind(viewerId)}::uuid`);
     if (query.assignee === 'unassigned') where.push(`c.assigned_to_user_id IS NULL`);
     if (query.overdue === true) where.push(`c.sla_due_at < ${bind(now)}::timestamptz`);
@@ -151,7 +151,10 @@ export class AdminModerationQueueRepository {
     return rows;
   }
 
-  /** KPI strip over every open and in-review case the viewer may see, whatever the filters. */
+  /**
+   * KPI strip over every open and in-review case the viewer may see. Ignores every
+   * query filter on purpose; a `targetId` view must read `items`, not these counts.
+   */
   async queueStats(viewerId: string, now: Date): Promise<QueueStatsRow> {
     const { rows } = await this.pool.query<QueueStatsRow>(
       `SELECT count(*)::int AS open,
@@ -261,5 +264,4 @@ export class AdminModerationQueueRepository {
     );
     return rows;
   }
-
 }

@@ -431,6 +431,26 @@ describe('admin moderation console', () => {
       expect(res.body.code).toBe('ADMIN_CURSOR_INVALID');
     });
 
+    it('filters by targetId with exactly one targetType and keeps the conflict filter', async () => {
+      const eventId = await makeEvent();
+      const { row } = await openCase('event', eventId, 'spam');
+      const other = (await openCase('event', await makeEvent(), 'spam')).row;
+      const ids = [row.id, other.id];
+      expect((await queueIds(moderator, ids, `&targetType=event&targetId=${eventId}`)).order).toEqual([row.id]);
+      const none = await get(`${BASE}?targetType=event&targetId=${unknownId()}`, moderator).expect(200);
+      expect(none.body.data.items).toEqual([]);
+      for (const bad of [`&targetId=${eventId}`, `&targetType=event,post&targetId=${eventId}`, '&targetType=event&targetId=nope']) {
+        const res = await get(`${BASE}?x=1${bad}`, moderator);
+        expect(res.status, bad).toBe(400);
+        expect(res.body.code).toBe('ADMIN_QUERY_INVALID');
+      }
+      // The organizer is conflicted: the case stays invisible even when asked for by id.
+      const organizerAdmin = await makeEvent(admin);
+      await openCase('event', organizerAdmin, 'spam');
+      const own = await get(`${BASE}?targetType=event&targetId=${organizerAdmin}`, admin).expect(200);
+      expect(own.body.data.items).toEqual([]);
+    });
+
     it('drops closed cases from the queue', async () => {
       const { row } = await openCase('event', await makeEvent(), 'spam');
       await decide(row.case_number, moderator, { actionType: 'no_action' }).expect(200);
@@ -607,6 +627,17 @@ describe('admin moderation console', () => {
       expect((await assign(row.case_number, admin, { assigneeId: 'nope' })).status).toBe(400);
       expect((await assign(row.case_number, admin, { extra: 1 })).status).toBe(400);
       expect((await caseById(row.id)).assigned_to_user_id).toBeNull();
+    });
+
+    it('answers 409 when the case is already theirs but never had a first response, and audits nothing', async () => {
+      const { row } = await openCase('event', await makeEvent(), 'scam');
+      await pool.query(
+        `UPDATE moderation_cases SET assigned_to_user_id = $2, status = 'in_review', first_response_at = NULL WHERE id = $1`,
+        [row.id, moderator.id],
+      );
+      const res = await assign(row.case_number, moderator).expect(409);
+      expect(res.body.code).toBe('INVALID_TRANSITION');
+      expect((await auditOf(row.id)).filter((l) => l.action === 'moderation_case.assigned')).toHaveLength(0);
     });
 
     it('answers 409 for a closed case', async () => {
@@ -922,6 +953,21 @@ describe('admin moderation console', () => {
       return (await openCase('post', postId, reasonGroup)).row;
     }
 
+    it('A3 unsuspend revokes the suspended action written by decide (NIT-2)', async () => {
+      const owner = await makeActor({ trustLevel: 1 });
+      const row = await suspensionCase(owner);
+      await decide(row.case_number, moderator, { actionType: 'suspended', expiresAt: inDays(7), reasonCode: 'financial_scam' }).expect(200);
+      const reason = 'Appeal accepted after review';
+      await post(`/api/v1/admin/users/${owner.id}/unsuspend`, admin, { reason, confirm: true }).expect(200);
+      const [action] = await actionsOf(row.id);
+      const revoked = (
+        await pool.query(`SELECT revoked_at, revoked_by_user_id, revoke_reason FROM moderation_actions WHERE id = $1`, [action?.id])
+      ).rows[0];
+      expect(revoked.revoked_at).toBeInstanceOf(Date);
+      expect(revoked.revoked_by_user_id).toBe(admin.id);
+      expect(revoked.revoke_reason).toBe(reason);
+    });
+
     it('suspends a member for 7 days, cuts the session and logs it (A4-AC-7)', async () => {
       const owner = await makeActor({ trustLevel: 1 });
       const row = await suspensionCase(owner);
@@ -1088,6 +1134,24 @@ describe('admin moderation console', () => {
         (scheduler as unknown as { lockPending: boolean }).lockPending = false;
       }
     }, 15_000);
+
+    it('does not stick lockPending when set throws synchronously', async () => {
+      const scheduler = app.get(ExpireSuspensionsScheduler);
+      const queueRedis = app.get<Redis>(REDIS_QUEUE);
+      const set = vi.spyOn(queueRedis, 'set').mockImplementation(() => {
+        throw new Error('sync boom');
+      });
+      try {
+        expect(await scheduler.tick()).not.toBeNull();
+        expect((scheduler as unknown as { lockPending: boolean }).lockPending).toBe(false);
+        expect(set).toHaveBeenCalledTimes(1);
+        // The flag is free, so the next tick tries the lock again.
+        await scheduler.tick();
+        expect(set).toHaveBeenCalledTimes(2);
+      } finally {
+        set.mockRestore();
+      }
+    });
 
     it('skips a tick while the previous pass is still running', async () => {
       const scheduler = app.get(ExpireSuspensionsScheduler);

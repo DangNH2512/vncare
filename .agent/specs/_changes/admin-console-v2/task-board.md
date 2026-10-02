@@ -597,3 +597,8 @@ Cần Debate Gate: không. Các lựa chọn có đánh đổi (deny-list Redis 
   - Test riêng cho nhánh "case đã gán nhưng `first_response_at` NULL → 409".
   - Scheduler: đặt `lockPending = true` bên trong `try`.
   - Ghi chú ngoại lệ quy ước 4 class cho thư mục `admin/`, vì ở đây có nhiều service/repository con theo màn hình (users, events, audit, moderation-queue, moderation-effects).
+- AD-16 xong: console `/moderation` và `/moderation/[caseNumber]`, khối Reports trên trang chi tiết user/event, link case trong audit-log, nhãn trạng thái sự kiện trong overview dùng nhãn admin.
+- **Follow-up BE (AD-15c):** thêm filter `targetType` + `targetId` cho `GET /admin/moderation/cases` (contract `AdminModerationQueueQuery` additive), để khối Reports không phải lọc phía client (hiện tối đa 5 × 100 case). Ở quy mô beta không chặn commit.
+- **Quyết định (AD-15c):** unsuspend thủ công (A3) thu hồi dòng `moderation_actions` loại `suspended` còn hiệu lực (đặt `revoked_*`), nên strike của lần đó rơi khỏi `active_strikes` (tức chấp nhận kháng nghị). Job tự hết hạn không revoke; dòng đã hết hạn tự nhiên không bị đụng.
+- Follow-up: hàng đợi cập nhật realtime khi có case mới (chưa có hook socket trong admin app).
+- AD-16b xong. Follow-up nhỏ: `ActionDialog` thêm prop để đặt hint `i` cạnh nhãn field/tiêu đề, vì hiện hint đứng một hàng riêng. Cần card được phép sửa `action-dialog/**`.

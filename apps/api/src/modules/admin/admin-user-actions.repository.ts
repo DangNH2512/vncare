@@ -97,4 +97,28 @@ export class AdminUserActionsRepository {
     );
     return rowCount === 1;
   }
+
+  /**
+   * Marks the newest in-force (not revoked, not naturally expired) `suspended` action of the user as revoked, whether
+   * it came from a case or from a manual suspend. Only `revoked_*` change, which
+   * the append-only trigger allows. No such row is fine (returns false).
+   */
+  async revokeActiveSuspension(
+    tx: PoolClient,
+    subjectUserId: string,
+    revokedByUserId: string,
+    reason: string,
+  ): Promise<boolean> {
+    const { rowCount } = await tx.query(
+      `UPDATE moderation_actions
+          SET revoked_at = now(), revoked_by_user_id = $2, revoke_reason = $3
+        WHERE id = (SELECT id FROM moderation_actions
+                     WHERE subject_user_id = $1 AND action_type = 'suspended'
+                       AND revoked_at IS NULL
+                       AND (expires_at IS NULL OR expires_at > now())
+                     ORDER BY id DESC LIMIT 1)`,
+      [subjectUserId, revokedByUserId, reason],
+    );
+    return rowCount === 1;
+  }
 }

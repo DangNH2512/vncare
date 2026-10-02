@@ -100,17 +100,18 @@ export class ExpireSuspensionsScheduler implements OnApplicationBootstrap, OnApp
   private async acquire(): Promise<boolean> {
     // A previous lock command never settled: Redis is unreachable. Do not queue another.
     if (this.lockPending) return true;
-    this.lockPending = true;
-    const command = this.redis
-      .set(EXPIRE_SUSPENSIONS_LOCK_KEY, this.holder, 'PX', LOCK_TTL_MS, 'NX')
-      .finally(() => {
+    let timer: NodeJS.Timeout | undefined;
+    try {
+      // Set inside the try so a synchronous throw from `set` cannot leave the flag stuck.
+      this.lockPending = true;
+      const command = Promise.resolve(
+        this.redis.set(EXPIRE_SUSPENSIONS_LOCK_KEY, this.holder, 'PX', LOCK_TTL_MS, 'NX'),
+      ).finally(() => {
         this.lockPending = false;
       });
-    let timer: NodeJS.Timeout | undefined;
-    const timeout = new Promise<'timeout'>((resolve) => {
-      timer = setTimeout(() => resolve('timeout'), LOCK_TIMEOUT_MS);
-    });
-    try {
+      const timeout = new Promise<'timeout'>((resolve) => {
+        timer = setTimeout(() => resolve('timeout'), LOCK_TIMEOUT_MS);
+      });
       const reply = await Promise.race([command, timeout]);
       if (reply === 'timeout') {
         this.logger.warn('lock command timed out, running unlocked');
@@ -118,6 +119,7 @@ export class ExpireSuspensionsScheduler implements OnApplicationBootstrap, OnApp
       }
       return reply === 'OK';
     } catch (error) {
+      this.lockPending = false;
       this.logger.warn(`lock unavailable, running unlocked: ${(error as Error).message}`);
       return true;
     } finally {

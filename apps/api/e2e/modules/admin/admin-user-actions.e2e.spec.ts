@@ -598,6 +598,52 @@ describe('admin user actions', () => {
       await me({ authorization: `Bearer ${relogin.body.data.accessToken as string}` }).expect(200);
     });
 
+    it('revokes the in-force suspended action (retrofit row with NULL case) in the same transaction', async () => {
+      const target = await make();
+      await suspend(target.id, admin).expect(200);
+      const reason = 'Appeal accepted after review';
+      await unsuspend(target.id, admin, { reason, confirm: true }).expect(200);
+      const { rows } = await pool.query(
+        `SELECT case_id, revoked_at, revoked_by_user_id, revoke_reason
+           FROM moderation_actions WHERE subject_user_id = $1 AND action_type = 'suspended'`,
+        [target.id],
+      );
+      expect(rows).toHaveLength(1);
+      expect(rows[0].case_id).toBeNull();
+      expect(rows[0].revoked_at).toBeInstanceOf(Date);
+      expect(rows[0].revoked_by_user_id).toBe(admin.id);
+      expect(rows[0].revoke_reason).toBe(reason);
+    });
+
+    it('revokes only the in-force suspended row, not one that expired by itself', async () => {
+      const target = await make({ status: 'suspended' });
+      const insert = (expires: string) =>
+        pool.query(
+          `INSERT INTO moderation_actions (case_id, action_type, actor_user_id, actor_role, subject_user_id,
+             target_type, target_id, reason_code, reason_note, severity, expires_at)
+           VALUES (NULL, 'suspended', $1, 'admin', $2, 'user', $2, 'other', $3, 'high', now() + $4::interval)
+           RETURNING id`,
+          [admin.id, target.id, REASON, expires],
+        );
+      const expired = (await insert('-2 days')).rows[0].id as string;
+      const live = (await insert('3 days')).rows[0].id as string;
+      await unsuspend(target.id, admin).expect(200);
+      const { rows } = await pool.query(
+        `SELECT id, revoked_at FROM moderation_actions WHERE id = ANY($1::uuid[])`,
+        [[expired, live]],
+      );
+      const byId = Object.fromEntries(rows.map((r) => [r.id, r.revoked_at]));
+      expect(byId[expired]).toBeNull();
+      expect(byId[live]).toBeInstanceOf(Date);
+    });
+
+    it('skips quietly when the account has no suspended action row', async () => {
+      const target = await make({ status: 'suspended' });
+      await unsuspend(target.id, admin).expect(200);
+      const { rows } = await pool.query(`SELECT 1 FROM moderation_actions WHERE subject_user_id = $1`, [target.id]);
+      expect(rows).toHaveLength(0);
+    });
+
     it('answers 409 for an active account and writes nothing', async () => {
       const target = await make();
       const res = await unsuspend(target.id, admin);

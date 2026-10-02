@@ -129,6 +129,13 @@ describe('AdminModerationQueueQuery', () => {
     expect(AdminModerationQueueQuery.safeParse({ status: 'resolved' }).success).toBe(false);
   });
 
+  it('accepts targetId only with exactly one targetType', () => {
+    expect(AdminModerationQueueQuery.safeParse({ targetType: 'event', targetId: id }).success).toBe(true);
+    expect(AdminModerationQueueQuery.safeParse({ targetId: id }).success).toBe(false);
+    expect(AdminModerationQueueQuery.safeParse({ targetType: 'event,post', targetId: id }).success).toBe(false);
+    expect(AdminModerationQueueQuery.safeParse({ targetType: 'event', targetId: 'nope' }).success).toBe(false);
+  });
+
   it('is strict and bounded', () => {
     expect(AdminModerationQueueQuery.safeParse({ sort: 'severity' }).success).toBe(false);
     expect(AdminModerationQueueQuery.safeParse({ limit: '101' }).success).toBe(false);

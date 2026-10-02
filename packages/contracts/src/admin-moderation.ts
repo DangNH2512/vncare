@@ -107,10 +107,13 @@ export type ModerationPersonT = z.infer<typeof ModerationPerson>;
  * Sort is fixed (severity, then `sla_due_at`), so there is no sort parameter.
  * Only `open` and `in_review` cases are ever returned.
  */
-export const AdminModerationQueueQuery = z.strictObject({
+export const AdminModerationQueueQuery = z
+  .strictObject({
   severity: z.preprocess(csv, z.array(ModerationSeverity).min(1)).optional(),
   status: z.preprocess(csv, z.array(ModerationQueueStatus).min(1)).optional(),
   targetType: z.preprocess(csv, z.array(ReportTargetType).min(1)).optional(),
+  /** Cases about one object (the "Reports" block, D-E9); needs exactly one `targetType`. */
+  targetId: z.uuid().optional(),
   assignee: z.enum(['me', 'unassigned', 'any']).default('any'),
   overdue: queryBool.optional(),
   cursor: z.string().min(1).max(512).optional(),
@@ -120,7 +123,11 @@ export const AdminModerationQueueQuery = z.strictObject({
     .min(1)
     .max(ADMIN_MODERATION_QUEUE_MAX_LIMIT)
     .default(ADMIN_MODERATION_QUEUE_DEFAULT_LIMIT),
-});
+  })
+  .refine((q) => q.targetId === undefined || q.targetType?.length === 1, {
+    path: ['targetId'],
+    message: 'targetId requires exactly one targetType',
+  });
 export type AdminModerationQueueQueryT = z.infer<typeof AdminModerationQueueQuery>;
 
 /** One queue row. */
@@ -151,6 +158,10 @@ export const AdminModerationQueueStats = z.object({
 export type AdminModerationQueueStatsT = z.infer<typeof AdminModerationQueueStats>;
 
 export const AdminModerationQueueResponse = cursorPage(AdminModerationQueueItem).extend({
+  /**
+   * Always the KPI of the whole queue the viewer may see, whatever the filters
+   * (`targetId` included). A Reports block filtered by `targetId` uses `items` only.
+   */
   stats: AdminModerationQueueStats,
 });
 export type AdminModerationQueueResponseT = z.infer<typeof AdminModerationQueueResponse>;
