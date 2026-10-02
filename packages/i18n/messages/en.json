@@ -1097,7 +1097,18 @@
         "capacity": "Capacity",
         "waitlistWaiting": "Waiting on the waitlist",
         "noOccurrences": "No occurrences yet.",
-        "occurrencesLabel": "Occurrences of this event"
+        "occurrencesLabel": "Occurrences of this event",
+        "tab": {
+          "label": "Event sections",
+          "details": "Details",
+          "history": "History"
+        },
+        "history": {
+          "empty": "No actions recorded for this event.",
+          "error": "Could not load the history.",
+          "viewAll": "View full history",
+          "list": "Actions on this event"
+        }
       },
       "table": {
         "caption": "Events",
@@ -1110,7 +1121,9 @@
       "previous": "Previous page",
       "cursorReset": "The list changed. Showing the first page.",
       "status": {
-        "draft": "Draft"
+        "draft": "Draft",
+        "suspended": "Suspended",
+        "takenDown": "Taken down"
       }
     },
     "action": {
@@ -1146,9 +1159,18 @@
       "hint": {
         "suspendUser": "Signs the person out of every device right away and blocks sign-in until the account is restored. Their events, posts and RSVPs are not hidden or removed. Staff accounts need the username typed again. The action is written to the audit log with your reason.",
         "unsuspendUser": "The person can sign in again. Nothing else changes. The action is written to the audit log with your reason.",
+        "suspendEvent": "Hides the event from the public until it is restored. The action is written to the audit log with your reason.",
+        "restoreEvent": "Puts the event back to the state it had before it was suspended, which can be published or awaiting review. The action is written to the audit log with your reason.",
+        "takeDownEvent": "Removes the event from the public for good. It cannot be restored. Admin only. The link name must be typed again. The action is written to the audit log with your reason.",
         "changeRole": "Takes effect immediately: the person is signed out everywhere and must sign in again to get the new role. Moderator and admin need trust level 3 or higher. Super admin cannot be granted here. The username must be typed again. The action is written to the audit log with your reason."
       },
       "unsuspendUserEffect": "The person can sign in again.",
+      "targetEvent": "Event",
+      "staleNotice": "Reload the page to see the new status.",
+      "reload": "Reload",
+      "suspendEventEffect": "The event is hidden from the public until it is restored.",
+      "restoreEventEffect": "The event goes back to the state it had before it was suspended.",
+      "takeDownEventEffect": "The event is removed from the public for good. This cannot be undone.",
       "changeRoleEffect": "The person is signed out everywhere and must sign in again.",
       "role": {
         "label": "New role",
@@ -1157,7 +1179,10 @@
       "done": {
         "suspendUser": "Account suspended.",
         "unsuspendUser": "Account restored.",
-        "changeRole": "Role changed to {role}."
+        "changeRole": "Role changed to {role}.",
+        "suspendEvent": "Event suspended.",
+        "restoreEvent": "Event restored. It is now {status}.",
+        "takeDownEvent": "Event taken down."
       },
       "sessionCutDeferred": "Sign-out was delayed. The old session may stay valid for up to 15 minutes."
     },

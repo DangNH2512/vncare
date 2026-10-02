@@ -11,3 +11,16 @@ import { call } from './api';
 export function listAuditLogs(query: string): Promise<AdminAuditListResponseT> {
   return call<AdminAuditListResponseT>(`/api/v1/admin/audit-logs${query}`);
 }
+
+/** Newest rows first; the History tab shows this many and links to the full log. */
+export const EVENT_HISTORY_LIMIT = 10;
+
+/** Audit rows of one event. The server decides which rows this role may see. */
+export function listEventHistory(eventId: string): Promise<AdminAuditListResponseT> {
+  const query = new URLSearchParams({
+    entityType: 'event',
+    entityId: eventId,
+    limit: String(EVENT_HISTORY_LIMIT),
+  });
+  return listAuditLogs(`?${query.toString()}`);
+}

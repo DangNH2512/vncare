@@ -9,8 +9,9 @@ export const EVENT_STATUS_LABEL_KEY: Readonly<Record<EventStatusT, MessageKey>> 
   draft: 'admin.events.status.draft',
   pending_review: 'event.status.pendingReview',
   published: 'event.status.published',
-  suspended: 'event.status.suspended',
-  taken_down: 'event.status.takenDown',
+  // Admin wording: "Hidden", not the public-facing "Suspended" of the shared `event.status.*` keys.
+  suspended: 'admin.events.status.suspended',
+  taken_down: 'admin.events.status.takenDown',
   cancelled: 'event.status.cancelled',
 };
 

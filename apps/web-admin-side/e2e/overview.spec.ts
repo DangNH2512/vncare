@@ -31,6 +31,29 @@ function sql(statement: string): void {
   execFileSync('psql', [DATABASE_URL, '-v', 'ON_ERROR_STOP=1', '-c', statement]);
 }
 
+function sqlValue(statement: string): number {
+  return Number(
+    execFileSync('psql', [DATABASE_URL, '-v', 'ON_ERROR_STOP=1', '-tA', '-c', statement]).toString().trim(),
+  );
+}
+
+/**
+ * User and event counters move while the suite runs: other specs and workers register and
+ * delete accounts on the same database. They are read from the database with the
+ * API's own predicate instead of being pinned to one earlier response.
+ */
+const DRIFTING_COUNT_SQL = {
+  totalUsers: `SELECT count(*) FROM users WHERE deleted_at IS NULL AND anonymized_at IS NULL`,
+  newUsers: `SELECT count(*) FROM users WHERE deleted_at IS NULL AND anonymized_at IS NULL
+             AND created_at >= now() - interval '7 days'`,
+  // Mirrors KPI_SQL in apps/api/src/modules/admin/admin.repository.ts (upcoming_events).
+  upcomingEvents: `SELECT count(*) FROM events e
+    JOIN LATERAL (SELECT o.starts_at FROM event_occurrences o
+                   WHERE o.event_id = e.id AND o.deleted_at IS NULL
+                   ORDER BY o.starts_at ASC LIMIT 1) occ ON true
+    WHERE e.deleted_at IS NULL AND e.status = 'published' AND occ.starts_at > now()`,
+} as const;
+
 const KPI_FIELDS = [
   ['totalUsers', 'Total users'],
   ['newUsers', 'New users (7 days)'],
@@ -41,9 +64,26 @@ const KPI_FIELDS = [
 
 async function expectKpisMatch(page: Page, kpis: Record<string, number>): Promise<void> {
   for (const [field] of KPI_FIELDS) {
-    await expect(page.getByTestId(`kpi-value-${field}`)).toHaveText(
-      (kpis[field] as number).toLocaleString('en-GB'),
-    );
+    const tile = page.getByTestId(`kpi-value-${field}`);
+    if (field !== 'totalUsers' && field !== 'newUsers' && field !== 'upcomingEvents') {
+      await expect(tile).toHaveText((kpis[field] as number).toLocaleString('en-GB'));
+      continue;
+    }
+    // The tile must show a value the database held while it was read: between the
+    // two counts taken around the read, or the one the API returned. Any other
+    // value is wrong; only the growth or shrink in between is tolerated.
+    const apiValue = kpis[field] as number;
+    await expect
+      .poll(
+        async () => {
+          const before = sqlValue(DRIFTING_COUNT_SQL[field]);
+          const shown = Number((await tile.innerText()).replace(/,/g, ''));
+          const after = sqlValue(DRIFTING_COUNT_SQL[field]);
+          return shown >= Math.min(before, after, apiValue) && shown <= Math.max(before, after, apiValue);
+        },
+        { message: `${field} tile stays within the database count` },
+      )
+      .toBe(true);
   }
 }
 

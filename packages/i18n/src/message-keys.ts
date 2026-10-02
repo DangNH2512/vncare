@@ -10,11 +10,17 @@ export type MessageKey =
   | 'admin.action.changeRoleEffect'
   | 'admin.action.closeLabel'
   | 'admin.action.done.changeRole'
+  | 'admin.action.done.restoreEvent'
+  | 'admin.action.done.suspendEvent'
   | 'admin.action.done.suspendUser'
+  | 'admin.action.done.takeDownEvent'
   | 'admin.action.done.unsuspendUser'
   | 'admin.action.failed'
   | 'admin.action.hint.changeRole'
+  | 'admin.action.hint.restoreEvent'
+  | 'admin.action.hint.suspendEvent'
   | 'admin.action.hint.suspendUser'
+  | 'admin.action.hint.takeDownEvent'
   | 'admin.action.hint.unsuspendUser'
   | 'admin.action.hintLabel'
   | 'admin.action.history'
@@ -24,7 +30,9 @@ export type MessageKey =
   | 'admin.action.reason.hint'
   | 'admin.action.reason.label'
   | 'admin.action.refresh'
+  | 'admin.action.reload'
   | 'admin.action.restoreEvent'
+  | 'admin.action.restoreEventEffect'
   | 'admin.action.review.cancel'
   | 'admin.action.review.change'
   | 'admin.action.review.role'
@@ -32,11 +40,15 @@ export type MessageKey =
   | 'admin.action.role.label'
   | 'admin.action.role.trustRequired'
   | 'admin.action.sessionCutDeferred'
+  | 'admin.action.staleNotice'
   | 'admin.action.suspendEvent'
+  | 'admin.action.suspendEventEffect'
   | 'admin.action.suspendUser'
   | 'admin.action.suspendUserEffect'
   | 'admin.action.takeDownEvent'
+  | 'admin.action.takeDownEventEffect'
   | 'admin.action.target'
+  | 'admin.action.targetEvent'
   | 'admin.action.typeToConfirm'
   | 'admin.action.unsuspendUser'
   | 'admin.action.unsuspendUserEffect'
@@ -142,6 +154,10 @@ export type MessageKey =
   | 'admin.events.detail.field.requiredTrust'
   | 'admin.events.detail.field.slug'
   | 'admin.events.detail.field.updatedAt'
+  | 'admin.events.detail.history.empty'
+  | 'admin.events.detail.history.error'
+  | 'admin.events.detail.history.list'
+  | 'admin.events.detail.history.viewAll'
   | 'admin.events.detail.no'
   | 'admin.events.detail.noOccurrences'
   | 'admin.events.detail.notFound'
@@ -156,6 +172,9 @@ export type MessageKey =
   | 'admin.events.detail.section.description'
   | 'admin.events.detail.section.host'
   | 'admin.events.detail.section.overview'
+  | 'admin.events.detail.tab.details'
+  | 'admin.events.detail.tab.history'
+  | 'admin.events.detail.tab.label'
   | 'admin.events.detail.waitlistWaiting'
   | 'admin.events.detail.yes'
   | 'admin.events.empty.title'
@@ -184,6 +203,8 @@ export type MessageKey =
   | 'admin.events.search.label'
   | 'admin.events.search.placeholder'
   | 'admin.events.status.draft'
+  | 'admin.events.status.suspended'
+  | 'admin.events.status.takenDown'
   | 'admin.events.table.caption'
   | 'admin.events.table.filterLabel'
   | 'admin.events.table.open'
@@ -1059,11 +1080,17 @@ export const MESSAGE_KEYS = [
   'admin.action.changeRoleEffect',
   'admin.action.closeLabel',
   'admin.action.done.changeRole',
+  'admin.action.done.restoreEvent',
+  'admin.action.done.suspendEvent',
   'admin.action.done.suspendUser',
+  'admin.action.done.takeDownEvent',
   'admin.action.done.unsuspendUser',
   'admin.action.failed',
   'admin.action.hint.changeRole',
+  'admin.action.hint.restoreEvent',
+  'admin.action.hint.suspendEvent',
   'admin.action.hint.suspendUser',
+  'admin.action.hint.takeDownEvent',
   'admin.action.hint.unsuspendUser',
   'admin.action.hintLabel',
   'admin.action.history',
@@ -1073,7 +1100,9 @@ export const MESSAGE_KEYS = [
   'admin.action.reason.hint',
   'admin.action.reason.label',
   'admin.action.refresh',
+  'admin.action.reload',
   'admin.action.restoreEvent',
+  'admin.action.restoreEventEffect',
   'admin.action.review.cancel',
   'admin.action.review.change',
   'admin.action.review.role',
@@ -1081,11 +1110,15 @@ export const MESSAGE_KEYS = [
   'admin.action.role.label',
   'admin.action.role.trustRequired',
   'admin.action.sessionCutDeferred',
+  'admin.action.staleNotice',
   'admin.action.suspendEvent',
+  'admin.action.suspendEventEffect',
   'admin.action.suspendUser',
   'admin.action.suspendUserEffect',
   'admin.action.takeDownEvent',
+  'admin.action.takeDownEventEffect',
   'admin.action.target',
+  'admin.action.targetEvent',
   'admin.action.typeToConfirm',
   'admin.action.unsuspendUser',
   'admin.action.unsuspendUserEffect',
@@ -1191,6 +1224,10 @@ export const MESSAGE_KEYS = [
   'admin.events.detail.field.requiredTrust',
   'admin.events.detail.field.slug',
   'admin.events.detail.field.updatedAt',
+  'admin.events.detail.history.empty',
+  'admin.events.detail.history.error',
+  'admin.events.detail.history.list',
+  'admin.events.detail.history.viewAll',
   'admin.events.detail.no',
   'admin.events.detail.noOccurrences',
   'admin.events.detail.notFound',
@@ -1205,6 +1242,9 @@ export const MESSAGE_KEYS = [
   'admin.events.detail.section.description',
   'admin.events.detail.section.host',
   'admin.events.detail.section.overview',
+  'admin.events.detail.tab.details',
+  'admin.events.detail.tab.history',
+  'admin.events.detail.tab.label',
   'admin.events.detail.waitlistWaiting',
   'admin.events.detail.yes',
   'admin.events.empty.title',
@@ -1233,6 +1273,8 @@ export const MESSAGE_KEYS = [
   'admin.events.search.label',
   'admin.events.search.placeholder',
   'admin.events.status.draft',
+  'admin.events.status.suspended',
+  'admin.events.status.takenDown',
   'admin.events.table.caption',
   'admin.events.table.filterLabel',
   'admin.events.table.open',

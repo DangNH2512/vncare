@@ -6,6 +6,7 @@
  * make a replay harmless. Result shapes come from `@dnc/contracts`.
  */
 import type {
+  AdminEventActionResultT,
   AdminRoleActionResultT,
   AdminUserActionResultT,
   AssignableRoleT,
@@ -53,6 +54,26 @@ export function changeUserRole(
   return call<AdminRoleActionResultT>(userActionPath(id, 'role'), {
     method: 'POST',
     body: JSON.stringify({ role, reason, confirm: true }),
+    headers: { 'idempotency-key': idempotencyKey },
+  });
+}
+
+export type EventAction = 'suspend' | 'restore' | 'takedown';
+
+/**
+ * Suspends, restores or takes down an event. `status` in the result is the
+ * state the event really ended in: a restore may land on `pending_review`.
+ */
+export function actOnEvent(
+  id: string,
+  action: EventAction,
+  reason: string,
+  idempotencyKey: string,
+): Promise<AdminEventActionResultT> {
+  const body: ReasonedActionBodyT = { reason, confirm: true };
+  return call<AdminEventActionResultT>(`/api/v1/admin/events/${encodeURIComponent(id)}/${action}`, {
+    method: 'POST',
+    body: JSON.stringify(body),
     headers: { 'idempotency-key': idempotencyKey },
   });
 }

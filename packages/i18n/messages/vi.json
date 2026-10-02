@@ -1097,7 +1097,18 @@
         "capacity": "Sức chứa",
         "waitlistWaiting": "Đang chờ trong hàng chờ",
         "noOccurrences": "Chưa có buổi nào.",
-        "occurrencesLabel": "Các buổi của sự kiện này"
+        "occurrencesLabel": "Các buổi của sự kiện này",
+        "tab": {
+          "label": "Các phần của sự kiện",
+          "details": "Chi tiết",
+          "history": "Lịch sử"
+        },
+        "history": {
+          "empty": "Chưa có thao tác nào được ghi cho sự kiện này.",
+          "error": "Không tải được lịch sử.",
+          "viewAll": "Xem đầy đủ lịch sử",
+          "list": "Các thao tác trên sự kiện này"
+        }
       },
       "table": {
         "caption": "Sự kiện",
@@ -1110,7 +1121,9 @@
       "previous": "Trang trước",
       "cursorReset": "Danh sách đã thay đổi. Đang hiện trang đầu.",
       "status": {
-        "draft": "Bản nháp"
+        "draft": "Bản nháp",
+        "suspended": "Đã ẩn",
+        "takenDown": "Đã gỡ bỏ"
       }
     },
     "action": {
@@ -1119,7 +1132,7 @@
       "changeRole": "Đổi vai trò",
       "suspendEvent": "Ẩn sự kiện",
       "restoreEvent": "Khôi phục sự kiện",
-      "takeDownEvent": "Gỡ sự kiện",
+      "takeDownEvent": "Gỡ bỏ sự kiện",
       "reason": {
         "label": "Lý do",
         "hint": "Tối thiểu 20 ký tự. Được ghi vào nhật ký thao tác.",
@@ -1146,9 +1159,18 @@
       "hint": {
         "suspendUser": "Đăng xuất người này khỏi mọi thiết bị ngay lập tức và chặn đăng nhập cho đến khi tài khoản được mở khoá. Sự kiện, bài đăng và RSVP của họ không bị ẩn hay xoá. Với tài khoản nhân sự, bạn phải gõ lại tên người dùng. Thao tác được ghi vào nhật ký cùng lý do của bạn.",
         "unsuspendUser": "Người này đăng nhập lại được. Không có gì khác thay đổi. Thao tác được ghi vào nhật ký cùng lý do của bạn.",
+        "suspendEvent": "Ẩn sự kiện khỏi công chúng cho đến khi được khôi phục. Thao tác được ghi vào nhật ký cùng lý do của bạn.",
+        "restoreEvent": "Đưa sự kiện về trạng thái trước khi bị ẩn, có thể là đã đăng hoặc chờ duyệt. Thao tác được ghi vào nhật ký cùng lý do của bạn.",
+        "takeDownEvent": "Gỡ sự kiện khỏi công chúng vĩnh viễn, không thể khôi phục. Chỉ quản trị viên. Bạn phải gõ lại đường dẫn. Thao tác được ghi vào nhật ký cùng lý do của bạn.",
         "changeRole": "Có hiệu lực ngay: người này bị đăng xuất khỏi mọi nơi và phải đăng nhập lại để nhận vai trò mới. Kiểm duyệt viên và quản trị viên cần mức tin cậy từ 3 trở lên. Không thể cấp vai trò quản trị cấp cao ở đây. Bạn phải gõ lại tên người dùng. Thao tác được ghi vào nhật ký cùng lý do của bạn."
       },
       "unsuspendUserEffect": "Người này đăng nhập lại được.",
+      "targetEvent": "Sự kiện",
+      "staleNotice": "Tải lại trang để xem trạng thái mới.",
+      "reload": "Tải lại",
+      "suspendEventEffect": "Sự kiện bị ẩn khỏi công chúng cho đến khi được khôi phục.",
+      "restoreEventEffect": "Sự kiện trở lại trạng thái trước khi bị ẩn.",
+      "takeDownEventEffect": "Sự kiện bị gỡ khỏi công chúng vĩnh viễn. Không thể hoàn tác.",
       "changeRoleEffect": "Người này bị đăng xuất khỏi mọi nơi và phải đăng nhập lại.",
       "role": {
         "label": "Vai trò mới",
@@ -1157,7 +1179,10 @@
       "done": {
         "suspendUser": "Đã tạm khoá tài khoản.",
         "unsuspendUser": "Đã mở khoá tài khoản.",
-        "changeRole": "Đã đổi vai trò thành {role}."
+        "changeRole": "Đã đổi vai trò thành {role}.",
+        "suspendEvent": "Đã ẩn sự kiện.",
+        "restoreEvent": "Đã khôi phục sự kiện. Trạng thái hiện tại: {status}.",
+        "takeDownEvent": "Đã gỡ sự kiện."
       },
       "sessionCutDeferred": "Việc đăng xuất bị trễ. Phiên cũ có thể còn hiệu lực tối đa 15 phút."
     },
