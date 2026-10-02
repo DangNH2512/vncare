@@ -89,6 +89,8 @@ interface CallInit {
   headers?: Record<string, string>;
   /** Set on the retry so a failed refresh cannot loop. */
   retried?: boolean;
+  /** Lets a caller cancel a superseded request (filter changed before the response landed). */
+  signal?: AbortSignal;
 }
 
 /** Narrows an untrusted error-body field to a string, or undefined. */
@@ -104,6 +106,7 @@ async function call<T>(path: string, init?: CallInit): Promise<T> {
       // explicit `undefined` as a value, and fetch does not accept one.
       ...(init?.method === undefined ? {} : { method: init.method }),
       ...(init?.body === undefined ? {} : { body: init.body }),
+      ...(init?.signal === undefined ? {} : { signal: init.signal }),
       // The refresh cookie must ride along on the auth routes.
       credentials: 'same-origin',
       headers: {
@@ -112,7 +115,10 @@ async function call<T>(path: string, init?: CallInit): Promise<T> {
         ...init?.headers,
       },
     });
-  } catch {
+  } catch (cause) {
+    // A caller-initiated abort is not a network failure: rethrow it untouched
+    // so retry UIs do not show "offline" for a request they cancelled.
+    if (init?.signal?.aborted === true) throw cause;
     throw new ApiError(0, 'OFFLINE', undefined);
   }
 
@@ -251,15 +257,44 @@ export function completeUpload(
 
 /* ------------------------------------------------------------------ events */
 
-export function listEvents(limit = 20): Promise<{
-  items: EventResponseT[];
-  nextCursor: string | null;
-}> {
-  return call(`/api/v1/events?limit=${limit}`);
+export interface ListEventsParams {
+  limit?: number;
+  cursor?: string;
+  areaId?: string;
+  status?: string;
+  /** ISO UTC, inclusive. */
+  from?: string;
+  /** ISO UTC, exclusive. */
+  to?: string;
+  lat?: number;
+  lng?: number;
+  radiusMeters?: number;
 }
 
-export function getEvent(id: string): Promise<EventResponseT> {
-  return call<EventResponseT>(`/api/v1/events/${id}`);
+export interface EventListPage {
+  items: EventResponseT[];
+  nextCursor: string | null;
+}
+
+/**
+ * Lists events. A bare number keeps the original `listEvents(limit)` call shape
+ * (the Home feed); an object carries the Discover filters.
+ */
+export function listEvents(
+  arg: number | ListEventsParams = 20,
+  signal?: AbortSignal,
+): Promise<EventListPage> {
+  const params: ListEventsParams = typeof arg === 'number' ? { limit: arg } : arg;
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined) query.set(key, String(value));
+  }
+  if (!query.has('limit')) query.set('limit', '20');
+  return call(`/api/v1/events?${query.toString()}`, signal === undefined ? undefined : { signal });
+}
+
+export function getEvent(id: string, signal?: AbortSignal): Promise<EventResponseT> {
+  return call<EventResponseT>(`/api/v1/events/${id}`, signal === undefined ? undefined : { signal });
 }
 
 export function createEvent(body: EventCreateRequestT): Promise<EventResponseT> {

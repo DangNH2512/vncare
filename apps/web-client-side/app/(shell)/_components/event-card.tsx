@@ -11,6 +11,7 @@ import { areaName, findAreaById } from '../../_lib/areas';
 import { cancelRsvp, joinOccurrence } from '../../_lib/api';
 import { translateApiError } from '../../_lib/api-error';
 import { cn } from '../../_lib/cn';
+import { useNow } from '../../_lib/use-now';
 import {
   formatEventDate,
   formatEventTime,
@@ -41,6 +42,8 @@ export function EventCard({ event, onChanged }: EventCardProps) {
   const full = seatsLeft === 0;
   const mine = event.viewerRsvpStatus;
   const isOwn = user?.handle === event.organizer.handle;
+  const now = useNow();
+  const started = now !== null && new Date(event.startsAt).getTime() <= now;
 
   const join = async () => {
     setBusy('joining');
@@ -96,7 +99,12 @@ export function EventCard({ event, onChanged }: EventCardProps) {
           </p>
           <p className="text-sm text-fg-muted">{t('feed.createdEvent')}</p>
         </div>
-        {isOwn && <Badge tone="neutral">{t('event.card.yours')}</Badge>}
+        {(isOwn || started) && (
+          <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+            {started && <Badge tone="warning">{t('event.card.started')}</Badge>}
+            {isOwn && <Badge tone="neutral">{t('event.card.yours')}</Badge>}
+          </div>
+        )}
       </header>
 
       <Link href={`/events/${event.id}`} className="group min-w-0">
@@ -131,7 +139,7 @@ export function EventCard({ event, onChanged }: EventCardProps) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {mine === null ? (
+        {mine === null && !started && (
           <Button
             size="sm"
             disabled={busy !== null || isOwn}
@@ -143,7 +151,8 @@ export function EventCard({ event, onChanged }: EventCardProps) {
                 ? t('feed.joinWaitlist')
                 : t('feed.rsvp')}
           </Button>
-        ) : (
+        )}
+        {mine !== null && (
           <Button
             size="sm"
             variant="secondary"

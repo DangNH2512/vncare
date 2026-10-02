@@ -1,17 +1,17 @@
-import { BlankScreen } from '../../_components/blank-screen';
+import { Suspense } from 'react';
+
+import { DiscoverScreen } from './_components/discover-screen';
+import { DiscoverSkeleton } from './_components/discover-states';
 
 /**
- * Placeholder for a screen the navigation already advertises.
- *
- * It exists so the link does not 404: a nav item that dead-ends is worse than
- * one that says "not yet". Replaced wholesale when the real screen lands.
+ * Discover route. The screen reads the URL through `useSearchParams`, which
+ * opts a client component out of static rendering, so the boundary keeps the
+ * rest of the page from bailing out to client-side rendering with it.
  */
 export default function DiscoverPage() {
   return (
-    <BlankScreen
-      glyph="🔎"
-      titleKey="blank.discover.title"
-      descriptionKey="blank.discover.body"
-    />
+    <Suspense fallback={<DiscoverSkeleton />}>
+      <DiscoverScreen />
+    </Suspense>
   );
 }

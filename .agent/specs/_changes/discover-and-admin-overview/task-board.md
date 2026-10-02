@@ -611,3 +611,11 @@ Cần Debate Gate: không. Các lựa chọn (kho localStorage, Pointer Events t
   - FU-S-NEARME: near-me rỗng riêng cho swipe.
   - Nếu SW-F chưa sửa thì B4/B5 phải xong trước M6.
 - Câu hỏi mở cho chủ dự án trước M6: Q-S1 (cổng G1/G2), Q-S2 (đăng xuất có xoá danh sách đã lưu không). Không chặn commit.
+- **SW-T2 (kiểm lại hẹp sau SW-F): GO-with-risks.**
+  - B1–B5 PASS (Chromium/WebKit × EN/VI). B2 chạy 20/20 lần sạch. Không có hồi quy mới.
+  - Đăng nhập làm mới danh sách tại chỗ ở List/Map: 28/28 PASS.
+  - B6 còn lỗi: VI + bộ lọc đang bật thì tràn ngang ở 360–390px. Sửa ở **SW-F2** trước khi commit.
+  - Fail còn lại là lỗi assertion của script: trust403 VI, popup "đủ người" của wc3.
+  - Dữ liệu dev: lượt test làm lệch RSVP seed của `demo_anna`/`demo_minh`/`demo_linh` (nhiều `waitlisted` hơn baseline). Chạy lại seed demo khi chủ dự án muốn trạng thái chuẩn.
+- **SW-F2 xong:** VI kèm bộ lọc không còn tràn ngang ở 320–390 (`swf2.cjs` BAD 0 trên Chromium và WebKit). Sheet của sự kiện đã tham gia ẩn dòng `rsvpNote`. `sw1..sw5` không có fail mới. Đủ điều kiện BA (B1, B2, B6), nên **commit web-client, cổng G0 mở** cho các card Social web (S2-3, S2-4, S3-2, S3-3, S4-2, S4-3) và AD-17/AD-18.
+- Follow-up: top bar trên phone cắt tên thương hiệu ("Da Nan…") là hành vi có từ trước của `shell/top-bar.tsx`; xử lý ở lượt thiết kế lại.

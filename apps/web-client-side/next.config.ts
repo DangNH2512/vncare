@@ -4,6 +4,24 @@ import type { NextConfig } from 'next';
 const API_ORIGIN = process.env.API_ORIGIN ?? 'http://localhost:3001';
 
 /**
+ * Dev only: extra hosts allowed to load the dev server's assets and HMR socket,
+ * so a phone on the LAN can open `http://<lan-ip>:3000`. Comma separated; both
+ * `192.168.1.74` and `http://192.168.1.74:3000` are accepted because Next wants
+ * bare hostnames. Unset means nothing is added. Ignored by `next build`/`start`.
+ */
+const DEV_ALLOWED_ORIGINS = (process.env.DEV_ALLOWED_ORIGINS ?? '')
+  .split(',')
+  .map((entry) => entry.trim())
+  .filter((entry) => entry !== '')
+  .map((entry) => {
+    try {
+      return new URL(entry.includes('://') ? entry : `http://${entry}`).hostname;
+    } catch {
+      return entry;
+    }
+  });
+
+/**
  * Workspace packages ship raw TypeScript (`main` points at `src/index.ts`), so
  * the bundler must compile them instead of treating them as pre-built deps.
  * Their relative imports are extensionless, which is what Turbopack and Metro
@@ -11,6 +29,7 @@ const API_ORIGIN = process.env.API_ORIGIN ?? 'http://localhost:3001';
  * would silently do nothing here.
  */
 const config: NextConfig = {
+  ...(DEV_ALLOWED_ORIGINS.length > 0 ? { allowedDevOrigins: DEV_ALLOWED_ORIGINS } : {}),
   transpilePackages: [
     '@dnc/contracts',
     '@dnc/domain',
