@@ -8,6 +8,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
 import { RolesGuard } from './common/guards/roles.guard.js';
 import { TrustLevelGuard } from './common/guards/trust-level.guard.js';
 import { AdminModule } from './modules/admin/index.js';
+import { AreaModule } from './modules/area/index.js';
 import { AuthModule } from './modules/auth/index.js';
 import { ChatModule } from './modules/chat/index.js';
 import { CommentModule } from './modules/comment/index.js';
@@ -31,6 +32,7 @@ import { RsvpModule } from './modules/rsvp/index.js';
     AuthModule,
     HealthModule,
     AdminModule,
+    AreaModule,
     MediaModule,
     ProfileModule,
     EventModule,

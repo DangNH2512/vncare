@@ -397,7 +397,9 @@
       "duplicate": "That already exists.",
       "referenceNotFound": "Something this refers to no longer exists.",
       "constraintViolated": "That request breaks a rule of this data.",
-      "retryLater": "The service is busy. Please try again in a moment."
+      "retryLater": "The service is busy. Please try again in a moment.",
+      "idempotencyKeyRequired": "This request is missing its retry key. Please try again.",
+      "invalidId": "That ID isn't valid."
     },
     "auth": {
       "unauthenticated": "Please sign in to continue.",
@@ -484,6 +486,16 @@
       "alreadyReported": "You already reported this.",
       "idempotencyRequired": "Missing request key.",
       "targetNotFound": "We couldn't find this content."
+    },
+    "area": {
+      "notFound": "That area does not exist.",
+      "outsideCoverage": "That point is outside every area we cover."
+    },
+    "block": {
+      "selfNotAllowed": "You can't block yourself."
+    },
+    "content": {
+      "underModeration": "This content is under moderation and can't be edited."
     }
   },
   "post": {
@@ -1748,7 +1760,18 @@
       "submitted": "Thanks. We review every report. Reports involving safety are reviewed within 4 hours. We'll let you know the outcome.",
       "alreadyReported": "You already reported this. We are reviewing it.",
       "limitReached": "You have reached today's report limit. Try again tomorrow.",
-      "sendFailed": "We could not send your report. Try again."
+      "sendFailed": "We could not send your report. Try again.",
+      "action": "Report",
+      "reassurance": "Reports are anonymous. The person you report won't know it was you.",
+      "reasonLabel": "Why are you reporting this?",
+      "descriptionLabel": "Tell us more (optional)",
+      "descriptionCounter": "{count} / 2,000",
+      "alsoBlock": "Also block this person",
+      "submitting": "Sending…",
+      "submittedBody": "Our moderators will review it. We never tell anyone who reported.",
+      "close": "Close",
+      "errorGeneric": "We couldn't send your report. Please try again.",
+      "errorOffline": "You seem to be offline. Check your connection and try again."
     },
     "myReports": {
       "title": "My reports",
@@ -1758,6 +1781,50 @@
         "actionTaken": "Closed - action taken",
         "noAction": "Closed - no action needed"
       }
+    },
+    "menu": {
+      "more": "More options"
+    },
+    "block": {
+      "action": "Block this person",
+      "actionAuthor": "Block author",
+      "actionOrganizer": "Block organizer",
+      "confirmTitle": "Block this person?",
+      "confirmBody": "You won't see each other's events, posts, comments or profile, and neither of you can message the other. They won't be notified.",
+      "confirm": "Block",
+      "cancel": "Cancel",
+      "working": "Blocking…",
+      "blocked": "Blocked",
+      "unblock": "Unblock",
+      "error": "We couldn't update this block. Please try again.",
+      "list": {
+        "title": "Blocked people",
+        "empty": "You haven't blocked anyone.",
+        "blockedAt": "Blocked {time}"
+      }
+    },
+    "label": {
+      "contentHidden": "Hidden for breaking the Community Guidelines",
+      "eventSuspended": "Temporarily removed for review",
+      "eventTakenDown": "Removed for breaking the Community Guidelines",
+      "eventUnavailable": "This event is no longer available"
+    }
+  },
+  "content": {
+    "status": {
+      "visible": "Visible",
+      "pending_review": "Pending review",
+      "hidden": "Hidden",
+      "removed": "Removed"
+    }
+  },
+  "user": {
+    "status": {
+      "pending": "Pending activation",
+      "active": "Active",
+      "suspended": "Suspended",
+      "deactivated": "Deactivated",
+      "deleted": "Deleted"
     }
   }
 }

@@ -9,6 +9,7 @@
 import type {
   AttendeeResponseT,
   AuthSessionResponseT,
+  BlockedUserResponseT,
   EventCreateRequestT,
   EventResponseT,
   LoginRequestT,
@@ -23,7 +24,10 @@ import type {
   ProfileUpdateRequestT,
   PublicProfileResponseT,
   RegisterRequestT,
+  CreateReportBodyT,
+  CreateReportResponseT,
 } from '@dnc/contracts';
+import { REPORT_IDEMPOTENCY_HEADER } from '@dnc/contracts';
 
 /**
  * Same-origin by design.
@@ -325,7 +329,7 @@ export function joinOccurrence(
 ): Promise<RsvpResponseT> {
   return call<RsvpResponseT>(`/api/v1/occurrences/${occurrenceId}/rsvps`, {
     method: 'POST',
-    headers: { 'idempotency-key': idempotencyKey },
+    headers: { [REPORT_IDEMPOTENCY_HEADER]: idempotencyKey },
   });
 }
 
@@ -351,4 +355,46 @@ export function listPosts(limit = 20): Promise<{
   nextCursor: string | null;
 }> {
   return call(`/api/v1/posts?limit=${limit}`);
+}
+
+/* ------------------------------------------------------------------ safety */
+
+/**
+ * Files a report. Unlike `joinOccurrence`, the key has no default: the report
+ * sheet mints it once when it opens and passes the same one on every retry,
+ * so a submit that timed out and is sent again resolves to the first report
+ * instead of filing a second (BR-23).
+ */
+export function createReport(
+  body: CreateReportBodyT,
+  idempotencyKey: string,
+): Promise<CreateReportResponseT> {
+  return call<CreateReportResponseT>('/api/v1/reports', {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: { [REPORT_IDEMPOTENCY_HEADER]: idempotencyKey },
+  });
+}
+
+/** 204 whether or not the block already existed. */
+export function blockUser(userId: string): Promise<void> {
+  return call<void>(`/api/v1/users/${encodeURIComponent(userId)}/block`, { method: 'POST' });
+}
+
+/** 204 whether or not a block existed. */
+export function unblockUser(userId: string): Promise<void> {
+  return call<void>(`/api/v1/users/${encodeURIComponent(userId)}/block`, { method: 'DELETE' });
+}
+
+/** The caller's own block list, newest first. */
+export function listMyBlocks(
+  cursor?: string,
+  limit = 20,
+): Promise<{
+  items: BlockedUserResponseT[];
+  nextCursor: string | null;
+}> {
+  const query = new URLSearchParams({ limit: String(limit) });
+  if (cursor !== undefined) query.set('cursor', cursor);
+  return call(`/api/v1/me/blocks?${query.toString()}`);
 }

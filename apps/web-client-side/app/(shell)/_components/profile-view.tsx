@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import Link from 'next/link';
 import type { MyProfileResponseT, PublicProfileResponseT } from '@dnc/contracts';
 import { nextTrustRequirement } from '@dnc/domain';
 
@@ -10,6 +11,7 @@ import { areaName, findAreaById } from '../../_lib/areas';
 import { formatEventDate } from '../../_lib/datetime';
 import { cn } from '../../_lib/cn';
 import { ProfileEditor } from './profile-editor';
+import { SafetyMenu } from './safety/safety-menu';
 
 export interface ProfileViewProps {
   profile: PublicProfileResponseT | MyProfileResponseT;
@@ -73,10 +75,17 @@ export function ProfileView({ profile, isOwner, onUpdated, action }: ProfileView
             </div>
             <div className="flex items-center gap-2">
               {action}
-              {isOwner && (
+              {isOwner ? (
                 <Button variant="secondary" size="sm" onClick={() => setEditing(true)}>
                   {t('profile.action.edit')}
                 </Button>
+              ) : (
+                // Report/Block on someone else's page only (AC-2, AC-12).
+                <SafetyMenu
+                  target={{ type: 'user', id: profile.userId }}
+                  owner={{ userId: profile.userId }}
+                  blockLabel="safety.block.action"
+                />
               )}
             </div>
           </div>
@@ -153,6 +162,21 @@ export function ProfileView({ profile, isOwner, onUpdated, action }: ProfileView
       )}
 
       {isOwner && mine && <TrustProgress profile={profile} />}
+
+      {/* The block list is private and only ever reached from your own page. */}
+      {isOwner && (
+        <Card padding="none">
+          <Link
+            href="/settings/blocked"
+            className="flex min-h-12 items-center justify-between gap-3 rounded-lg px-4 text-sm font-medium text-fg transition-colors hover:bg-surface-sunken sm:px-5"
+          >
+            <span className="min-w-0">{t('safety.block.list.title')}</span>
+            <span aria-hidden className="text-fg-muted">
+              ›
+            </span>
+          </Link>
+        </Card>
+      )}
     </div>
   );
 }

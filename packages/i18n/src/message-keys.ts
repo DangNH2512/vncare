@@ -750,6 +750,10 @@ export type MessageKey =
   | 'common.retry'
   | 'common.seeAll'
   | 'common.skipToContent'
+  | 'content.status.hidden'
+  | 'content.status.pending_review'
+  | 'content.status.removed'
+  | 'content.status.visible'
   | 'datetime.timeZoneNote'
   | 'datetime.today'
   | 'datetime.tomorrow'
@@ -872,6 +876,8 @@ export type MessageKey =
   | 'errors.admin.targetRoleProtected'
   | 'errors.admin.trustTooLow'
   | 'errors.admin.userNotFound'
+  | 'errors.area.notFound'
+  | 'errors.area.outsideCoverage'
   | 'errors.auth.accountSuspended'
   | 'errors.auth.accountUnavailable'
   | 'errors.auth.emailTaken'
@@ -884,6 +890,7 @@ export type MessageKey =
   | 'errors.auth.roleNotAllowed'
   | 'errors.auth.trustLevelTooLow'
   | 'errors.auth.unauthenticated'
+  | 'errors.block.selfNotAllowed'
   | 'errors.chat.cannotMessageSelf'
   | 'errors.chat.conversationClosed'
   | 'errors.chat.conversationNotFound'
@@ -902,8 +909,11 @@ export type MessageKey =
   | 'errors.comment.parentNotFound'
   | 'errors.common.constraintViolated'
   | 'errors.common.duplicate'
+  | 'errors.common.idempotencyKeyRequired'
+  | 'errors.common.invalidId'
   | 'errors.common.referenceNotFound'
   | 'errors.common.retryLater'
+  | 'errors.content.underModeration'
   | 'errors.event.dateRangeInvalid'
   | 'errors.event.notFound'
   | 'errors.event.notOrganizer'
@@ -1172,15 +1182,41 @@ export type MessageKey =
   | 'rsvp.error.occurrenceNotFound'
   | 'rsvp.error.suspended'
   | 'rsvp.error.trustTooLow'
+  | 'safety.block.action'
+  | 'safety.block.actionAuthor'
+  | 'safety.block.actionOrganizer'
+  | 'safety.block.blocked'
+  | 'safety.block.cancel'
+  | 'safety.block.confirm'
+  | 'safety.block.confirmBody'
+  | 'safety.block.confirmTitle'
+  | 'safety.block.error'
+  | 'safety.block.list.blockedAt'
+  | 'safety.block.list.empty'
+  | 'safety.block.list.title'
+  | 'safety.block.unblock'
+  | 'safety.block.working'
+  | 'safety.label.contentHidden'
+  | 'safety.label.eventSuspended'
+  | 'safety.label.eventTakenDown'
+  | 'safety.label.eventUnavailable'
+  | 'safety.menu.more'
   | 'safety.myReports.status.actionTaken'
   | 'safety.myReports.status.noAction'
   | 'safety.myReports.status.received'
   | 'safety.myReports.status.reviewing'
   | 'safety.myReports.title'
+  | 'safety.report.action'
   | 'safety.report.alreadyReported'
+  | 'safety.report.alsoBlock'
   | 'safety.report.anonymity_notice'
+  | 'safety.report.close'
+  | 'safety.report.descriptionCounter'
+  | 'safety.report.descriptionLabel'
   | 'safety.report.description_label'
   | 'safety.report.emergency_first'
+  | 'safety.report.errorGeneric'
+  | 'safety.report.errorOffline'
   | 'safety.report.limitReached'
   | 'safety.report.reason.danger'
   | 'safety.report.reason.ghost_event'
@@ -1194,9 +1230,13 @@ export type MessageKey =
   | 'safety.report.reason.sexual'
   | 'safety.report.reason.spam'
   | 'safety.report.reason.unsafe_setup'
+  | 'safety.report.reasonLabel'
+  | 'safety.report.reassurance'
   | 'safety.report.sendFailed'
   | 'safety.report.submit'
   | 'safety.report.submitted'
+  | 'safety.report.submittedBody'
+  | 'safety.report.submitting'
   | 'safety.report.title'
   | 'shell.a11y.bottomNav'
   | 'shell.a11y.create'
@@ -1230,7 +1270,12 @@ export type MessageKey =
   | 'trust.requirement.host5Events'
   | 'trust.requirement.hostFirstEvent'
   | 'trust.requirement.resolveReports'
-  | 'trust.requirement.verifyContact';
+  | 'trust.requirement.verifyContact'
+  | 'user.status.active'
+  | 'user.status.deactivated'
+  | 'user.status.deleted'
+  | 'user.status.pending'
+  | 'user.status.suspended';
 
 export const MESSAGE_KEYS = [
   'a11y.clearFilter',
@@ -1983,6 +2028,10 @@ export const MESSAGE_KEYS = [
   'common.retry',
   'common.seeAll',
   'common.skipToContent',
+  'content.status.hidden',
+  'content.status.pending_review',
+  'content.status.removed',
+  'content.status.visible',
   'datetime.timeZoneNote',
   'datetime.today',
   'datetime.tomorrow',
@@ -2105,6 +2154,8 @@ export const MESSAGE_KEYS = [
   'errors.admin.targetRoleProtected',
   'errors.admin.trustTooLow',
   'errors.admin.userNotFound',
+  'errors.area.notFound',
+  'errors.area.outsideCoverage',
   'errors.auth.accountSuspended',
   'errors.auth.accountUnavailable',
   'errors.auth.emailTaken',
@@ -2117,6 +2168,7 @@ export const MESSAGE_KEYS = [
   'errors.auth.roleNotAllowed',
   'errors.auth.trustLevelTooLow',
   'errors.auth.unauthenticated',
+  'errors.block.selfNotAllowed',
   'errors.chat.cannotMessageSelf',
   'errors.chat.conversationClosed',
   'errors.chat.conversationNotFound',
@@ -2135,8 +2187,11 @@ export const MESSAGE_KEYS = [
   'errors.comment.parentNotFound',
   'errors.common.constraintViolated',
   'errors.common.duplicate',
+  'errors.common.idempotencyKeyRequired',
+  'errors.common.invalidId',
   'errors.common.referenceNotFound',
   'errors.common.retryLater',
+  'errors.content.underModeration',
   'errors.event.dateRangeInvalid',
   'errors.event.notFound',
   'errors.event.notOrganizer',
@@ -2405,15 +2460,41 @@ export const MESSAGE_KEYS = [
   'rsvp.error.occurrenceNotFound',
   'rsvp.error.suspended',
   'rsvp.error.trustTooLow',
+  'safety.block.action',
+  'safety.block.actionAuthor',
+  'safety.block.actionOrganizer',
+  'safety.block.blocked',
+  'safety.block.cancel',
+  'safety.block.confirm',
+  'safety.block.confirmBody',
+  'safety.block.confirmTitle',
+  'safety.block.error',
+  'safety.block.list.blockedAt',
+  'safety.block.list.empty',
+  'safety.block.list.title',
+  'safety.block.unblock',
+  'safety.block.working',
+  'safety.label.contentHidden',
+  'safety.label.eventSuspended',
+  'safety.label.eventTakenDown',
+  'safety.label.eventUnavailable',
+  'safety.menu.more',
   'safety.myReports.status.actionTaken',
   'safety.myReports.status.noAction',
   'safety.myReports.status.received',
   'safety.myReports.status.reviewing',
   'safety.myReports.title',
+  'safety.report.action',
   'safety.report.alreadyReported',
+  'safety.report.alsoBlock',
   'safety.report.anonymity_notice',
+  'safety.report.close',
+  'safety.report.descriptionCounter',
+  'safety.report.descriptionLabel',
   'safety.report.description_label',
   'safety.report.emergency_first',
+  'safety.report.errorGeneric',
+  'safety.report.errorOffline',
   'safety.report.limitReached',
   'safety.report.reason.danger',
   'safety.report.reason.ghost_event',
@@ -2427,9 +2508,13 @@ export const MESSAGE_KEYS = [
   'safety.report.reason.sexual',
   'safety.report.reason.spam',
   'safety.report.reason.unsafe_setup',
+  'safety.report.reasonLabel',
+  'safety.report.reassurance',
   'safety.report.sendFailed',
   'safety.report.submit',
   'safety.report.submitted',
+  'safety.report.submittedBody',
+  'safety.report.submitting',
   'safety.report.title',
   'shell.a11y.bottomNav',
   'shell.a11y.create',
@@ -2464,4 +2549,9 @@ export const MESSAGE_KEYS = [
   'trust.requirement.hostFirstEvent',
   'trust.requirement.resolveReports',
   'trust.requirement.verifyContact',
+  'user.status.active',
+  'user.status.deactivated',
+  'user.status.deleted',
+  'user.status.pending',
+  'user.status.suspended',
 ] as const;

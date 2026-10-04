@@ -39,7 +39,7 @@ export class CommentService {
     input: CommentCreateRequestT,
     viewer: CurrentUserContext,
   ): Promise<CommentResponseT> {
-    const state = await this.comments.targetState(target);
+    const state = await this.comments.targetState(target, viewer.id);
     if (state === 'missing') throw this.targetNotFound(target);
     if (state === 'closed') {
       throw new ForbiddenException({
@@ -48,7 +48,7 @@ export class CommentService {
       });
     }
 
-    const placement = await this.resolvePlacement(target, input.parentId);
+    const placement = await this.resolvePlacement(target, input.parentId, viewer);
 
     // Reserve-first: the slot is taken before the insert so parallel requests
     // cannot all slip under the ceiling. Anything that does not produce a
@@ -110,10 +110,11 @@ export class CommentService {
   private async resolvePlacement(
     target: CommentTargetRef,
     parentId: string | undefined,
+    viewer: CurrentUserContext,
   ): Promise<{ parentId: string | null; depth: 0 | 1 }> {
     if (!parentId) return { parentId: null, depth: 0 };
 
-    const parent = await this.comments.findParent(parentId, target);
+    const parent = await this.comments.findParent(parentId, target, viewer.id);
     if (!parent) {
       throw new NotFoundException({
         code: 'PARENT_COMMENT_NOT_FOUND',
@@ -138,7 +139,7 @@ export class CommentService {
     query: ListCommentQueryT,
     viewer: CurrentUserContext | null,
   ): Promise<{ items: CommentResponseT[]; nextCursor: string | null }> {
-    if ((await this.comments.targetState(target)) === 'missing') {
+    if ((await this.comments.targetState(target, viewer?.id ?? null)) === 'missing') {
       throw this.targetNotFound(target);
     }
     const { rows, limit, branch } = await this.comments.list(target, query, viewer?.id ?? null);
@@ -162,7 +163,7 @@ export class CommentService {
         messageKey: 'errors.comment.notAuthor',
       });
     }
-    await this.assertThreadOpen(existing);
+    await this.assertThreadOpen(existing, viewer);
 
     try {
       const row = await this.comments.update(id, patch, viewer.id);
@@ -222,7 +223,7 @@ export class CommentService {
         messageKey: 'errors.comment.notThreadOwner',
       });
     }
-    await this.assertThreadOpen(row);
+    await this.assertThreadOpen(row, viewer);
 
     // Checked before any write: replies have no pinned slot, and rejecting one
     // must leave the existing pin untouched.
@@ -249,15 +250,15 @@ export class CommentService {
   ): Promise<CommentRow> {
     const row = await this.comments.findById(id, viewer?.id ?? null);
     if (!row) throw this.notFound();
-    if ((await this.comments.targetState(this.targetOf(row))) === 'missing') {
+    if ((await this.comments.targetState(this.targetOf(row), viewer?.id ?? null)) === 'missing') {
       throw this.notFound();
     }
     return row;
   }
 
   /** Edits and pins need an open thread; a cancelled event is read-only. */
-  private async assertThreadOpen(row: CommentRow): Promise<void> {
-    if ((await this.comments.targetState(this.targetOf(row))) === 'closed') {
+  private async assertThreadOpen(row: CommentRow, viewer: CurrentUserContext): Promise<void> {
+    if ((await this.comments.targetState(this.targetOf(row), viewer.id)) === 'closed') {
       throw new ForbiddenException({
         code: 'COMMENTS_CLOSED',
         messageKey: 'errors.comment.closed',

@@ -15,6 +15,7 @@ import { ChatIcon } from './comments/comment-icons';
 import { CommentThread } from './comments/comment-thread';
 import { ReactionButton } from './comments/reaction-button';
 import { MediaCarousel } from './media-carousel';
+import { SafetyMenu } from './safety/safety-menu';
 
 const KIND_LABEL: Readonly<Record<PostKindT, MessageKey>> = {
   question: 'post.kind.question',
@@ -33,6 +34,8 @@ const KIND_TONE = {
 
 export interface CommunityPostProps {
   post: PostResponseT;
+  /** After the viewer blocked this post's author; the feed drops their posts. */
+  onAuthorBlocked?: (authorUserId: string) => void;
 }
 
 /**
@@ -42,7 +45,7 @@ export interface CommunityPostProps {
  * no RSVP, because it has no time and no seats. Making the two look alike would
  * suggest you can join a question.
  */
-export function CommunityPost({ post }: CommunityPostProps) {
+export function CommunityPost({ post, onAuthorBlocked }: CommunityPostProps) {
   const t = useTranslate();
   const { locale } = useLocale();
   const { user } = useAuth();
@@ -68,6 +71,7 @@ export function CommunityPost({ post }: CommunityPostProps) {
     epoch.current.viewer = viewerId;
   }
   const reactionIsStale = epoch.current.staleFor === post;
+  const isOwn = user !== null && user.id === post.authorUserId;
 
   const area = post.areaId === null ? undefined : findAreaById(post.areaId);
   const author = post.author;
@@ -126,7 +130,26 @@ export function CommunityPost({ post }: CommunityPostProps) {
           </div>
         </div>
         <Badge tone={KIND_TONE[post.kind]}>{t(KIND_LABEL[post.kind])}</Badge>
+        {/* Report/Block on everyone's posts but your own (AC-2). */}
+        {!isOwn && (
+          <SafetyMenu
+            target={{ type: 'post', id: post.id }}
+            owner={{ userId: post.authorUserId }}
+            blockLabel="safety.block.actionAuthor"
+            {...(onAuthorBlocked === undefined
+              ? {}
+              : { onBlocked: () => onAuthorBlocked(post.authorUserId) })}
+          />
+        )}
       </div>
+
+      {/* Only the author is ever served a hidden post; the label tells them
+          why nobody else can see it. */}
+      {post.status === 'hidden' && (
+        <Badge tone="danger" className="self-start">
+          {t('safety.label.contentHidden')}
+        </Badge>
+      )}
 
       {/* User-written text: `whitespace-pre-wrap` keeps the author's line breaks,
           `break-words` stops a pasted URL from widening the whole feed column. */}

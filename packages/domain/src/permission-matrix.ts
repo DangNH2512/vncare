@@ -37,6 +37,8 @@ export const AUDIT_LOG_VIEW_ROLES: readonly UserRoleT[] = ['moderator', 'admin',
 export const MODERATION_QUEUE_VIEW_ROLES: readonly UserRoleT[] = ['moderator', 'admin', 'super_admin'];
 /** A4: decide a moderation case. */
 export const MODERATION_DECIDE_ROLES: readonly UserRoleT[] = ['moderator', 'admin', 'super_admin'];
+/** Every global role; for safety tools any signed-in account may use on its own behalf. */
+export const ALL_ROLES: readonly UserRoleT[] = ['member', 'curator', 'moderator', 'admin', 'super_admin'];
 
 /**
  * Machine-readable permission keys.
@@ -61,7 +63,8 @@ export type PermissionKey =
   | 'user.role.assign'
   | 'audit_log.view'
   | 'moderation.queue.view'
-  | 'moderation.decide';
+  | 'moderation.decide'
+  | 'block.manage';
 
 export interface PermissionRule {
   key: PermissionKey;
@@ -139,6 +142,12 @@ export const PERMISSION_MATRIX: readonly PermissionRule[] = [
     key: 'moderation.decide',
     docRef: 'docs/analysis/05-trust-safety-va-kiem-duyet.md §13.10',
     allowedRoles: MODERATION_DECIDE_ROLES,
+  },
+  {
+    // Member-facing: a block only ever affects the caller's own view.
+    key: 'block.manage',
+    docRef: 'docs/analysis/05-trust-safety-va-kiem-duyet.md §13.10',
+    allowedRoles: ALL_ROLES,
   },
 ];
 

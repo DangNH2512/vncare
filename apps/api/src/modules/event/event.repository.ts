@@ -3,6 +3,7 @@ import type { Pool } from 'pg';
 import type { EventStatusT, EventUpdateRequestT, ListEventQueryT } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
 import { withTransaction } from '../../common/db/transaction.js';
+import { eventVisibleTo } from '../../common/db/event-visibility.js';
 import { decodeCursor, encodeCursor } from '../../common/pagination.js';
 
 export interface EventRow {
@@ -144,14 +145,17 @@ export class EventRepository {
     });
   }
 
-  /** Non-published events are visible only to their organizer. */
+  /**
+   * Non-published events are visible only to their organizer. An event whose
+   * organizer has a block with the viewer, either way, does not exist for
+   * that viewer (brief §6): the caller's 404 is the unknown-id one.
+   */
   async findById(id: string, viewerUserId: string | null): Promise<EventRow | null> {
     const { rows } = await this.pool.query<EventRow>(
       `SELECT ${SELECT_COLUMNS}
          FROM events e ${OCCURRENCE_JOIN} ${VIEWER_RSVP_JOIN.replace('$VIEWER', '$2')}
         WHERE e.id = $1
-          AND e.deleted_at IS NULL
-          AND (e.status = 'published' OR e.organizer_id = $2)`,
+          AND ${eventVisibleTo('$2', 'e')}`,
       [id, viewerUserId],
     );
     return rows[0] ?? null;
@@ -184,6 +188,10 @@ export class EventRepository {
    * occurrence is before `from` but a later one is inside the window would be
    * missed; the fix is to push `starts_at >= from` into OCCURRENCE_JOIN, which
    * also enables an index range scan on (event_id, starts_at).
+   *
+   * Events organized by someone the viewer has a block with are left out; the
+   * block predicate is a per-row anti-join and does not change which index
+   * serves the radius filter.
    */
   async list(
     query: ListEventQueryT,
@@ -193,8 +201,7 @@ export class EventRepository {
     const { rows } = await this.pool.query<EventRow>(
       `SELECT ${SELECT_COLUMNS}
          FROM events e ${OCCURRENCE_JOIN} ${VIEWER_RSVP_JOIN.replace('$VIEWER', '$1')}
-        WHERE e.deleted_at IS NULL
-          AND (e.status = 'published' OR e.organizer_id = $1)
+        WHERE ${eventVisibleTo('$1', 'e')}
           AND ($2::uuid IS NULL OR e.area_id = $2)
           AND ($3::event_status_enum IS NULL OR e.status = $3)
           AND ($4::uuid IS NULL OR e.organizer_id = $4)

@@ -83,8 +83,8 @@ export class RsvpController {
   @SerializeOptions({ schema: AttendeesEnvelope })
   async attendees(
     @Param('occurrenceId', { schema: UuidParam }) occurrenceId: string,
-    @CurrentUser() _viewer: CurrentUserContext,
+    @CurrentUser() viewer: CurrentUserContext,
   ) {
-    return { success: true, data: await this.rsvps.attendees(occurrenceId) };
+    return { success: true, data: await this.rsvps.attendees(occurrenceId, viewer) };
   }
 }

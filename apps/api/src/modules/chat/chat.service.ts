@@ -131,6 +131,19 @@ export class ChatService {
         details: { required: DIRECT_MESSAGE_MIN_TRUST },
       });
     }
+    // After the self and trust checks, never before: the order in which errors
+    // appear must not differ between a blocked pair and any other, or the
+    // error sequence itself would reveal the block (acceptance Q-A1).
+    const state = await this.chats.directOpeningState(viewer.id, recipientUserId);
+    if (!state.recipient_exists) throw this.recipientNotFound();
+    if (state.blocked) {
+      // A pair that already talked gets its old thread back, exactly like a
+      // declined pair; sending into it is refused (sendMessage). A pair
+      // that never did gets the unknown-user answer, and nothing is written —
+      // the blocker must not receive an invitation from the person they blocked.
+      if (state.existing_id !== null) return state.existing_id;
+      throw this.recipientNotFound();
+    }
 
     try {
       const { id } = await this.chats.findOrCreateDirect(viewer.id, recipientUserId);
@@ -242,6 +255,14 @@ export class ChatService {
     // Unlocked pre-check so a refusal never spends a slot. The quota is only
     // decidable under the lock, so it is not counted here.
     this.assertSendable({ ...conversation, request_message_quota: 0 }, viewer, null);
+    // A block placed after the thread was accepted stops new messages both
+    // ways. History stays readable: listMessages does not come through here.
+    if (conversation.type === 'direct') {
+      const other = conversation.participants.find((p) => p.userId !== viewer.id);
+      if (other && (await this.chats.isBlockedBetween(viewer.id, other.userId))) {
+        throw this.requestRefused();
+      }
+    }
 
     const slots = await this.reserveSendSlots(viewer);
 
@@ -378,10 +399,7 @@ export class ChatService {
     if (conversation.type !== 'direct') return;
 
     if (conversation.request_status === 'declined' || conversation.request_status === 'blocked') {
-      throw new ForbiddenException({
-        code: 'CONVERSATION_REQUEST_REFUSED',
-        messageKey: 'errors.chat.requestRefused',
-      });
+      throw this.requestRefused();
     }
     if (conversation.request_status !== 'pending') return;
     if (conversation.created_by_user_id !== viewer.id) return;
@@ -441,18 +459,40 @@ export class ChatService {
   }
 
   /**
+   * The answer for a recipient that does not exist or is deleted — and, by
+   * design, for a blocked pair with no thread yet (Q-A1): one fixed body, so
+   * the two cannot be told apart. Previously an unknown id surfaced as a
+   * foreign-key 400 and a soft-deleted one opened a thread.
+   */
+  private recipientNotFound(): NotFoundException {
+    return new NotFoundException({
+      code: 'PROFILE_NOT_FOUND',
+      messageKey: 'errors.profile.notFound',
+    });
+  }
+
+  private conversationNotFound(): NotFoundException {
+    return new NotFoundException({
+      code: 'CONVERSATION_NOT_FOUND',
+      messageKey: 'errors.chat.conversationNotFound',
+    });
+  }
+
+  private requestRefused(): ForbiddenException {
+    return new ForbiddenException({
+      code: 'CONVERSATION_REQUEST_REFUSED',
+      messageKey: 'errors.chat.requestRefused',
+    });
+  }
+
+  /**
    * A non-member and a non-existent conversation both answer 404. Telling the
    * caller a thread exists but is not theirs is enough to confirm that two
    * specific people are talking.
    */
   private async loadOrThrow(id: string, viewer: CurrentUserContext) {
     const conversation = await this.chats.findForParticipant(id, viewer.id);
-    if (!conversation) {
-      throw new NotFoundException({
-        code: 'CONVERSATION_NOT_FOUND',
-        messageKey: 'errors.chat.conversationNotFound',
-      });
-    }
+    if (!conversation) throw this.conversationNotFound();
     return conversation;
   }
 }

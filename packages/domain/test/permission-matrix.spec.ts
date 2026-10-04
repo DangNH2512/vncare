@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ALL_ROLES,
   ANALYTICS_PLATFORM_ROLES,
   allowedRolesFor,
   isStaffRole,
@@ -78,10 +79,18 @@ describe('PERMISSION_MATRIX', () => {
     expect(new Set(keys).size).toBe(keys.length);
   });
 
-  it('never grants a permission to member', () => {
+  it('never grants a permission to member, except the member-facing safety tools', () => {
+    // Blocking is a safety tool every account has (doc 05 §13.10). Any other
+    // key reaching member is a console permission leaking.
+    const memberFacing: readonly PermissionKey[] = ['block.manage'];
     for (const rule of PERMISSION_MATRIX) {
+      if (memberFacing.includes(rule.key)) continue;
       expect(rule.allowedRoles).not.toContain('member');
     }
+  });
+
+  it('opens block.manage to every role', () => {
+    expect(allowedRolesFor('block.manage')).toEqual(ALL_ROLES);
   });
 
   it('points every rule at a doc reference', () => {

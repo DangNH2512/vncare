@@ -1,5 +1,6 @@
 export {
   ApiError,
+  codePointLength,
   cursorPage,
   envelope,
   type ApiErrorT,
@@ -21,6 +22,16 @@ export {
   type AdminSystemHealthResponseT,
   type AdminSystemHealthStatusT,
 } from './admin';
+export {
+  AreaDetailResponse,
+  AreaResolveQuery,
+  AreaResponse,
+  ListAreaQuery,
+  type AreaDetailResponseT,
+  type AreaResolveQueryT,
+  type AreaResponseT,
+  type ListAreaQueryT,
+} from './area';
 export {
   AuthSessionResponse,
   LoginRequest,
@@ -362,3 +373,9 @@ export {
   type ModerationResolutionCodeT,
   type ModerationSlaStateT,
 } from './admin-moderation';
+export {
+  BlockedUserResponse,
+  ListBlockQuery,
+  type BlockedUserResponseT,
+  type ListBlockQueryT,
+} from './safety';

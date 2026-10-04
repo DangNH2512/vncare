@@ -12,6 +12,7 @@ export {
   type TrustSignals,
 } from './trust';
 export {
+  ALL_ROLES,
   ANALYTICS_PLATFORM_ROLES,
   AUDIT_LOG_VIEW_ROLES,
   CONTENT_HIDE_ROLES,
