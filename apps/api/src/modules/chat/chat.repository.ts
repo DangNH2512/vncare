@@ -10,6 +10,8 @@ import type {
 } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
 import { withTransaction } from '../../common/db/transaction.js';
+import { blockedBetween } from '../../common/db/block-filter.js';
+import { eventRoomOpen, eventVisibleTo } from '../../common/db/event-visibility.js';
 import { decodeCursor, encodeCursor } from '../../common/pagination.js';
 
 /**
@@ -210,15 +212,67 @@ export class ChatRepository {
     }
   }
 
-  /** Joins a member to an existing room, or revives a membership they left. */
-  async join(conversationId: string, userId: string): Promise<void> {
-    await this.pool.query(
+  /**
+   * Joins a member to an event room, or revives a membership they left.
+   *
+   * One statement, gated on the room being an event group whose event the
+   * member could open (eventVisibleTo, FU-2): a room of a suspended, taken-down
+   * or someone else's draft event — and any direct thread — joins nobody.
+   * Returns false then, and the caller answers the unknown-room 404.
+   */
+  async join(conversationId: string, userId: string): Promise<boolean> {
+    const { rowCount } = await this.pool.query(
       `INSERT INTO conversation_participants (conversation_id, user_id, role)
-       VALUES ($1, $2, 'member')
+       SELECT c.id, $2, 'member'
+         FROM conversations c
+         JOIN events e ON e.id = c.event_id
+        WHERE c.id = $1
+          AND c.type = 'event_group'
+          AND c.deleted_at IS NULL
+          AND ${eventVisibleTo('$2', 'e')}
        ON CONFLICT (conversation_id, user_id)
        DO UPDATE SET left_at = NULL`,
       [conversationId, userId],
     );
+    return (rowCount ?? 0) > 0;
+  }
+
+  /** Whether an event room accepts new messages: its event is live and published (FU-2). */
+  async eventRoomAcceptsMessages(conversationId: string): Promise<boolean> {
+    const { rowCount } = await this.pool.query(
+      `SELECT 1 FROM conversations c
+         JOIN events e ON e.id = c.event_id
+        WHERE c.id = $1 AND ${eventRoomOpen('e')}`,
+      [conversationId],
+    );
+    return (rowCount ?? 0) > 0;
+  }
+
+  /**
+   * Everything opening a direct thread needs to decide, in one round trip:
+   * whether the recipient is a live account, whether a block stands between
+   * the pair, and the pair's existing thread if there is one (FU-1).
+   */
+  async directOpeningState(
+    initiatorId: string,
+    recipientId: string,
+  ): Promise<{ recipient_exists: boolean; blocked: boolean; existing_id: string | null }> {
+    const { rows } = await this.pool.query<{
+      recipient_exists: boolean;
+      blocked: boolean;
+      existing_id: string | null;
+    }>(
+      `SELECT
+         EXISTS (SELECT 1 FROM users
+                  WHERE id = $2 AND deleted_at IS NULL AND status <> 'deleted') AS recipient_exists,
+         ${blockedBetween('$1', '$2::uuid')} AS blocked,
+         (SELECT id FROM conversations
+           WHERE type = 'direct' AND deleted_at IS NULL
+             AND user_a_id = LEAST($1::uuid, $2::uuid)
+             AND user_b_id = GREATEST($1::uuid, $2::uuid)) AS existing_id`,
+      [initiatorId, recipientId],
+    );
+    return rows[0] ?? { recipient_exists: false, blocked: false, existing_id: null };
   }
 
   /**
@@ -419,28 +473,65 @@ export class ChatRepository {
     );
   }
 
-  /** Recipient's answer to a conversation request. Only they may call it. */
+  /**
+   * True when either person has blocked the other.
+   *
+   * The global `blocks` table is the one source of truth for "are these two
+   * blocked" (task board D5); `conversations.request_status = 'blocked'` only
+   * records how one request was answered and is not read for this.
+   */
+  async isBlockedBetween(userId: string, otherUserId: string): Promise<boolean> {
+    const { rows } = await this.pool.query<{ blocked: boolean }>(
+      `SELECT ${blockedBetween('$1', '$2::uuid')} AS blocked`,
+      [userId, otherUserId],
+    );
+    return rows[0]?.blocked ?? false;
+  }
+
+  /**
+   * Recipient's answer to a conversation request. Only they may call it.
+   *
+   * Answering `blocked` also blocks the requester globally, in the same
+   * transaction, so "blocked in chat" and "blocked" are one thing (D5): the
+   * requester then disappears from the recipient's events, posts and profile
+   * as well, and a later unblock lifts both — without reopening this closed
+   * thread.
+   */
   async respondToRequest(
     conversationId: string,
     recipientId: string,
     decision: 'accepted' | 'declined' | 'blocked',
   ): Promise<boolean> {
-    const { rowCount } = await this.pool.query(
-      // Both casts are load-bearing: without them PostgreSQL infers $3 as enum
-      // from the assignment and as text from the comparison, and refuses the
-      // statement with 42P08.
-      `UPDATE conversations
-          SET request_status = $3::conversation_request_status_enum,
-              status = CASE WHEN $3::text = 'blocked' THEN 'closed' ELSE status END,
-              updated_at = now()
-        WHERE id = $1
-          AND type = 'direct'
-          AND request_status = 'pending'
-          AND created_by_user_id <> $2
-          AND $2 IN (user_a_id, user_b_id)`,
-      [conversationId, recipientId, decision],
-    );
-    return (rowCount ?? 0) > 0;
+    return withTransaction(this.pool, async (tx) => {
+      const { rows } = await tx.query<{ created_by_user_id: string }>(
+        // Both casts are load-bearing: without them PostgreSQL infers $3 as enum
+        // from the assignment and as text from the comparison, and refuses the
+        // statement with 42P08.
+        `UPDATE conversations
+            SET request_status = $3::conversation_request_status_enum,
+                status = CASE WHEN $3::text = 'blocked' THEN 'closed' ELSE status END,
+                updated_at = now()
+          WHERE id = $1
+            AND type = 'direct'
+            AND request_status = 'pending'
+            AND created_by_user_id <> $2
+            AND $2 IN (user_a_id, user_b_id)
+          RETURNING created_by_user_id`,
+        [conversationId, recipientId, decision],
+      );
+      const requester = rows[0]?.created_by_user_id;
+      if (requester === undefined) return false;
+
+      if (decision === 'blocked') {
+        await tx.query(
+          `INSERT INTO blocks (blocker_user_id, blocked_user_id)
+           VALUES ($1, $2)
+           ON CONFLICT (blocker_user_id, blocked_user_id) DO NOTHING`,
+          [recipientId, requester],
+        );
+      }
+      return true;
+    });
   }
 
   /** Recipients of a realtime broadcast: everyone still in the room. */

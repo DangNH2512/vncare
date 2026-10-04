@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type {
   CommentCreateRequestT,
   CommentResponseT,
@@ -26,11 +31,11 @@ export class CommentService {
     input: CommentCreateRequestT,
     viewer: CurrentUserContext,
   ): Promise<CommentResponseT> {
-    if (!(await this.comments.targetExists(target))) {
+    if (!(await this.comments.targetExists(target, viewer.id))) {
       throw this.targetNotFound(target);
     }
 
-    const placement = await this.resolvePlacement(target, input.parentId);
+    const placement = await this.resolvePlacement(target, input.parentId, viewer);
 
     try {
       const row = await this.comments.create({
@@ -60,10 +65,11 @@ export class CommentService {
   private async resolvePlacement(
     target: CommentTargetRef,
     parentId: string | undefined,
+    viewer: CurrentUserContext,
   ): Promise<{ parentId: string | null; depth: 0 | 1 }> {
     if (!parentId) return { parentId: null, depth: 0 };
 
-    const parent = await this.comments.findParent(parentId, target);
+    const parent = await this.comments.findParent(parentId, target, viewer.id);
     if (!parent) {
       throw new NotFoundException({
         code: 'PARENT_COMMENT_NOT_FOUND',
@@ -88,7 +94,7 @@ export class CommentService {
     query: ListCommentQueryT,
     viewer: CurrentUserContext | null,
   ): Promise<{ items: CommentResponseT[]; nextCursor: string | null }> {
-    if (!(await this.comments.targetExists(target))) {
+    if (!(await this.comments.targetExists(target, viewer?.id ?? null))) {
       throw this.targetNotFound(target);
     }
     const { rows, limit, branch } = await this.comments.list(target, query, viewer?.id ?? null);
@@ -107,10 +113,17 @@ export class CommentService {
   ): Promise<CommentResponseT> {
     const author = await this.comments.findAuthor(id);
     if (!author) throw this.notFound();
-    if (author !== viewer.id) {
+    if (author.user_id !== viewer.id) {
       throw new ForbiddenException({
         code: 'NOT_COMMENT_AUTHOR',
         messageKey: 'errors.comment.notAuthor',
+      });
+    }
+    if (author.status === 'hidden' || author.status === 'removed') {
+      // Same rule as posts: a hidden body is moderation evidence (BA #10).
+      throw new ConflictException({
+        code: 'CONTENT_UNDER_MODERATION',
+        messageKey: 'errors.content.underModeration',
       });
     }
 

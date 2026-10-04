@@ -4,10 +4,12 @@ import { MAX_GALLERY_PREVIEW, type PostKindT, type PostResponseT } from '@dnc/co
 import type { MessageKey } from '@dnc/i18n';
 
 import { Avatar, Badge, Card } from '../../_components/ui';
+import { useAuth } from '../../_components/auth-provider';
 import { useLocale, useTranslate } from '../../_components/locale-provider';
 import { areaName, findAreaById } from '../../_lib/areas';
 import { timeAgo } from '../../_lib/datetime';
 import { MediaCarousel } from './media-carousel';
+import { SafetyMenu } from './safety/safety-menu';
 
 const KIND_LABEL: Readonly<Record<PostKindT, MessageKey>> = {
   question: 'post.kind.question',
@@ -26,6 +28,8 @@ const KIND_TONE = {
 
 export interface CommunityPostProps {
   post: PostResponseT;
+  /** After the viewer blocked this post's author; the feed drops their posts. */
+  onAuthorBlocked?: (authorUserId: string) => void;
 }
 
 /**
@@ -35,9 +39,11 @@ export interface CommunityPostProps {
  * no RSVP, because it has no time and no seats. Making the two look alike would
  * suggest you can join a question.
  */
-export function CommunityPost({ post }: CommunityPostProps) {
+export function CommunityPost({ post, onAuthorBlocked }: CommunityPostProps) {
   const t = useTranslate();
   const { locale } = useLocale();
+  const { user } = useAuth();
+  const isOwn = user !== null && user.id === post.authorUserId;
 
   const area = post.areaId === null ? undefined : findAreaById(post.areaId);
   // The author's display name arrives with the profile endpoint; until then the
@@ -55,7 +61,26 @@ export function CommunityPost({ post }: CommunityPostProps) {
           </p>
         </div>
         <Badge tone={KIND_TONE[post.kind]}>{t(KIND_LABEL[post.kind])}</Badge>
+        {/* Report/Block on everyone's posts but your own (AC-2). */}
+        {!isOwn && (
+          <SafetyMenu
+            target={{ type: 'post', id: post.id }}
+            owner={{ userId: post.authorUserId }}
+            blockLabel="safety.block.actionAuthor"
+            {...(onAuthorBlocked === undefined
+              ? {}
+              : { onBlocked: () => onAuthorBlocked(post.authorUserId) })}
+          />
+        )}
       </div>
+
+      {/* Only the author is ever served a hidden post; the label tells them
+          why nobody else can see it. */}
+      {post.status === 'hidden' && (
+        <Badge tone="danger" className="self-start">
+          {t('safety.label.contentHidden')}
+        </Badge>
+      )}
 
       {/* User-written text: `whitespace-pre-wrap` keeps the author's line breaks,
           `break-words` stops a pasted URL from widening the whole feed column. */}

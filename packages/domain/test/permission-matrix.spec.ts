@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ADMIN_ROLES,
+  ALL_ROLES,
   allowedRolesFor,
   isStaffRole,
+  MODERATION_ROLES,
   PERMISSION_MATRIX,
   STAFF_ROLES,
   SYSTEM_HEALTH_ROLES,
@@ -40,10 +43,31 @@ describe('PERMISSION_MATRIX', () => {
     expect(new Set(keys).size).toBe(keys.length);
   });
 
-  it('never grants a permission to member', () => {
+  it('never grants a permission to member, except the member-facing safety tools', () => {
+    // Reporting and blocking are safety tools every account has (doc 05 §7.9,
+    // §13.10). Any other key reaching member is a console permission leaking.
+    const memberFacing: readonly PermissionKey[] = ['report.create', 'block.manage'];
     for (const rule of PERMISSION_MATRIX) {
+      if (memberFacing.includes(rule.key)) continue;
       expect(rule.allowedRoles).not.toContain('member');
     }
+  });
+
+  it('keeps curator out of the moderation queue and the audit log (Đ40, Đ48)', () => {
+    for (const key of ['moderation.queue.view', 'moderation.action.take', 'audit_log.view'] as const) {
+      expect(allowedRolesFor(key)).toEqual(MODERATION_ROLES);
+      expect(allowedRolesFor(key)).not.toContain('curator');
+      expect(allowedRolesFor(key)).not.toContain('member');
+    }
+  });
+
+  it('restricts restoring a taken-down event to admin and super_admin', () => {
+    expect(allowedRolesFor('moderation.event.restore_taken_down')).toEqual(ADMIN_ROLES);
+  });
+
+  it('opens reporting and blocking to every role', () => {
+    expect(allowedRolesFor('report.create')).toEqual(ALL_ROLES);
+    expect(allowedRolesFor('block.manage')).toEqual(ALL_ROLES);
   });
 
   it('points every rule at a doc reference', () => {

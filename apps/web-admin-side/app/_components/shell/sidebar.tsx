@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SYSTEM_HEALTH_ROLES } from '@dnc/domain';
+import { allowedRolesFor, SYSTEM_HEALTH_ROLES } from '@dnc/domain';
 import type { UserRoleT } from '@dnc/contracts';
 
 import { cn } from '../../_lib/cn';
@@ -22,12 +22,22 @@ interface NavItem {
  * UI half of AC-5 ("curator/moderator sidebar has no System health entry");
  * `RequireRole` on the destination page is the other half, for someone who
  * types the URL directly instead of clicking.
+ *
+ * Moderation queue and Audit log follow the same rule through
+ * `allowedRolesFor(...)`: both resolve to `MODERATION_ROLES`, so a curator
+ * sees neither entry (AC-21, AC-44). The API still answers 403 on its own.
  */
 export function Sidebar({ role }: { role: UserRoleT }) {
   const t = useTranslate();
   const pathname = usePathname();
 
   const items: NavItem[] = [{ href: '/', labelKey: 'admin.nav.overview' }];
+  if (allowedRolesFor('moderation.queue.view').includes(role)) {
+    items.push({ href: '/moderation', labelKey: 'admin.nav.moderationQueue' });
+  }
+  if (allowedRolesFor('audit_log.view').includes(role)) {
+    items.push({ href: '/audit-logs', labelKey: 'admin.nav.auditLog' });
+  }
   if (SYSTEM_HEALTH_ROLES.includes(role)) {
     items.push({ href: '/system-health', labelKey: 'admin.nav.systemHealth' });
   }
@@ -39,7 +49,11 @@ export function Sidebar({ role }: { role: UserRoleT }) {
     >
       <ul className="flex flex-col gap-1">
         {items.map((item) => {
-          const active = pathname === item.href;
+          // A section stays highlighted on its child routes (a ticket under /moderation).
+          const active =
+            item.href === '/'
+              ? pathname === '/'
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <li key={item.href}>
               <Link

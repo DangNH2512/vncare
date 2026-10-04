@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { Pool } from 'pg';
 import type { ReactionKindT, ReactionTargetT } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
+import { notBlockedBetween } from '../../common/db/block-filter.js';
+import { commentThreadVisibleTo, eventVisibleTo } from '../../common/db/event-visibility.js';
 
 export interface ReactionTargetRef {
   type: ReactionTargetT;
@@ -19,11 +21,21 @@ export interface ReactionSummaryRow {
   viewer_reaction: ReactionKindT | null;
 }
 
-/** Existence probe per target: a reaction may only attach to live, visible content. */
+/**
+ * Existence probe per target: a reaction may only attach to live, visible
+ * content. Content owned by someone the viewer ($2) has a block with, either
+ * way, does not exist for them — reacting, un-reacting and reading the
+ * summary all answer the unknown-target 404 (brief §6).
+ */
 const EXISTS_SQL: Readonly<Record<ReactionTargetT, string>> = {
-  post: `SELECT 1 FROM posts WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'`,
-  comment: `SELECT 1 FROM comments WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'`,
-  event: `SELECT 1 FROM events WHERE id = $1 AND deleted_at IS NULL`,
+  post: `SELECT 1 FROM posts WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'
+           AND ${notBlockedBetween('$2', 'author_user_id')}`,
+  comment: `SELECT 1 FROM comments c
+              WHERE c.id = $1 AND c.deleted_at IS NULL AND c.status = 'visible'
+                AND ${notBlockedBetween('$2', 'c.user_id')}
+                AND ${commentThreadVisibleTo('$2', 'c')}`,
+  // Same rule as GET /events/:id: no reacting to a suspended or taken-down event (CR-2).
+  event: `SELECT 1 FROM events e WHERE e.id = $1 AND ${eventVisibleTo('$2', 'e')}`,
 };
 
 /**
@@ -43,8 +55,11 @@ const REACTION_COLUMN: Readonly<Record<ReactionTargetT, string>> = {
 export class ReactionRepository {
   constructor(@Inject(PG_POOL) private readonly pool: Pool) {}
 
-  async targetExists(target: ReactionTargetRef): Promise<boolean> {
-    const { rowCount } = await this.pool.query(EXISTS_SQL[target.type], [target.id]);
+  async targetExists(target: ReactionTargetRef, viewerUserId: string | null): Promise<boolean> {
+    const { rowCount } = await this.pool.query(EXISTS_SQL[target.type], [
+      target.id,
+      viewerUserId,
+    ]);
     return (rowCount ?? 0) > 0;
   }
 

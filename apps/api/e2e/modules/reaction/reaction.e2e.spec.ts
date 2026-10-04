@@ -56,6 +56,14 @@ describe('reaction module', () => {
       })
       .expect(201);
     eventId = event.body.data.id;
+
+    // Reactions follow the event's visibility: a draft is only reachable by its
+    // organizer, so the probe event has to be published before others react.
+    await request(app.getHttpServer())
+      .put(`/api/v1/events/${eventId}/status`)
+      .set(author.headers)
+      .send({ status: 'published' })
+      .expect(200);
   });
 
   afterAll(async () => {

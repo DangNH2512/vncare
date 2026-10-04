@@ -221,6 +221,10 @@ export async function seedArea(): Promise<{ areaId: string; cleanup: () => Promi
   return {
     areaId,
     cleanup: async () => {
+      // Moderation rows first: moderation_actions has RESTRICT foreign keys to
+      // users, so nothing below can delete an actor while their trail exists.
+      await removeModerationTrail(pool, actors);
+
       // Ordered by dependency, and scoped to this file's actors so parallel
       // spec files never delete each other's rows.
       await pool.query(
@@ -273,6 +277,57 @@ export async function seedArea(): Promise<{ areaId: string; cleanup: () => Promi
       await pool.end();
     },
   };
+}
+
+/**
+ * Removes the moderation rows that involve this file's actors.
+ *
+ * `audit_logs` and `moderation_actions` are append-only: a trigger rejects
+ * every DELETE (0009). Teardown is the one sanctioned exception, and it gets
+ * past the trigger with `session_replication_role = replica`, which skips
+ * ordinary triggers — foreign-key checks included — for this transaction only.
+ * That setting needs a superuser. The local `dnc` role is one; an environment
+ * whose test role is not will fail here, loudly, rather than leave rows behind.
+ * Production must never run the app as a superuser (task board §8 risk 4/5).
+ *
+ * Blocks cascade when users are deleted; they are removed explicitly anyway so
+ * a spec that keeps its accounts alive still leaves no relationship behind.
+ */
+async function removeModerationTrail(pool: Pool, userIds: readonly string[]): Promise<void> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('SET LOCAL session_replication_role = replica');
+    await client.query(
+      `DELETE FROM audit_logs
+        WHERE actor_user_id = ANY($1::uuid[]) OR subject_user_id = ANY($1::uuid[])`,
+      [userIds],
+    );
+    await client.query(
+      `DELETE FROM moderation_actions
+        WHERE actor_user_id = ANY($1::uuid[]) OR target_user_id = ANY($1::uuid[])`,
+      [userIds],
+    );
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
+  await pool.query(
+    `DELETE FROM reports
+      WHERE reporter_user_id = ANY($1::uuid[]) OR target_owner_user_id = ANY($1::uuid[])`,
+    [userIds],
+  );
+  await pool.query(`DELETE FROM moderation_tickets WHERE target_owner_user_id = ANY($1::uuid[])`, [
+    userIds,
+  ]);
+  await pool.query(
+    `DELETE FROM blocks
+      WHERE blocker_user_id = ANY($1::uuid[]) OR blocked_user_id = ANY($1::uuid[])`,
+    [userIds],
+  );
 }
 
 /** A uuid that belongs to nothing — for "not found" and "not yours" assertions. */

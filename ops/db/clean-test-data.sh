@@ -22,6 +22,23 @@ CREATE TEMP TABLE doomed AS
 \echo 'test accounts to remove:'
 SELECT count(*) FROM doomed;
 
+-- Moderation trail first: moderation_actions holds RESTRICT foreign keys to
+-- users. Both tables below are append-only by trigger (0009); `replica` skips
+-- ordinary triggers for this transaction, needs a superuser, and is switched
+-- back off immediately so nothing else in this script runs without its
+-- foreign-key checks.
+SET LOCAL session_replication_role = replica;
+DELETE FROM audit_logs WHERE actor_user_id IN (SELECT id FROM doomed)
+   OR subject_user_id IN (SELECT id FROM doomed);
+DELETE FROM moderation_actions WHERE actor_user_id IN (SELECT id FROM doomed)
+   OR target_user_id IN (SELECT id FROM doomed);
+SET LOCAL session_replication_role = origin;
+DELETE FROM reports WHERE reporter_user_id IN (SELECT id FROM doomed)
+   OR target_owner_user_id IN (SELECT id FROM doomed);
+DELETE FROM moderation_tickets WHERE target_owner_user_id IN (SELECT id FROM doomed);
+DELETE FROM blocks WHERE blocker_user_id IN (SELECT id FROM doomed)
+   OR blocked_user_id IN (SELECT id FROM doomed);
+
 DELETE FROM reactions WHERE user_id IN (SELECT id FROM doomed)
    OR post_id IN (SELECT id FROM posts WHERE author_user_id IN (SELECT id FROM doomed))
    OR comment_id IN (SELECT id FROM comments WHERE user_id IN (SELECT id FROM doomed));

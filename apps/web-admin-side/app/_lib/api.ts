@@ -8,15 +8,24 @@
  * `@dnc/contracts`, so this file owns transport only, never data shapes.
  *
  * Only the endpoints the operations console needs are exposed here: auth
- * (`login`, `refresh`, `logout`, `me`) and the admin surface
- * (`getSystemHealth`). There is no `register` — staff accounts are
- * provisioned another way, not self-served through this app.
+ * (`login`, `refresh`, `logout`, `me`), system health, the moderation queue
+ * and its actions, and the audit log. There is no `register` — staff accounts
+ * are provisioned another way, not self-served through this app.
  */
 import type {
   AdminSystemHealthResponseT,
+  AuditLogQueryT,
+  AuditLogResponseT,
   AuthSessionResponseT,
   LoginRequestT,
+  ModerationActionRequestT,
+  ModerationActionResponseT,
+  ModerationQueueQueryT,
+  ModerationQueueResponseT,
+  ModerationTicketDetailResponseT,
   SessionUserResponseT,
+  TicketDismissRequestT,
+  TicketSeverityRequestT,
 } from '@dnc/contracts';
 
 /**
@@ -51,6 +60,8 @@ export class ApiError extends Error {
     readonly status: number,
     readonly code: string | undefined,
     readonly messageKey: string | undefined,
+    /** Extra values for the message, e.g. `{ maxDays }` on SUSPENSION_TOO_LONG. */
+    readonly details: Readonly<Record<string, unknown>> | undefined = undefined,
   ) {
     super(`API ${status} ${code ?? ''}`.trim());
     this.name = 'ApiError';
@@ -129,9 +140,11 @@ async function call<T>(path: string, init?: CallInit): Promise<T> {
     // messageKey: 'errors.auth.roleNotAllowed' }`, no nesting).
     const error =
       typeof body === 'object' && body !== null
-        ? (body as { code?: string; messageKey?: string })
+        ? (body as { code?: string; messageKey?: string; details?: Record<string, unknown> })
         : {};
-    throw new ApiError(response.status, error.code, error.messageKey);
+    const details =
+      typeof error.details === 'object' && error.details !== null ? error.details : undefined;
+    throw new ApiError(response.status, error.code, error.messageKey, details);
   }
 
   if (response.status === 204) return undefined as T;
@@ -219,4 +232,125 @@ export function me(): Promise<SessionUserResponseT> {
  */
 export function getSystemHealth(): Promise<AdminSystemHealthResponseT> {
   return call<AdminSystemHealthResponseT>('/api/v1/admin/system/health');
+}
+
+/* ----------------------------------------------------------- moderation */
+
+/** Page of any cursor-paginated list (`cursorPage()` in `@dnc/contracts`). */
+export interface CursorPage<T> {
+  items: T[];
+  nextCursor: string | null;
+}
+
+/**
+ * Serialises only the parameters that are set. An empty string counts as
+ * unset: it is what a cleared filter field holds, and sending `severity=`
+ * would fail validation instead of meaning "any".
+ */
+function toQueryString(params: Readonly<Record<string, string | number | undefined>>): string {
+  const search = new URLSearchParams();
+  for (const [name, value] of Object.entries(params)) {
+    if (value === undefined || value === '') continue;
+    search.set(name, String(value));
+  }
+  const text = search.toString();
+  return text === '' ? '' : `?${text}`;
+}
+
+/**
+ * One key per decision, generated when the operator opens the form and kept
+ * across retries of that same submit — a network retry then resolves to the
+ * first attempt instead of recording the decision twice.
+ */
+export function newIdempotencyKey(): string {
+  return crypto.randomUUID();
+}
+
+function idempotencyHeaders(key: string | undefined): Record<string, string> {
+  return key === undefined ? {} : { 'idempotency-key': key };
+}
+
+/**
+ * Open or handled tickets, conflict-of-interest tickets already removed by
+ * the API (task board D10). `serverTime` drives every countdown (D15).
+ * Requires `moderation.queue.view`.
+ */
+export function getModerationQueue(
+  query: Partial<ModerationQueueQueryT> = {},
+): Promise<ModerationQueueResponseT> {
+  return call<ModerationQueueResponseT>(
+    `/api/v1/admin/moderation/queue${toQueryString({
+      status: query.status,
+      severity: query.severity,
+      cursor: query.cursor,
+      limit: query.limit,
+    })}`,
+  );
+}
+
+/** Full ticket: snapshots, reporters, owner, action history. 403 `CONFLICT_OF_INTEREST` when involved. */
+export function getModerationTicket(ticketId: string): Promise<ModerationTicketDetailResponseT> {
+  return call<ModerationTicketDetailResponseT>(
+    `/api/v1/admin/moderation/tickets/${encodeURIComponent(ticketId)}`,
+  );
+}
+
+/** Enforcement or reversal (E7). Writes one moderation action and one audit row server-side. */
+export function takeModerationAction(
+  body: ModerationActionRequestT,
+  idempotencyKey?: string,
+): Promise<ModerationActionResponseT> {
+  return call<ModerationActionResponseT>('/api/v1/admin/moderation/actions', {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: idempotencyHeaders(idempotencyKey),
+  });
+}
+
+/** Closes an open ticket as "no violation" (`no_action`, E8). */
+export function dismissTicket(
+  ticketId: string,
+  body: TicketDismissRequestT,
+  idempotencyKey?: string,
+): Promise<ModerationActionResponseT> {
+  return call<ModerationActionResponseT>(
+    `/api/v1/admin/moderation/tickets/${encodeURIComponent(ticketId)}/dismiss`,
+    { method: 'POST', body: JSON.stringify(body), headers: idempotencyHeaders(idempotencyKey) },
+  );
+}
+
+/** Re-grades an open ticket; the API recomputes its deadline (`severity_changed`, E9). */
+export function changeTicketSeverity(
+  ticketId: string,
+  body: TicketSeverityRequestT,
+  idempotencyKey?: string,
+): Promise<ModerationActionResponseT> {
+  return call<ModerationActionResponseT>(
+    `/api/v1/admin/moderation/tickets/${encodeURIComponent(ticketId)}/severity`,
+    { method: 'POST', body: JSON.stringify(body), headers: idempotencyHeaders(idempotencyKey) },
+  );
+}
+
+/* ---------------------------------------------------------------- audit */
+
+/**
+ * Read-only journal, newest first (E10). The API narrows the result by role
+ * (`auditLogScope`): a moderator only ever receives their own entries, and
+ * filtering on someone else's id returns an empty page rather than a 403.
+ * There is deliberately no write function here — the API has no such route.
+ */
+export function listAuditLogs(
+  query: Partial<AuditLogQueryT> = {},
+): Promise<CursorPage<AuditLogResponseT>> {
+  return call<CursorPage<AuditLogResponseT>>(
+    `/api/v1/admin/audit-logs${toQueryString({
+      from: query.from,
+      to: query.to,
+      action: query.action,
+      actorUserId: query.actorUserId,
+      entityType: query.entityType,
+      cursor: query.cursor,
+      limit: query.limit,
+    })}`,
+  );
 }

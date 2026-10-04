@@ -9,6 +9,8 @@ import type {
 } from '@dnc/contracts';
 import { PG_POOL } from '../../database/database.module.js';
 import { decodeCursor, encodeCursor } from '../../common/pagination.js';
+import { notBlockedBetween } from '../../common/db/block-filter.js';
+import { commentThreadVisibleTo, eventVisibleTo } from '../../common/db/event-visibility.js';
 
 export interface CommentRow {
   id: string;
@@ -88,20 +90,32 @@ export class CommentRepository {
    * Confirms the thread target is real and readable before a comment is
    * attached, so a bad id answers 404 instead of a foreign-key 400 that says
    * nothing about which id was wrong.
+   *
+   * A target owned by someone the viewer has a block with, either way, is
+   * not readable: its thread 404s for reading and for writing (brief §6). An
+   * event thread follows the event's own visibility, so a suspended or
+   * taken-down event has no open thread either (CR-2).
    */
-  async targetExists(target: CommentTargetRef): Promise<boolean> {
+  async targetExists(target: CommentTargetRef, viewerUserId: string | null): Promise<boolean> {
     const sql =
       target.type === 'post'
-        ? `SELECT 1 FROM posts WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'`
-        : `SELECT 1 FROM events WHERE id = $1 AND deleted_at IS NULL`;
-    const { rowCount } = await this.pool.query(sql, [target.id]);
+        ? `SELECT 1 FROM posts
+            WHERE id = $1 AND deleted_at IS NULL AND status = 'visible'
+              AND ${notBlockedBetween('$2', 'author_user_id')}`
+        : `SELECT 1 FROM events e WHERE e.id = $1 AND ${eventVisibleTo('$2', 'e')}`;
+    const { rowCount } = await this.pool.query(sql, [target.id, viewerUserId]);
     return (rowCount ?? 0) > 0;
   }
 
-  /** Depth and thread root of a candidate parent, used to flatten level-2 replies. */
+  /**
+   * Depth and thread root of a candidate parent, used to flatten level-2
+   * replies. A parent written by someone the viewer has a block with is not
+   * there to reply to.
+   */
   async findParent(
     parentId: string,
     target: CommentTargetRef,
+    viewerUserId: string,
   ): Promise<{ id: string; depth: number; parent_id: string | null } | null> {
     const column = target.type === 'post' ? 'post_id' : 'event_id';
     const { rows } = await this.pool.query<{
@@ -110,8 +124,9 @@ export class CommentRepository {
       parent_id: string | null;
     }>(
       `SELECT id, depth, parent_id FROM comments
-        WHERE id = $1 AND ${column} = $2 AND deleted_at IS NULL`,
-      [parentId, target.id],
+        WHERE id = $1 AND ${column} = $2 AND deleted_at IS NULL
+          AND ${notBlockedBetween('$3', 'user_id')}`,
+      [parentId, target.id, viewerUserId],
     );
     return rows[0] ?? null;
   }
@@ -142,6 +157,12 @@ export class CommentRepository {
     return rows[0] as CommentRow;
   }
 
+  /**
+   * A comment by someone the viewer has a block with, either way, reads as
+   * absent — and so does any comment in a thread the viewer cannot read: on a
+   * post by the other side of a block, or on an event the viewer could not
+   * open (CR-2, CR-8). Otherwise the comment would confirm its thread exists.
+   */
   async findById(id: string, viewerUserId: string | null): Promise<CommentRow | null> {
     const { rows } = await this.pool.query<CommentRow>(
       `SELECT ${SELECT_COLUMNS}
@@ -149,18 +170,21 @@ export class CommentRepository {
          LEFT JOIN reactions r ON r.comment_id = c.id AND r.user_id = $2
         WHERE c.id = $1
           AND c.deleted_at IS NULL
-          AND (c.status = 'visible' OR c.user_id = $2)`,
+          AND (c.status = 'visible' OR c.user_id = $2)
+          AND ${notBlockedBetween('$2', 'c.user_id')}
+          AND ${commentThreadVisibleTo('$2', 'c')}`,
       [id, viewerUserId],
     );
     return rows[0] ?? null;
   }
 
-  async findAuthor(id: string): Promise<string | null> {
-    const { rows } = await this.pool.query<{ user_id: string }>(
-      `SELECT user_id FROM comments WHERE id = $1 AND deleted_at IS NULL`,
+  /** Author and moderation status — enough for the edit checks, nothing more. */
+  async findAuthor(id: string): Promise<{ user_id: string; status: ContentStatusT } | null> {
+    const { rows } = await this.pool.query<{ user_id: string; status: ContentStatusT }>(
+      `SELECT user_id, status FROM comments WHERE id = $1 AND deleted_at IS NULL`,
       [id],
     );
-    return rows[0]?.user_id ?? null;
+    return rows[0] ?? null;
   }
 
   /**
@@ -169,6 +193,9 @@ export class CommentRepository {
    * Roots come newest first with pinned items on top — that is the order the
    * index is built for. Replies come oldest first, because a branch reads as a
    * conversation and reversing it makes the answers precede the questions.
+   *
+   * Both branches drop comments by anyone the viewer has a block with. This is
+   * a personal filter: a third reader still sees everyone's comments (AC-14).
    */
   async list(
     target: CommentTargetRef,
@@ -187,6 +214,7 @@ export class CommentRepository {
             AND c.parent_id = $3
             AND c.deleted_at IS NULL
             AND c.status = 'visible'
+            AND ${notBlockedBetween('$1', 'c.user_id')}
             AND ($4::timestamptz IS NULL OR (c.created_at, c.id) > ($4, $5::uuid))
           ORDER BY c.created_at ASC, c.id ASC
           LIMIT $6`,
@@ -211,6 +239,7 @@ export class CommentRepository {
           AND c.parent_id IS NULL
           AND c.deleted_at IS NULL
           AND c.status = 'visible'
+          AND ${notBlockedBetween('$1', 'c.user_id')}
           AND ($3::boolean IS NULL
                OR (c.is_pinned, c.created_at, c.id) < ($3, $4::timestamptz, $5::uuid))
         ORDER BY c.is_pinned DESC, c.created_at DESC, c.id DESC

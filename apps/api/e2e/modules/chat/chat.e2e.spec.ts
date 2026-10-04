@@ -277,6 +277,14 @@ describe('chat module', () => {
       })
       .expect(201);
 
+    // A room follows its event's visibility: members can only join and post
+    // while the event is published.
+    await request(app.getHttpServer())
+      .put(`/api/v1/events/${event.body.data.id}/status`)
+      .set(host.headers)
+      .send({ status: 'published' })
+      .expect(200);
+
     const room = await request(app.getHttpServer())
       .post('/api/v1/conversations')
       .set(host.headers)

@@ -55,6 +55,21 @@ export function FeedStream() {
     setPosts((current) => [post, ...current]);
   }, []);
 
+  /**
+   * Blocking an author takes their posts out of the feed at once (AC-13).
+   * Kept as a set rather than only filtered out of `posts`: a reload that
+   * lands before the server applies the block must not bring them back.
+   * Events are refetched instead — they name the organizer by handle, not by
+   * id, so only the server knows which ones belong to the blocked person.
+   */
+  const [blockedAuthors, setBlockedAuthors] = useState<ReadonlySet<string>>(() => new Set());
+  const handleAuthorBlocked = useCallback((authorUserId: string) => {
+    setBlockedAuthors((current) => new Set(current).add(authorUserId));
+    void listEvents(50)
+      .then((page) => setEvents(page.items))
+      .catch(() => undefined);
+  }, []);
+
   /** An RSVP made on one card updates that card in place. */
   const handleEventChanged = useCallback((changed: EventResponseT) => {
     setEvents((current) => current.map((e) => (e.id === changed.id ? changed : e)));
@@ -87,7 +102,11 @@ export function FeedStream() {
   const visiblePosts =
     filter === 'today' || filter === 'weekend'
       ? []
-      : posts.filter((post) => areaFilterId === undefined || post.areaId === areaFilterId);
+      : posts.filter(
+          (post) =>
+            !blockedAuthors.has(post.authorUserId) &&
+            (areaFilterId === undefined || post.areaId === areaFilterId),
+        );
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
@@ -136,7 +155,7 @@ export function FeedStream() {
       </ChipRow>
 
       {visiblePosts.map((post) => (
-        <CommunityPost key={post.id} post={post} />
+        <CommunityPost key={post.id} post={post} onAuthorBlocked={handleAuthorBlocked} />
       ))}
 
       {loading ? (

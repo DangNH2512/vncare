@@ -1,11 +1,16 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type {
   ListPostQueryT,
   PostCreateRequestT,
   PostResponseT,
   PostUpdateRequestT,
 } from '@dnc/contracts';
-import type { MediaResponseT } from '@dnc/contracts';
+import type { ContentStatusT, MediaResponseT } from '@dnc/contracts';
 import { MediaService } from '../media/index.js';
 import { toPage } from '../../common/pagination.js';
 import { translatePostgresError } from '../../common/db/pg-error.js';
@@ -99,7 +104,16 @@ export class PostService {
     patch: PostUpdateRequestT,
     viewer: CurrentUserContext,
   ): Promise<PostResponseT> {
-    await this.assertOwner(id, viewer);
+    const status = await this.assertOwner(id, viewer);
+    if (status === 'hidden' || status === 'removed') {
+      // The hidden body is the evidence behind a moderation decision; letting
+      // the author rewrite it would erase what the moderator acted on (BA #10).
+      // Deleting stays allowed — that path does not go through here.
+      throw new ConflictException({
+        code: 'CONTENT_UNDER_MODERATION',
+        messageKey: 'errors.content.underModeration',
+      });
+    }
     try {
       const sanitized = Object.hasOwn(patch, 'mediaIds')
         ? { ...patch, mediaIds: await this.attachableMedia(patch.mediaIds ?? [], viewer) }
@@ -141,15 +155,16 @@ export class PostService {
    * so its existence is not a secret and hiding it would only make the client's
    * error handling wrong. A deleted or never-existing id still answers 404.
    */
-  private async assertOwner(id: string, viewer: CurrentUserContext): Promise<void> {
-    const ownerId = await this.posts.findOwner(id);
-    if (!ownerId) throw this.notFound();
-    if (ownerId !== viewer.id) {
+  private async assertOwner(id: string, viewer: CurrentUserContext): Promise<ContentStatusT> {
+    const owner = await this.posts.findOwner(id);
+    if (!owner) throw this.notFound();
+    if (owner.author_user_id !== viewer.id) {
       throw new ForbiddenException({
         code: 'NOT_POST_OWNER',
         messageKey: 'errors.post.notOwner',
       });
     }
+    return owner.status;
   }
 
   private notFound(): NotFoundException {
