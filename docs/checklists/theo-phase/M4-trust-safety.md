@@ -1,6 +1,6 @@
 # Checklist M4 · Trust & Safety tối thiểu
 
-**Dự án:** Da Nang Connect — Giai đoạn 1 (MVP) · **Trạng thái chụp:** 19/09/2026 · **Ngày chốt:** 25/12/2026 · **Phân công:** 23/09/2026 (60-20-20)
+**Dự án:** Da Nang Connect — Giai đoạn 1 (MVP) · **Trạng thái chụp:** 19/09/2026 (mục của TV3 cập nhật 03/10/2026) · **Ngày chốt:** 25/12/2026 · **Phân công:** 23/09/2026 (60-20-20)
 
 **Bản sửa được:** `docs/checklists/checklist-milestone-M0-M6.xlsx` (mỗi phase một sheet, cột Trạng thái có danh sách chọn, sheet Tổng quan tự tính lại).
 
@@ -37,7 +37,7 @@
 
 ## 2. M4 · Trust & Safety tối thiểu — chốt 25/12/2026
 
-**Sprint:** L7 · **Tổng:** 40 mục · ✅ 0 · 🟡 0 · ⬜ 35 · ⛔ 0 · ❓ 2 · ⚪ 0 · ✂️ 3 · **Tỷ lệ xong:** 0%
+**Sprint:** L7 · **Tổng:** 40 mục · ✅ 5 · 🟡 9 · ⬜ 21 · ⛔ 0 · ❓ 2 · ⚪ 0 · ✂️ 3 · **Tỷ lệ xong:** 14%
 
 **SP theo người (còn lại / trong phạm vi):** TV1 8 / 8 · TV2 0 / 0 · TV3 26 / 26
 
@@ -58,15 +58,15 @@
 
 | ☐ | Mã | Nội dung | Phụ trách | Trạng thái | Ghi chú / bằng chứng |
 |:-:|---|---|---|---|---|
-| ☐ | E8-S1 | Báo cáo hoạt động / người dùng (5 SP) · MUST | TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: TV3 làm nút báo cáo và chọn lý do trên web/PWA, thay cho app native |
-| ☐ | E8-S2 | Chặn người dùng (5 SP) · MUST | TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: TV3 làm cả thao tác chặn trên web/PWA lẫn API chặn hai chiều |
-| ☐ | E8-S3 | Hàng đợi kiểm duyệt xếp theo mức nghiêm trọng + thời gian chờ (3 SP) · MUST | TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Nhóm B rút gọn 8 → 3 SP: bảng report lọc theo mức, xử lý tay; SLA P0 = 2 giờ vẫn giữ, do Founder trực |
-| ☐ | E8-S4 | Ẩn nội dung / gỡ hoạt động / khoá tài khoản, có ghi lý do & người thực hiện (5 SP) · MUST | TV3 | <span class="nw">⬜ Chưa làm</span> | — |
+| ☐ | E8-S1 | Báo cáo hoạt động / người dùng (5 SP) · MUST | TV3 | <span class="nw">🟡 Một phần</span> | Tinh gọn: TV3 làm nút báo cáo và chọn lý do trên web/PWA, thay cho app native Cập nhật 03/10/2026: Code API + web/admin xong, e2e xanh trên PostGIS thật (report 33/33, block 53/53, moderation 68/68, audit 12/12). BA nghiệm thu: pass có điều kiện (.agent/specs/_changes/moderation-core/acceptance.md). Còn: merge vào develop (TV1 review packages/**), screen test EN/VI, video/ảnh bằng chứng. Nút báo cáo trên bình luận hoãn vì web chưa có UI bình luận. |
+| ☐ | E8-S2 | Chặn người dùng (5 SP) · MUST | TV3 | <span class="nw">🟡 Một phần</span> | Tinh gọn: TV3 làm cả thao tác chặn trên web/PWA lẫn API chặn hai chiều Cập nhật 03/10/2026: Code API + web/admin xong, e2e xanh trên PostGIS thật (report 33/33, block 53/53, moderation 68/68, audit 12/12). BA nghiệm thu: pass có điều kiện (.agent/specs/_changes/moderation-core/acceptance.md). Còn: merge vào develop (TV1 review packages/**), screen test EN/VI, video/ảnh bằng chứng. |
+| ☐ | E8-S3 | Hàng đợi kiểm duyệt xếp theo mức nghiêm trọng + thời gian chờ (3 SP) · MUST | TV3 | <span class="nw">🟡 Một phần</span> | Tinh gọn: Nhóm B rút gọn 8 → 3 SP: bảng report lọc theo mức, xử lý tay; SLA P0 = 2 giờ vẫn giữ, do Founder trực Cập nhật 03/10/2026: Code API + web/admin xong, e2e xanh trên PostGIS thật (report 33/33, block 53/53, moderation 68/68, audit 12/12). BA nghiệm thu: pass có điều kiện (.agent/specs/_changes/moderation-core/acceptance.md). Còn: merge vào develop (TV1 review packages/**), screen test EN/VI, video/ảnh bằng chứng. |
+| ☐ | E8-S4 | Ẩn nội dung / gỡ hoạt động / khoá tài khoản, có ghi lý do & người thực hiện (5 SP) · MUST | TV3 | <span class="nw">🟡 Một phần</span> | Cập nhật 03/10/2026: Code API + web/admin xong, e2e xanh trên PostGIS thật (report 33/33, block 53/53, moderation 68/68, audit 12/12). BA nghiệm thu: pass có điều kiện (.agent/specs/_changes/moderation-core/acceptance.md). Còn: merge vào develop (TV1 review packages/**), screen test EN/VI, video/ảnh bằng chứng. |
 | ☐ | E8-S5 | Community Guidelines + màn đồng ý trước khi tham gia (3 SP) · MUST | TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Founder soạn nội dung Guidelines; TV3 dựng màn đồng ý trên web/PWA |
 | ☐ | E8-S8 | Nhãn "Verified organizer" (3 SP) · SHOULD | TV1 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Nhóm C, vẫn trong phạm vi; chỉ hoãn nếu phải giữ ngày 18/03/2027 |
 | ☐ | E3-S3 | Trust level T0–T5 trên hồ sơ, tính bằng job BullMQ (5 SP) · MUST | TV1 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Giữ nguyên thang T0–T5; job chỉ tự tính T0–T3, còn T4 và T5 do Founder gán tay hằng tuần |
 | ☐ | E7-S6 | Trung tâm thông báo trong app và trên web (8 SP) · SHOULD | Founder | <span class="nw">✂️ Cắt / hoãn</span> | Tinh gọn: Hoãn sau ra mắt; dùng email + Web Push, email là bản lưu thông báo cũ |
-| ☐ | E9-S1 | Khu vực quản trị riêng, đăng nhập tách biệt, audit log (5 SP) · MUST | TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: §10.4 tính E9-S1 vào L8 (E9 tinh gọn 5 + 8 + 8 + 5 + 2 = 28 SP, vừa khít L8), nhưng bảng report E8-S3 ở L7 cần khu admin có đăng nhập riêng + audit log; tạm giữ ở M4/L7, chờ Founder + TV3 chốt (xem conflicts) |
+| ☐ | E9-S1 | Khu vực quản trị riêng, đăng nhập tách biệt, audit log (5 SP) · MUST | TV3 | <span class="nw">🟡 Một phần</span> | Tinh gọn: §10.4 tính E9-S1 vào L8 (E9 tinh gọn 5 + 8 + 8 + 5 + 2 = 28 SP, vừa khít L8), nhưng bảng report E8-S3 ở L7 cần khu admin có đăng nhập riêng + audit log; tạm giữ ở M4/L7, chờ Founder + TV3 chốt (xem conflicts) Cập nhật 03/10/2026: Code API + web/admin xong, e2e xanh trên PostGIS thật (report 33/33, block 53/53, moderation 68/68, audit 12/12). BA nghiệm thu: pass có điều kiện (.agent/specs/_changes/moderation-core/acceptance.md). Còn: merge vào develop (TV1 review packages/**), screen test EN/VI, video/ảnh bằng chứng. Làm ở L7 cùng hàng đợi (audit_logs + trang /audit-logs). |
 | ☐ | E4-S7 | Tạo hoạt động trên mobile dưới 90 giây (nấc M2++) (13 SP) · MUST | Founder | <span class="nw">✂️ Cắt / hoãn</span> | Tinh gọn: Hoãn app native; mất thông điệp 90 giây, bù bằng form web tối ưu điện thoại (TV1) |
 
 ### 2.3. DoD bổ sung
@@ -78,19 +78,19 @@
 | ☐ | S5-DoD-3 | Grep toàn repo không còn dấu vết thang cũ: `grep -rniE "trust_score\|reputation_score\|verified_member\|established\|ambassador"` phải rỗng. Không tồn tại bất kỳ thang điểm 0–100 nào | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
 | ☐ | S5-DoD-4 | Nhãn hiển thị đúng 6 chuỗi i18n: `T0 New`, `T1 Email verified`, `T2 Phone verified`, `T3 Active member`, `T4 Trusted`, `T5 Community leader` | TV1 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: TV1 nạp khoá en + vi; bản VI chuẩn do Thuê ngoài: Dịch giả, nạp ở L11 |
 | ☐ | S5-DoD-5 | Tín hiệu âm (`no_show_recorded`, `report_upheld`) chỉ moderator thấy; người dùng thường gọi API hồ sơ người khác không nhận được các trường này — có test 2 vai trò | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
-| ☐ | S5-DoD-6 | Hàng đợi kiểm duyệt tính thời gian còn lại của SLA theo bảng ở §5.9: P0 = 2 giờ, P1 = 12 giờ, P2 = 48 giờ, P3 = 72 giờ. Ticket sắp quá hạn nhuộm màu cảnh báo | TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Áp lên bảng report rút gọn của E8-S3; vẫn đủ 4 mức SLA, Founder trực P0 |
-| ☐ | S5-DoD-7 | Mọi hành động moderator ghi vào `moderation_actions` bất biến: ai, lúc nào, đối tượng nào, lý do gì, hành động gì | TV3 | <span class="nw">⬜ Chưa làm</span> | — |
-| ☐ | S5-DoD-8 | Chặn hai chiều: A chặn B thì B không thấy nội dung của A, không RSVP vào sự kiện của A, không nhắn được cho A — test cả hai chiều | TV3 | <span class="nw">⬜ Chưa làm</span> | — |
+| ☐ | S5-DoD-6 | Hàng đợi kiểm duyệt tính thời gian còn lại của SLA theo bảng ở §5.9: P0 = 2 giờ, P1 = 12 giờ, P2 = 48 giờ, P3 = 72 giờ. Ticket sắp quá hạn nhuộm màu cảnh báo | TV3 | <span class="nw">🟡 Một phần</span> | Tinh gọn: Áp lên bảng report rút gọn của E8-S3; vẫn đủ 4 mức SLA, Founder trực P0 Cập nhật 03/10/2026: API tính hạn SLA P0 2h / P1 12h / P2 48h / P3 72h và trạng thái cảnh báo (moderation-queue.e2e 19/19). UI đếm ngược + màu cảnh báo đã làm ở /moderation, chờ screen test. |
+| ☑ | S5-DoD-7 | Mọi hành động moderator ghi vào `moderation_actions` bất biến: ai, lúc nào, đối tượng nào, lý do gì, hành động gì | TV3 | <span class="nw">✅ Xong</span> | Cập nhật 03/10/2026: moderation_actions bất biến bằng trigger (UPDATE/DELETE/TRUNCATE → lỗi 42501); mỗi hành động ghi 1 dòng action + 1 dòng audit trong cùng transaction. Bằng chứng: moderation-actions.e2e.spec.ts 42/42, migration 0009. |
+| ☑ | S5-DoD-8 | Chặn hai chiều: A chặn B thì B không thấy nội dung của A, không RSVP vào sự kiện của A, không nhắn được cho A — test cả hai chiều | TV3 | <span class="nw">✅ Xong</span> | Cập nhật 03/10/2026: Bảng blocks, lọc hai chiều trên sự kiện, RSVP, post, comment, reaction, hồ sơ, tin nhắn riêng và chat nhóm. Bằng chứng: block.e2e.spec.ts 53/53 (cả hai chiều + người thứ ba vẫn thấy cả hai). |
 | ☐ | S5-DoD-9 | Community Guidelines song ngữ đã đăng ở URL công khai, có phiên bản và ngày hiệu lực | Founder + TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Founder soạn nội dung; bản VI lấy trước từ gói dịch giả thuê ngoài (TG-M4-3); TV3 đăng trang |
 
 ### 2.4. Nghiệm thu
 
 | ☐ | Mã | Nội dung | Phụ trách | Trạng thái | Ghi chú / bằng chứng |
 |:-:|---|---|---|---|---|
-| ☐ | M4-1 | Báo cáo hoạt động và báo cáo người dùng đều hoạt động, có phân loại lý do | TV3 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Video. Tinh gọn: Quay video trên web/PWA; Founder là người thứ hai xác nhận thay QA (DoD-9 chung ở §6.1, không phải S5-DoD-9) |
-| ☐ | M4-2 | Chặn người dùng có hiệu lực hai chiều | TV3 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Test 2 tài khoản |
-| ☐ | M4-3 | Hàng đợi kiểm duyệt xếp theo mức nghiêm trọng và thời gian chờ; SLA P0 = 2 giờ hiển thị đồng hồ đếm ngược | TV3 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Ảnh giao diện. Tinh gọn: Nghiệm thu trên bảng report rút gọn (E8-S3 còn 3 SP): vẫn xếp theo mức + thời gian chờ, đếm ngược P0 2 giờ |
-| ☐ | M4-4 | Ẩn nội dung / gỡ hoạt động / khoá tài khoản đều ghi `moderation_actions` bất biến (ai, lúc nào, lý do) | TV3 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Truy vấn SQL |
+| ☐ | M4-1 | Báo cáo hoạt động và báo cáo người dùng đều hoạt động, có phân loại lý do | TV3 | <span class="nw">🟡 Một phần</span> | Bằng chứng: Video. Tinh gọn: Quay video trên web/PWA; Founder là người thứ hai xác nhận thay QA (DoD-9 chung ở §6.1, không phải S5-DoD-9) Cập nhật 03/10/2026: API + web xong, đủ 12 lý do phân loại; e2e report 33/33. Còn quay video và Founder xác nhận. |
+| ☑ | M4-2 | Chặn người dùng có hiệu lực hai chiều | TV3 | <span class="nw">✅ Xong</span> | Bằng chứng: Test 2 tài khoản Cập nhật 03/10/2026: Test 2 tài khoản, cả hai chiều: block.e2e.spec.ts 53/53. |
+| ☐ | M4-3 | Hàng đợi kiểm duyệt xếp theo mức nghiêm trọng và thời gian chờ; SLA P0 = 2 giờ hiển thị đồng hồ đếm ngược | TV3 | <span class="nw">🟡 Một phần</span> | Bằng chứng: Ảnh giao diện. Tinh gọn: Nghiệm thu trên bảng report rút gọn (E8-S3 còn 3 SP): vẫn xếp theo mức + thời gian chờ, đếm ngược P0 2 giờ Cập nhật 03/10/2026: Hàng đợi xếp theo mức rồi thời gian chờ, đếm ngược P0 2h có ở /moderation (admin). Còn chụp ảnh giao diện. |
+| ☑ | M4-4 | Ẩn nội dung / gỡ hoạt động / khoá tài khoản đều ghi `moderation_actions` bất biến (ai, lúc nào, lý do) | TV3 | <span class="nw">✅ Xong</span> | Bằng chứng: Truy vấn SQL Cập nhật 03/10/2026: e2e truy vấn SQL moderation_actions sau mỗi hành động (người làm, thời điểm, lý do) và chứng minh không sửa/xoá được. Bằng chứng: moderation-actions.e2e.spec.ts. |
 | ☐ | M4-5 | Trust level T0–T5 hiển thị trên hồ sơ với đúng 6 nhãn quy định; tính bằng job `trust-level-recompute` | TV1 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Ảnh 6 hồ sơ mẫu. Tinh gọn: T0–T3 do job tự tính; hai hồ sơ mẫu T4 và T5 dựng từ tín hiệu Founder gán tay |
 | ☐ | M4-6 | Không tồn tại thang điểm 0–100 hay enum `new/verified/established/trusted/ambassador` trong repo | TV1 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Kết quả grep |
 | ☐ | M4-7 | Tín hiệu âm chỉ moderator thấy; người dùng thường không đọc được qua API | TV1 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Test 2 vai trò |
@@ -101,8 +101,8 @@
 
 | ☐ | Mã | Nội dung | Phụ trách | Trạng thái | Ghi chú / bằng chứng |
 |:-:|---|---|---|---|---|
-| ☐ | S5-Demo-1 | Tài khoản A báo cáo sự kiện của B với lý do "lừa đảo" → ticket vào hàng đợi mức P0, đồng hồ SLA 2 giờ bắt đầu chạy | TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Báo cáo gửi từ web/PWA; ticket P0 hiện trên bảng report rút gọn, Founder là người trực nhận |
-| ☐ | S5-Demo-2 | Moderator gỡ sự kiện, ghi lý do → sự kiện biến khỏi khám phá ngay, người đã RSVP nhận thông báo huỷ | TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Thông báo huỷ đi qua email + Web Push, không còn Expo Push hay trung tâm thông báo |
+| ☑ | S5-Demo-1 | Tài khoản A báo cáo sự kiện của B với lý do "lừa đảo" → ticket vào hàng đợi mức P0, đồng hồ SLA 2 giờ bắt đầu chạy | TV3 | <span class="nw">✅ Xong</span> | Tinh gọn: Báo cáo gửi từ web/PWA; ticket P0 hiện trên bảng report rút gọn, Founder là người trực nhận Cập nhật 03/10/2026: Chạy thật 26/09/2026 trên local: báo cáo lý do scam → ticket mức critical (P0), sla_due_at = lúc báo cáo + 2h; có e2e trong report.e2e.spec.ts. Diễn tập cùng Founder thuộc TG-M4-2. |
+| ☐ | S5-Demo-2 | Moderator gỡ sự kiện, ghi lý do → sự kiện biến khỏi khám phá ngay, người đã RSVP nhận thông báo huỷ | TV3 | <span class="nw">🟡 Một phần</span> | Tinh gọn: Thông báo huỷ đi qua email + Web Push, không còn Expo Push hay trung tâm thông báo Cập nhật 03/10/2026: Gỡ sự kiện có lý do → biến khỏi khám phá ngay (e2e moderation-actions). Thông báo huỷ cho người đã RSVP chờ hệ thống thông báo E7 (TV1). |
 | ☐ | S5-Demo-3 | Chạy `report_upheld` cho B → job recompute chạy ngay, `trust_level` của B tụt về T2, nhãn trên hồ sơ đổi ngay | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
 | ☐ | S5-Demo-4 | Tài khoản C xác minh số điện thoại bằng OTP → lên T2 (tính năng OTP giao ở S6, demo bằng seed tín hiệu) | TV1 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: OTP dùng nhà cung cấp có sẵn (E3-S6 còn 2 SP), chưa có ở L7 nên vẫn demo bằng seed tín hiệu |
 | ☐ | S5-Demo-5 | Trên iPhone thật, bấm đồng hồ: tạo một hoạt động từ màn hình chính tới lúc đăng — dưới 90 giây | Founder | <span class="nw">✂️ Cắt / hoãn</span> | Tinh gọn: Hoãn cùng E4-S7 (không có app native); thông điệp 90 giây bị mất, bù bằng form web tối ưu điện thoại |

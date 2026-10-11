@@ -1,6 +1,6 @@
 # Checklist M2 · Tạo & khám phá sự kiện
 
-**Dự án:** Da Nang Connect — Giai đoạn 1 (MVP) · **Trạng thái chụp:** 19/09/2026 · **Ngày chốt:** 13/11/2026 · **Phân công:** 23/09/2026 (60-20-20)
+**Dự án:** Da Nang Connect — Giai đoạn 1 (MVP) · **Trạng thái chụp:** 19/09/2026 (mục của TV3 cập nhật 03/10/2026) · **Ngày chốt:** 13/11/2026 · **Phân công:** 23/09/2026 (60-20-20)
 
 **Bản sửa được:** `docs/checklists/checklist-milestone-M0-M6.xlsx` (mỗi phase một sheet, cột Trạng thái có danh sách chọn, sheet Tổng quan tự tính lại).
 
@@ -37,7 +37,7 @@
 
 ## 2. M2 · Tạo & khám phá sự kiện — chốt 13/11/2026
 
-**Sprint:** L2, L3, L4 · **Tổng:** 72 mục · ✅ 0 · 🟡 11 · ⬜ 45 · ⛔ 0 · ❓ 5 · ⚪ 1 · ✂️ 10 · **Tỷ lệ xong:** 0%
+**Sprint:** L2, L3, L4 · **Tổng:** 72 mục · ✅ 0 · 🟡 13 · ⬜ 43 · ⛔ 0 · ❓ 5 · ⚪ 1 · ✂️ 10 · **Tỷ lệ xong:** 0%
 
 **SP theo người (còn lại / trong phạm vi):** TV1 77 / 77 · TV2 16 / 16 · TV3 5 / 5
 
@@ -70,7 +70,7 @@
 | ☐ | E4-S6 | Form tạo hoạt động nhiều bước trên web, tự lưu nháp, xem trước (8 SP) · MUST | L3 | TV1 | <span class="nw">🟡 Một phần</span> | Web đang dùng một form đơn; doc yêu cầu wizard 4 bước + tự lưu nháp + xem trước (mockup ③ create-1…4). Tinh gọn: Rút gọn còn 8 SP: một trang cuộn dài + tự lưu nháp, không chia bước, không xem trước đầy đủ; form một trang hiện có đã đúng hướng; tối ưu điện thoại (bù E4-S7) làm ở L9 (M5) |
 | ☐ | E3-S1 | Tạo hồ sơ: ảnh, giới thiệu, ngôn ngữ, khu vực, sở thích (8 SP) · MUST | L2 | TV2 | <span class="nw">🟡 Một phần</span> | Module profile + profile-editor đã có; chưa có onboarding 3 bước. Tinh gọn: Hồ sơ chỉ sửa trên web (E3-S5 hoãn); TV2 làm onboarding/profile-editor |
 | ☐ | E3-S2 | Tải ảnh nhanh + phục vụ qua CDN (3 SP) · MUST | L2 | TV2 | <span class="nw">🟡 Một phần</span> | Upload lên MinIO có tiến độ; chưa có CDN. Tinh gọn: Dùng dịch vụ lưu ảnh có sẵn thay pipeline tự dựng, còn 3 SP; phụ thuộc nhà cung cấp, chi phí theo lưu lượng |
-| ☐ | E5-S1 | Từ điển khu vực Đà Nẵng có ranh giới thật (5 SP) · MUST | L2 | TV3 | <span class="nw">🟡 Một phần</span> | Seed 6 khu vực + polygon trong packages/geo; ranh giới thật chưa được Product ký duyệt. Tinh gọn: Phần còn lại chủ yếu là Founder ký duyệt ranh giới 6 khu vực (không viết code); TV3 sửa polygon trong packages/geo và seed; không bao giờ cắt (NT-2) |
+| ☐ | E5-S1 | Từ điển khu vực Đà Nẵng có ranh giới thật (5 SP) · MUST | L2 | TV3 | <span class="nw">🟡 Một phần</span> | Seed 6 khu vực + polygon trong packages/geo; ranh giới thật chưa được Product ký duyệt. Tinh gọn: Phần còn lại chủ yếu là Founder ký duyệt ranh giới 6 khu vực (không viết code); TV3 sửa polygon trong packages/geo và seed; không bao giờ cắt (NT-2) Cập nhật 03/10/2026: API khu vực xong: GET /api/v1/areas (?mvp=true), /areas/resolve, /areas/:id; e2e area 9/9 (commit 1dbd2a1). Còn Founder ký ranh giới 6 khu vực. |
 | ☐ | E2-S5 | Đăng nhập Facebook (3 SP) · SHOULD |  | Founder | <span class="nw">✂️ Cắt / hoãn</span> | Tinh gọn: Nhóm B CẮT, thu hồi 3 SP: chỉ giữ email + Google; mất một phần expat quen dùng Facebook |
 | ☐ | E1-S10 | Công tắc đổi ngôn ngữ EN ↔ VI trên web + mobile (5 SP) · MUST | L2 | TV2 | <span class="nw">🟡 Một phần</span> | Web có công tắc EN/VI; mobile chưa có app. Tinh gọn: Không có app native: phần mobile là web trên trình duyệt điện thoại; chuỗi VI tạm tới khi nạp bản dịch thuê ngoài ở L11 |
 | ☐ | E5-S2 | API lọc: loại hình, khu vực, thời gian, ngôn ngữ, mức phí (13 SP) · MUST | L4 | TV1 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Không bao giờ cắt (NT-2) |
@@ -91,7 +91,7 @@
 | ☐ | S2-DoD-3 | Mọi `events` được tạo đều sinh tối thiểu 1 dòng `event_occurrences` — kể cả sự kiện không lặp lại. Có test: tạo sự kiện đơn → `SELECT count() FROM event_occurrences WHERE event_id = ?` trả về đúng `1` | L2 | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
 | ☐ | S2-DoD-4 | `starts_at` / `ends_at` lưu UTC; form nhập theo `Asia/Ho_Chi_Minh` và test có ca nhập 23:30 giờ Việt Nam để bắt lỗi lệch ngày | L3 | TV1 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: TV1 viết ca Playwright nhập 23:30 trên form web (không có QA thường trực) |
 | ☐ | S2-DoD-5 | Index `GIST` trên `events.location` đã có; `EXPLAIN` một truy vấn `ST_DWithin` cho thấy dùng index | L2 | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
-| ☐ | S2-DoD-6 | Bảng `areas` seed phân cấp đầy đủ, nhưng bộ lọc chỉ phơi ra đúng 6 khu vực MVP: An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn. Có test kiểm tra endpoint `GET /api/v1/areas?mvp=true` trả đúng 6 phần tử | L2 | TV3 | <span class="nw">⬜ Chưa làm</span> | — |
+| ☐ | S2-DoD-6 | Bảng `areas` seed phân cấp đầy đủ, nhưng bộ lọc chỉ phơi ra đúng 6 khu vực MVP: An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn. Có test kiểm tra endpoint `GET /api/v1/areas?mvp=true` trả đúng 6 phần tử | L2 | TV3 | <span class="nw">🟡 Một phần</span> | Cập nhật 03/10/2026: GET /api/v1/areas?mvp=true trả đúng 6 khu vực, có test (area.e2e.spec.ts). Còn seed phân cấp đầy đủ: cần migration thêm cột cấp/parent cho areas, chưa làm. |
 | ☐ | S2-DoD-7 | `events.source` ∈ `self_serve` \| `curated`, bắt buộc, không null | L2 | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
 | ☐ | S2-DoD-8 | Ảnh: giới hạn 8 MB/ảnh, tự nén, sinh 3 kích cỡ, trả qua CDN, thời gian tải ảnh bìa trên 4G mô phỏng < 1,5 giây | L2 | TV2 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Nén, 3 kích cỡ và CDN do dịch vụ lưu ảnh có sẵn đảm nhận; TV2 cấu hình và đo trên 4G mô phỏng |
 | ☐ | S3-DoD-1 | `GET /api/v1/events` phân trang bằng cursor `(starts_at, id)`, không dùng `OFFSET` | L4 | TV1 | <span class="nw">⬜ Chưa làm</span> | — |
@@ -110,7 +110,7 @@
 | ☐ | M2-1 | Tạo, sửa, huỷ hoạt động trên web hoạt động đầy đủ, gồm tự lưu nháp và xem trước |  | TV1 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Video. Tinh gọn: Xem trước chỉ ở mức rút gọn của E4-S6 (form một trang); Founder ký nghiệm thu theo tiêu chí đã rút |
 | ☐ | M2-2 | Mỗi `events` sinh tối thiểu 1 `event_occurrences`, kể cả sự kiện không lặp lại |  | TV1 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Test + truy vấn SQL |
 | ☐ | M2-3 | Cột chủ sự kiện tên đúng `events.host_user_id`; grep `creator_id`/`organizer_id` rỗng |  | TV1 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Kết quả grep |
-| ☐ | M2-4 | Bộ lọc phơi đúng 6 khu vực MVP: An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn |  | TV1 + TV3 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Ảnh giao diện + test API |
+| ☐ | M2-4 | Bộ lọc phơi đúng 6 khu vực MVP: An Thượng, Mỹ Khê, Mỹ An, Hải Châu, Sơn Trà, Ngũ Hành Sơn |  | TV1 + TV3 | <span class="nw">🟡 Một phần</span> | Bằng chứng: Ảnh giao diện + test API Cập nhật 03/10/2026: Phía API của TV3 xong (?mvp=true trả đúng 6 khu vực, có test). Giao diện bộ lọc là phần TV1. |
 | ☐ | M2-5 | Lọc theo loại hình / khu vực / khoảng thời gian / ngôn ngữ / mức phí đều đúng, có `facets` đếm thật |  | TV1 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Video + so khớp 10 mẫu |
 | ☐ | M2-6 | Truy vấn bán kính `ST_DWithin` dùng index GIST; `p95 < 200 ms` với 10.000 sự kiện |  | TV1 | <span class="nw">⬜ Chưa làm</span> | Bằng chứng: Báo cáo đo + `EXPLAIN`. Tinh gọn: Giữ vì E5-S3 (nhóm C) không bị cắt |
 | ☐ | M2-7 | Bản đồ Đà Nẵng hiển thị đúng khu vực, gom cụm, ≥ 45 fps với 500 điểm |  | Founder | <span class="nw">✂️ Cắt / hoãn</span> | Bằng chứng: Video. Tinh gọn: Bản đồ web hoãn (E5-S6); nghiệm thu thay bằng danh sách nhóm theo 6 khu vực (TG-M2-4) |

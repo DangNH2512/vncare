@@ -1,6 +1,6 @@
 # Checklist M5 · Beta kín 60 user
 
-**Dự án:** Da Nang Connect — Giai đoạn 1 (MVP) · **Trạng thái chụp:** 19/09/2026 · **Ngày chốt:** 26/02/2027 · **Phân công:** 23/09/2026 (60-20-20)
+**Dự án:** Da Nang Connect — Giai đoạn 1 (MVP) · **Trạng thái chụp:** 19/09/2026 (mục của TV3 cập nhật 03/10/2026) · **Ngày chốt:** 26/02/2027 · **Phân công:** 23/09/2026 (60-20-20)
 
 **Bản sửa được:** `docs/checklists/checklist-milestone-M0-M6.xlsx` (mỗi phase một sheet, cột Trạng thái có danh sách chọn, sheet Tổng quan tự tính lại).
 
@@ -37,7 +37,7 @@
 
 ## 2. M5 · Beta kín 60 user — chốt 26/02/2027
 
-**Sprint:** L8, L9, L10 · **Tổng:** 64 mục · ✅ 0 · 🟡 0 · ⬜ 58 · ⛔ 0 · ❓ 0 · ⚪ 0 · ✂️ 6 · **Tỷ lệ xong:** 0%
+**Sprint:** L8, L9, L10 · **Tổng:** 64 mục · ✅ 1 · 🟡 0 · ⬜ 57 · ⛔ 0 · ❓ 0 · ⚪ 0 · ✂️ 6 · **Tỷ lệ xong:** 2%
 
 **SP theo người (còn lại / trong phạm vi):** TV1 30 / 30 · TV2 17 / 17 · TV3 31 / 31
 
@@ -78,7 +78,7 @@
 |:-:|---|---|---|---|---|---|
 | ☐ | S6-DoD-1 | Bấm đồng hồ: Community Manager nhập một sự kiện thật từ một bài đăng công khai → ≤ 3 phút, đo trên 5 sự kiện khác nhau, lấy trung vị | L8 | Founder + TV3 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Founder kiêm Community Manager tự bấm đồng hồ; TV3 tối ưu form console |
 | ☐ | S6-DoD-2 | Mọi listing curate bắt buộc có: `source = 'curated'`, trường nguồn gốc, nhãn hiển thị "Listed by Da Nang Connect from a public post — not managed by the organiser", và nút gỡ ngay trên trang công khai | L8 | TV3 | <span class="nw">⬜ Chưa làm</span> | — |
-| ☐ | S6-DoD-3 | Không có chức năng scraping nào trong repo. `grep -rniE "puppeteer\|playwright-scrape\|cheerio\|scrape"` trong `apps/api` phải rỗng (trừ dev-dependency test) | L8 | TV3 | <span class="nw">⬜ Chưa làm</span> | — |
+| ☑ | S6-DoD-3 | Không có chức năng scraping nào trong repo. `grep -rniE "puppeteer\|playwright-scrape\|cheerio\|scrape"` trong `apps/api` phải rỗng (trừ dev-dependency test) | L8 | TV3 | <span class="nw">✅ Xong</span> | Cập nhật 03/10/2026: grep puppeteer/playwright-scrape/cheerio/scrape trong apps/api rỗng ngày 03/10/2026. Phải giữ khi làm E9-S2. |
 | ☐ | S6-DoD-4 | Luồng nhận quyền: mã mời một lần, hết hạn 14 ngày, dùng rồi vô hiệu; nhận quyền xong `source` đổi `curated` → `self_serve`, `host_user_id` chuyển sang organizer thật, người curate cũ chuyển thành `event_cohosts` với `role_in_event = 'listed_by'` | L8 | TV3 | <span class="nw">⬜ Chưa làm</span> | — |
 | ☐ | S6-DoD-5 | Điểm danh QR: mã xoay theo thời gian, không dùng lại được; quét xong `rsvps.status` = `checked_in` và sinh tín hiệu `attendance_confirmed` | L8 | TV1 | <span class="nw">⬜ Chưa làm</span> | Tinh gọn: Theo E6-S5 rút gọn: bỏ vế mã QR xoay; kiểm tra thay bằng organizer tick tay → `checked_in` + `attendance_confirmed`, chỉ host của occurrence được tick, không tick lặp |
 | ☐ | S6-DoD-6 | Job đóng occurrence chạy T+3h sau `ends_at`: ai `going` mà không `checked_in` → `no_show`, sinh `no_show_recorded` | L9 | TV1 | <span class="nw">⬜ Chưa làm</span> | — |

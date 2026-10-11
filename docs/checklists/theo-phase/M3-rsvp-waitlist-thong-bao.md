@@ -1,6 +1,6 @@
 # Checklist M3 · RSVP + Waitlist + Thông báo
 
-**Dự án:** Da Nang Connect — Giai đoạn 1 (MVP) · **Trạng thái chụp:** 19/09/2026 · **Ngày chốt:** 11/12/2026 · **Phân công:** 23/09/2026 (60-20-20)
+**Dự án:** Da Nang Connect — Giai đoạn 1 (MVP) · **Trạng thái chụp:** 19/09/2026 (mục của TV3 cập nhật 03/10/2026) · **Ngày chốt:** 11/12/2026 · **Phân công:** 23/09/2026 (60-20-20)
 
 **Bản sửa được:** `docs/checklists/checklist-milestone-M0-M6.xlsx` (mỗi phase một sheet, cột Trạng thái có danh sách chọn, sheet Tổng quan tự tính lại).
 
