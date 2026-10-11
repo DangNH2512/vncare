@@ -33,7 +33,13 @@ export type ApiErrorT = z.infer<typeof ApiError>;
  * Length in code points, the unit PostgreSQL's `length()` counts in CHECK
  * constraints. Zod's `.min()`/`.max()` count UTF-16 units, which lets ten
  * emoji pass a 20-character floor and then fail the CHECK as a 500.
+ *
+ * Code points, not graphemes: `Intl.Segmenter` would count a family emoji as
+ * one, but PostgreSQL counts its parts, and this has to agree with the CHECK.
+ * A string iterator yields exactly one code point per step.
  */
 export function codePointLength(value: string): number {
-  return [...value].length;
+  let count = 0;
+  for (const _codePoint of value) count += 1;
+  return count;
 }
