@@ -43,7 +43,9 @@ services:
       - redisqueue-data:/data
 
   minio:
-    image: minio/minio:latest
+    # Community fork, drop-in for the old minio/minio image: upstream stopped
+    # publishing public images, so that tag no longer pulls (access denied).
+    image: pgsty/minio:latest
     command: ["server", "/data", "--console-address", ":9001"]
     environment:
       MINIO_ROOT_USER: dnc
