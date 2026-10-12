@@ -17,25 +17,20 @@ import { setWorkerUrl } from 'maplibre-gl';
 export const MARKER_COLOR = '#0369A1';
 
 /**
- * Raster OpenStreetMap.
+ * MapLibre style URL for the OpenStreetMap basemap.
  *
- * Raster rather than vector: these maps are small and short-lived, and a
- * vector style would download a glyph and sprite set for no gain at this size.
- * Attribution is required by the ODbL and is rendered by the attribution
- * control, not optional.
+ * `NEXT_PUBLIC_MAP_STYLE_URL` selects the provider, for example a MapTiler
+ * style URL carrying its key (docs/analysis/04, tile source). Without it the
+ * map uses OpenFreeMap's Liberty style, which needs no key and allows
+ * commercial use. Neither `tile.openstreetmap.org` (its usage policy rules out
+ * app traffic, and some networks resolve it to localhost) nor CARTO (now
+ * key-only) is used: both left the map blank.
+ *
+ * The style carries its own attribution, rendered by the attribution control;
+ * it is required by the ODbL and is not optional.
  */
-export const OSM_STYLE = {
-  version: 8 as const,
-  sources: {
-    osm: {
-      type: 'raster' as const,
-      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-      tileSize: 256,
-      attribution: '© OpenStreetMap contributors',
-    },
-  },
-  layers: [{ id: 'osm', type: 'raster' as const, source: 'osm' }],
-};
+export const OSM_STYLE =
+  process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? 'https://tiles.openfreemap.org/styles/liberty';
 
 let workerConfigured = false;
 
